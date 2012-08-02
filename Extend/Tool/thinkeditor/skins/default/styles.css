@@ -1,0 +1,218 @@
+.te_main {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #B1BAB7;
+}
+.te_toolbar_box {
+    background: none repeat scroll 0 0 #F5F5F5;
+    border-bottom: 1px solid #B1BAB7;
+    padding-bottom: 12px;
+}
+.te_toolbar {
+    margin-left: 10px;
+    margin-right: 8px;
+    overflow: hidden;
+}
+.te_toolbar:after {
+    clear: both;
+    content: " ";
+    display: block;
+    height: 0;
+}
+* + html .te_toolbar {
+    overflow: hidden;
+}
+.te_main iframe {
+}
+.te_main textarea {
+    border: medium none;
+    overflow-y: scroll;
+    resize: none;
+}
+.te_dialog {
+    display: none;
+    position: absolute;
+}
+.te_group {
+    float: left;
+    height: 22px;
+    margin: 8px 2px 1px -2px;
+    overflow-y: hidden;
+}
+.te_btn {
+    background-image: url("img/bg_img.png");
+    background-repeat: no-repeat;
+    border: 1px solid #F5F5F5;
+    cursor: pointer;
+    float: left;
+    font-size: 8px;
+    height: 20px;
+    margin-right: 5px;
+    width: 20px;
+}
+.te_line {
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #B0BABA;
+    float: left;
+    height: 20px;
+    margin-right: 5px;
+    overflow: hidden;
+    width: 0;
+}
+.te_mouseover {
+    border: 1px solid #C0C0C0;
+}
+.te_btn_source {
+    background-position: 2px -4px;
+}
+.te_btn_undo {
+    background-position: 3px -28px;
+}
+.te_btn_redo {
+    background-position: 3px -53px;
+}
+.te_btn_cut {
+    background-position: 2px -78px;
+}
+.te_btn_copy {
+    background-position: 3px -103px;
+}
+.te_btn_paste {
+    background-position: 2px -128px;
+}
+.te_btn_pastetext {
+    background-position: 2px -153px;
+}
+.te_btn_pastefromword {
+    background-position: 3px -177px;
+}
+.te_btn_selectAll {
+    background-position: 2px -203px;
+}
+.te_btn_blockquote {
+    background-position: 2px -228px;
+}
+.te_btn_find {
+    background-position: 3px -254px;
+}
+.te_btn_image {
+    background-position: 2px -278px;
+}
+.te_btn_flash {
+    background-position: 2px -303px;
+}
+.te_btn_media {
+    background-position: 3px -329px;
+}
+.te_btn_table {
+    background-position: 2px -353px;
+}
+.te_btn_hr {
+    background-position: 3px -377px;
+}
+.te_btn_pagebreak {
+    background-position: 2px -403px;
+}
+.te_btn_face {
+    background-position: 2px -428px;
+}
+.te_btn_code {
+    background-position: 1px -452px;
+}
+.te_btn_link {
+    background-position: 3px -478px;
+}
+.te_btn_unlink {
+    background-position: 3px -503px;
+}
+.te_btn_print {
+    background-position: 2px -528px;
+}
+.te_btn_fullscreen {
+    background-position: 2px -553px;
+}
+.te_btn_style {
+    background-position: 3px -579px;
+}
+.te_btn_font {
+    background-position: 2px -604px;
+}
+.te_btn_fontsize {
+    background-position: 2px -629px;
+}
+.te_btn_fontcolor {
+    background-position: 3px -652px;
+}
+.te_btn_backcolor {
+    background-position: 2px -678px;
+}
+.te_btn_bold {
+    background-position: 3px -702px;
+}
+.te_btn_italic {
+    background-position: 4px -727px;
+}
+.te_btn_underline {
+    background-position: 3px -752px;
+}
+.te_btn_strikethrough {
+    background-position: 2px -779px;
+}
+.te_btn_unformat {
+    background-position: 3px -803px;
+}
+.te_btn_leftalign {
+    background-position: 3px -828px;
+}
+.te_btn_centeralign {
+    background-position: 3px -853px;
+}
+.te_btn_rightalign {
+    background-position: 3px -878px;
+}
+.te_btn_blockjustify {
+    background-position: 3px -903px;
+}
+.te_btn_orderedlist {
+    background-position: 3px -929px;
+}
+.te_btn_unorderedlist {
+    background-position: 3px -953px;
+}
+.te_btn_indent {
+    background-position: 4px -978px;
+}
+.te_btn_outdent {
+    background-position: 4px -1003px;
+}
+.te_btn_subscript {
+    background-position: 2px -1028px;
+}
+.te_btn_superscript {
+    background-position: 3px -1053px;
+}
+.te_btn_about {
+    background-position: 4px -1079px;
+}
+.te_bottom {
+    border-top: 1px solid #B1BAB7;
+    height: 12px;
+    overflow: hidden;
+    position: relative;
+    top: -1px;
+}
+.te_resize_center {
+    background: url("img/resize_center.jpg") no-repeat scroll center center #F5F5F5;
+    cursor: n-resize;
+    height: 12px;
+    overflow: hidden;
+}
+.te_resize_left {
+    background: url("img/resize_leftjpg.jpg") no-repeat scroll 0 0 transparent;
+    bottom: 0;
+    cursor: nw-resize;
+    height: 10px;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    width: 10px;
+}
