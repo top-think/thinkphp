@@ -1,73 +1,51 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 <title>系统发生错误</title>
-<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-<meta name="Generator" content="EditPlus"/>
-<style>
-body{
-	font-family: 'Microsoft Yahei', Verdana, arial, sans-serif;
-	font-size:14px;
-}
-a{text-decoration:none;color:#174B73;}
-a:hover{ text-decoration:none;color:#FF6600;}
-h2{
-	border-bottom:1px solid #DDD;
-	padding:8px 0;
-    font-size:25px;
-}
-.title{
-	margin:4px 0;
-	color:#F60;
-	font-weight:bold;
-}
-.message,#trace{
-	padding:1em;
-	border:solid 1px #000;
-	margin:10px 0;
-	background:#FFD;
-	line-height:150%;
-}
-.message{
-	background:#FFD;
-	color:#2E2E2E;
-		border:1px solid #E0E0E0;
-}
-#trace{
-	background:#E7F7FF;
-	border:1px solid #E0E0E0;
-	color:#535353;
-}
-.notice{
-    padding:10px;
-	margin:5px;
-	color:#666;
-	background:#FCFCFC;
-	border:1px solid #E0E0E0;
-}
-.red{
-	color:red;
-	font-weight:bold;
-}
+<style type="text/css">
+*{ padding: 0; margin: 0; }
+html{ overflow-y: scroll; }
+body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16px; }
+img{ border: 0; }
+.error{ padding: 24px 48px; }
+.face{ font-size: 100px; font-weight: normal; line-height: 120px; margin-bottom: 12px; }
+h1{ font-size: 32px; line-height: 48px; }
+.error .content{ padding-top: 10px}
+.error .info{ margin-bottom: 12px; }
+.error .info .title{ margin-bottom: 3px; }
+.error .info .title h3{ color: #000; font-weight: 700; font-size: 16px; }
+.error .info .text{ line-height: 24px; }
+.copyright{ padding: 12px 48px; color: #999; }
+.copyright a{ color: #000; text-decoration: none; }
 </style>
 </head>
 <body>
-<div class="notice">
-<h2>系统发生错误 </h2>
-<div >您可以选择 [ <A HREF="<?php echo(strip_tags($_SERVER['PHP_SELF']))?>">重试</A> ] [ <A HREF="javascript:history.back()">返回</A> ] 或者 [ <A HREF="<?php echo(__APP__);?>">回到首页</A> ]</div>
-<?php if(isset($e['file'])) {?>
-<p><strong>错误位置:</strong>　FILE: <span class="red"><?php echo $e['file'] ;?></span>　LINE: <span class="red"><?php echo $e['line'];?></span></p>
-<?php }?>
-<p class="title">[ 错误信息 ]</p>
-<p class="message"><?php echo strip_tags($e['message']);?></p>
+<div class="error">
+<p class="face">:(</p>
+<h1><?php echo strip_tags($e['message']);?></h1>
+<div class="content">
+	<div class="info">
+		<div class="title">
+			<h3>错误位置</h3>
+		</div>
+		<div class="text">
+			<p>FILE: <?php echo $e['file'] ;?> &#12288;LINE: <?php echo $e['line'];?></p>
+		</div>
+	</div>
 <?php if(isset($e['trace'])) {?>
-<p class="title">[ TRACE ]</p>
-<p id="trace">
-<?php echo nl2br($e['trace']);?>
-</p>
+	<div class="info">
+		<div class="title">
+			<h3>TRACE</h3>
+		</div>
+		<div class="text">
+			<p><?php echo nl2br($e['trace']);?></p>
+		</div>
+	</div>
 <?php }?>
 </div>
-<div align="center" style="color:#FF3300;margin:5pt;font-family:Verdana"> ThinkPHP <sup style='color:gray;font-size:9pt'><?php echo THINK_VERSION;?></sup><span style='color:silver'> { Fast & Simple OOP PHP Framework } -- [ WE CAN DO IT JUST THINK ]</span>
+</div>
+<div class="copyright">
+<p><a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a><sup><?php echo THINK_VERSION ?></sup> { Fast & Simple OOP PHP Framework } -- [ WE CAN DO IT JUST THINK ]</p>
 </div>
 </body>
 </html>
