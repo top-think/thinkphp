@@ -11,7 +11,6 @@
 // $Id: ThinkPHP.php 2791 2012-02-29 10:08:57Z liu21st $
 
 // ThinkPHP 入口文件
-
 //记录开始运行时间
 $GLOBALS['_beginTime'] = microtime(TRUE);
 // 记录内存初始使用
