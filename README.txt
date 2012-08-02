@@ -114,3 +114,4 @@ ThinkPHP无需安装，下载ThinkPHP核心包或者完整版之后，把解压�
 
 [ 支持 ]
 更多内容和支持请访问ThinkPHP官方网站http://thinkphp.cn/ 和论坛 http://bbs.thinkphp.cn。
+官方在线手册 http://doc.thinkphp.cn/manual/
