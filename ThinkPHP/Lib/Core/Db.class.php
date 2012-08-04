@@ -500,6 +500,13 @@ class Db {
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
                         }
                         $whereStr .= implode(' AND ',$str);
+                    }elseif($multi){
+                        unset($val['_multi']);
+                        $str    =   array();
+                        foreach($val as $item){
+                            $str[]  =  $this->parseWhereItem($this->parseKey($key),$item);
+                        }
+                        $whereStr .= implode(' OR ',$str);
                     }else{
                         $whereStr   .= $this->parseWhereItem($this->parseKey($key),$val);
                     }
