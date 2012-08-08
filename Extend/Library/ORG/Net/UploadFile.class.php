@@ -142,11 +142,11 @@ class UploadFile {//类定义开始
                 $thumbPath    =  $this->thumbPath?$this->thumbPath:dirname($filename).'/';
                 // 生成图像缩略图
                 import($this->imageClassPath);
-                $realFilename  =  $this->autoSub?basename($file['savename']):$file['savename'];
                 for($i=0,$len=count($thumbWidth); $i<$len; $i++) {
-                    $thumbfile  =   $thumbFile[$i]?$thumbFile[$i]:$thumbPrefix[$i].substr($realFilename,0,strrpos($realFilename, '.')).$thumbSuffix[$i];
-                    $thumbname	=	$thumbPath.$thumbfile.'.'.$file['extension'];
-                    Image::thumb($filename,$thumbname,'',$thumbWidth[$i],$thumbHeight[$i],true);
+                    $prefix =   isset($thumbPrefix[$i])?$thumbPrefix[$i]:$thumbPrefix[0];
+                    $suffix =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
+                    $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix.'.'.$file['extension'];
+                    Image::thumb($filename,$thumbPath.$thumbname,'',$thumbWidth[$i],$thumbHeight[$i],true);
                 }
                 if($this->thumbRemoveOrigin) {
                     // 生成缩略图之后删除原图
