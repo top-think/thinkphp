@@ -51,7 +51,6 @@ class UploadFile {//类定义开始
 
     // 错误信息
     private $error = '';
-
     // 上传成功的文件信息
     private $uploadFileInfo ;
 
@@ -67,12 +66,6 @@ class UploadFile {//类定义开始
             $this->config[$name]    =   $value;
         }
     }
-
-    // 错误信息
-    private $error = '';
-
-    // 上传成功的文件信息
-    private $uploadFileInfo ;
 
     /**
      +----------------------------------------------------------
