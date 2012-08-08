@@ -146,7 +146,7 @@ class UploadFile {//类定义开始
                 $thumbPrefix		=	explode(',',$this->thumbPrefix);
                 $thumbSuffix = explode(',',$this->thumbSuffix);
                 $thumbFile			=	explode(',',$this->thumbFile);
-                $thumbPath    =  $this->thumbPath?$this->thumbPath:$file['savepath'];
+                $thumbPath    =  $this->thumbPath?$this->thumbPath:dirname($filename).'/';
                 // 生成图像缩略图
                 import($this->imageClassPath);
                 $realFilename  =  $this->autoSub?basename($file['savename']):$file['savename'];
