@@ -54,7 +54,7 @@ class Db {
     // 数据库连接参数配置
     protected $config             = '';
     // 数据库表达式
-    protected $comparison      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE');
+    protected $comparison      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
     // 查询表达式
     protected $selectSql  =     'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%';
 
@@ -500,13 +500,6 @@ class Db {
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
                         }
                         $whereStr .= implode(' AND ',$str);
-                    }elseif($multi){
-                        unset($val['_multi']);
-                        $str    =   array();
-                        foreach($val as $item){
-                            $str[]  =  $this->parseWhereItem($this->parseKey($key),$item);
-                        }
-                        $whereStr .= implode(' OR ',$str);
                     }else{
                         $whereStr   .= $this->parseWhereItem($this->parseKey($key),$val);
                     }
