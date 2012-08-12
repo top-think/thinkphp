@@ -808,6 +808,7 @@ class Model {
         $options =  $this->_parseOptions($options);
         $field  =   trim($field);
         if(strpos($field,',')) { // 多字段
+            $options['limit']   =   is_numeric($sepa)?$sepa:'';
             $resultSet = $this->db->select($options);
             if(!empty($resultSet)) {
                 $_field = explode(',', $field);
@@ -821,7 +822,7 @@ class Model {
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
-                        $cols[$name]   =  is_null($sepa)?$result:implode($sepa,$result);
+                        $cols[$name]   =  is_string($sepa)?implode($sepa,array_slice($result,1)):$result;
                     }
                 }
                 return $cols;
