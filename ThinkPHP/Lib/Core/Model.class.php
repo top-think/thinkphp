@@ -812,16 +812,12 @@ class Model {
             if(!empty($resultSet)) {
                 $_field = explode(',', $field);
                 $field  = array_keys($resultSet[0]);
-                $move   =  $_field[0]==$_field[1]?false:true;
                 $key =  array_shift($field);
                 $key2 = array_shift($field);
                 $cols   =   array();
                 $count  =   count($_field);
                 foreach ($resultSet as $result){
                     $name   =  $result[$key];
-                    if($move) { // 删除键值记录
-                        unset($result[$key]);
-                    }
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
