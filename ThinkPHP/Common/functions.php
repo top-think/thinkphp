@@ -438,6 +438,8 @@ function session($name,$value='') {
         if(isset($name['expire'])) ini_set('session.gc_maxlifetime', $name['expire']);
         if(isset($name['use_trans_sid'])) ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies'])) ini_set('session.use_cookies', $name['use_cookies']?1:0);
+        if(isset($name['cache_limiter'])) session_cache_limiter($name['cache_limiter']);
+        if(isset($name['cache_expire'])) session_cache_expire($name['cache_expire']);
         if(isset($name['type'])) C('SESSION_TYPE',$name['type']);
         if(C('SESSION_TYPE')) { // 读取session驱动
             $class = 'Session'. ucwords(strtolower(C('SESSION_TYPE')));
