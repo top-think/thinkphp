@@ -135,5 +135,6 @@ return  array(
     'VAR_FILTERS'           =>  '',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
     'OUTPUT_ENCODE'         =>  true, // 页面压缩输出
+    'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
 
 );
