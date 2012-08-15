@@ -206,7 +206,8 @@ class DbPdo extends Db{
             $result = $this->_linkID->commit();
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -228,7 +229,8 @@ class DbPdo extends Db{
             $result = $this->_linkID->rollback();
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;

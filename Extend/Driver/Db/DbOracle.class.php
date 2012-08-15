@@ -60,8 +60,7 @@ class DbOracle extends Db{
             $this->linkID[$linkNum] = $conn($config['username'], $config['password'],$config['database']);//modify by wyfeng at 2008.12.19
 
             if (!$this->linkID[$linkNum]){
-                $error = $this->error(false);
-                throw_exception($error["message"], '', $error["code"]);
+                $this->error(false);
             }
             // 标记连接成功
             $this->connected = true;
@@ -197,7 +196,8 @@ class DbOracle extends Db{
         if ($this->transTimes > 0) {
             $result = oci_commit($this->_linkID);
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }
@@ -219,7 +219,8 @@ class DbOracle extends Db{
         if ($this->transTimes > 0) {
             $result = oci_rollback($this->_linkID);
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }
@@ -327,16 +328,17 @@ class DbOracle extends Db{
      */
      public function error($result = true) {
         if($result){
-           $this->error = oci_error($this->queryID);
+           $error = oci_error($this->queryID);
         }elseif(!$this->_linkID){
-            $this->error = oci_error();
+            $error = oci_error();
         }else{
-            $this->error = oci_error($this->_linkID);
+            $error = oci_error($this->_linkID);
         }
         if('' != $this->queryStr){
-            $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
+            $error['message'] .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        trace($this->error,'','ERR');
+        $result? trace($error['message'],'','ERR'):throw_exception($error['message'],'',$error['code']);
+        $this->error    =   $error['message'];
         return $this->error;
     }
 

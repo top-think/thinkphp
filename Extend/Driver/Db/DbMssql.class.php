@@ -198,7 +198,8 @@ class DbMssql extends Db{
             $result = mssql_query('COMMIT TRAN', $this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -218,7 +219,8 @@ class DbMssql extends Db{
             $result = mssql_query('ROLLBACK TRAN', $this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;

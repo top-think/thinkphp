@@ -50,7 +50,7 @@ class DbSqlsrv extends Db{
             $host = $config['hostname'].($config['hostport']?",{$config['hostport']}":'');
             $connectInfo  =  array('Database'=>$config['database'],'UID'=>$config['username'],'PWD'=>$config['password'],'CharacterSet' => C('DEFAULT_CHARSET'));
             $this->linkID[$linkNum] = sqlsrv_connect( $host, $connectInfo);
-            if ( !$this->linkID[$linkNum] )  throw_exception($this->error());
+            if ( !$this->linkID[$linkNum] )  $this->error(false);
             // 标记连接成功
             $this->connected =  true;
             //注销数据库安全信息
@@ -189,7 +189,8 @@ class DbSqlsrv extends Db{
             $result = sqlsrv_commit($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -209,7 +210,8 @@ class DbSqlsrv extends Db{
             $result = sqlsrv_rollback($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -348,12 +350,16 @@ class DbSqlsrv extends Db{
      * @return string
      +----------------------------------------------------------
      */
-    public function error() {
-        $this->error = sqlsrv_errors();
+    public function error($result = true) {
+        $errors = sqlsrv_errors();
+        $this->error    =   '';
+        foreach( $errors as $error ) {
+            $this->error .= $error['message'];
+        }
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        trace($this->error,'','ERR');
+        $result? trace($error['message'],'','ERR'):throw_exception($this->error);
         return $this->error;
     }
 

@@ -172,7 +172,8 @@ class DbIbase extends Db{
             $result =  ibase_commit($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -194,7 +195,8 @@ class DbIbase extends Db{
             $result =ibase_rollback($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;

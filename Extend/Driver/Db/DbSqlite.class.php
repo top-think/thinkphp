@@ -182,7 +182,8 @@ class DbSqlite extends Db {
         if ($this->transTimes > 0) {
             $result = sqlite_query($this->_linkID,'COMMIT TRANSACTION');
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }
@@ -204,7 +205,8 @@ class DbSqlite extends Db {
         if ($this->transTimes > 0) {
             $result = sqlite_query($this->_linkID,'ROLLBACK TRANSACTION');
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }

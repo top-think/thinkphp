@@ -201,7 +201,8 @@ class DbPgsql extends Db{
         if ($this->transTimes > 0) {
             $result = pg_exec($this->_linkID,'end;');
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }
@@ -223,7 +224,8 @@ class DbPgsql extends Db{
         if ($this->transTimes > 0) {
             $result = pg_exec($this->_linkID,'abort;');
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
             $this->transTimes = 0;
         }
