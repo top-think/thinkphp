@@ -391,7 +391,7 @@ class DbMysql extends Db{
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        APP_DEBUG ? throw_exception($this->error):trace($this->error,'','ERR');
+        trace($this->error,'','ERR');
         return $this->error;
     }
 

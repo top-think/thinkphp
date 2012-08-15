@@ -524,6 +524,9 @@ function trace($value='[think]',$label='',$level='DEBUG') {
         return $_trace;
     }else{
         $info   =   ($label?$label.':':'').print_r($value,true);
+        if(APP_DEBUG && 'ERR' == $level) {// 调试模式ERR抛出异常
+            throw_exception($info);
+        }
         if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')) {
             Log::record($info,$level);
         }else{
