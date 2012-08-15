@@ -200,7 +200,8 @@ class DbMysqli extends Db{
             $this->_linkID->autocommit( true);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -222,7 +223,8 @@ class DbMysqli extends Db{
             $result = $this->_linkID->rollback();
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -386,7 +388,7 @@ class DbMysqli extends Db{
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        trace($this->error,'','ERR');
+        APP_DEBUG ? throw_exception($this->error):trace($this->error,'','ERR');
         return $this->error;
     }
 
