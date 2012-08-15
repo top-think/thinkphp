@@ -20,7 +20,7 @@ class ShowPageTraceBehavior extends Behavior {
     // 行为参数定义
     protected $options   =  array(
         'SHOW_PAGE_TRACE'=> false,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
+        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
         'PAGE_TRACE_SAVE'=> false,
     );
 
@@ -72,7 +72,16 @@ class ShowPageTraceBehavior extends Behavior {
                     $trace[$title]  =   $info;
                     break;
                 default:// 调试信息
-                    $trace[$title]  =   isset($debug[$name])?$debug[$name]:'';
+                    if(strpos($name,'|')) {// 多组信息
+                        $array  =   explode('|',$name);
+                        $result =   array();
+                        foreach($array as $name){
+                            $result   +=   isset($debug[$name])?$debug[$name]:array();
+                        }
+                        $trace[$title]  =   $result;
+                    }else{
+                        $trace[$title]  =   isset($debug[$name])?$debug[$name]:'';
+                    }
             }
         }
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志

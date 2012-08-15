@@ -275,7 +275,7 @@ class Think {
           case E_USER_NOTICE:
           default:
             $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
-            trace($errorStr,'','ERR');
+            trace($errorStr,'','NOTIC');
             break;
       }
     }
