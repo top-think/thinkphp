@@ -1061,7 +1061,7 @@ class Model {
                     if(0==strpos($val[2],'{%') && strpos($val[2],'}'))
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
                         $val[2]  =  L(substr($val[2],2,-1));
-                    $val[3]  =  isset($val[3])?$val[3]:self::EXISTS_VAILIDATE;
+                    $val[3]  =  isset($val[3])?$val[3]:self::EXISTS_VALIDATE;
                     $val[4]  =  isset($val[4])?$val[4]:'regex';
                     // 判断验证条件
                     switch($val[3]) {
