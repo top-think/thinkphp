@@ -28,8 +28,8 @@ class Model {
     const MODEL_UPDATE    =   2;      //  更新模型数据
     const MODEL_BOTH      =   3;      //  包含上面两种方式
     const MUST_VALIDATE         =   1;// 必须验证
-    const EXISTS_VAILIDATE      =   0;// 表单存在字段则验证
-    const VALUE_VAILIDATE       =   2;// 表单值不为空则验证
+    const EXISTS_VALIDATE      =   0;// 表单存在字段则验证
+    const VALUE_VALIDATE       =   2;// 表单值不为空则验证
 
     // 当前数据库操作对象
     protected $db = null;
@@ -785,7 +785,7 @@ class Model {
                     if(0==strpos($val[2],'{%') && strpos($val[2],'}'))
                         // 支持提示信息的多语言 使用 {%语言定义} 方式
                         $val[2]  =  L(substr($val[2],2,-1));
-                    $val[3]  =  isset($val[3])?$val[3]:self::EXISTS_VAILIDATE;
+                    $val[3]  =  isset($val[3])?$val[3]:self::EXISTS_VALIDATE;
                     $val[4]  =  isset($val[4])?$val[4]:'regex';
                     // 判断验证条件
                     switch($val[3]) {
@@ -793,7 +793,7 @@ class Model {
                             if(false === $this->_validationField($data,$val)) 
                                 return false;
                             break;
-                        case self::VALUE_VAILIDATE:    // 值不为空的时候才验证
+                        case self::VALUE_VALIDATE:    // 值不为空的时候才验证
                             if('' != trim($data[$val[0]]))
                                 if(false === $this->_validationField($data,$val)) 
                                     return false;
