@@ -1069,7 +1069,7 @@ class Model {
                             if(false === $this->_validationField($data,$val)) 
                                 return false;
                             break;
-                        case self::VALUE_VAILIDATE:    // 值不为空的时候才验证
+                        case self::VALUE_VALIDATE:    // 值不为空的时候才验证
                             if('' != trim($data[$val[0]]))
                                 if(false === $this->_validationField($data,$val)) 
                                     return false;
