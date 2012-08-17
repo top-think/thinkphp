@@ -28,8 +28,8 @@ class Model {
     const MODEL_UPDATE    =   2;      //  更新模型数据
     const MODEL_BOTH      =   3;      //  包含上面两种方式
     const MUST_VALIDATE         =   1;// 必须验证
-    const EXISTS_VAILIDATE      =   0;// 表单存在字段则验证
-    const VALUE_VAILIDATE       =   2;// 表单值不为空则验证
+    const EXISTS_VALIDATE      =   0;// 表单存在字段则验证
+    const VALUE_VALIDATE       =   2;// 表单值不为空则验证
     // 当前使用的扩展模型
     private $_extModel =  null;
     // 当前数据库操作对象
