@@ -292,10 +292,14 @@ function R($url,$vars=array(),$layer='') {
     $action  =  $info['basename'];
     $module =  $info['dirname'];
     $class = A($module,$layer);
-    if($class)
+    if($class){
+        if(is_string($vars)) {
+            parse_str($vars,$vars);
+        }
         return call_user_func_array(array(&$class,$action),$vars);
-    else
+    }else{
         return false;
+    }
 }
 
 // 获取和设置语言定义(不区分大小写)
