@@ -387,7 +387,7 @@ class  ThinkTemplate {
                     // 别名可以无需定义解析方法
                     $tag  =  $name;
                 }
-                $n1 = empty($val['attr'])?'(\s*?)':'\s(.*?)';
+                $n1 = empty($val['attr'])?'(\s*?)':'\s([^'.$end.']*)';
                 if (!$closeTag){
                     $patterns = '/'.$begin.$parseTag.$n1.'\/(\s*?)'.$end.'/eis';
                     $replacement = "\$this->parseXmlTag('$tagLib','$tag','$1','')";
