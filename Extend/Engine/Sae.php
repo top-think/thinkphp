@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Sae.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+// $Id: Sae.php 1093 2012-08-23 14:18:04Z luofei614@126.com $
 // Sae版ThinkPHP 入口文件
 //-------命令行生成缓存
 if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
@@ -36,14 +36,14 @@ if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
 defined('ENGINE_PATH') or define('ENGINE_PATH', dirname(__FILE__) . '/');
 define('SAE_PATH', ENGINE_PATH . 'Sae/');
 //[sae]判断是否运行在SAE上。
-if (!isset($_SERVER['HTTP_APPCOOKIE'])) {
+if (!function_exists('saeAutoLoader')) {
     define('IS_SAE', FALSE);
     defined('THINK_PATH') or define('THINK_PATH', dirname(dirname(dirname(__FILE__))) . '/');
     defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
     //加载平滑函数
     require SAE_PATH . 'Common/sae_functions.php';
     //加载模拟器
-    if (!defined('SAE_APPNAME')) require SAE_PATH . 'SaeImit.php';
+    if (!defined('SAE_ACCESSKEY'))  require SAE_PATH . 'SaeImit.php';
     require THINK_PATH . 'ThinkPHP.php';
 } else {
     define('IS_SAE', TRUE);

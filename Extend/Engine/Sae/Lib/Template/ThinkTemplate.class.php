@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: ThinkTemplate.class.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+// $Id: ThinkTemplate.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
  +------------------------------------------------------------------------------
@@ -20,7 +20,7 @@
  * @package  Think
  * @subpackage  Template
  * @author liu21st <liu21st@gmail.com>
- * @version  $Id: ThinkTemplate.class.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+ * @version  $Id: ThinkTemplate.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
  +------------------------------------------------------------------------------
  */
 class  ThinkTemplate {
@@ -96,11 +96,16 @@ class  ThinkTemplate {
      +----------------------------------------------------------
      */
     public function loadTemplate ($tmplTemplateFile) {
-        $this->templateFile    =  $tmplTemplateFile;
+        if(is_file($tmplTemplateFile)) {
+            $this->templateFile    =  $tmplTemplateFile;
+            // 读取模板文件内容
+            $tmplContent = file_get_contents($tmplTemplateFile);
+        }else{
+            $tmplContent    =   $tmplTemplateFile;
+        }
         //[sae] 根据模版文件名定位缓存文件
         $tmplCacheFile = CACHE_PATH.md5($tmplTemplateFile).$this->config['cache_suffix'];
-        // 读取模板文件内容
-        $tmplContent = file_get_contents($tmplTemplateFile);
+
         // 判断是否启用布局
         if(C('LAYOUT_ON')) {
             if(false !== strpos($tmplContent,'{__NOLAYOUT__}')) { // 可以单独定义不使用布局
@@ -204,12 +209,13 @@ class  ThinkTemplate {
 
     // 检查PHP语法
     protected function parsePhp($content) {
+        if(ini_get('short_open_tag')){
+            // 开启短标签的情况要将<?标签用echo方式输出 否则无法正常输出xml标识
+            $content = preg_replace('/(<\?(?!php|=|$))/i', '<?php echo \'\\1\'; ?>'."\n", $content );
+        }
         // PHP语法检查
         if(C('TMPL_DENY_PHP') && false !== strpos($content,'<?php')) {
             throw_exception(L('_NOT_ALLOW_PHP_'));
-        }elseif(ini_get('short_open_tag')){
-            // 开启短标签的情况要将<?标签用echo方式输出 否则无法正常输出xml标识
-            $content = preg_replace('/(<\?(?!php|=|$))/i', '<?php echo \'\\1\'; ?>'."\n", $content );
         }
         return $content;
     }
@@ -481,8 +487,7 @@ class  ThinkTemplate {
             $var = array_shift($varArray);
             //非法变量过滤 不允许在变量里面使用 ->
             //TODO：还需要继续完善
-            if(preg_match('/->/is',$var))
-                return '';
+           // if(preg_match('/->/is',$var)) return '';
             if('Think.' == substr($var,0,6)){
                 // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                 $name = $this->parseThinkVar($var);
@@ -504,12 +509,6 @@ class  ThinkTemplate {
                     default:  // 自动判断数组或对象 只支持二维
                         $name = 'is_array($'.$var.')?$'.$var.'["'.$vars[0].'"]:$'.$var.'->'.$vars[0];
                 }
-            }elseif(false !==strpos($var,'::')){
-                //支持 {$var:property} 方式输出对象的属性
-                $vars = explode('::',$var);
-                $var  =  str_replace('::','->',$var);
-                $name = "$".$var;
-                $var  = $vars[0];
             }elseif(false !== strpos($var,'[')) {
                 //支持 {$var['key']} 方式输出数组
                 $name = "$".$var;
@@ -599,19 +598,15 @@ class  ThinkTemplate {
                 case 'COOKIE':
                     if(isset($vars[3])) {
                         $parseStr = '$_COOKIE[\''.$vars[2].'\'][\''.$vars[3].'\']';
-                    }elseif(C('COOKIE_PREFIX')){
-                        $parseStr = '$_COOKIE[\''.C('COOKIE_PREFIX').$vars[2].'\']';
                     }else{
-                        $parseStr = '$_COOKIE[\''.$vars[2].'\']';
+                        $parseStr = 'cookie(\''.$vars[2].'\')';
                     }
                     break;
                 case 'SESSION':
                     if(isset($vars[3])) {
                         $parseStr = '$_SESSION[\''.$vars[2].'\'][\''.$vars[3].'\']';
-                    }elseif(C('SESSION_PREFIX')){
-                        $parseStr = '$_SESSION[\''.C('SESSION_PREFIX').'\'][\''.$vars[2].'\']';
                     }else{
-                        $parseStr = '$_SESSION[\''.$vars[2].'\']';
+                        $parseStr = 'session(\''.$vars[2].'\')';
                     }
                     break;
                 case 'ENV':
@@ -622,7 +617,7 @@ class  ThinkTemplate {
                     $parseStr = strtoupper($vars[2]);break;
                 case 'LANG':
                     $parseStr = 'L("'.$vars[2].'")';break;
-				case 'CONFIG':
+                case 'CONFIG':
                     if(isset($vars[3])) {
                         $vars[2] .= '.'.$vars[3];
                     }

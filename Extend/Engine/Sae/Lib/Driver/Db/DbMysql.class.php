@@ -8,9 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: DbMysql.class.php 2990 2012-06-12 04:56:04Z luofei614@gmail.com $
+// $Id: DbMysql.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
-!defined('THINK_PATH') && exit();
+defined('THINK_PATH') or exit();
 define('CLIENT_MULTI_RESULTS', 131072);
 /**
  +------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ define('CLIENT_MULTI_RESULTS', 131072);
  * @package  Think
  * @subpackage  Db
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: DbMysql.class.php 2990 2012-06-12 04:56:04Z luofei614@gmail.com $
+ * @version   $Id: DbMysql.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
  +------------------------------------------------------------------------------
  */
 class DbMysql extends Db{
@@ -238,7 +238,8 @@ class DbMysql extends Db{
             $result = mysql_query('COMMIT', $this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -260,7 +261,8 @@ class DbMysql extends Db{
             $result = mysql_query('ROLLBACK', $this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                throw_exception($this->error());
+                $this->error();
+                return false;
             }
         }
         return true;
@@ -420,7 +422,7 @@ class DbMysql extends Db{
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        Log::record($this->error,Log::ERR);
+        trace($this->error,'','ERR');
         //[sae] 短信预警
         if(C('SMS_ON')) Sms::send('sql语句执行时出错，请在SAE日志中心查看详情', $this->error,Sms::MYSQL_ERROR);
         return $this->error;

@@ -22,6 +22,7 @@ function sae_auto_load($class){
     'SaeTaskQueue'=>SAE_PATH.'SaeImit/SaeTaskQueue.class.php',
     'SaeStorage'=>SAE_PATH.'SaeImit/SaeStorage.class.php',
     'SaeKVClient'=>SAE_PATH.'SaeImit/SaeKVClient.class.php',
+    'SaeKV'=>SAE_PATH.'SaeImit/SaeKV.class.php',
     'Memcache'=>SAE_PATH.'SaeImit/Memcache.class.php',
     'CacheFile'=>THINK_PATH.'Lib/Driver/Cache/CacheFile.class.php',
     'SaeMail'=>SAE_PATH.'SaeImit/SaeMail.class.php',

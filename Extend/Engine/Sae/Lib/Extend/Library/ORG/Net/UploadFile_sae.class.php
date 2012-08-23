@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: UploadFile_sae.class.php 2959 2012-06-06 01:31:54Z luofei614@gmail.com $
+// $Id: UploadFile_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -19,65 +19,51 @@
  * @package  ORG
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: UploadFile_sae.class.php 2959 2012-06-06 01:31:54Z luofei614@gmail.com $
+ * @version   $Id: UploadFile_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 class UploadFile {//类定义开始
     // 上传文件的最大值
 
-    public $maxSize = -1;
-    // 是否支持多文件上传
-    public $supportMulti = true;
-    // 允许上传的文件后缀
-    //  留空不作后缀检查
-    public $allowExts = array();
-    // 允许上传的文件类型
-    // 留空不做检查
-    public $allowTypes = array();
-    // 使用对上传图片进行缩略图处理
-    public $thumb = false;
-    // 图库类包路径
-    public $imageClassPath = 'ORG.Util.Image';
-    // 缩略图最大宽度
-    public $thumbMaxWidth;
-    // 缩略图最大高度
-    public $thumbMaxHeight;
-    // 缩略图前缀
-    public $thumbPrefix = 'thumb_';
-    public $thumbSuffix = '';
-    // 缩略图保存路径
-    public $thumbPath = '';
-    // 缩略图文件名
-    public $thumbFile = '';
-    // 是否移除原图
-    public $thumbRemoveOrigin = false;
-    // 压缩图片文件上传
-    public $zipImages = false;
-    // 启用子目录保存文件
-    public $autoSub = false;
-    // 子目录创建方式 可以使用hash date
-    public $subType = 'hash';
-    public $dateFormat = 'Ymd';
-    public $hashLevel = 1; // hash的目录层次
-    // 上传文件保存路径
-    public $savePath = '';
-    public $autoCheck = true; // 是否自动检查附件
-    // 存在同名是否覆盖
-    public $uploadReplace = false;
-    // 上传文件命名规则
-    // 例如可以是 time uniqid com_create_guid 等
-    // 必须是一个无需任何参数的函数名 可以使用自定义函数
-    public $saveRule = '';
-    // 上传文件Hash规则函数名
-    // 例如可以是 md5_file sha1_file 等
-    public $hashType = 'md5_file';
-    // 错误信息
-    private $error = '';
-    // 上传成功的文件信息
-    private $uploadFileInfo;
-    //[sae] domain
-    private $domain;
-    private $thumbDomain;
+    private $config =   array(
+        'maxSize' => -1,    // 上传文件的最大值
+        'supportMulti' => true,    // 是否支持多文件上传
+        'allowExts'=> array(),    // 允许上传的文件后缀 留空不作后缀检查
+        'allowTypes' => array(),    // 允许上传的文件类型 留空不做检查
+        'thumb'   =>  false,    // 使用对上传图片进行缩略图处理
+        'imageClassPath' => 'ORG.Util.Image',    // 图库类包路径
+        'thumbMaxWidth'   =>'',// 缩略图最大宽度
+        'thumbMaxHeight'    =>'',// 缩略图最大高度
+        'thumbPrefix'   =>  'thumb_',// 缩略图前缀
+        'thumbSuffix'  =>  '',
+        'thumbPath' => '',// 缩略图保存路径
+        'thumbFile'   =>'',// 缩略图文件名
+        'thumbRemoveOrigin' => false,// 是否移除原图
+        'zipImages' => false,// 压缩图片文件上传
+        'autoSub'   =>  false,// 启用子目录保存文件
+        'subType'   => 'hash',// 子目录创建方式 可以使用hash date
+        'dateFormat' => 'Ymd',
+        'hashLevel' =>  1, // hash的目录层次
+        'savePath' => '',// 上传文件保存路径
+        'autoCheck' => true, // 是否自动检查附件
+        'uploadReplace' => false,// 存在同名是否覆盖
+        'saveRule'=>'',// 上传文件命名规则
+        'hashType'=>'md5_file',// 上传文件Hash规则函数名
+        );
+
+
+  public function __get($name){
+        if(isset($this->config[$name])) {
+            return $this->config[$name];
+        }
+        return null;
+    }
+
+    public function __set($name,$value){
+        if(isset($this->config[$name])) {
+            $this->config[$name]    =   $value;
+        }
+    }
 
     /**
       +----------------------------------------------------------
@@ -153,11 +139,11 @@ class UploadFile {//类定义开始
                 $thumbPrefix = explode(',', $this->thumbPrefix);
                 $thumbSuffix = explode(',', $this->thumbSuffix);
                 $thumbFile = explode(',', $this->thumbFile);
-                $thumbPath = $this->thumbPath ? $this->thumbPath : $file['savepath'];
+                $thumbPath    =  $this->thumbPath?$this->thumbPath:dirname($filename).'/';
                 //[sae] 定义缩略图目录时，判断doamin
                 $domain = $this->thumbPath ? $this->thumbDomain : $this->domain;
                 //[sae] 用自带image类生成缩略图
-                $realFilename = $this->autoSub ? basename($file['savename']) : $file['savename'];
+               // $realFilename = $this->autoSub ? basename($file['savename']) : $file['savename'];
                 $srcWidth = $image[0];
                 $srcHeight = $image[1];
                 $img = Think::instance('SaeImage');
@@ -172,11 +158,19 @@ class UploadFile {//类定义开始
                         $width = (int) ($srcWidth * $scale);
                         $height = (int) ($srcHeight * $scale);
                     }
-                    $thumbname = $thumbPrefix[$i] . substr($realFilename, 0, strrpos($realFilename, '.')) . $thumbSuffix[$i] . '.' . $file['extension'];
+
+                    if(!empty($thumbFile[$i])) {
+                        $thumbname  =   $thumbFile[$i];
+                    }else{
+                        $prefix =   isset($thumbPrefix[$i])?$thumbPrefix[$i]:$thumbPrefix[0];
+                        $suffix =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
+                        $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
+                    }
+
                     $img->setData(file_get_contents($file['tmp_name']));
                     $img->resize($width, $height);
                     $new_data = $img->exec();
-                    if (!$s->write($domain, $thumbPath . $thumbname, $new_data)) {
+                    if (!$s->write($domain, $thumbPath . $thumbname.'.'.$file['extension'], $new_data)) {
                         $this->error = $s->errno() == -7 ? 'domain [ ' . $this->domain . ' ] 不存在！请在SAE控制台的Storage服务中添加一个domain' : '生成缩略图失败！';
                         return false;
                     }
@@ -425,7 +419,7 @@ class UploadFile {//类定义开始
         if ($this->autoSub) {
             // 使用子目录保存文件
             $filename['savename'] = $saveName;
-            $saveName = $this->getSubName($filename) . '/' . $saveName;
+            $saveName = $this->getSubName($filename) . $saveName;
         }
         return $saveName;
     }
@@ -444,7 +438,7 @@ class UploadFile {//类定义开始
     private function getSubName($file) {
         switch ($this->subType) {
             case 'date':
-                $dir = date($this->dateFormat, time());
+                $dir = date($this->dateFormat, time()).'/';
                 break;
             case 'hash':
             default:

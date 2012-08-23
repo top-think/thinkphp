@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: functions.php 2984 2012-06-11 14:10:44Z luofei614@gmail.com $
+// $Id: functions.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
  * @category   Think
  * @package  Common
  * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: functions.php 2984 2012-06-11 14:10:44Z luofei614@gmail.com $
+ * @version  $Id: functions.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 
@@ -45,8 +45,6 @@ function halt($error) {
         } else {
             $e = $error;
         }
-        // 包含异常页面模板
-        include C('TMPL_EXCEPTION_FILE');
     } else {
         //否则定向到错误页面
         $error_page = C('ERROR_PAGE');
@@ -57,10 +55,11 @@ function halt($error) {
                 $e['message'] = is_array($error) ? $error['message'] : $error;
             else
                 $e['message'] = C('ERROR_MESSAGE');
-            // 包含异常页面模板
-            include C('TMPL_EXCEPTION_FILE');
+           
         }
     }
+     // 包含异常页面模板
+    include C('TMPL_EXCEPTION_FILE');
     exit;
 }
 
@@ -131,20 +130,6 @@ function debug_end($label='') {
     echo '</div>';
 }
 
-// 添加和获取页面Trace记录
-function trace($title='',$value='') {
-    if(!C('SHOW_PAGE_TRACE')) return;
-    static $_trace =  array();
-    if(is_array($title)) { // 批量赋值
-        $_trace   =  array_merge($_trace,$title);
-    }elseif('' !== $value){ // 赋值
-        $_trace[$title] = $value;
-    }elseif('' !== $title){ // 取值
-        return $_trace[$title];
-    }else{ // 获取全部Trace数据
-        return $_trace;
-    }
-}
 
 // 设置当前页面的布局
 function layout($layout) {
@@ -239,7 +224,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     if(C('URL_MODEL') == 0) { // 普通模式URL转换
         $url   =  __APP__.'?'.http_build_query(array_reverse($var));
         if(!empty($vars)) {
-            $vars = http_build_query($vars);
+            $vars = urldecode(http_build_query($vars));
             $url   .= '&'.$vars;
         }
     }else{ // PATHINFO模式或者兼容URL模式
@@ -249,13 +234,13 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $url   =  __APP__.'/'.implode($depr,array_reverse($var));
         }
         if(!empty($vars)) { // 添加参数
-            $vars = http_build_query($vars);
-            $url .= $depr.str_replace(array('=','&'),$depr,$vars);
+            foreach ($vars as $var => $val)
+                $url .= $depr.$var . $depr . $val;
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
-            if(0 < strpos($suffix, '|')){
-                $suffix = strstr($suffix, '|', true);
+            if($pos = strpos($suffix, '|')){
+                $suffix = substr($suffix, 0, $pos);
             }
             if($suffix && $url[1]){
                 $url  .=  '.'.ltrim($suffix,'.');
@@ -463,7 +448,7 @@ function session($name,$value='') {
     $prefix   =  C('SESSION_PREFIX');
     if(is_array($name)) { // session初始化 在session_start 之前调用
         if(isset($name['prefix'])) C('SESSION_PREFIX',$name['prefix']);
-        if(isset($_REQUEST[C('VAR_SESSION_ID')])){
+        if(C('VAR_SESSION_ID') && isset($_REQUEST[C('VAR_SESSION_ID')])){
             session_id($_REQUEST[C('VAR_SESSION_ID')]);
         }elseif(isset($name['id'])) {
             session_id($name['id']);
@@ -476,6 +461,8 @@ function session($name,$value='') {
         if(isset($name['use_trans_sid'])) ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies'])) ini_set('session.use_cookies', $name['use_cookies']?1:0);
         if(isset($name['type'])) C('SESSION_TYPE',$name['type']);
+        if(isset($name['cache_limiter'])) session_cache_limiter($name['cache_limiter']);
+        if(isset($name['cache_expire'])) session_cache_expire($name['cache_expire']);
         if(C('SESSION_TYPE')) { // 读取session驱动
             $class = 'Session'. ucwords(strtolower(C('SESSION_TYPE')));
             // 检查驱动类
@@ -505,9 +492,9 @@ function session($name,$value='') {
         }elseif(0===strpos($name,'?')){ // 检查session
             $name   =  substr($name,1);
             if($prefix) {
-                return isset($_SESSION[$prefix][$name]);
+                return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;
             }else{
-                return isset($_SESSION[$name]);
+                return isset($_SESSION[$name])?$_SESSION[$name]:null;
             }
         }elseif(is_null($name)){ // 清空session
             if($prefix) {
@@ -573,13 +560,14 @@ function cookie($name, $value='', $option=null) {
     }
     $name = $config['prefix'] . $name;
     if ('' === $value) {
-        return isset($_COOKIE[$name]) ? $_COOKIE[$name] : null; // 获取指定Cookie
+        return isset($_COOKIE[$name]) ? json_decode(MAGIC_QUOTES_GPC?stripslashes($_COOKIE[$name]):$_COOKIE[$name]) : null; // 获取指定Cookie
     } else {
         if (is_null($value)) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain']);
             unset($_COOKIE[$name]); // 删除指定cookie
         } else {
             // 设置cookie
+            $value  = json_encode($value);
             $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
             setcookie($name, $value, $expire, $config['path'], $config['domain']);
             $_COOKIE[$name] = $value;
@@ -611,9 +599,10 @@ function load_ext_file() {
 }
 
 // 获取客户端IP地址
-function get_client_ip() {
+function get_client_ip($type = 0) {
+    $type = $type ? 1 : 0;
     static $ip = NULL;
-    if ($ip !== NULL) return $ip;
+    if ($ip !== NULL) return $ip[$type];
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
         $pos =  array_search('unknown',$arr);
@@ -625,8 +614,9 @@ function get_client_ip() {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
-    $ip = (false !== ip2long($ip)) ? $ip : '0.0.0.0';
-    return $ip;
+    $long = ip2long($ip);
+    $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+    return $ip[$type];
 }
 
 function send_http_status($code) {

@@ -8,18 +8,17 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: runtime.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+// $Id: runtime.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
  +------------------------------------------------------------------------------
  * ThinkPHP 运行时文件 编译后不再加载
  +------------------------------------------------------------------------------
  */
-if (!defined('THINK_PATH')) exit();
+defined('THINK_PATH') or exit();
 if (version_compare(PHP_VERSION, '5.2.0', '<')) die('require PHP > 5.2.0 !');
 //  版本信息
-define('THINK_VERSION', '3.0');
-define('THINK_RELEASE', '20120323');
+define('THINK_VERSION', '3.1RC');
 
 //   系统信息
 if(version_compare(PHP_VERSION,'5.3.0','<')) {

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Sms.class.php 2990 2012-06-12 04:56:04Z luofei614@gmail.com $
+// $Id: Sms.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
  +------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
  * @package  Think
  * @subpackage  Core
  * @author    luofei614 <www.3g4k.com>
- * @version   $Id: Sms.class.php 2990 2012-06-12 04:56:04Z luofei614@gmail.com $
+ * @version   $Id: Sms.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
  +------------------------------------------------------------------------------
  */
 
@@ -54,7 +54,7 @@ class Sms {
             }
         //记录日志
         if(C('LOG_RECORD'))
-            Log::record($msg.'；detail：'.$detail . '【status:' . $status . '】', 'SEND_SMS',true);
+            trace($msg.'；detail：'.$detail . '【status:' . $status . '】','短信发送','SAE',true);
         else
             Log::write($msg.'；detail：'.$detail .'【status:' . $status . '】', 'SEND_SMS');
     }

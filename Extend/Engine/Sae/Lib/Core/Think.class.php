@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Think.class.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+// $Id: Think.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
  +------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
  * @package  Think
  * @subpackage  Core
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: Think.class.php 2974 2012-06-11 03:46:31Z luofei614@gmail.com $
+ * @version   $Id: Think.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
  +------------------------------------------------------------------------------
  */
 class Think {
@@ -271,21 +271,17 @@ class Think {
           case E_CORE_ERROR:
           case E_COMPILE_ERROR:
           case E_USER_ERROR:
-            ob_clean();
-            $errorStr = "$errstr ".basename($errfile)." 第 $errline 行.";
+            ob_end_clean();
+            $errorStr = "$errstr ".$errfile." 第 $errline 行.";
             if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
-            //[sae] 短信预警
-            if(C('SMS_ON')) Sms::send('程序出现致命错误,请在SAE日志中心查看详情',$errorStr,Sms::ERR);
-            halt($errorStr);
+            function_exists('halt')?halt($errorStr):exit('ERROR:'.$errorStr);
             break;
           case E_STRICT:
           case E_USER_WARNING:
           case E_USER_NOTICE:
           default:
-            $errorStr = "[$errno] $errstr ".basename($errfile)." 第 $errline 行.";
-            Log::record($errorStr,Log::NOTICE);
-            //[sae] 短信预警
-            if(C('SMS_ON')) Sms::send('程序出现Notice报错，请在SAE日志中心查看详情',$errorStr,Sms::NOTICE);
+            $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
+            trace($errorStr,'','NOTIC');
             break;
       }
     }

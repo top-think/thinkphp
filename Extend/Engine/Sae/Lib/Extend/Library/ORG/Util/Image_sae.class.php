@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Image_sae.class.php 2766 2012-02-20 15:58:21Z luofei614@gmail.com $
+// $Id: Image_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -19,7 +19,7 @@
  * @package  ORG
  * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: Image_sae.class.php 2766 2012-02-20 15:58:21Z luofei614@gmail.com $
+ * @version   $Id: Image_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 class Image {
@@ -205,6 +205,9 @@ class Image {
 
             // 载入原图
             $createFun = 'ImageCreateFrom' . ($type == 'jpg' ? 'jpeg' : $type);
+            if(!function_exists($createFun)) {
+                return false;
+            }
             $srcImg = $createFun($image);
 
             //创建缩略图
@@ -212,25 +215,30 @@ class Image {
                 $thumbImg = imagecreatetruecolor($width, $height);
             else
                 $thumbImg = imagecreate($width, $height);
-
+              //png和gif的透明处理 by luofei614
+            if('png'==$type){
+                imagealphablending($thumbImg, false);//取消默认的混色模式（为解决阴影为绿色的问题）
+                imagesavealpha($thumbImg,true);//设定保存完整的 alpha 通道信息（为解决阴影为绿色的问题）    
+            }elseif('gif'==$type){
+                $trnprt_indx = imagecolortransparent($srcImg);
+                 if ($trnprt_indx >= 0) {
+                        //its transparent
+                       $trnprt_color = imagecolorsforindex($srcImg , $trnprt_indx);
+                       $trnprt_indx = imagecolorallocate($thumbImg, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+                       imagefill($thumbImg, 0, 0, $trnprt_indx);
+                       imagecolortransparent($thumbImg, $trnprt_indx);
+              }
+            }
             // 复制图片
             if (function_exists("ImageCopyResampled"))
                 imagecopyresampled($thumbImg, $srcImg, 0, 0, 0, 0, $width, $height, $srcWidth, $srcHeight);
             else
                 imagecopyresized($thumbImg, $srcImg, 0, 0, 0, 0, $width, $height, $srcWidth, $srcHeight);
-            if ('gif' == $type || 'png' == $type) {
-                //imagealphablending($thumbImg, false);//取消默认的混色模式
-                //imagesavealpha($thumbImg,true);//设定保存完整的 alpha 通道信息
-                $background_color = imagecolorallocate($thumbImg, 0, 255, 0);  //  指派一个绿色
-                imagecolortransparent($thumbImg, $background_color);  //  设置为透明色，若注释掉该行则输出绿色的图
-            }
 
             // 对jpeg图形设置隔行扫描
             if ('jpg' == $type || 'jpeg' == $type)
                 imageinterlace($thumbImg, $interlace);
 
-            //$gray=ImageColorAllocate($thumbImg,255,0,0);
-            //ImageString($thumbImg,2,5,5,"ThinkPHP",$gray);
             // 生成图片
             $imageFun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
             $imageFun($thumbImg, $thumbname);
@@ -321,7 +329,7 @@ class Image {
     //[sae]使用saevcode实现
     static function buildImageVerify($length=4, $mode=1, $type='png', $width=48, $height=22, $verifyName='verify') {
         $vcode = Think::instance('SaeVcode');
-        $_SESSION[$verifyName] = md5($vcode->answer());
+        session($verifyName, md5($vcode->answer()));
         $question = $vcode->question();
         header('Location:' . $question['img_url']);
     }
@@ -331,7 +339,7 @@ class Image {
         import('ORG.Util.String');
         $code = String::randString($length, 4);
         $width = ($length * 45) > $width ? $length * 45 : $width;
-        $_SESSION[$verifyName] = md5($code);
+        session($verifyName, md5($code));
         $im = imagecreatetruecolor($width, $height);
         $borderColor = imagecolorallocate($im, 100, 100, 100);                    //边框色
         $bkcolor = imagecolorallocate($im, 250, 250, 250);
