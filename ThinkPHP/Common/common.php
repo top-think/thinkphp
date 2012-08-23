@@ -8,20 +8,21 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: common.php 3084 2012-07-27 04:17:58Z liu21st@gmail.com $
 
 /**
-  +------------------------------------------------------------------------------
  * Think 基础函数库
-  +------------------------------------------------------------------------------
  * @category   Think
  * @package  Common
  * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: common.php 3084 2012-07-27 04:17:58Z liu21st@gmail.com $
-  +------------------------------------------------------------------------------
  */
 
-// 记录和统计时间（微秒）
+/**
+ * 记录和统计时间（微秒）
+ * @param string $start 开始标签
+ * @param string $end 结束标签
+ * @param integer $dec 小数位 
+ * @return mixed
+ */
 function G($start,$end='',$dec=4) {
     static $_info = array();
     if(is_float($end)) { // 记录时间
@@ -34,7 +35,12 @@ function G($start,$end='',$dec=4) {
     }
 }
 
-// 设置和获取统计数据
+/**
+ * 设置和获取统计数据
+ * @param string $key 标识位置
+ * @param integer $step 步进值
+ * @return mixed
+ */
 function N($key, $step=0) {
     static $_num = array();
     if (!isset($_num[$key])) {
@@ -47,19 +53,11 @@ function N($key, $step=0) {
 }
 
 /**
-  +----------------------------------------------------------
  * 字符串命名风格转换
- * type
- * =0 将Java风格转换为C的风格
- * =1 将C风格转换为Java的风格
-  +----------------------------------------------------------
- * @access protected
-  +----------------------------------------------------------
+ * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
  * @param string $name 字符串
  * @param integer $type 转换类型
-  +----------------------------------------------------------
  * @return string
-  +----------------------------------------------------------
  */
 function parse_name($name, $type=0) {
     if ($type) {
@@ -69,7 +67,11 @@ function parse_name($name, $type=0) {
     }
 }
 
-// 优化的require_once
+/**
+ * 优化的require_once
+ * @param string $filename 文件地址
+ * @return boolen
+ */
 function require_cache($filename) {
     static $_importFiles = array();
     if (!isset($_importFiles[$filename])) {
@@ -83,7 +85,11 @@ function require_cache($filename) {
     return $_importFiles[$filename];
 }
 
-// 区分大小写的文件存在判断
+/**
+ * 区分大小写的文件存在判断
+ * @param string $filename 文件地址
+ * @return boolen
+ */
 function file_exists_case($filename) {
     if (is_file($filename)) {
         if (IS_WIN && C('APP_FILE_CASE')) {
@@ -96,16 +102,11 @@ function file_exists_case($filename) {
 }
 
 /**
-  +----------------------------------------------------------
- * 导入所需的类库 同java的Import
- * 本函数有缓存功能
-  +----------------------------------------------------------
+ * 导入所需的类库 同java的Import 本函数有缓存功能
  * @param string $class 类库命名空间字符串
  * @param string $baseUrl 起始路径
  * @param string $ext 导入的文件扩展名
-  +----------------------------------------------------------
  * @return boolen
-  +----------------------------------------------------------
  */
 function import($class, $baseUrl = '', $ext='.class.php') {
     static $_file = array();
@@ -145,16 +146,12 @@ function import($class, $baseUrl = '', $ext='.class.php') {
 }
 
 /**
-  +----------------------------------------------------------
  * 基于命名空间方式导入函数库
  * load('@.Util.Array')
-  +----------------------------------------------------------
  * @param string $name 函数库命名空间字符串
  * @param string $baseUrl 起始路径
  * @param string $ext 导入的文件扩展名
-  +----------------------------------------------------------
  * @return void
-  +----------------------------------------------------------
  */
 function load($name, $baseUrl='', $ext='.php') {
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
@@ -173,16 +170,26 @@ function load($name, $baseUrl='', $ext='.php') {
     require_cache($baseUrl . $name . $ext);
 }
 
-// 快速导入第三方框架类库
-// 所有第三方框架的类库文件统一放到 系统的Vendor目录下面
-// 并且默认都是以.php后缀导入
+/**
+ * 快速导入第三方框架类库 所有第三方框架的类库文件统一放到 系统的Vendor目录下面
+ * @param string $class 类库
+ * @param string $baseUrl 基础目录
+ * @param string $ext 类库后缀 
+ * @return boolean
+ */
 function vendor($class, $baseUrl = '', $ext='.php') {
     if (empty($baseUrl))
         $baseUrl = VENDOR_PATH;
     return import($class, $baseUrl, $ext);
 }
 
-// 快速定义和导入别名
+/**
+ * 快速定义和导入别名 支持批量定义
+ * @param string|array $alias 类库别名
+ * @param string $classfile 对应类库
+ * @return boolean
+ */
+// 
 function alias_import($alias, $classfile='') {
     static $_alias = array();
     if (is_string($alias)) {
@@ -201,14 +208,10 @@ function alias_import($alias, $classfile='') {
 }
 
 /**
-  +----------------------------------------------------------
  * D函数用于实例化Model 格式 项目://分组/模块
- +----------------------------------------------------------
- * @param string name Model资源地址
- * @param string layer 业务层名称
-  +----------------------------------------------------------
+ * @param string $name Model资源地址
+ * @param string $layer 业务层名称
  * @return Model
-  +----------------------------------------------------------
  */
 function D($name='',$layer='') {
     if(empty($name)) return new Model;
@@ -232,15 +235,11 @@ function D($name='',$layer='') {
 }
 
 /**
-  +----------------------------------------------------------
  * M函数用于实例化一个没有模型文件的Model
-  +----------------------------------------------------------
- * @param string name Model名称 支持指定基础模型 例如 MongoModel:User
- * @param string tablePrefix 表前缀
+ * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
+ * @param string $tablePrefix 表前缀
  * @param mixed $connection 数据库连接信息
-  +----------------------------------------------------------
  * @return Model
-  +----------------------------------------------------------
  */
 function M($name='', $tablePrefix='',$connection='') {
     static $_model = array();
@@ -256,14 +255,10 @@ function M($name='', $tablePrefix='',$connection='') {
 }
 
 /**
-  +----------------------------------------------------------
  * A函数用于实例化Action 格式：[项目://][分组/]模块
-  +----------------------------------------------------------
- * @param string name Action资源地址
- * @param string layer 控制层名称
-  +----------------------------------------------------------
- * @return Action
-  +----------------------------------------------------------
+ * @param string $name Action资源地址
+ * @param string $layer 控制层名称
+ * @return Action|false
  */
 function A($name,$layer='') {
     static $_action = array();
@@ -285,8 +280,13 @@ function A($name,$layer='') {
     }
 }
 
-// 远程调用模块的操作方法
-// URL 参数格式 [项目://][分组/]模块/操作 
+/**
+ * 远程调用模块的操作方法 URL 参数格式 [项目://][分组/]模块/操作
+ * @param string $url 调用地址
+ * @param string|array $vars 调用参数 支持字符串和数组 
+ * @param string $layer 要调用的控制层名称
+ * @return mixed
+ */
 function R($url,$vars=array(),$layer='') {
     $info =  pathinfo($url);
     $action  =  $info['basename'];
@@ -302,7 +302,12 @@ function R($url,$vars=array(),$layer='') {
     }
 }
 
-// 获取和设置语言定义(不区分大小写)
+/**
+ * 获取和设置语言定义(不区分大小写)
+ * @param string|array $name 语言变量
+ * @param string $value 语言值
+ * @return mixed
+ */
 function L($name=null, $value=null) {
     static $_lang = array();
     // 空参数返回所有定义
@@ -323,7 +328,12 @@ function L($name=null, $value=null) {
     return;
 }
 
-// 获取配置值
+/**
+ * 获取和设置配置参数 支持批量定义
+ * @param string|array $name 配置变量
+ * @param mixed $value 配置值
+ * @return mixed
+ */
 function C($name=null, $value=null) {
     static $_config = array();
     // 无参数时获取所有
@@ -361,7 +371,12 @@ function C($name=null, $value=null) {
     return null; // 避免非法参数
 }
 
-// 处理标签扩展
+/**
+ * 处理标签扩展
+ * @param string $tag 标签名称
+ * @param mixed $params 传入参数
+ * @return mixed
+ */
 function tag($tag, &$params=NULL) {
     // 系统标签扩展
     $extends = C('extends.' . $tag);
@@ -396,7 +411,13 @@ function tag($tag, &$params=NULL) {
     }
 }
 
-// 动态添加行为扩展到某个标签
+/**
+ * 动态添加行为扩展到某个标签
+ * @param string $tag 标签名称
+ * @param string $behavior 行为名称
+ * @param string $path 行为路径 
+ * @return void
+ */
 function add_tag_behavior($tag,$behavior,$path='') {
     $array   =  C('tags.'.$tag);
     if(!$array) {
@@ -410,7 +431,12 @@ function add_tag_behavior($tag,$behavior,$path='') {
     C('tags.'.$tag,$array);
 }
 
-// 过滤器方法
+/**
+ * 过滤器方法 引用传值
+ * @param string $name 过滤器名称
+ * @param string $content 要过滤的内容
+ * @return void
+ */
 function filter($name, &$content) {
     $class = $name . 'Filter';
     require_cache(LIB_PATH . 'Filter/' . $class . '.class.php');
@@ -418,7 +444,12 @@ function filter($name, &$content) {
     $content = $filter->run($content);
 }
 
-// 执行行为
+/**
+ * 执行某个行为
+ * @param string $name 行为名称
+ * @param Mixed $params 传人的参数
+ * @return void
+ */
 function B($name, &$params=NULL) {
     $class = $name.'Behavior';
     G('behaviorStart');
@@ -429,7 +460,13 @@ function B($name, &$params=NULL) {
     }
 }
 
-// 渲染输出Widget
+/**
+ * 渲染输出Widget
+ * @param string $name Widget名称
+ * @param array $data 传人的参数
+ * @param boolean $return 是否返回内容 
+ * @return void
+ */
 function W($name, $data=array(), $return=false) {
     $class = $name . 'Widget';
     require_cache(LIB_PATH . 'Widget/' . $class . '.class.php');
@@ -443,7 +480,11 @@ function W($name, $data=array(), $return=false) {
         echo $content;
 }
 
-// 去除代码中的空白和注释
+/**
+ * 去除代码中的空白和注释
+ * @param string $content 代码内容
+ * @return string
+ */
 function strip_whitespace($content) {
     $stripStr = '';
     //分析php源码
@@ -521,7 +562,13 @@ function array_define($array,$check=true) {
 }
 //[/RUNTIME]
 
-// 添加和获取页面Trace记录
+/**
+ * 添加和获取页面Trace记录
+ * @param string $value 变量
+ * @param string $label 标签
+ * @param string $level 日志级别 
+ * @return void
+ */
 function trace($value='[think]',$label='',$level='DEBUG') {
     static $_trace =  array();
     if('[think]' === $value){ // 获取trace信息

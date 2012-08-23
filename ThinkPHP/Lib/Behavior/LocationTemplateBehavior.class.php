@@ -8,13 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: LocationTemplateBehavior.class.php 3001 2012-06-15 03:39:19Z liu21st@gmail.com $
 
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 自动定位模板文件
- +------------------------------------------------------------------------------
+ * 系统行为扩展：定位模板文件
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class LocationTemplateBehavior extends Behavior {
     // 行为扩展的执行入口必须是run
@@ -25,17 +26,10 @@ class LocationTemplateBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 自动定位模板文件
-     +----------------------------------------------------------
      * @access private
-     +----------------------------------------------------------
      * @param string $templateFile 文件名
-     +----------------------------------------------------------
      * @return string
-     +----------------------------------------------------------
-     * @throws ThinkExecption
-     +----------------------------------------------------------
      */
     private function parseTemplateFile($templateFile) {
         if(''==$templateFile) {

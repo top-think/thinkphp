@@ -8,14 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: WriteHtmlCacheBehavior.class.php 3001 2012-06-15 03:39:19Z liu21st@gmail.com $
 
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 静态缓存写入
- * 增加配置参数如下：
- +------------------------------------------------------------------------------
+ * 系统行为扩展：静态缓存写入
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class WriteHtmlCacheBehavior extends Behavior {
 

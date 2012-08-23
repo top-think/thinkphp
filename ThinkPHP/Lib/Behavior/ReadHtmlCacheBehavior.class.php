@@ -8,13 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: ReadHtmlCacheBehavior.class.php 3001 2012-06-15 03:39:19Z liu21st@gmail.com $
 
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 静态缓存读取
- +------------------------------------------------------------------------------
+ * 系统行为扩展：静态缓存读取
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class ReadHtmlCacheBehavior extends Behavior {
     protected $options   =  array(
@@ -89,17 +90,12 @@ class ReadHtmlCacheBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 检查静态HTML文件是否有效
      * 如果无效需要重新更新
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @param string $cacheFile  静态文件名
      * @param integer $cacheTime  缓存有效期
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
         if(!is_file($cacheFile)){
