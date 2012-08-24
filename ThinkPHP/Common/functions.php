@@ -8,20 +8,19 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
 /**
-  +------------------------------------------------------------------------------
  * Think 标准模式公共函数库
-  +------------------------------------------------------------------------------
  * @category   Think
  * @package  Common
  * @author   liu21st <liu21st@gmail.com>
- * @version  $Id$
-  +------------------------------------------------------------------------------
  */
 
-// 错误输出
+/**
+ * 错误输出
+ * @param mixed $error 错误
+ * @return void
+ */
 function halt($error) {
     $e = array();
     if (APP_DEBUG) {
@@ -62,7 +61,13 @@ function halt($error) {
     exit;
 }
 
-// 自定义异常处理
+/**
+ * 自定义异常处理
+ * @param string $msg 异常消息
+ * @param string $type 异常类型 默认为ThinkException
+ * @param integer $code 异常代码 默认为0
+ * @return void
+ */
 function throw_exception($msg, $type='ThinkException', $code=0) {
     if (class_exists($type, false))
         throw new $type($msg, $code, true);
@@ -70,7 +75,14 @@ function throw_exception($msg, $type='ThinkException', $code=0) {
         halt($msg);        // 异常类型不存在则输出错误信息字串
 }
 
-// 浏览器友好的变量输出
+/**
+ * 浏览器友好的变量输出
+ * @param mixed $var 变量
+ * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
+ * @param string $label 标签 默认为空
+ * @param boolean $strict 是否严谨 默认为true
+ * @return void|string
+ */
 function dump($var, $echo=true, $label=null, $strict=true) {
     $label = ($label === null) ? '' : rtrim($label) . ' ';
     if (!$strict) {
@@ -96,7 +108,12 @@ function dump($var, $echo=true, $label=null, $strict=true) {
         return $output;
 }
 
-// 404 处理
+/**
+ * 404处理
+ * @param string $msg 404信息
+ * @param string $url 跳转URL地址
+ * @return void
+ */
 function _404($msg='',$url='') {
     APP_DEBUG && throw_exception($msg);
     if($msg && C('LOG_EXCEPTION_RECORD')) Log::write($msg);
@@ -111,14 +128,22 @@ function _404($msg='',$url='') {
     }
 }
 
- // 区间调试开始
+/**
+ * 区间调试开始 记录当前标签的开始时间和内存使用
+ * @param string $label 区间标签
+ * @return void
+ */
 function debug_start($label='') {
     $GLOBALS[$label]['_beginTime'] = microtime(TRUE);
     if (MEMORY_LIMIT_ON)
         $GLOBALS[$label]['_beginMem'] = memory_get_usage();
 }
 
-// 区间调试结束，显示指定标记到当前位置的调试
+/**
+ * 区间调试结束，并显示指定标签区间的时间和内存使用情况
+ * @param string $label 区间标签
+ * @return void
+ */
 function debug_end($label='') {
     $GLOBALS[$label]['_endTime'] = microtime(TRUE);
     echo '<div style="text-align:center;width:100%">Process ' . $label . ': Times ' . number_format($GLOBALS[$label]['_endTime'] - $GLOBALS[$label]['_beginTime'], 6) . 's ';
@@ -129,7 +154,11 @@ function debug_end($label='') {
     echo '</div>';
 }
 
-// 设置当前页面的布局
+/**
+ * 设置当前页面的布局
+ * @param string|false $layout 布局名称 为false的时候表示关闭布局
+ * @return void
+ */
 function layout($layout) {
     if(false !== $layout) {
         // 开启布局
@@ -142,8 +171,15 @@ function layout($layout) {
     }
 }
 
-// URL组装 支持不同模式
-// 格式：U('[分组/模块/操作@域名]?参数','参数','伪静态后缀','是否跳转','显示域名')
+/**
+ * URL组装 支持不同URL模式
+ * @param string $url URL表达式，格式：'[分组/模块/操作@域名]?参数1=值1&参数2=值2...'
+ * @param string|array $vars 传入的参数，支持数组和字符串
+ * @param string $suffix 伪静态后缀，默认为true表示获取配置值
+ * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
+ * @param boolean $domain 是否显示域名
+ * @return string
+ */
 function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     // 解析URL
     $info =  parse_url($url);
@@ -253,7 +289,10 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         return $url;
 }
 
-// 判断是否SSL协议
+/**
+ * 判断是否SSL协议
+ * @return boolean
+ */
 function is_ssl() {
     if(isset($_SERVER['HTTPS']) && ('1' == $_SERVER['HTTPS'] || 'on' == strtolower($_SERVER['HTTPS']))){
         return true;
@@ -263,7 +302,13 @@ function is_ssl() {
     return false;
 }
 
-// URL重定向
+/**
+ * URL重定向
+ * @param string $url 重定向的URL地址
+ * @param integer $time 重定向的等待时间（秒）
+ * @param string $msg 重定向前的提示信息
+ * @return void
+ */
 function redirect($url, $time=0, $msg='') {
     //多行URL地址支持
     $url = str_replace(array("\n", "\r"), '', $url);
@@ -286,7 +331,13 @@ function redirect($url, $time=0, $msg='') {
     }
 }
 
-// 缓存管理函数
+/**
+ * 缓存管理
+ * @param string|array $name 缓存名称，如果为数组表示进行缓存设置
+ * @param mixed $value 缓存值
+ * @param integer $expire 缓存有效期（秒）
+ * @return mixed
+ */
 function cache($name,$value='',$expire=0) {
     static $cache  =   '';
     if(is_array($name)) { // 缓存初始化
@@ -308,7 +359,15 @@ function cache($name,$value='',$expire=0) {
     }
 }
 
-// 全局缓存设置和读取
+/**
+ * 全局缓存设置和读取
+ * @param string $name 缓存名称
+ * @param mixed $value 缓存值
+ * @param integer $expire 缓存有效期（秒）
+ * @param string $type 缓存类型
+ * @param array $options 缓存参数
+ * @return mixed
+ */
 function S($name, $value='', $expire=null, $type='',$options=null) {
     static $_cache = array();
     //取得缓存对象实例
@@ -335,7 +394,13 @@ function S($name, $value='', $expire=null, $type='',$options=null) {
     return $value;
 }
 
-// 快速文件数据读取和保存 针对简单类型数据 字符串、数组
+/**
+ * 快速文件数据读取和保存 针对简单类型数据 字符串、数组
+ * @param string $name 缓存名称
+ * @param mixed $value 缓存值
+ * @param string $path 缓存路径
+ * @return mixed
+ */
 function F($name, $value='', $path=DATA_PATH) {
     static $_cache = array();
     $filename = $path . $name . '.php';
@@ -365,7 +430,13 @@ function F($name, $value='', $path=DATA_PATH) {
     return $value;
 }
 
-// 取得对象实例 支持调用类的静态方法
+/**
+ * 取得对象实例 支持调用类的静态方法
+ * @param string $name 类名
+ * @param string $method 方法名，如果为空则返回实例化对象
+ * @param array $args 调用参数
+ * @return object
+ */
 function get_instance_of($name, $method='', $args=array()) {
     static $_instance = array();
     $identify = empty($args) ? $name . $method : $name . $method . to_guid_string($args);
@@ -388,7 +459,11 @@ function get_instance_of($name, $method='', $args=array()) {
     return $_instance[$identify];
 }
 
-// 根据PHP各种类型变量生成唯一标识号
+/**
+ * 根据PHP各种类型变量生成唯一标识号
+ * @param mixed $mix 变量
+ * @return string
+ */
 function to_guid_string($mix) {
     if (is_object($mix) && function_exists('spl_object_hash')) {
         return spl_object_hash($mix);
@@ -400,7 +475,13 @@ function to_guid_string($mix) {
     return md5($mix);
 }
 
-// xml编码
+/**
+ * XML编码
+ * @param mixed $data 数据
+ * @param string $encoding 数据编码
+ * @param string $root 根节点名
+ * @return string
+ */
 function xml_encode($data, $encoding='utf-8', $root='think') {
     $xml = '<?xml version="1.0" encoding="' . $encoding . '"?>';
     $xml.= '<' . $root . '>';
@@ -409,6 +490,11 @@ function xml_encode($data, $encoding='utf-8', $root='think') {
     return $xml;
 }
 
+/**
+ * 数据XML编码
+ * @param mixed $data 数据
+ * @return string
+ */
 function data_to_xml($data) {
     $xml = '';
     foreach ($data as $key => $val) {
@@ -421,7 +507,12 @@ function data_to_xml($data) {
     return $xml;
 }
 
-// session管理函数
+/**
+ * session管理函数
+ * @param string|array $name session名称 如果为数组则表示进行session设置
+ * @param mixed $value session值
+ * @return mixed
+ */
 function session($name,$value='') {
     $prefix   =  C('SESSION_PREFIX');
     if(is_array($name)) { // session初始化 在session_start 之前调用
@@ -503,7 +594,13 @@ function session($name,$value='') {
     }
 }
 
-// Cookie 设置、获取、删除
+/**
+ * Cookie 设置、获取、删除
+ * @param string $name cookie名称
+ * @param mixed $value cookie值
+ * @param mixed $options cookie参数
+ * @return mixed
+ */
 function cookie($name, $value='', $option=null) {
     // 默认设置
     $config = array(
@@ -553,7 +650,10 @@ function cookie($name, $value='', $option=null) {
     }
 }
 
-// 加载扩展配置文件
+/**
+ * 加载动态扩展文件
+ * @return void
+ */
 function load_ext_file() {
     // 加载自定义外部文件
     if(C('LOAD_EXT_FILE')) {
@@ -576,7 +676,11 @@ function load_ext_file() {
     }
 }
 
-// 获取客户端IP地址
+/**
+ * 获取客户端IP地址
+ * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
+ * @return mixed
+ */
 function get_client_ip($type = 0) {
 	$type = $type ? 1 : 0;
     static $ip = NULL;
@@ -597,6 +701,11 @@ function get_client_ip($type = 0) {
     return $ip[$type];
 }
 
+/**
+ * 发送HTTP状态
+ * @param integer $code 状态码
+ * @return void
+ */
 function send_http_status($code) {
     static $_status = array(
         // Success 2xx

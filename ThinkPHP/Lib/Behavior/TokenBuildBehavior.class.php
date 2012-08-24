@@ -8,13 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: TokenBuildBehavior.class.php 3083 2012-07-22 16:05:45Z liu21st@gmail.com $
 
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 表单令牌生成
- +------------------------------------------------------------------------------
+ * 系统行为扩展：表单令牌生成
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class TokenBuildBehavior extends Behavior {
     // 行为参数定义

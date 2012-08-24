@@ -32,5 +32,6 @@ return array(
             'CacheMemcache.class.php'=>SAE_PATH.'Lib/Extend/Driver/Cache/CacheMemcache_sae.class.php',
             'DbMysql.class.php'=>SAE_PATH.'Lib/Driver/Db/DbMysql.class.php',
             'DbMysqli.class.php'=>SAE_PATH.'Lib/Driver/Db/DbMysqli.class.php',//TODU, 判断是否在SAE平台可用
-         )
+         ),
+        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试','SAE'=>'SAE'), // 页面Trace可定制的选项卡 
         );

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: common.php 2984 2012-06-11 14:10:44Z luofei614@gmail.com $
+// $Id: common.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
  * @category   Think
  * @package  Common
  * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: common.php 2984 2012-06-11 14:10:44Z luofei614@gmail.com $
+ * @version  $Id: common.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 
@@ -210,26 +210,29 @@ function alias_import($alias, $classfile='') {
     return false;
 }
 
+
 /**
   +----------------------------------------------------------
  * D函数用于实例化Model 格式 项目://分组/模块
  +----------------------------------------------------------
  * @param string name Model资源地址
+ * @param string layer 业务层名称
   +----------------------------------------------------------
  * @return Model
   +----------------------------------------------------------
  */
-function D($name='') {
+function D($name='',$layer='') {
     if(empty($name)) return new Model;
     static $_model = array();
+    $layer  =   $layer?$layer:C('DEFAULT_M_LAYER');
     if(strpos($name,'://')) {// 指定项目
-        $name   =  str_replace('://','/Model/',$name);
+        $name   =  str_replace('://','/'.$layer.'/',$name);
     }else{
-        $name   =  C('DEFAULT_APP').'/Model/'.$name;
+        $name   =  C('DEFAULT_APP').'/'.$layer.'/'.$name;
     }
-    if(isset($_model[$name])) return $_model[$name];
-    import($name.'Model');
-    $class   =   basename($name.'Model');
+    if(isset($_model[$name]))   return $_model[$name];
+    import($name.$layer);
+    $class   =   basename($name.$layer);
     if(class_exists($class)) {
         $model = new $class();
     }else {
@@ -238,6 +241,7 @@ function D($name='') {
     $_model[$name]  =  $model;
     return $model;
 }
+
 
 /**
   +----------------------------------------------------------
@@ -257,9 +261,10 @@ function M($name='', $tablePrefix='',$connection='') {
     }else{
         $class   =   'Model';
     }
-    if (!isset($_model[$name . '_' . $class]))
-        $_model[$name . '_' . $class] = new $class($name,$tablePrefix,$connection);
-    return $_model[$name . '_' . $class];
+    $guid   =   $tablePrefix . $name . '_' . $class;
+    if (!isset($_model[$guid]))
+        $_model[$guid] = new $class($name,$tablePrefix,$connection);
+    return $_model[$guid];
 }
 
 /**
@@ -267,21 +272,22 @@ function M($name='', $tablePrefix='',$connection='') {
  * A函数用于实例化Action 格式：[项目://][分组/]模块
   +----------------------------------------------------------
  * @param string name Action资源地址
+ * @param string layer 控制层名称
   +----------------------------------------------------------
  * @return Action
   +----------------------------------------------------------
  */
-function A($name) {
+function A($name,$layer='') {
     static $_action = array();
-    if(isset($_action[$name]))
-        return $_action[$name];
+    $layer  =   $layer?$layer:C('DEFAULT_C_LAYER');
     if(strpos($name,'://')) {// 指定项目
-        $name   =  str_replace('://','/Action/',$name);
+        $name   =  str_replace('://','/'.$layer.'/',$name);
     }else{
-        $name   =  '@/Action/'.$name;
+        $name   =  '@/'.$layer.'/'.$name;
     }
-    import($name.'Action');
-    $class   =   basename($name.'Action');
+    if(isset($_action[$name]))  return $_action[$name];
+    import($name.$layer);
+    $class   =   basename($name.$layer);
     if(class_exists($class,false)) {
         $action = new $class();
         $_action[$name]  =  $action;
@@ -293,15 +299,19 @@ function A($name) {
 
 // 远程调用模块的操作方法
 // URL 参数格式 [项目://][分组/]模块/操作 
-function R($url,$vars=array()) {
+function R($url,$vars=array(),$layer='') {
     $info =  pathinfo($url);
     $action  =  $info['basename'];
     $module =  $info['dirname'];
-    $class = A($module);
-    if($class)
+    $class = A($module,$layer);
+    if($class){
+        if(is_string($vars)) {
+            parse_str($vars,$vars);
+        }
         return call_user_func_array(array(&$class,$action),$vars);
-    else
+    }else{
         return false;
+    }
 }
 
 // 获取和设置语言定义(不区分大小写)
@@ -329,15 +339,19 @@ function L($name=null, $value=null) {
 function C($name=null, $value=null) {
     static $_config = array();
     // 无参数时获取所有
-    if (empty($name))
+    if (empty($name)) {
+        if(!empty($value) && $array = cache('c_'.$value)) {
+            $_config = array_merge($_config, array_change_key_case($array));
+        }
         return $_config;
+    }
     // 优先执行设置获取或赋值
     if (is_string($name)) {
         if (!strpos($name, '.')) {
             $name = strtolower($name);
             if (is_null($value))
                 return isset($_config[$name]) ? $_config[$name] : null;
-            $_config[$name] = is_array($value)?array_change_key_case($value):$value;
+            $_config[$name] = $value;
             return;
         }
         // 二维数组设置和获取支持
@@ -350,7 +364,11 @@ function C($name=null, $value=null) {
     }
     // 批量设置
     if (is_array($name)){
-        return $_config = array_merge($_config, array_change_key_case($name));
+        $_config = array_merge($_config, array_change_key_case($name));
+        if(!empty($value)) {// 保存配置值
+            cache('c_'.$value,$_config);
+        }
+        return;
     }
     return null; // 避免非法参数
 }
@@ -373,7 +391,7 @@ function tag($tag, &$params=NULL) {
     if($tags) {
         if(APP_DEBUG) {
             G($tag.'Start');
-            Log::record('Tag[ '.$tag.' ] --START--',Log::INFO);
+            trace('[ '.$tag.' ] --START--','','INFO');
         }
         // 执行扩展
         foreach ($tags as $key=>$name) {
@@ -383,7 +401,7 @@ function tag($tag, &$params=NULL) {
             B($name, $params);
         }
         if(APP_DEBUG) { // 记录行为的执行日志
-            Log::record('Tag[ '.$tag.' ] --END-- [ RunTime:'.G($tag.'Start',$tag.'End',6).'s ]',Log::INFO);
+            trace('[ '.$tag.' ] --END-- [ RunTime:'.G($tag.'Start',$tag.'End',6).'s ]','','INFO');
         }
     }else{ // 未执行任何行为 返回false
         return false;
@@ -419,8 +437,7 @@ function B($name, &$params=NULL) {
     $behavior = new $class();
     $behavior->run($params);
     if(APP_DEBUG) { // 记录行为的执行日志
-        G('behaviorEnd');
-        Log::record('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]',Log::INFO);
+        trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
 }
 
@@ -517,7 +534,26 @@ function array_define($array,$check=true) {
     return $content;
 }
 //[/RUNTIME]
-
+// 添加和获取页面Trace记录
+function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
+    static $_trace =  array();
+    if('[think]' === $value){ // 获取trace信息
+        return $_trace;
+    }else{
+        $info   =   ($label?$label.':':'').print_r($value,true);
+        if(APP_DEBUG && 'ERR' == $level) {// 调试模式ERR抛出异常
+            throw_exception($info);
+        }
+        if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE') || $record) {
+            Log::record($info,$level,$record);
+        }else{
+            if(!isset($_trace[$level])) {
+                $_trace[$level] =   array();
+            }
+            $_trace[$level][] = $info;
+        }
+    }
+}
 //获得storage的domain地址,在config_sae.php中可以使用
 function sae_storage_root($domain){
     if(defined('SAE_CACHE_BUILDER'))

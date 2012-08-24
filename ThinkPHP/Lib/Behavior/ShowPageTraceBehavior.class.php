@@ -8,13 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: ShowPageTraceBehavior.class.php 3059 2012-07-05 04:37:06Z liu21st@gmail.com $
 
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 页面Trace显示输出
- +------------------------------------------------------------------------------
+ * 系统行为扩展：页面Trace显示输出
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class ShowPageTraceBehavior extends Behavior {
     // 行为参数定义
@@ -32,11 +33,8 @@ class ShowPageTraceBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 显示页面Trace信息
-     +----------------------------------------------------------
      * @access private
-     +----------------------------------------------------------
      */
     private function showTrace() {
          // 系统默认显示信息
@@ -116,9 +114,7 @@ class ShowPageTraceBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 获取运行时间
-     +----------------------------------------------------------
      */
     private function showTime() {
         // 显示运行时间
@@ -127,5 +123,4 @@ class ShowPageTraceBehavior extends Behavior {
         // 显示详细运行时间
         return G('beginTime','viewEndTime').'s ( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
     }
-
 }
