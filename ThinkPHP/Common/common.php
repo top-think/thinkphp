@@ -214,7 +214,6 @@ function vendor($class, $baseUrl = '', $ext='.php') {
  * @param string $classfile 对应类库
  * @return boolean
  */
-// 
 function alias_import($alias, $classfile='') {
     static $_alias = array();
     if (is_string($alias)) {
@@ -446,7 +445,7 @@ function tag($tag, &$params=NULL) {
 function add_tag_behavior($tag,$behavior,$path='') {
     $array      =  C('tags.'.$tag);
     if(!$array) {
-        $array   =  array();
+        $array  =  array();
     }
     if($path) {
         $array[$behavior] = $path;

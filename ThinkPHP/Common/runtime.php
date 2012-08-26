@@ -41,7 +41,7 @@ if(!IS_CLI) {
         if(IS_CGI) {
             //CGI/FASTCGI模式下
             $_temp  = explode('.php',$_SERVER['PHP_SELF']);
-            define('_PHP_FILE_',  rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
+            define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
         }else {
             define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
         }
@@ -64,22 +64,22 @@ if(!IS_CLI) {
 }
 
 // 路径设置 可在入口文件中重新定义 所有路径常量都必须以/ 结尾
-defined('CORE_PATH')    or define('CORE_PATH',THINK_PATH.'Lib/'); // 系统核心类库目录
-defined('EXTEND_PATH')  or define('EXTEND_PATH',THINK_PATH.'Extend/'); // 系统扩展目录
-defined('MODE_PATH')    or define('MODE_PATH',EXTEND_PATH.'Mode/'); // 模式扩展目录
-defined('ENGINE_PATH')  or define('ENGINE_PATH',EXTEND_PATH.'Engine/'); // 引擎扩展目录
-defined('VENDOR_PATH')  or define('VENDOR_PATH',EXTEND_PATH.'Vendor/'); // 第三方类库目录
-defined('LIBRARY_PATH') or define('LIBRARY_PATH',EXTEND_PATH.'Library/'); // 扩展类库目录
+defined('CORE_PATH')    or define('CORE_PATH',      THINK_PATH.'Lib/'); // 系统核心类库目录
+defined('EXTEND_PATH')  or define('EXTEND_PATH',    THINK_PATH.'Extend/'); // 系统扩展目录
+defined('MODE_PATH')    or define('MODE_PATH',      EXTEND_PATH.'Mode/'); // 模式扩展目录
+defined('ENGINE_PATH')  or define('ENGINE_PATH',    EXTEND_PATH.'Engine/'); // 引擎扩展目录
+defined('VENDOR_PATH')  or define('VENDOR_PATH',    EXTEND_PATH.'Vendor/'); // 第三方类库目录
+defined('LIBRARY_PATH') or define('LIBRARY_PATH',   EXTEND_PATH.'Library/'); // 扩展类库目录
 defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
-defined('LIB_PATH')     or define('LIB_PATH',    APP_PATH.'Lib/'); // 项目类库目录
-defined('CONF_PATH')    or define('CONF_PATH',  APP_PATH.'Conf/'); // 项目配置目录
-defined('LANG_PATH')    or define('LANG_PATH', APP_PATH.'Lang/'); // 项目语言包目录
-defined('TMPL_PATH')    or define('TMPL_PATH',APP_PATH.'Tpl/'); // 项目模板目录
-defined('HTML_PATH')    or define('HTML_PATH',APP_PATH.'Html/'); // 项目静态目录
-defined('LOG_PATH')     or define('LOG_PATH',  RUNTIME_PATH.'Logs/'); // 项目日志目录
-defined('TEMP_PATH')    or define('TEMP_PATH', RUNTIME_PATH.'Temp/'); // 项目缓存目录
-defined('DATA_PATH')    or define('DATA_PATH', RUNTIME_PATH.'Data/'); // 项目数据目录
-defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Cache/'); // 项目模板缓存目录
+defined('LIB_PATH')     or define('LIB_PATH',       APP_PATH.'Lib/'); // 项目类库目录
+defined('CONF_PATH')    or define('CONF_PATH',      APP_PATH.'Conf/'); // 项目配置目录
+defined('LANG_PATH')    or define('LANG_PATH',      APP_PATH.'Lang/'); // 项目语言包目录
+defined('TMPL_PATH')    or define('TMPL_PATH',      APP_PATH.'Tpl/'); // 项目模板目录
+defined('HTML_PATH')    or define('HTML_PATH',      APP_PATH.'Html/'); // 项目静态目录
+defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 项目日志目录
+defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 项目缓存目录
+defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 项目数据目录
+defined('CACHE_PATH')   or define('CACHE_PATH',     RUNTIME_PATH.'Cache/'); // 项目模板缓存目录
 
 // 为了方便导入第三方类库 设置Vendor目录到include_path
 set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
@@ -132,15 +132,15 @@ function check_runtime() {
 // 创建编译缓存
 function build_runtime_cache($append='') {
     // 生成编译文件
-    $defs = get_defined_constants(TRUE);
-    $content    =  '$GLOBALS[\'_beginTime\'] = microtime(TRUE);';
+    $defs           = get_defined_constants(TRUE);
+    $content        =  '$GLOBALS[\'_beginTime\'] = microtime(TRUE);';
     if(defined('RUNTIME_DEF_FILE')) { // 编译后的常量文件外部引入
         file_put_contents(RUNTIME_DEF_FILE,'<?php '.array_define($defs['user']));
-        $content  .=  'require \''.RUNTIME_DEF_FILE.'\';';
+        $content   .=  'require \''.RUNTIME_DEF_FILE.'\';';
     }else{
-        $content  .= array_define($defs['user']);
+        $content   .= array_define($defs['user']);
     }
-    $content    .= 'set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);';
+    $content       .= 'set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);';
     // 读取核心编译文件列表
     $list = array(
         THINK_PATH.'Common/common.php',
@@ -155,10 +155,10 @@ function build_runtime_cache($append='') {
     if(C('APP_TAGS_ON')) {
         $content .= build_tags_cache();
     }
-    $alias = include THINK_PATH.'Conf/alias.php';
-    $content .= 'alias_import('.var_export($alias,true).');';
+    $alias      = include THINK_PATH.'Conf/alias.php';
+    $content   .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
-    $content .= $append."\nL(".var_export(L(),true).");C(".var_export(C(),true).');G(\'loadTime\');Think::Start();';
+    $content   .= $append."\nL(".var_export(L(),true).");C(".var_export(C(),true).');G(\'loadTime\');Think::Start();';
     file_put_contents(RUNTIME_FILE,strip_whitespace('<?php '.$content));
 }
 
@@ -223,8 +223,8 @@ function build_first_action() {
 function build_dir_secure($dirs='') {
     // 目录安全写入
     if(defined('BUILD_DIR_SECURE') && BUILD_DIR_SECURE) {
-        defined('DIR_SECURE_FILENAME') or define('DIR_SECURE_FILENAME','index.html');
-        defined('DIR_SECURE_CONTENT') or define('DIR_SECURE_CONTENT',' ');
+        defined('DIR_SECURE_FILENAME')  or define('DIR_SECURE_FILENAME',    'index.html');
+        defined('DIR_SECURE_CONTENT')   or define('DIR_SECURE_CONTENT',     ' ');
         // 自动写入目录安全文件
         $content = DIR_SECURE_CONTENT;
         $files = explode(',', DIR_SECURE_FILENAME);
