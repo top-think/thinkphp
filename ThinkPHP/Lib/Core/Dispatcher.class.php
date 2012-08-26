@@ -14,7 +14,7 @@
  * 完成URL解析、路由和调度
  * @category   Think
  * @package  Think
- * @subpackage  Util
+ * @subpackage  Core
  * @author    liu21st <liu21st@gmail.com>
  */
 class Dispatcher {

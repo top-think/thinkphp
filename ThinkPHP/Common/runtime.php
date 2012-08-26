@@ -11,6 +11,9 @@
 
 /**
  * ThinkPHP 运行时文件 编译后不再加载
+ * @category   Think
+ * @package  Common
+ * @author   liu21st <liu21st@gmail.com>
  */
 defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');

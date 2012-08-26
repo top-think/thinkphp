@@ -13,7 +13,7 @@
  * ThinkPHP Widget类 抽象类
  * @category   Think
  * @package  Think
- * @subpackage  Util
+ * @subpackage  Core
  * @author liu21st <liu21st@gmail.com>
  */
 abstract class Widget {
