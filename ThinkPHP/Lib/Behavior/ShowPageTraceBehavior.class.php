@@ -20,9 +20,9 @@ defined('THINK_PATH') or exit();
 class ShowPageTraceBehavior extends Behavior {
     // 行为参数定义
     protected $options   =  array(
-        'SHOW_PAGE_TRACE'=> false,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
-        'PAGE_TRACE_SAVE'=> false,
+        'SHOW_PAGE_TRACE'   => false,   // 显示页面Trace信息
+        'TRACE_PAGE_TABS'   => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
+        'PAGE_TRACE_SAVE'   => false,
     );
 
     // 行为扩展的执行入口必须是run
@@ -38,26 +38,26 @@ class ShowPageTraceBehavior extends Behavior {
      */
     private function showTrace() {
          // 系统默认显示信息
-        $files =  get_included_files();
+        $files  =  get_included_files();
         $info   =   array();
         foreach ($files as $key=>$file){
             $info[] = $file.' ( '.number_format(filesize($file)/1024,2).' KB )';
         }
         $trace  =   array();
         $base   =   array(
-            '请求信息'=>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.__SELF__,
-            '运行时间'=> $this->showTime(),
-            '内存开销'=> MEMORY_LIMIT_ON?number_format((memory_get_usage() - $GLOBALS['_startUseMems'])/1024,2).' kb':'不支持',
-            '查询信息'=> N('db_query').' queries '.N('db_write').' writes ',
-            '文件加载'=> count(get_included_files()),
-            '缓存信息'=> N('cache_read').' gets '.N('cache_write').' writes ',
-            '配置加载'=> count(c()),
-            '会话信息'=> 'SESSION_ID='.session_id(),
+            '请求信息'  =>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.__SELF__,
+            '运行时间'  =>  $this->showTime(),
+            '内存开销'  =>  MEMORY_LIMIT_ON?number_format((memory_get_usage() - $GLOBALS['_startUseMems'])/1024,2).' kb':'不支持',
+            '查询信息'  =>  N('db_query').' queries '.N('db_write').' writes ',
+            '文件加载'  =>  count(get_included_files()),
+            '缓存信息'  =>  N('cache_read').' gets '.N('cache_write').' writes ',
+            '配置加载'  =>  count(c()),
+            '会话信息'  =>  'SESSION_ID='.session_id(),
             );
         // 读取项目定义的Trace文件
         $traceFile  =   CONF_PATH.'trace.php';
         if(is_file($traceFile)) {
-            $base    =   array_merge($base,include $traceFile);
+            $base   =   array_merge($base,include $traceFile);
         }
         $debug  =   trace();
         $tabs   =   C('TRACE_PAGE_TABS');

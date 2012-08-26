@@ -23,35 +23,35 @@ class TagLib {
      * @var string
      * @access protected
      */
-    protected $xml = '';
-    protected $tags = array();// 标签定义
+    protected $xml      = '';
+    protected $tags     = array();// 标签定义
     /**
      * 标签库名称
      * @var string
      * @access protected
      */
-    protected $tagLib ='';
+    protected $tagLib   ='';
 
     /**
      * 标签库标签列表
      * @var string
      * @access protected
      */
-    protected $tagList = array();
+    protected $tagList  = array();
 
     /**
      * 标签库分析数组
      * @var string
      * @access protected
      */
-    protected $parse = array();
+    protected $parse    = array();
 
     /**
      * 标签库是否有效
      * @var string
      * @access protected
      */
-    protected $valid = false;
+    protected $valid    = false;
 
     /**
      * 当前模板对象
@@ -68,7 +68,7 @@ class TagLib {
      */
     public function __construct() {
         $this->tagLib  = strtolower(substr(get_class($this),6));
-        $this->tpl       = Think::instance('ThinkTemplate');
+        $this->tpl     = Think::instance('ThinkTemplate');
     }
 
     /**
@@ -79,14 +79,14 @@ class TagLib {
      */
     public function parseXmlAttr($attr,$tag) {
         //XML解析安全过滤
-        $attr = str_replace('&','___', $attr);
-        $xml =  '<tpl><tag '.$attr.' /></tpl>';
-        $xml = simplexml_load_string($xml);
+        $attr   =   str_replace('&','___', $attr);
+        $xml    =   '<tpl><tag '.$attr.' /></tpl>';
+        $xml    =   simplexml_load_string($xml);
         if(!$xml) {
             throw_exception(L('_XML_TAG_ERROR_').' : '.$attr);
         }
-        $xml = (array)($xml->tag->attributes());
-        $array = array_change_key_case($xml['@attributes']);
+        $xml    =   (array)($xml->tag->attributes());
+        $array  =   array_change_key_case($xml['@attributes']);
         if($array) {
             $attrs  = explode(',',$this->tags[strtolower($tag)]['attr']);
             foreach($attrs as $name) {
@@ -169,9 +169,9 @@ class TagLib {
      * @return string
      */
     public function parseThinkVar($varStr){
-        $vars = explode('.',$varStr);
-        $vars[1] = strtoupper(trim($vars[1]));
-        $parseStr = '';
+        $vars       = explode('.',$varStr);
+        $vars[1]    = strtoupper(trim($vars[1]));
+        $parseStr   = '';
         if(count($vars)>=3){
             $vars[2] = trim($vars[2]);
             switch($vars[1]){

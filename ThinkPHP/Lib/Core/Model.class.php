@@ -26,7 +26,7 @@ class Model {
     const EXISTS_VALIDATE       =   0;// 表单存在字段则验证
     const VALUE_VALIDATE        =   2;// 表单值不为空则验证
     // 当前使用的扩展模型
-    private $_extModel          =   null;
+    private   $_extModel        =   null;
     // 当前数据库操作对象
     protected $db               =   null;
     // 主键名称

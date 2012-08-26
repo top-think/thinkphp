@@ -21,30 +21,30 @@
 class  ThinkTemplate {
 
     // 模板页面中引入的标签库列表
-    protected $tagLib          =  array();
+    protected   $tagLib          =   array();
     // 当前模板文件
-    protected $templateFile  =  '';
+    protected   $templateFile    =   '';
     // 模板变量
-    public $tVar                 = array();
-    public $config  =  array();
-    private   $literal = array();
+    public      $tVar            =   array();
+    public      $config          =   array();
+    private     $literal         =   array();
 
     /**
      * 架构函数
      * @access public
      */
     public function __construct(){
-        $this->config['cache_path']        =  C('CACHE_PATH');
-        $this->config['template_suffix']   =  C('TMPL_TEMPLATE_SUFFIX');
-        $this->config['cache_suffix']       =  C('TMPL_CACHFILE_SUFFIX');
-        $this->config['tmpl_cache']        =  C('TMPL_CACHE_ON');
-        $this->config['cache_time']        =  C('TMPL_CACHE_TIME');
-        $this->config['taglib_begin']        =  $this->stripPreg(C('TAGLIB_BEGIN'));
-        $this->config['taglib_end']          =  $this->stripPreg(C('TAGLIB_END'));
-        $this->config['tmpl_begin']         =  $this->stripPreg(C('TMPL_L_DELIM'));
-        $this->config['tmpl_end']           =  $this->stripPreg(C('TMPL_R_DELIM'));
-        $this->config['default_tmpl']       =  C('TEMPLATE_NAME');
-        $this->config['layout_item']        = C('TMPL_LAYOUT_ITEM');
+        $this->config['cache_path']         =   C('CACHE_PATH');
+        $this->config['template_suffix']    =   C('TMPL_TEMPLATE_SUFFIX');
+        $this->config['cache_suffix']       =   C('TMPL_CACHFILE_SUFFIX');
+        $this->config['tmpl_cache']         =   C('TMPL_CACHE_ON');
+        $this->config['cache_time']         =   C('TMPL_CACHE_TIME');
+        $this->config['taglib_begin']       =   $this->stripPreg(C('TAGLIB_BEGIN'));
+        $this->config['taglib_end']         =   $this->stripPreg(C('TAGLIB_END'));
+        $this->config['tmpl_begin']         =   $this->stripPreg(C('TMPL_L_DELIM'));
+        $this->config['tmpl_end']           =   $this->stripPreg(C('TMPL_R_DELIM'));
+        $this->config['default_tmpl']       =   C('TEMPLATE_NAME');
+        $this->config['layout_item']        =   C('TMPL_LAYOUT_ITEM');
     }
 
     private function stripPreg($str) {

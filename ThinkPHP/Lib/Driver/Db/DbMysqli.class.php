@@ -253,7 +253,7 @@ class DbMysqli extends Db{
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) { // 过滤非标量数据
                 $values[]   =  $value;
-                $fields[]     =  $this->parseKey($key);
+                $fields[]   =  $this->parseKey($key);
             }
         }
         $sql   =  'REPLACE INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';

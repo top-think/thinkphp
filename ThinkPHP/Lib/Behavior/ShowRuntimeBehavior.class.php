@@ -20,13 +20,13 @@ defined('THINK_PATH') or exit();
 class ShowRuntimeBehavior extends Behavior {
     // 行为参数定义
     protected $options   =  array(
-        'SHOW_RUN_TIME'			=> false,   // 运行时间显示
-        'SHOW_ADV_TIME'			=> false,   // 显示详细的运行时间
-        'SHOW_DB_TIMES'			=> false,   // 显示数据库查询和写入次数
-        'SHOW_CACHE_TIMES'		=> false,   // 显示缓存操作次数
-        'SHOW_USE_MEM'			=> false,   // 显示内存开销
-        'SHOW_LOAD_FILE'          => false,   // 显示加载文件数
-        'SHOW_FUN_TIMES'         => false ,  // 显示函数调用次数
+        'SHOW_RUN_TIME'		=> false,   // 运行时间显示
+        'SHOW_ADV_TIME'		=> false,   // 显示详细的运行时间
+        'SHOW_DB_TIMES'		=> false,   // 显示数据库查询和写入次数
+        'SHOW_CACHE_TIMES'	=> false,   // 显示缓存操作次数
+        'SHOW_USE_MEM'		=> false,   // 显示内存开销
+        'SHOW_LOAD_FILE'    => false,   // 显示加载文件数
+        'SHOW_FUN_TIMES'    => false ,  // 显示函数调用次数
     );
 
     // 行为扩展的执行入口必须是run

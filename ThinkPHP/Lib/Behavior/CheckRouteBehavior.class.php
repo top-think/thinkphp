@@ -42,8 +42,8 @@ class CheckRouteBehavior extends Behavior {
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     return $return = $this->parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
-                    $len1=   substr_count($regx,'/');
-                    $len2 =  substr_count($rule,'/');
+                    $len1   =   substr_count($regx,'/');
+                    $len2   =   substr_count($rule,'/');
                     if($len1>=$len2) {
                         if('$' == substr($rule,-1,1)) {// 完整匹配
                             if($len1 != $len2) {
@@ -95,7 +95,7 @@ class CheckRouteBehavior extends Behavior {
         $var  =  array();
         if(false !== strpos($url,'?')) { // [分组/模块/操作?]参数1=值1&参数2=值2...
             $info   =  parse_url($url);
-            $path = explode('/',$info['path']);
+            $path   = explode('/',$info['path']);
             parse_str($info['query'],$var);
         }elseif(strpos($url,'/')){ // [分组/模块/操作]
             $path = explode('/',$url);

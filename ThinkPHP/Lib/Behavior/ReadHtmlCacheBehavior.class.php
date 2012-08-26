@@ -19,10 +19,10 @@ defined('THINK_PATH') or exit();
  */
 class ReadHtmlCacheBehavior extends Behavior {
     protected $options   =  array(
-            'HTML_CACHE_ON'=>false,
-            'HTML_CACHE_TIME'=>60,
-            'HTML_CACHE_RULES'=>array(),
-            'HTML_FILE_SUFFIX'=>'.html',
+            'HTML_CACHE_ON'     =>  false,
+            'HTML_CACHE_TIME'   =>  60,
+            'HTML_CACHE_RULES'  =>  array(),
+            'HTML_FILE_SUFFIX'  =>  '.html',
         );
 
     // 行为扩展的执行入口必须是run
@@ -64,15 +64,15 @@ class ReadHtmlCacheBehavior extends Behavior {
             }
             if(!empty($html)) {
                 // 解读静态规则
-                $rule    = $html[0];
+                $rule   = $html[0];
                 // 以$_开头的系统变量
-                $rule  = preg_replace('/{\$(_\w+)\.(\w+)\|(\w+)}/e',"\\3(\$\\1['\\2'])",$rule);
-                $rule  = preg_replace('/{\$(_\w+)\.(\w+)}/e',"\$\\1['\\2']",$rule);
+                $rule   = preg_replace('/{\$(_\w+)\.(\w+)\|(\w+)}/e',"\\3(\$\\1['\\2'])",$rule);
+                $rule   = preg_replace('/{\$(_\w+)\.(\w+)}/e',"\$\\1['\\2']",$rule);
                 // {ID|FUN} GET变量的简写
-                $rule  = preg_replace('/{(\w+)\|(\w+)}/e',"\\2(\$_GET['\\1'])",$rule);
-                $rule  = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
+                $rule   = preg_replace('/{(\w+)\|(\w+)}/e',"\\2(\$_GET['\\1'])",$rule);
+                $rule   = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
                 // 特殊系统变量
-                $rule  = str_ireplace(
+                $rule   = str_ireplace(
                     array('{:app}','{:module}','{:action}','{:group}'),
                     array(APP_NAME,MODULE_NAME,ACTION_NAME,defined('GROUP_NAME')?GROUP_NAME:''),
                     $rule);
@@ -115,8 +115,8 @@ class ReadHtmlCacheBehavior extends Behavior {
 
     //检测是否是空操作
     static private function isEmptyAction($module,$action) {
-        $className =  $module.'Action';
-        $class=new $className;
+        $className  =   $module.'Action';
+        $class      =   new $className;
         return !method_exists($class,$action);
     }
 

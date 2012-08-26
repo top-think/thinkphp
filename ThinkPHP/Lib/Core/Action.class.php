@@ -21,7 +21,7 @@ abstract class Action {
     // 视图实例对象
     protected $view     =  null;
     // 当前Action名称
-    private $name       =  '';
+    private   $name     =  '';
     // 控制器参数
     protected $config   =   array();
 
