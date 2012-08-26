@@ -18,40 +18,40 @@
  */
 class Db {
     // 数据库类型
-    protected $dbType           = null;
+    protected $dbType     = null;
     // 是否自动释放查询结果
-    protected $autoFree         = false;
+    protected $autoFree   = false;
     // 当前操作所属的模型名
-    protected $model =  '_think_';
+    protected $model      = '_think_';
     // 是否使用永久连接
-    protected $pconnect         = false;
+    protected $pconnect   = false;
     // 当前SQL指令
-    protected $queryStr          = '';
-    protected $modelSql         =  array();
+    protected $queryStr   = '';
+    protected $modelSql   = array();
     // 最后插入ID
-    protected $lastInsID         = null;
+    protected $lastInsID  = null;
     // 返回或者影响记录数
-    protected $numRows        = 0;
+    protected $numRows    = 0;
     // 返回字段数
-    protected $numCols          = 0;
+    protected $numCols    = 0;
     // 事务指令数
-    protected $transTimes      = 0;
+    protected $transTimes = 0;
     // 错误信息
-    protected $error              = '';
+    protected $error      = '';
     // 数据库连接ID 支持多个连接
-    protected $linkID              = array();
+    protected $linkID     = array();
     // 当前连接ID
-    protected $_linkID            =   null;
+    protected $_linkID    = null;
     // 当前查询ID
-    protected $queryID          = null;
+    protected $queryID    = null;
     // 是否已经连接数据库
-    protected $connected       = false;
+    protected $connected  = false;
     // 数据库连接参数配置
-    protected $config             = '';
+    protected $config     = '';
     // 数据库表达式
-    protected $comparison      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
+    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
     // 查询表达式
-    protected $selectSql  =     'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%';
+    protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%';
 
     /**
      * 取得数据库类实例
@@ -124,14 +124,14 @@ class Db {
         }elseif(is_array($db_config)) { // 数组配置
              $db_config =   array_change_key_case($db_config);
              $db_config = array(
-                  'dbms'        => $db_config['db_type'],
-                  'username'  => $db_config['db_user'],
-                  'password'   => $db_config['db_pwd'],
-                  'hostname'  => $db_config['db_host'],
-                  'hostport'    => $db_config['db_port'],
-                  'database'   => $db_config['db_name'],
-                  'dsn'         => $db_config['db_dsn'],
-                  'params'   => $db_config['db_params'],
+                  'dbms'      =>  $db_config['db_type'],
+                  'username'  =>  $db_config['db_user'],
+                  'password'  =>  $db_config['db_pwd'],
+                  'hostname'  =>  $db_config['db_host'],
+                  'hostport'  =>  $db_config['db_port'],
+                  'database'  =>  $db_config['db_name'],
+                  'dsn'       =>  $db_config['db_dsn'],
+                  'params'    =>  $db_config['db_params'],
              );
         }elseif(empty($db_config)) {
             // 如果配置为空，读取配置文件设置
@@ -139,14 +139,14 @@ class Db {
                 $db_config =  $this->parseDSN(C('DB_DSN'));
             }else{
                 $db_config = array (
-                    'dbms'        =>   C('DB_TYPE'),
-                    'username'  =>   C('DB_USER'),
-                    'password'   =>   C('DB_PWD'),
-                    'hostname'  =>   C('DB_HOST'),
-                    'hostport'    =>   C('DB_PORT'),
-                    'database'   =>   C('DB_NAME'),
-                    'dsn'          =>   C('DB_DSN'),
-                    'params'     =>   C('DB_PARAMS'),
+                    'dbms'      =>  C('DB_TYPE'),
+                    'username'  =>  C('DB_USER'),
+                    'password'  =>  C('DB_PWD'),
+                    'hostname'  =>  C('DB_HOST'),
+                    'hostport'  =>  C('DB_PORT'),
+                    'database'  =>  C('DB_NAME'),
+                    'dsn'       =>  C('DB_DSN'),
+                    'params'    =>  C('DB_PARAMS'),
                 );
             }
         }
@@ -201,13 +201,13 @@ class Db {
             $r = floor(mt_rand(0,count($_config['hostname'])-1));   // 每次随机连接的数据库
         }
         $db_config = array(
-            'username'  =>   isset($_config['username'][$r])?$_config['username'][$r]:$_config['username'][0],
-            'password'   =>   isset($_config['password'][$r])?$_config['password'][$r]:$_config['password'][0],
-            'hostname'  =>   isset($_config['hostname'][$r])?$_config['hostname'][$r]:$_config['hostname'][0],
-            'hostport'    =>   isset($_config['hostport'][$r])?$_config['hostport'][$r]:$_config['hostport'][0],
-            'database'   =>   isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
-            'dsn'          =>   isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
-            'params'     =>   isset($_config['params'][$r])?$_config['params'][$r]:$_config['params'][0],
+            'username'  =>  isset($_config['username'][$r])?$_config['username'][$r]:$_config['username'][0],
+            'password'  =>  isset($_config['password'][$r])?$_config['password'][$r]:$_config['password'][0],
+            'hostname'  =>  isset($_config['hostname'][$r])?$_config['hostname'][$r]:$_config['hostname'][0],
+            'hostport'  =>  isset($_config['hostport'][$r])?$_config['hostport'][$r]:$_config['hostport'][0],
+            'database'  =>  isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
+            'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
+            'params'    =>  isset($_config['params'][$r])?$_config['params'][$r]:$_config['params'][0],
         );
         return $this->connect($db_config,$r);
     }
@@ -225,22 +225,22 @@ class Db {
         $info = parse_url($dsnStr);
         if($info['scheme']){
             $dsn = array(
-            'dbms'        => $info['scheme'],
-            'username'  => isset($info['user']) ? $info['user'] : '',
-            'password'   => isset($info['pass']) ? $info['pass'] : '',
-            'hostname'  => isset($info['host']) ? $info['host'] : '',
-            'hostport'    => isset($info['port']) ? $info['port'] : '',
-            'database'   => isset($info['path']) ? substr($info['path'],1) : ''
+            'dbms'      =>  $info['scheme'],
+            'username'  =>  isset($info['user']) ? $info['user'] : '',
+            'password'  =>  isset($info['pass']) ? $info['pass'] : '',
+            'hostname'  =>  isset($info['host']) ? $info['host'] : '',
+            'hostport'  =>  isset($info['port']) ? $info['port'] : '',
+            'database'  =>  isset($info['path']) ? substr($info['path'],1) : ''
             );
         }else {
             preg_match('/^(.*?)\:\/\/(.*?)\:(.*?)\@(.*?)\:([0-9]{1, 6})\/(.*?)$/',trim($dsnStr),$matches);
             $dsn = array (
-            'dbms'        => $matches[1],
-            'username'  => $matches[2],
-            'password'   => $matches[3],
-            'hostname'  => $matches[4],
-            'hostport'    => $matches[5],
-            'database'   => $matches[6]
+            'dbms'      =>  $matches[1],
+            'username'  =>  $matches[2],
+            'password'  =>  $matches[3],
+            'hostname'  =>  $matches[4],
+            'hostport'  =>  $matches[5],
+            'database'  =>  $matches[6]
             );
         }
         $dsn['dsn'] =  ''; // 兼容配置信息数组
@@ -307,15 +307,15 @@ class Db {
      */
     protected function parseValue($value) {
         if(is_string($value)) {
-            $value = '\''.$this->escapeString($value).'\'';
+            $value =  '\''.$this->escapeString($value).'\'';
         }elseif(isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp'){
-            $value   =  $this->escapeString($value[1]);
+            $value =  $this->escapeString($value[1]);
         }elseif(is_array($value)) {
-            $value   =  array_map(array($this, 'parseValue'),$value);
+            $value =  array_map(array($this, 'parseValue'),$value);
         }elseif(is_bool($value)){
-            $value = $value ? '1' : '0';
+            $value =  $value ? '1' : '0';
         }elseif(is_null($value)){
-            $value   =  'null';
+            $value =  'null';
         }
         return $value;
     }
@@ -404,26 +404,26 @@ class Db {
                         throw_exception(L('_EXPRESS_ERROR_').':'.$key);
                     }
                     // 多条件支持
-                    $multi = is_array($val) &&  isset($val['_multi']);
-                    $key = trim($key);
+                    $multi  = is_array($val) &&  isset($val['_multi']);
+                    $key    = trim($key);
                     if(strpos($key,'|')) { // 支持 name|title|nickname 方式定义查询字段
-                        $array   =  explode('|',$key);
-                        $str   = array();
+                        $array =  explode('|',$key);
+                        $str   =  array();
                         foreach ($array as $m=>$k){
                             $v =  $multi?$val[$m]:$val;
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
                         }
                         $whereStr .= implode(' OR ',$str);
                     }elseif(strpos($key,'&')){
-                        $array   =  explode('&',$key);
-                        $str   = array();
+                        $array =  explode('&',$key);
+                        $str   =  array();
                         foreach ($array as $m=>$k){
                             $v =  $multi?$val[$m]:$val;
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
                         }
                         $whereStr .= implode(' AND ',$str);
                     }else{
-                        $whereStr   .= $this->parseWhereItem($this->parseKey($key),$val);
+                        $whereStr .= $this->parseWhereItem($this->parseKey($key),$val);
                     }
                 }
                 $whereStr .= ' )'.$operate;
@@ -444,7 +444,7 @@ class Db {
                     if(is_array($val[1])) {
                         $likeLogic  =   isset($val[2])?strtoupper($val[2]):'OR';
                         $likeStr    =   $this->comparison[strtolower($val[0])];
-                        $like   =   array();
+                        $like       =   array();
                         foreach ($val[1] as $item){
                             $like[] = $key.' '.$likeStr.' '.$this->parseValue($item);
                         }
@@ -461,7 +461,7 @@ class Db {
                         if(is_string($val[1])) {
                              $val[1] =  explode(',',$val[1]);
                         }
-                        $zone   =   implode(',',$this->parseValue($val[1]));
+                        $zone      =   implode(',',$this->parseValue($val[1]));
                         $whereStr .= $key.' '.strtoupper($val[0]).' ('.$zone.')';
                     }
                 }elseif(preg_match('/BETWEEN/i',$val[0])){ // BETWEEN运算
@@ -473,10 +473,10 @@ class Db {
             }else {
                 $count = count($val);
                 if(in_array(strtoupper(trim($val[$count-1])),array('AND','OR','XOR'))) {
-                    $rule = strtoupper(trim($val[$count-1]));
-                    $count   =  $count -1;
+                    $rule   = strtoupper(trim($val[$count-1]));
+                    $count  = $count -1;
                 }else{
-                    $rule = 'AND';
+                    $rule   = 'AND';
                 }
                 for($i=0;$i<$count;$i++) {
                     $data = is_array($val[$i])?$val[$i][1]:$val[$i];
@@ -517,7 +517,7 @@ class Db {
                 break;
             case '_complex':
                 // 复合查询条件
-                $whereStr   = substr($this->parseWhere($val),6);
+                $whereStr = substr($this->parseWhere($val),6);
                 break;
             case '_query':
                 // 字符串模式查询条件
@@ -658,7 +658,7 @@ class Db {
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) { // 过滤非标量数据
                 $values[]   =  $value;
-                $fields[]     =  $this->parseKey($key);
+                $fields[]   =  $this->parseKey($key);
             }
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
@@ -727,11 +727,11 @@ class Db {
      */
     public function select($options=array()) {
         $this->model  =   $options['model'];
-        $sql   = $this->buildSelectSql($options);
+        $sql    = $this->buildSelectSql($options);
         $cache  =  isset($options['cache'])?$options['cache']:false;
         if($cache) { // 查询缓存检测
-            $key =  is_string($cache['key'])?$cache['key']:md5($sql);
-            $value   =  S($key,'','',$cache['type']);
+            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
+            $value  =  S($key,'','',$cache['type']);
             if(false !== $value) {
                 return $value;
             }
@@ -755,22 +755,22 @@ class Db {
             if(strpos($options['page'],',')) {
                 list($page,$listRows) =  explode(',',$options['page']);
             }else{
-                $page    = $options['page'];
+                $page = $options['page'];
             }
-            $page    = $page?$page:1;
-            $listRows = isset($listRows)?$listRows:(is_numeric($options['limit'])?$options['limit']:20);
+            $page    =  $page?$page:1;
+            $listRows=  isset($listRows)?$listRows:(is_numeric($options['limit'])?$options['limit']:20);
             $offset  =  $listRows*((int)$page-1);
             $options['limit'] =  $offset.','.$listRows;
         }
         if(C('DB_SQL_BUILD_CACHE')) { // SQL创建缓存
-            $key =  md5(serialize($options));
-            $value   =  S($key);
+            $key    =  md5(serialize($options));
+            $value  =  S($key);
             if(false !== $value) {
                 return $value;
             }
         }
         $sql  =   $this->parseSql($this->selectSql,$options);
-        $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         if(isset($key)) { // 写入SQL创建缓存
             S($key,$sql,0,'',array('length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
         }
@@ -846,7 +846,7 @@ class Db {
      * @return void
      */
     public function setModel($model){
-        $this->model  =   $model;
+        $this->model =  $model;
     }
 
    /**

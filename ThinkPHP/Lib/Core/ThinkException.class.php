@@ -51,12 +51,12 @@ class ThinkException extends Exception {
         if($this->extra)
             // 通过throw_exception抛出的异常要去掉多余的调试信息
             array_shift($trace);
-        $this->class = isset($trace[0]['class'])?$trace[0]['class']:'';
-        $this->function = isset($trace[0]['function'])?$trace[0]['function']:'';
-        $this->file = $trace[0]['file'];
-        $this->line = $trace[0]['line'];
-        $file   =   file($this->file);
-        $traceInfo='';
+        $this->class    =   isset($trace[0]['class'])?$trace[0]['class']:'';
+        $this->function =   isset($trace[0]['function'])?$trace[0]['function']:'';
+        $this->file     =   $trace[0]['file'];
+        $this->line     =   $trace[0]['line'];
+        $file           =   file($this->file);
+        $traceInfo      =   '';
         $time = date('y-m-d H:i:m');
         foreach($trace as $t) {
             $traceInfo .= '['.$time.'] '.$t['file'].' ('.$t['line'].') ';

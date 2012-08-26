@@ -33,13 +33,13 @@ class App {
         Dispatcher::dispatch();
 
         // 定义当前请求的系统常量
-        define('NOW_TIME',$_SERVER['REQUEST_TIME']);
+        define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
         define('REQUEST_METHOD',$_SERVER['REQUEST_METHOD']);
-        define('IS_GET',    REQUEST_METHOD =='GET' ? true : false);
-        define('IS_POST',   REQUEST_METHOD =='POST' ? true : false);
-        define('IS_PUT',    REQUEST_METHOD =='PUT' ? true : false);
-        define('IS_DELETE', REQUEST_METHOD =='DELETE' ? true : false);
-        define('IS_AJAX',   ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] == 'xmlhttprequest')) || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
+        define('IS_GET',        REQUEST_METHOD =='GET' ? true : false);
+        define('IS_POST',       REQUEST_METHOD =='POST' ? true : false);
+        define('IS_PUT',        REQUEST_METHOD =='PUT' ? true : false);
+        define('IS_DELETE',     REQUEST_METHOD =='DELETE' ? true : false);
+        define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] == 'xmlhttprequest')) || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         if(defined('GROUP_NAME')) {
             // 加载分组配置文件
@@ -94,10 +94,10 @@ class App {
      */
     static public function exec() {
         if(!preg_match('/^[A-Za-z](\w)*$/',MODULE_NAME)){ // 安全检测
-            $module =  false;
+            $module  =  false;
         }else{
             //创建Action控制器实例
-            $group =  defined('GROUP_NAME') ? GROUP_NAME.'/' : '';
+            $group   =  defined('GROUP_NAME') ? GROUP_NAME.'/' : '';
             $module  =  A($group.MODULE_NAME);
         }
 
@@ -157,7 +157,7 @@ class App {
                     foreach ($params as $param){
                         $name = $param->getName();
                         if(isset($vars[$name])) {
-                            $args[]  =  $vars[$name];
+                            $args[] =  $vars[$name];
                         }elseif($param->isDefaultValueAvailable()){
                             $args[] = $param->getDefaultValue();
                         }else{

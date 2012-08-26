@@ -19,48 +19,48 @@
  */
 class Model {
     // 操作状态
-    const MODEL_INSERT      =   1;      //  插入模型数据
-    const MODEL_UPDATE    =   2;      //  更新模型数据
-    const MODEL_BOTH      =   3;      //  包含上面两种方式
+    const MODEL_INSERT          =   1;      //  插入模型数据
+    const MODEL_UPDATE          =   2;      //  更新模型数据
+    const MODEL_BOTH            =   3;      //  包含上面两种方式
     const MUST_VALIDATE         =   1;// 必须验证
-    const EXISTS_VALIDATE      =   0;// 表单存在字段则验证
-    const VALUE_VALIDATE       =   2;// 表单值不为空则验证
+    const EXISTS_VALIDATE       =   0;// 表单存在字段则验证
+    const VALUE_VALIDATE        =   2;// 表单值不为空则验证
     // 当前使用的扩展模型
-    private $_extModel =  null;
+    private $_extModel          =   null;
     // 当前数据库操作对象
-    protected $db = null;
+    protected $db               =   null;
     // 主键名称
-    protected $pk  = 'id';
+    protected $pk               =   'id';
     // 数据表前缀
-    protected $tablePrefix  =   '';
+    protected $tablePrefix      =   '';
     // 模型名称
-    protected $name = '';
+    protected $name             =   '';
     // 数据库名称
-    protected $dbName  = '';
+    protected $dbName           =   '';
     //数据库配置
-    protected $connection='';
+    protected $connection       =   '';
     // 数据表名（不包含表前缀）
-    protected $tableName = '';
+    protected $tableName        =   '';
     // 实际数据表名（包含表前缀）
-    protected $trueTableName ='';
+    protected $trueTableName    =   '';
     // 最近错误信息
-    protected $error = '';
+    protected $error            =   '';
     // 字段信息
-    protected $fields = array();
+    protected $fields           =   array();
     // 数据信息
-    protected $data =   array();
+    protected $data             =   array();
     // 查询表达式参数
-    protected $options  =   array();
-    protected $_validate       = array();  // 自动验证定义
-    protected $_auto           = array();  // 自动完成定义
-    protected $_map           = array();  // 字段映射定义
-    protected $_scope          = array();  // 命名范围定义
+    protected $options          =   array();
+    protected $_validate        =   array();  // 自动验证定义
+    protected $_auto            =   array();  // 自动完成定义
+    protected $_map             =   array();  // 字段映射定义
+    protected $_scope           =   array();  // 命名范围定义
     // 是否自动检测数据表字段信息
-    protected $autoCheckFields   =   true;
+    protected $autoCheckFields  =   true;
     // 是否批处理验证
-    protected $patchValidate   =  false;
+    protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods = array('table','order','alias','having','group','lock','distinct','auto','filter','validate');
+    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate');
 
     /**
      * 架构函数
@@ -299,18 +299,18 @@ class Model {
         if(empty($data)) {
             // 没有传递数据，获取当前数据对象的值
             if(!empty($this->data)) {
-                $data    =   $this->data;
+                $data           =   $this->data;
                 // 重置数据
-                $this->data = array();
+                $this->data     = array();
             }else{
-                $this->error = L('_DATA_TYPE_INVALID_');
+                $this->error    = L('_DATA_TYPE_INVALID_');
                 return false;
             }
         }
         // 分析表达式
-        $options =  $this->_parseOptions($options);
+        $options    =   $this->_parseOptions($options);
         // 数据处理
-        $data = $this->_facade($data);
+        $data       =   $this->_facade($data);
         if(false === $this->_before_insert($data,$options)) {
             return false;
         }
@@ -388,36 +388,36 @@ class Model {
         if(empty($data)) {
             // 没有传递数据，获取当前数据对象的值
             if(!empty($this->data)) {
-                $data    =   $this->data;
+                $data           =   $this->data;
                 // 重置数据
-                $this->data = array();
+                $this->data     =   array();
             }else{
-                $this->error = L('_DATA_TYPE_INVALID_');
+                $this->error    =   L('_DATA_TYPE_INVALID_');
                 return false;
             }
         }
         // 数据处理
-        $data = $this->_facade($data);
+        $data       =   $this->_facade($data);
         // 分析表达式
-        $options =  $this->_parseOptions($options);
+        $options    =   $this->_parseOptions($options);
         if(false === $this->_before_update($data,$options)) {
             return false;
         }
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
             if(isset($data[$this->getPk()])) {
-                $pk   =  $this->getPk();
-                $where[$pk]   =  $data[$pk];
-                $options['where']  =  $where;
-                $pkValue = $data[$pk];
+                $pk                 =   $this->getPk();
+                $where[$pk]         =   $data[$pk];
+                $options['where']   =   $where;
+                $pkValue            =   $data[$pk];
                 unset($data[$pk]);
             }else{
                 // 如果没有任何更新条件则不执行
-                $this->error = L('_OPERATION_WRONG_');
+                $this->error        =   L('_OPERATION_WRONG_');
                 return false;
             }
         }
-        $result = $this->db->update($data,$options);
+        $result     =   $this->db->update($data,$options);
         if(false !== $result) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_update($data,$options);
@@ -447,13 +447,13 @@ class Model {
             // 根据主键删除记录
             $pk   =  $this->getPk();
             if(strpos($options,',')) {
-                $where[$pk]   =  array('IN', $options);
+                $where[$pk]     =  array('IN', $options);
             }else{
-                $where[$pk]   =  $options;
+                $where[$pk]     =  $options;
             }
-            $pkValue    =   $where[$pk];
-            $options =  array();
-            $options['where'] =  $where;
+            $pkValue            =  $where[$pk];
+            $options            =  array();
+            $options['where']   =  $where;
         }
         // 分析表达式
         $options =  $this->_parseOptions($options);
@@ -480,21 +480,21 @@ class Model {
             // 根据主键查询
             $pk   =  $this->getPk();
             if(strpos($options,',')) {
-                $where[$pk] =  array('IN',$options);
+                $where[$pk]     =  array('IN',$options);
             }else{
-                $where[$pk]   =  $options;
+                $where[$pk]     =  $options;
             }
-            $options =  array();
-            $options['where'] =  $where;
+            $options            =  array();
+            $options['where']   =  $where;
         }elseif(false === $options){ // 用于子查询 不查询只返回SQL
-            $options =  array();
+            $options            =  array();
             // 分析表达式
-            $options =  $this->_parseOptions($options);
+            $options            =  $this->_parseOptions($options);
             return  '( '.$this->db->buildSelectSql($options).' )';
         }
         // 分析表达式
-        $options =  $this->_parseOptions($options);
-        $resultSet = $this->db->select($options);
+        $options    =  $this->_parseOptions($options);
+        $resultSet  = $this->db->select($options);
         if(false === $resultSet) {
             return false;
         }
@@ -532,17 +532,17 @@ class Model {
         $this->options  =   array();
         if(!isset($options['table']))
             // 自动获取表名
-            $options['table'] =$this->getTableName();
+            $options['table']   =   $this->getTableName();
         if(!empty($options['alias'])) {
-            $options['table']   .= ' '.$options['alias'];
+            $options['table']  .=   ' '.$options['alias'];
         }
         // 记录操作的模型名称
-        $options['model'] =  $this->name;
+        $options['model']       =   $this->name;
         // 字段类型验证
         if(isset($options['where']) && is_array($options['where']) && !empty($this->fields)) {
             // 对数组查询条件进行字段类型检查
             foreach ($options['where'] as $key=>$val){
-                $key    =   trim($key);
+                $key            =   trim($key);
                 if(in_array($key,$this->fields,true)){
                     if(is_scalar($val)) {
                         $this->_parseType($options['where'],$key);
@@ -586,22 +586,22 @@ class Model {
      */
     public function find($options=array()) {
         if(is_numeric($options) || is_string($options)) {
-            $where[$this->getPk()] =$options;
-            $options = array();
-            $options['where'] = $where;
+            $where[$this->getPk()]  =   $options;
+            $options                =   array();
+            $options['where']       =   $where;
         }
         // 总是查找一条记录
-        $options['limit'] = 1;
+        $options['limit']   =   1;
         // 分析表达式
-        $options =  $this->_parseOptions($options);
-        $resultSet = $this->db->select($options);
+        $options            =   $this->_parseOptions($options);
+        $resultSet          =   $this->db->select($options);
         if(false === $resultSet) {
             return false;
         }
         if(empty($resultSet)) {// 查询结果为空
             return null;
         }
-        $this->data = $resultSet[0];
+        $this->data         =   $resultSet[0];
         $this->_after_find($this->data,$options);
         return $this->data;
     }
@@ -645,9 +645,9 @@ class Model {
      */
     public function setField($field,$value='') {
         if(is_array($field)) {
-            $data = $field;
+            $data           =   $field;
         }else{
-            $data[$field]   =  $value;
+            $data[$field]   =   $value;
         }
         return $this->save($data);
     }
@@ -682,19 +682,19 @@ class Model {
      * @return mixed
      */
     public function getField($field,$sepa=null) {
-        $options['field']    =  $field;
-        $options =  $this->_parseOptions($options);
-        $field  =   trim($field);
+        $options['field']       =   $field;
+        $options                =   $this->_parseOptions($options);
+        $field                  =   trim($field);
         if(strpos($field,',')) { // 多字段
             $options['limit']   =   is_numeric($sepa)?$sepa:'';
-            $resultSet = $this->db->select($options);
+            $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
-                $_field = explode(',', $field);
-                $field  = array_keys($resultSet[0]);
-                $key =  array_shift($field);
-                $key2 = array_shift($field);
-                $cols   =   array();
-                $count  =   count($_field);
+                $_field         =   explode(',', $field);
+                $field          =   array_keys($resultSet[0]);
+                $key            =   array_shift($field);
+                $key2           =   array_shift($field);
+                $cols           =   array();
+                $count          =   count($_field);
                 foreach ($resultSet as $result){
                     $name   =  $result[$key];
                     if(2==$count) {
@@ -732,7 +732,7 @@ class Model {
      public function create($data='',$type='') {
         // 如果没有传值默认取POST数据
         if(empty($data)) {
-            $data    =   $_POST;
+            $data   =   $_POST;
         }elseif(is_object($data)){
             $data   =   get_object_vars($data);
         }
@@ -828,19 +828,19 @@ class Model {
      */
     public function regex($value,$rule) {
         $validate = array(
-            'require'=> '/.+/',
-            'email' => '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
-            'url' => '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!#\w]*)?$/',
-            'currency' => '/^\d+(\.\d+)?$/',
-            'number' => '/^\d+$/',
-            'zip' => '/^\d{6}$/',
-            'integer' => '/^[-\+]?\d+$/',
-            'double' => '/^[-\+]?\d+(\.\d+)?$/',
-            'english' => '/^[A-Za-z]+$/',
+            'require'   =>  '/.+/',
+            'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
+            'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!#\w]*)?$/',
+            'currency'  =>  '/^\d+(\.\d+)?$/',
+            'number'    =>  '/^\d+$/',
+            'zip'       =>  '/^\d{6}$/',
+            'integer'   =>  '/^[-\+]?\d+$/',
+            'double'    =>  '/^[-\+]?\d+(\.\d+)?$/',
+            'english'   =>  '/^[A-Za-z]+$/',
         );
         // 检查是否有内置的正则表达式
         if(isset($validate[strtolower($rule)]))
-            $rule   =   $validate[strtolower($rule)];
+            $rule       =   $validate[strtolower($rule)];
         return preg_match($rule,$value)===1;
     }
 
@@ -956,9 +956,9 @@ class Model {
     protected function _validationField($data,$val) {
         if(false === $this->_validationFieldItem($data,$val)){
             if($this->patchValidate) {
-                $this->error[$val[0]]  =  $val[2];
+                $this->error[$val[0]]   =   $val[2];
             }else{
-                $this->error    =   $val[2];
+                $this->error            =   $val[2];
                 return false;
             }
         }
@@ -1273,11 +1273,11 @@ class Model {
      */
     public function getDbFields(){
         if(isset($this->options['table'])) {// 动态指定表名
-            $fields =   $this->db->getFields($this->options['table']);
+            $fields     =   $this->db->getFields($this->options['table']);
             return  $fields?array_keys($fields):false;
         }
         if($this->fields) {
-            $fields   =  $this->fields;
+            $fields     =  $this->fields;
             unset($fields['_autoinc'],$fields['_pk'],$fields['_type'],$fields['_version']);
             return $fields;
         }
@@ -1313,9 +1313,9 @@ class Model {
      */
     public function join($join) {
         if(is_array($join)) {
-            $this->options['join'] =  $join;
+            $this->options['join']      =   $join;
         }elseif(!empty($join)) {
-            $this->options['join'][]  =   $join;
+            $this->options['join'][]    =   $join;
         }
         return $this;
     }
@@ -1374,14 +1374,14 @@ class Model {
      */
     public function field($field,$except=false){
         if(true === $field) {// 获取全部字段
-            $fields   =  $this->getDbFields();
-            $field =  $fields?$fields:'*';
+            $fields     =  $this->getDbFields();
+            $field      =  $fields?$fields:'*';
         }elseif($except) {// 字段排除
             if(is_string($field)) {
-                $field =  explode(',',$field);
+                $field  =  explode(',',$field);
             }
-            $fields   =  $this->getDbFields();
-            $field =  $fields?array_diff($fields,$field):$field;
+            $fields     =  $this->getDbFields();
+            $field      =  $fields?array_diff($fields,$field):$field;
         }
         $this->options['field']   =   $field;
         return $this;
@@ -1403,8 +1403,8 @@ class Model {
                 return $this;
             }
         }elseif(is_string($scope)){ // 支持多个命名范围调用 用逗号分割
-            $scopes    =   explode(',',$scope);
-            $options    =   array();
+            $scopes         =   explode(',',$scope);
+            $options        =   array();
             foreach ($scopes as $name){
                 if(!isset($this->_scope[$name])) continue;
                 $options    =   array_merge($options,$this->_scope[$name]);
@@ -1413,7 +1413,7 @@ class Model {
                 $options    =   array_merge($options,$args);
             }
         }elseif(is_array($scope)){ // 直接传入命名范围定义
-            $options    =   $scope;
+            $options        =   $scope;
         }
         
         if(is_array($options) && !empty($options)){

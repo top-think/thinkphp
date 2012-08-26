@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Cache.class.php 2702 2012-02-02 12:35:01Z liu21st $
 
 /**
  * 缓存管理类
@@ -49,7 +48,7 @@ class Cache {
      */
     public function connect($type='',$options=array()) {
         if(empty($type))  $type = C('DATA_CACHE_TYPE');
-        $type = strtolower(trim($type));
+        $type  = strtolower(trim($type));
         $class = 'Cache'.ucwords($type);
         if(is_file(CORE_PATH.'Driver/Cache/'.$class.'.class.php')) {
             // 内置驱动
@@ -103,13 +102,13 @@ class Cache {
     // 
     protected function queue($key) {
         static $_handler = array(
-            'file'=>array('F','F'),
-            'xcache'=>array('xcache_get','xcache_set'),
-            'apc'=>array('apc_fetch','apc_store'),
+            'file'  =>  array('F','F'),
+            'xcache'=>  array('xcache_get','xcache_set'),
+            'apc'   =>  array('apc_fetch','apc_store'),
         );
         $queue  =  isset($this->options['queue'])?$this->options['queue']:'file';
-        $fun  =  $_handler[$queue];
-        $value   =  $fun[0]('think_queue');
+        $fun    =  $_handler[$queue];
+        $value  =  $fun[0]('think_queue');
         if(!$value) {
             $value   =  array();
         }

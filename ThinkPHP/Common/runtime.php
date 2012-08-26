@@ -8,12 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id$
 
 /**
- +------------------------------------------------------------------------------
  * ThinkPHP 运行时文件 编译后不再加载
- +------------------------------------------------------------------------------
  */
 defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
@@ -64,22 +61,22 @@ if(!IS_CLI) {
 }
 
 // 路径设置 可在入口文件中重新定义 所有路径常量都必须以/ 结尾
-defined('CORE_PATH') or define('CORE_PATH',THINK_PATH.'Lib/'); // 系统核心类库目录
-defined('EXTEND_PATH') or define('EXTEND_PATH',THINK_PATH.'Extend/'); // 系统扩展目录
-defined('MODE_PATH') or define('MODE_PATH',EXTEND_PATH.'Mode/'); // 模式扩展目录
-defined('ENGINE_PATH') or define('ENGINE_PATH',EXTEND_PATH.'Engine/'); // 引擎扩展目录
-defined('VENDOR_PATH') or define('VENDOR_PATH',EXTEND_PATH.'Vendor/'); // 第三方类库目录
+defined('CORE_PATH')    or define('CORE_PATH',THINK_PATH.'Lib/'); // 系统核心类库目录
+defined('EXTEND_PATH')  or define('EXTEND_PATH',THINK_PATH.'Extend/'); // 系统扩展目录
+defined('MODE_PATH')    or define('MODE_PATH',EXTEND_PATH.'Mode/'); // 模式扩展目录
+defined('ENGINE_PATH')  or define('ENGINE_PATH',EXTEND_PATH.'Engine/'); // 引擎扩展目录
+defined('VENDOR_PATH')  or define('VENDOR_PATH',EXTEND_PATH.'Vendor/'); // 第三方类库目录
 defined('LIBRARY_PATH') or define('LIBRARY_PATH',EXTEND_PATH.'Library/'); // 扩展类库目录
-defined('COMMON_PATH') or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
-defined('LIB_PATH') or define('LIB_PATH',    APP_PATH.'Lib/'); // 项目类库目录
-defined('CONF_PATH') or define('CONF_PATH',  APP_PATH.'Conf/'); // 项目配置目录
-defined('LANG_PATH') or define('LANG_PATH', APP_PATH.'Lang/'); // 项目语言包目录
-defined('TMPL_PATH') or define('TMPL_PATH',APP_PATH.'Tpl/'); // 项目模板目录
-defined('HTML_PATH') or define('HTML_PATH',APP_PATH.'Html/'); // 项目静态目录
-defined('LOG_PATH') or define('LOG_PATH',  RUNTIME_PATH.'Logs/'); // 项目日志目录
-defined('TEMP_PATH') or define('TEMP_PATH', RUNTIME_PATH.'Temp/'); // 项目缓存目录
-defined('DATA_PATH') or define('DATA_PATH', RUNTIME_PATH.'Data/'); // 项目数据目录
-defined('CACHE_PATH') or define('CACHE_PATH',   RUNTIME_PATH.'Cache/'); // 项目模板缓存目录
+defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
+defined('LIB_PATH')     or define('LIB_PATH',    APP_PATH.'Lib/'); // 项目类库目录
+defined('CONF_PATH')    or define('CONF_PATH',  APP_PATH.'Conf/'); // 项目配置目录
+defined('LANG_PATH')    or define('LANG_PATH', APP_PATH.'Lang/'); // 项目语言包目录
+defined('TMPL_PATH')    or define('TMPL_PATH',APP_PATH.'Tpl/'); // 项目模板目录
+defined('HTML_PATH')    or define('HTML_PATH',APP_PATH.'Html/'); // 项目静态目录
+defined('LOG_PATH')     or define('LOG_PATH',  RUNTIME_PATH.'Logs/'); // 项目日志目录
+defined('TEMP_PATH')    or define('TEMP_PATH', RUNTIME_PATH.'Temp/'); // 项目缓存目录
+defined('DATA_PATH')    or define('DATA_PATH', RUNTIME_PATH.'Data/'); // 项目数据目录
+defined('CACHE_PATH')   or define('CACHE_PATH',   RUNTIME_PATH.'Cache/'); // 项目模板缓存目录
 
 // 为了方便导入第三方类库 设置Vendor目录到include_path
 set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);

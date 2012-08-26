@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Action.class.php 3087 2012-07-28 12:29:23Z liu21st@gmail.com $
 
 /**
  * ThinkPHP Action控制器基类 抽象类
@@ -20,9 +19,9 @@
 abstract class Action {
 
     // 视图实例对象
-    protected $view   =  null;
+    protected $view     =  null;
     // 当前Action名称
-    private $name =  '';
+    private $name       =  '';
     // 控制器参数
     protected $config   =   array();
 
@@ -188,7 +187,7 @@ abstract class Action {
                 case '_param':  
                     switch($_SERVER['REQUEST_METHOD']) {
                         case 'POST':
-                            $input    =  $_POST;
+                            $input  =  $_POST;
                             break;
                         case 'PUT':
                             parse_str(file_get_contents('php://input'), $input);
@@ -201,11 +200,11 @@ abstract class Action {
                         $input  =   array_merge($input,$params);
                     }
                     break;
-                case '_request': $input =& $_REQUEST;break;
-                case '_session': $input =& $_SESSION;break;
-                case '_cookie':  $input =& $_COOKIE;break;
-                case '_server':  $input =& $_SERVER;break;
-                case '_globals':  $input =& $GLOBALS;break;
+                case '_request': $input =& $_REQUEST;   break;
+                case '_session': $input =& $_SESSION;   break;
+                case '_cookie':  $input =& $_COOKIE;    break;
+                case '_server':  $input =& $_SERVER;    break;
+                case '_globals': $input =& $GLOBALS;    break;
                 default:
                     throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             }
@@ -213,7 +212,7 @@ abstract class Action {
                 $data   =   $input; // 由VAR_FILTERS配置进行过滤
             }elseif(isset($input[$args[0]])) { // 取值操作
                 $data	 =	 $input[$args[0]];
-                $filters  =  isset($args[1])?$args[1]:C('DEFAULT_FILTER');
+                $filters =  isset($args[1])?$args[1]:C('DEFAULT_FILTER');
                 if($filters) {// 2012/3/23 增加多方法过滤支持
                     $filters    =   explode(',',$filters);
                     foreach($filters as $filter){

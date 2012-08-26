@@ -46,8 +46,8 @@ class Dispatcher {
 
         // 开启子域名部署
         if(C('APP_SUB_DOMAIN_DEPLOY')) {
-            $rules = C('APP_SUB_DOMAIN_RULES');
-            $subDomain    = strtolower(substr($_SERVER['HTTP_HOST'],0,strpos($_SERVER['HTTP_HOST'],'.')));
+            $rules      = C('APP_SUB_DOMAIN_RULES');
+            $subDomain  = strtolower(substr($_SERVER['HTTP_HOST'],0,strpos($_SERVER['HTTP_HOST'],'.')));
             define('SUB_DOMAIN',$subDomain); // 二级域名定义
             if($subDomain && isset($rules[$subDomain])) {
                 $rule =  $rules[$subDomain];
@@ -58,15 +58,15 @@ class Dispatcher {
             }
             if(!empty($rule)) {
                 // 子域名部署规则 '子域名'=>array('分组名/[模块名]','var1=a&var2=b');
-                $array   =  explode('/',$rule[0]);
-                $module = array_pop($array);
+                $array  =   explode('/',$rule[0]);
+                $module =   array_pop($array);
                 if(!empty($module)) {
-                    $_GET[C('VAR_MODULE')] = $module;
-                    $domainModule   =  true;
+                    $_GET[C('VAR_MODULE')]  =   $module;
+                    $domainModule           =   true;
                 }
                 if(!empty($array)) {
-                    $_GET[C('VAR_GROUP')]  = array_pop($array);
-                    $domainGroup =  true;
+                    $_GET[C('VAR_GROUP')]   =   array_pop($array);
+                    $domainGroup            =   true;
                 }
                 if(isset($rule[1])) { // 传入参数
                     parse_str($rule[1],$parms);

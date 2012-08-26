@@ -8,20 +8,16 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: convention.php 3088 2012-07-29 09:12:19Z luofei614@gmail.com $
 
 /**
- +------------------------------------------------------------------------------
  * ThinkPHP惯例配置文件
  * 该文件请不要修改，如果要覆盖惯例配置的值，可在项目配置文件中设定和惯例不符的配置项
  * 配置名称大小写任意，系统会统一转换成小写
  * 所有配置参数都可以在生效前动态改变
- +------------------------------------------------------------------------------
  * @category Think
  * @package  Common
  * @author   liu21st <liu21st@gmail.com>
  * @version  $Id: convention.php 3088 2012-07-29 09:12:19Z luofei614@gmail.com $
- +------------------------------------------------------------------------------
  */
 defined('THINK_PATH') or exit();
 return  array(
@@ -47,7 +43,7 @@ return  array(
     'DEFAULT_C_LAYER'       =>  'Action', // 默认的控制器层名称
     'DEFAULT_APP'           => '@',     // 默认项目名称，@表示当前项目
     'DEFAULT_LANG'          => 'zh-cn', // 默认语言
-    'DEFAULT_THEME'    => '',	// 默认模板主题名称
+    'DEFAULT_THEME'         => '',	// 默认模板主题名称
     'DEFAULT_GROUP'         => 'Home',  // 默认分组
     'DEFAULT_MODULE'        => 'Index', // 默认模块名称
     'DEFAULT_ACTION'        => 'index', // 默认操作名称
@@ -92,19 +88,19 @@ return  array(
 
     /* 日志设置 */
     'LOG_RECORD'            => false,   // 默认不记录日志
-    'LOG_TYPE'                 => 3, // 日志记录类型 0 系统 1 邮件 3 文件 4 SAPI 默认为文件方式
-    'LOG_DEST'                 => '', // 日志记录目标
-    'LOG_EXTRA'               => '', // 日志记录额外信息
-    'LOG_LEVEL'                => 'EMERG,ALERT,CRIT,ERR',// 允许记录的日志级别
+    'LOG_TYPE'              => 3, // 日志记录类型 0 系统 1 邮件 3 文件 4 SAPI 默认为文件方式
+    'LOG_DEST'              => '', // 日志记录目标
+    'LOG_EXTRA'             => '', // 日志记录额外信息
+    'LOG_LEVEL'             => 'EMERG,ALERT,CRIT,ERR',// 允许记录的日志级别
     'LOG_FILE_SIZE'         => 2097152,	// 日志文件大小限制
     'LOG_EXCEPTION_RECORD'  => false,    // 是否记录异常信息日志
 
     /* SESSION设置 */
     'SESSION_AUTO_START'    => true,    // 是否自动开启Session
-    'SESSION_OPTIONS'           => array(), // session 配置数组 支持type name id path expire domian 等参数
-    'SESSION_TYPE'              => '', // session hander类型 默认无需设置 除非扩展了session hander驱动
-    'SESSION_PREFIX'            => '', // session 前缀
-    //'VAR_SESSION_ID'        => 'session_id',     //sessionID的提交变量
+    'SESSION_OPTIONS'       => array(), // session 配置数组 支持type name id path expire domian 等参数
+    'SESSION_TYPE'          => '', // session hander类型 默认无需设置 除非扩展了session hander驱动
+    'SESSION_PREFIX'        => '', // session 前缀
+    //'VAR_SESSION_ID'      => 'session_id',     //sessionID的提交变量
 
     /* 模板引擎设置 */
     'TMPL_CONTENT_TYPE'     => 'text/html', // 默认模板输出类型
@@ -113,16 +109,16 @@ return  array(
     'TMPL_EXCEPTION_FILE'   => THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
     'TMPL_DETECT_THEME'     => false,       // 自动侦测模板主题
     'TMPL_TEMPLATE_SUFFIX'  => '.html',     // 默认模板文件后缀
-    'TMPL_FILE_DEPR'=>'/', //模板文件MODULE_NAME与ACTION_NAME之间的分割符，只对项目分组部署有效
+    'TMPL_FILE_DEPR'        =>  '/', //模板文件MODULE_NAME与ACTION_NAME之间的分割符，只对项目分组部署有效
 
     /* URL设置 */
 	'URL_CASE_INSENSITIVE'  => false,   // 默认false 表示URL区分大小写 true则表示不区分大小写
     'URL_MODEL'             => 1,       // URL访问模式,可选参数0、1、2、3,代表以下四种模式：
     // 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE  模式); 3 (兼容模式)  默认为PATHINFO 模式，提供最好的用户体验和SEO支持
     'URL_PATHINFO_DEPR'     => '/',	// PATHINFO模式下，各参数之间的分割符号
-    'URL_PATHINFO_FETCH'     =>   'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL', // 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
+    'URL_PATHINFO_FETCH'    =>   'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL', // 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
     'URL_HTML_SUFFIX'       => '',  // URL伪静态后缀设置
-    'URL_PARAMS_BIND'        =>  true, // URL变量绑定到Action方法参数
+    'URL_PARAMS_BIND'       =>  true, // URL变量绑定到Action方法参数
 
     /* 系统变量名称设置 */
     'VAR_GROUP'             => 'g',     // 默认分组获取变量
@@ -130,7 +126,7 @@ return  array(
     'VAR_ACTION'            => 'a',		// 默认操作获取变量
     'VAR_AJAX_SUBMIT'       => 'ajax',  // 默认的AJAX提交变量
     'VAR_PATHINFO'          => 's',	// PATHINFO 兼容模式获取变量例如 ?s=/module/action/id/1 后面的参数取决于URL_PATHINFO_DEPR
-    'VAR_URL_PARAMS'      => '_URL_', // PATHINFO URL参数变量
+    'VAR_URL_PARAMS'        => '_URL_', // PATHINFO URL参数变量
     'VAR_TEMPLATE'          => 't',		// 默认模板切换变量
     'VAR_FILTERS'           =>  '',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
