@@ -13,7 +13,7 @@
  * ThinkPHP 数据库中间层实现类
  * @category   Think
  * @package  Think
- * @subpackage  Db
+ * @subpackage  Core
  * @author    liu21st <liu21st@gmail.com>
  */
 class Db {

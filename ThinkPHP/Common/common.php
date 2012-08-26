@@ -34,14 +34,14 @@
  * @return mixed
  */
 function G($start,$end='',$dec=4) {
-    static $_info   =   array();
-    static $_mem    =   array();
+    static $_info       =   array();
+    static $_mem        =   array();
     if(is_float($end)) { // 记录时间
-        $_info[$start]  =  $end;
+        $_info[$start]  =   $end;
     }elseif(!empty($end)){ // 统计时间和内存使用
-        if(!isset($_info[$end])) $_info[$end]   =  microtime(TRUE);
+        if(!isset($_info[$end])) $_info[$end]       =  microtime(TRUE);
         if(MEMORY_LIMIT_ON && $dec=='m'){
-            if(!isset($_mem[$end])) $_mem[$end]   =  memory_get_usage();
+            if(!isset($_mem[$end])) $_mem[$end]     =  memory_get_usage();
             return number_format(($_mem[$end]-$_mem[$start])/1024);          
         }else{
             return number_format(($_info[$end]-$_info[$start]),$dec);
@@ -49,7 +49,7 @@ function G($start,$end='',$dec=4) {
             
     }else{ // 记录时间和内存使用
         $_info[$start]  =  microtime(TRUE);
-        if(MEMORY_LIMIT_ON) $_mem[$start]  =  memory_get_usage();
+        if(MEMORY_LIMIT_ON) $_mem[$start]           =  memory_get_usage();
     }
 }
 
@@ -67,7 +67,7 @@ function G($start,$end='',$dec=4) {
  * @return mixed
  */
 function N($key, $step=0) {
-    static $_num = array();
+    static $_num    = array();
     if (!isset($_num[$key])) {
         $_num[$key] = 0;
     }
@@ -144,26 +144,26 @@ function import($class, $baseUrl = '', $ext='.class.php') {
         return true;
     else
         $_file[$class . $baseUrl] = true;
-    $class_strut = explode('/', $class);
+    $class_strut     = explode('/', $class);
     if (empty($baseUrl)) {
         if ('@' == $class_strut[0] || APP_NAME == $class_strut[0]) {
             //加载当前项目应用类库
             $baseUrl = dirname(LIB_PATH);
-            $class = substr_replace($class, basename(LIB_PATH).'/', 0, strlen($class_strut[0]) + 1);
+            $class   = substr_replace($class, basename(LIB_PATH).'/', 0, strlen($class_strut[0]) + 1);
         }elseif ('think' == strtolower($class_strut[0])){ // think 官方基类库
             $baseUrl = CORE_PATH;
-            $class = substr($class,6);
+            $class   = substr($class,6);
         }elseif (in_array(strtolower($class_strut[0]), array('org', 'com'))) {
             // org 第三方公共类库 com 企业公共类库
             $baseUrl = LIBRARY_PATH;
         }else { // 加载其他项目应用类库
-            $class = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
+            $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
             $baseUrl = APP_PATH . '../' . $class_strut[0] . '/'.basename(LIB_PATH).'/';
         }
     }
     if (substr($baseUrl, -1) != '/')
-        $baseUrl .= '/';
-    $classfile = $baseUrl . $class . $ext;
+        $baseUrl    .= '/';
+    $classfile       = $baseUrl . $class . $ext;
     if (!class_exists(basename($class),false)) {
         // 如果类不存在 则导入类库文件
         return require_cache($classfile);
@@ -183,15 +183,15 @@ function load($name, $baseUrl='', $ext='.php') {
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
             //加载当前项目函数库
-            $baseUrl = COMMON_PATH;
-            $name = substr($name, 2);
+            $baseUrl    = COMMON_PATH;
+            $name       = substr($name, 2);
         } else {
             //加载ThinkPHP 系统函数库
-            $baseUrl = EXTEND_PATH . 'Function/';
+            $baseUrl    = EXTEND_PATH . 'Function/';
         }
     }
     if (substr($baseUrl, -1) != '/')
-        $baseUrl .= '/';
+        $baseUrl       .= '/';
     require_cache($baseUrl . $name . $ext);
 }
 
@@ -240,20 +240,20 @@ function alias_import($alias, $classfile='') {
  */
 function D($name='',$layer='') {
     if(empty($name)) return new Model;
-    static $_model = array();
-    $layer  =   $layer?$layer:C('DEFAULT_M_LAYER');
+    static $_model  =   array();
+    $layer          =   $layer?$layer:C('DEFAULT_M_LAYER');
     if(strpos($name,'://')) {// 指定项目
-        $name   =  str_replace('://','/'.$layer.'/',$name);
+        $name       =   str_replace('://','/'.$layer.'/',$name);
     }else{
-        $name   =  C('DEFAULT_APP').'/'.$layer.'/'.$name;
+        $name       =   C('DEFAULT_APP').'/'.$layer.'/'.$name;
     }
     if(isset($_model[$name]))   return $_model[$name];
     import($name.$layer);
-    $class   =   basename($name.$layer);
+    $class          =   basename($name.$layer);
     if(class_exists($class)) {
-        $model = new $class();
+        $model      =   new $class();
     }else {
-        $model  = new Model(basename($name));
+        $model      =   new Model(basename($name));
     }
     $_model[$name]  =  $model;
     return $model;
@@ -267,13 +267,13 @@ function D($name='',$layer='') {
  * @return Model
  */
 function M($name='', $tablePrefix='',$connection='') {
-    static $_model = array();
+    static $_model  = array();
     if(strpos($name,':')) {
         list($class,$name)    =  explode(':',$name);
     }else{
-        $class   =   'Model';
+        $class      =   'Model';
     }
-    $guid   =   $tablePrefix . $name . '_' . $class;
+    $guid           =   $tablePrefix . $name . '_' . $class;
     if (!isset($_model[$guid]))
         $_model[$guid] = new $class($name,$tablePrefix,$connection);
     return $_model[$guid];
@@ -287,7 +287,7 @@ function M($name='', $tablePrefix='',$connection='') {
  */
 function A($name,$layer='') {
     static $_action = array();
-    $layer  =   $layer?$layer:C('DEFAULT_C_LAYER');
+    $layer      =   $layer?$layer:C('DEFAULT_C_LAYER');
     if(strpos($name,'://')) {// 指定项目
         $name   =  str_replace('://','/'.$layer.'/',$name);
     }else{
@@ -295,10 +295,10 @@ function A($name,$layer='') {
     }
     if(isset($_action[$name]))  return $_action[$name];
     import($name.$layer);
-    $class   =   basename($name.$layer);
+    $class      =   basename($name.$layer);
     if(class_exists($class,false)) {
-        $action = new $class();
-        $_action[$name]  =  $action;
+        $action             = new $class();
+        $_action[$name]     =  $action;
         return $action;
     }else {
         return false;
@@ -313,10 +313,10 @@ function A($name,$layer='') {
  * @return mixed
  */
 function R($url,$vars=array(),$layer='') {
-    $info =  pathinfo($url);
-    $action  =  $info['basename'];
-    $module =  $info['dirname'];
-    $class = A($module,$layer);
+    $info   =   pathinfo($url);
+    $action =   $info['basename'];
+    $module =   $info['dirname'];
+    $class  =   A($module,$layer);
     if($class){
         if(is_string($vars)) {
             parse_str($vars,$vars);
@@ -404,9 +404,9 @@ function C($name=null, $value=null) {
  */
 function tag($tag, &$params=NULL) {
     // 系统标签扩展
-    $extends = C('extends.' . $tag);
+    $extends    = C('extends.' . $tag);
     // 应用标签扩展
-    $tags = C('tags.' . $tag);
+    $tags       = C('tags.' . $tag);
     if (!empty($tags)) {
         if(empty($tags['_overlay']) && !empty($extends)) { // 合并扩展
             $tags = array_unique(array_merge($extends,$tags));
@@ -444,7 +444,7 @@ function tag($tag, &$params=NULL) {
  * @return void
  */
 function add_tag_behavior($tag,$behavior,$path='') {
-    $array   =  C('tags.'.$tag);
+    $array      =  C('tags.'.$tag);
     if(!$array) {
         $array   =  array();
     }
@@ -463,10 +463,10 @@ function add_tag_behavior($tag,$behavior,$path='') {
  * @return void
  */
 function filter($name, &$content) {
-    $class = $name . 'Filter';
+    $class      =   $name . 'Filter';
     require_cache(LIB_PATH . 'Filter/' . $class . '.class.php');
-    $filter = new $class();
-    $content = $filter->run($content);
+    $filter     =   new $class();
+    $content    =   $filter->run($content);
 }
 
 /**
@@ -476,9 +476,9 @@ function filter($name, &$content) {
  * @return void
  */
 function B($name, &$params=NULL) {
-    $class = $name.'Behavior';
+    $class      = $name.'Behavior';
     G('behaviorStart');
-    $behavior = new $class();
+    $behavior   = new $class();
     $behavior->run($params);
     if(APP_DEBUG) { // 记录行为的执行日志
         trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
@@ -493,12 +493,12 @@ function B($name, &$params=NULL) {
  * @return void
  */
 function W($name, $data=array(), $return=false) {
-    $class = $name . 'Widget';
+    $class      =   $name . 'Widget';
     require_cache(LIB_PATH . 'Widget/' . $class . '.class.php');
     if (!class_exists($class))
         throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
-    $widget = Think::instance($class);
-    $content = $widget->render($data);
+    $widget     =   Think::instance($class);
+    $content    =   $widget->render($data);
     if ($return)
         return $content;
     else
@@ -511,14 +511,14 @@ function W($name, $data=array(), $return=false) {
  * @return string
  */
 function strip_whitespace($content) {
-    $stripStr = '';
+    $stripStr   = '';
     //分析php源码
-    $tokens = token_get_all($content);
+    $tokens     = token_get_all($content);
     $last_space = false;
     for ($i = 0, $j = count($tokens); $i < $j; $i++) {
         if (is_string($tokens[$i])) {
             $last_space = false;
-            $stripStr .= $tokens[$i];
+            $stripStr  .= $tokens[$i];
         } else {
             switch ($tokens[$i][0]) {
                 //过滤各种PHP注释
@@ -528,7 +528,7 @@ function strip_whitespace($content) {
                 //过滤空格
                 case T_WHITESPACE:
                     if (!$last_space) {
-                        $stripStr .= ' ';
+                        $stripStr  .= ' ';
                         $last_space = true;
                     }
                     break;
@@ -548,7 +548,7 @@ function strip_whitespace($content) {
                     break;
                 default:
                     $last_space = false;
-                    $stripStr .= $tokens[$i][1];
+                    $stripStr  .= $tokens[$i][1];
             }
         }
     }
@@ -558,12 +558,12 @@ function strip_whitespace($content) {
 //[RUNTIME]
 // 编译文件
 function compile($filename) {
-    $content = file_get_contents($filename);
+    $content        = file_get_contents($filename);
     // 替换预编译指令
-    $content = preg_replace('/\/\/\[RUNTIME\](.*?)\/\/\[\/RUNTIME\]/s', '', $content);
-    $content = substr(trim($content), 5);
+    $content        = preg_replace('/\/\/\[RUNTIME\](.*?)\/\/\[\/RUNTIME\]/s', '', $content);
+    $content        = substr(trim($content), 5);
     if ('?>' == substr($content, -2))
-        $content = substr($content, 0, -2);
+        $content    = substr($content, 0, -2);
     return $content;
 }
 
@@ -609,7 +609,7 @@ function trace($value='[think]',$label='',$level='DEBUG') {
             if(!isset($_trace[$level])) {
                 $_trace[$level] =   array();
             }
-            $_trace[$level][] = $info;
+            $_trace[$level][]   = $info;
         }
     }
 }
