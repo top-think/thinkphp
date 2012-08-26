@@ -54,12 +54,12 @@ return  array(
 
     /* 数据库设置 */
     'DB_TYPE'               => 'mysql',     // 数据库类型
-	'DB_HOST'               => 'localhost', // 服务器地址
-	'DB_NAME'               => '',          // 数据库名
-	'DB_USER'               => 'root',      // 用户名
-	'DB_PWD'                => '',          // 密码
-	'DB_PORT'               => '',        // 端口
-	'DB_PREFIX'             => 'think_',    // 数据库表前缀
+    'DB_HOST'               => 'localhost', // 服务器地址
+    'DB_NAME'               => '',          // 数据库名
+    'DB_USER'               => 'root',      // 用户名
+    'DB_PWD'                => '',          // 密码
+    'DB_PORT'               => '',        // 端口
+    'DB_PREFIX'             => 'think_',    // 数据库表前缀
     'DB_FIELDTYPE_CHECK'    => false,       // 是否进行字段类型检查
     'DB_FIELDS_CACHE'       => true,        // 启用字段缓存
     'DB_CHARSET'            => 'utf8',      // 数据库编码默认采用utf8
@@ -73,12 +73,12 @@ return  array(
     'DB_SQL_LOG'            => false, // SQL执行日志记录
 
     /* 数据缓存设置 */
-    'DATA_CACHE_TIME'		=> 0,      // 数据缓存有效期 0表示永久缓存
+    'DATA_CACHE_TIME'       => 0,      // 数据缓存有效期 0表示永久缓存
     'DATA_CACHE_COMPRESS'   => false,   // 数据缓存是否压缩缓存
-    'DATA_CACHE_CHECK'		=> false,   // 数据缓存是否校验缓存
-    'DATA_CACHE_TYPE'		=> 'File',  // 数据缓存类型,支持:File|Db|Apc|Memcache|Shmop|Sqlite|Xcache|Apachenote|Eaccelerator
+    'DATA_CACHE_CHECK'      => false,   // 数据缓存是否校验缓存
+    'DATA_CACHE_TYPE'       => 'File',  // 数据缓存类型,支持:File|Db|Apc|Memcache|Shmop|Sqlite|Xcache|Apachenote|Eaccelerator
     'DATA_CACHE_PATH'       => TEMP_PATH,// 缓存路径设置 (仅对File方式缓存有效)
-    'DATA_CACHE_SUBDIR'		=> false,    // 使用子目录缓存 (自动根据缓存标识的哈希创建子目录)
+    'DATA_CACHE_SUBDIR'     => false,    // 使用子目录缓存 (自动根据缓存标识的哈希创建子目录)
     'DATA_PATH_LEVEL'       => 1,        // 子目录缓存级别
 
     /* 错误设置 */
@@ -112,7 +112,7 @@ return  array(
     'TMPL_FILE_DEPR'        =>  '/', //模板文件MODULE_NAME与ACTION_NAME之间的分割符，只对项目分组部署有效
 
     /* URL设置 */
-	'URL_CASE_INSENSITIVE'  => false,   // 默认false 表示URL区分大小写 true则表示不区分大小写
+    'URL_CASE_INSENSITIVE'  => false,   // 默认false 表示URL区分大小写 true则表示不区分大小写
     'URL_MODEL'             => 1,       // URL访问模式,可选参数0、1、2、3,代表以下四种模式：
     // 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE  模式); 3 (兼容模式)  默认为PATHINFO 模式，提供最好的用户体验和SEO支持
     'URL_PATHINFO_DEPR'     => '/',	// PATHINFO模式下，各参数之间的分割符号
