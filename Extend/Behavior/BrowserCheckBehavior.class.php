@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: BrowserCheckBehavior.class.php 2616 2012-01-16 08:36:46Z liu21st $
 
 class BrowserCheckBehavior extends Behavior {
     protected $options   =  array(

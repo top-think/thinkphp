@@ -8,18 +8,13 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Log.class.php 2702 2012-02-02 12:35:01Z liu21st $
 
 /**
- +------------------------------------------------------------------------------
  * 日志处理类
- +------------------------------------------------------------------------------
  * @category   Think
  * @package  Think
  * @subpackage  Core
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: Log.class.php 2702 2012-02-02 12:35:01Z liu21st $
- +------------------------------------------------------------------------------
  */
 class Log {
 
@@ -47,39 +42,29 @@ class Log {
     static $format =  '[ c ]';
 
     /**
-     +----------------------------------------------------------
      * 记录日志 并且会过滤未经设置的级别
-     +----------------------------------------------------------
      * @static
      * @access public
-     +----------------------------------------------------------
      * @param string $message 日志信息
      * @param string $level  日志级别
      * @param boolean $record  是否强制记录
-     +----------------------------------------------------------
      * @return void
-     +----------------------------------------------------------
      */
     static function record($message,$level=self::ERR,$record=false) {
-        if($record || strpos(C('LOG_RECORD_LEVEL'),$level)) {
+        if($record || false!== strpos(C('LOG_RECORD_LEVEL'),$level)) {
             $now = date(self::$format);
             self::$log[] =   "{$now} {$level}: {$message}\r\n";
         }
     }
 
     /**
-     +----------------------------------------------------------
      * 日志保存
-     +----------------------------------------------------------
      * @static
      * @access public
-     +----------------------------------------------------------
      * @param integer $type 日志记录方式
      * @param string $destination  写入目标
      * @param string $extra 额外参数
-     +----------------------------------------------------------
      * @return void
-     +----------------------------------------------------------
      */
     static function save($type=self::FILE,$destination='',$extra='') {
         if(empty($destination))
@@ -96,20 +81,15 @@ class Log {
     }
 
     /**
-     +----------------------------------------------------------
      * 日志直接写入
-     +----------------------------------------------------------
      * @static
      * @access public
-     +----------------------------------------------------------
      * @param string $message 日志信息
      * @param string $level  日志级别
      * @param integer $type 日志记录方式
      * @param string $destination  写入目标
      * @param string $extra 额外参数
-     +----------------------------------------------------------
      * @return void
-     +----------------------------------------------------------
      */
     static function write($message,$level=self::ERR,$type=self::FILE,$destination='',$extra='') {
         $now = date(self::$format);

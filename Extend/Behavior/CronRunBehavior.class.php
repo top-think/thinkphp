@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: CronRunBehavior.class.php 2616 2012-01-16 08:36:46Z liu21st $
 
 class CronRunBehavior extends Behavior {
     protected $options   =  array(
