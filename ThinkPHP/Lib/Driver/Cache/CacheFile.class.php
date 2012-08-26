@@ -14,7 +14,7 @@ defined('THINK_PATH') or exit();
  * 文件类型缓存类
  * @category   Think
  * @package  Think
- * @subpackage  Driver
+ * @subpackage  Driver.Cache
  * @author    liu21st <liu21st@gmail.com>
  */
 class CacheFile extends Cache {

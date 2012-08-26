@@ -14,7 +14,7 @@ defined('THINK_PATH') or exit();
  * CX标签库解析类
  * @category   Think
  * @package  Think
- * @subpackage  Driver
+ * @subpackage  Driver.Taglib
  * @author    liu21st <liu21st@gmail.com>
  */
 class TagLibCx extends TagLib {

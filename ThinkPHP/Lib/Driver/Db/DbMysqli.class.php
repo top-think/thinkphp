@@ -14,7 +14,7 @@ defined('THINK_PATH') or exit();
  * Mysqli数据库驱动类
  * @category   Think
  * @package  Think
- * @subpackage  Driver
+ * @subpackage  Driver.Db
  * @author    liu21st <liu21st@gmail.com>
  */
 class DbMysqli extends Db{

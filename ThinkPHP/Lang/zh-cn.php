@@ -14,7 +14,6 @@
  * @category   Think
  * @package  Lang
  * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: zh-cn.php 3034 2012-06-20 16:07:41Z liu21st@gmail.com $
  */
 return array(
     //  核心
