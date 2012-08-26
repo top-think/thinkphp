@@ -6,13 +6,17 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: 尘缘 <130775@qq.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: CacheRedis.class.php 2787 2012-02-28 08:50:32Z shuhai.sir@gmail.com $
 
+defined('THINK_PATH') or exit();
 /**
- * CacheRedis缓存驱动类
+ * Redis缓存驱动 
  * 要求安装phpredis扩展：https://github.com/owlient/phpredis
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    尘缘 <130775@qq.com>
  */
 class CacheRedis extends Cache {
 
@@ -26,12 +30,12 @@ class CacheRedis extends Cache {
         }
         if(empty($options)) {
             $options = array (
-                'host'  => C('REDIS_HOST') ? C('REDIS_HOST') : '127.0.0.1',
-                'port'  => C('REDIS_PORT') ? C('REDIS_PORT') : 6379,
-                'timeout' => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
-                'persistent' => false,
-                'expire'   => C('DATA_CACHE_TIME'),
-                'length'   => 0,
+                'host'          => C('REDIS_HOST') ? C('REDIS_HOST') : '127.0.0.1',
+                'port'          => C('REDIS_PORT') ? C('REDIS_PORT') : 6379,
+                'timeout'       => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+                'persistent'    => false,
+                'expire'        => C('DATA_CACHE_TIME'),
+                'length'        => 0,
             );
         }
         $this->options =  $options;

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Sae.php 1093 2012-08-23 14:18:04Z luofei614@126.com $
+
 // Sae版ThinkPHP 入口文件
 //-------命令行生成缓存
 if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
@@ -20,9 +20,9 @@ if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
     $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_runtime.php' : '~runtime.php';
     defined('RUNTIME_FILE') or define('RUNTIME_FILE', RUNTIME_PATH . $runtime);
     define('MEMORY_LIMIT_ON', true);//sae上的固定值
-    defined('APP_DEBUG') or define('APP_DEBUG', false); //[saebuilder] 是否调试模式
+    defined('APP_DEBUG')    or define('APP_DEBUG', false); //[saebuilder] 是否调试模式
     //ENGINE_PATH 和 SAE_PATH也定义为相对路径
-    defined('ENGINE_PATH') or define('ENGINE_PATH', THINK_PATH . '/Extend/Engine/');
+    defined('ENGINE_PATH')  or define('ENGINE_PATH', THINK_PATH . '/Extend/Engine/');
     define('SAE_PATH', ENGINE_PATH . 'Sae/');
     define('IS_SAE', TRUE);
     define('SAE_CACHE_BUILDER',true);
@@ -33,13 +33,13 @@ if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
 }
 //-------end 命令行生成缓存
 //[sae]定义SAE_PATH
-defined('ENGINE_PATH') or define('ENGINE_PATH', dirname(__FILE__) . '/');
+defined('ENGINE_PATH')      or define('ENGINE_PATH', dirname(__FILE__) . '/');
 define('SAE_PATH', ENGINE_PATH . 'Sae/');
 //[sae]判断是否运行在SAE上。
 if (!function_exists('saeAutoLoader')) {
     define('IS_SAE', FALSE);
-    defined('THINK_PATH') or define('THINK_PATH', dirname(dirname(dirname(__FILE__))) . '/');
-    defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+    defined('THINK_PATH')   or define('THINK_PATH', dirname(dirname(dirname(__FILE__))) . '/');
+    defined('APP_PATH')     or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
     //加载平滑函数
     require SAE_PATH . 'Common/sae_functions.php';
     //加载模拟器
@@ -61,7 +61,7 @@ if (!function_exists('saeAutoLoader')) {
         exit('<div style=\'font-weight:bold;float:left;width:430px;text-align:center;border:1px solid silver;background:#E8EFFF;padding:8px;color:red;font-size:14px;font-family:Tahoma\'>sae环境下请手动生成项目目录~</div>');
     }
     defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Sae_Runtime/');
-    defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
+    defined('APP_DEBUG')    or define('APP_DEBUG', false); // 是否调试模式
     $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_runtime.php' : '~runtime.php';
     defined('RUNTIME_FILE') or define('RUNTIME_FILE', RUNTIME_PATH . $runtime);
     //[sae] 载入核心编译缓存

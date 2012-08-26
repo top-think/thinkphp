@@ -9,9 +9,17 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
+/**
+ * 自动执行任务
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
+ */
 class CronRunBehavior extends Behavior {
     protected $options   =  array(
-            'CRON_MAX_TIME'=>60,
+            'CRON_MAX_TIME' =>  60, // 单个任务最大执行时间
         );
     public function run(&$params) {
         // 锁定自动执行

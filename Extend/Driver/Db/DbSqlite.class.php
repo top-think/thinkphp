@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Sqlite数据库驱动类
+ * Sqlite数据库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbSqlite extends Db {
 

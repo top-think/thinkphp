@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Firebird数据库驱动类 剑雷 2007.12.28
+ * Firebird数据库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    剑雷
  */
 class DbIbase extends Db{
 

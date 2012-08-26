@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * ThinkPHP 关联模型类扩展
+ * ThinkPHP关联模型扩展 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Model
+ * @author    liu21st <liu21st@gmail.com>
  */
 define('HAS_ONE',1);
 define('BELONGS_TO',2);

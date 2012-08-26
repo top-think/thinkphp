@@ -8,10 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: CacheMemcache.class.php 2728 2012-02-12 04:12:51Z liu21st $
 
+defined('THINK_PATH') or exit();
 /**
- * Memcache缓存驱动类
+ * Memcache缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheMemcache extends Cache {
 
@@ -25,12 +29,12 @@ class CacheMemcache extends Cache {
         }
         if(empty($options)) {
             $options = array (
-                'host'  => C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
-                'port'  => C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
-                'timeout' => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
-                'persistent' => false,
-                'expire'   =>C('DATA_CACHE_TIME'),
-                'length'   =>0,
+                'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
+                'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
+                'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+                'persistent'  =>  false,
+                'expire'      =>  C('DATA_CACHE_TIME'),
+                'length'      =>  0,
             );
         }
         $this->options =  $options;

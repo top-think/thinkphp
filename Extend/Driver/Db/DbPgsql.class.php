@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Pgsql数据库驱动类
+ * Pgsql数据库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbPgsql extends Db{
 

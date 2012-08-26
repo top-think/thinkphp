@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Smart模板引擎驱动类
+ * Smart模板引擎驱动 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Template
+ * @author    liu21st <liu21st@gmail.com>
  */
 class TemplateSmart {
     /**
@@ -21,19 +26,19 @@ class TemplateSmart {
      * @return void
      */
     public function fetch($templateFile,$var) {
-        $templateFile=substr($templateFile,strlen(TMPL_PATH));
+        $templateFile   =   substr($templateFile,strlen(TMPL_PATH));
         vendor('SmartTemplate.class#smarttemplate');
-        $tpl = new SmartTemplate($templateFile);
+        $tpl            =   new SmartTemplate($templateFile);
         if(C('TMPL_ENGINE_CONFIG')) {
             $config  =  C('TMPL_ENGINE_CONFIG');
             foreach ($config as $key=>$val){
                 $tpl->{$key}   =  $val;
             }
         }else{
-            $tpl->caching = C('TMPL_CACHE_ON');
-            $tpl->template_dir = TMPL_PATH;
-            $tpl->temp_dir = CACHE_PATH ;
-            $tpl->cache_dir = TEMP_PATH ;
+            $tpl->caching       = C('TMPL_CACHE_ON');
+            $tpl->template_dir  = TMPL_PATH;
+            $tpl->temp_dir      = CACHE_PATH ;
+            $tpl->cache_dir     = TEMP_PATH ;
         }
         $tpl->assign($var);
         $tpl->output();

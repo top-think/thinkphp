@@ -9,17 +9,22 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * ThinkPHP 高级模型类扩展
+ * 高级模型扩展 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Model
+ * @author    liu21st <liu21st@gmail.com>
  */
 class AdvModel extends Model {
-    protected $optimLock = 'lock_version';
-    protected $returnType  =  'array';
-    protected $blobFields     =   array();
-    protected $blobValues    = null;
-    protected $serializeField   = array();
-    protected $readonlyField  = array();
-    protected $_filter           = array();
+    protected $optimLock        =   'lock_version';
+    protected $returnType       =   'array';
+    protected $blobFields       =   array();
+    protected $blobValues       =   null;
+    protected $serializeField   =   array();
+    protected $readonlyField    =   array();
+    protected $_filter          =   array();
 
     public function __construct($name='',$tablePrefix='',$connection='') {
         if('' !== $name || is_subclass_of($this,'AdvModel') ){
@@ -90,7 +95,7 @@ class AdvModel extends Model {
         // 检查文本字段
         $data = $this->checkBlobFields($data);
         // 检查字段过滤
-        $data   =  $this->setFilterFields($data);
+        $data = $this->setFilterFields($data);
     }
 
     protected function _after_insert($data,$options) {
@@ -109,7 +114,7 @@ class AdvModel extends Model {
         // 检查只读字段
         $data = $this->checkReadonlyField($data);
         // 检查字段过滤
-        $data   =  $this->setFilterFields($data);
+        $data = $this->setFilterFields($data);
     }
 
     protected function _after_update($data,$options) {
@@ -295,7 +300,7 @@ class AdvModel extends Model {
 
     /**
      * 写入数据的时候过滤数据字段
-     * @access pubic
+     * @access protected
      * @param mixed $result 查询的数据
      * @return array
      */

@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Apachenote缓存驱动类
+ * Apachenote缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheApachenote extends Cache {
 
@@ -21,10 +26,10 @@ class CacheApachenote extends Cache {
     public function __construct($options='') {
         if(empty($options)){
             $options = array(
-                'host' => '127.0.0.1',
-                'port' => 1042,
-                'timeout' => 10,
-                'length'   =>0
+                'host'      =>  '127.0.0.1',
+                'port'      =>  1042,
+                'timeout'   =>  10,
+                'length'    =>  0
             );
         }
         $this->handler = null;

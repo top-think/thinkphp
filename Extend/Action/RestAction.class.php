@@ -9,19 +9,24 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * ThinkPHP RESTFul 控制器扩展类
+ * ThinkPHP Restful 控制器扩展 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Action
+ * @author    liu21st <liu21st@gmail.com>
  */
 abstract class RestAction {
 
     // 当前Action名称
-    private $name =  '';
+    private     $name       =   '';
     // 视图实例
-    protected $view   =  null;
-    protected $_method =  ''; // 当前请求类型
-    protected $_type = ''; // 当前资源类型
+    protected   $view       =   null;
+    protected   $_method    =   ''; // 当前请求类型
+    protected   $_type      =   ''; // 当前资源类型
     // 输出类型
-    protected $_types = array();
+    protected   $_types     =   array();
 
    /**
      * 架构函数 取得模板对象实例
@@ -289,20 +294,20 @@ abstract class RestAction {
      */
     protected function getAcceptType(){
         $type = array(
-            'html'=>'text/html,application/xhtml+xml,*/*',
-            'xml'=>'application/xml,text/xml,application/x-xml',
-            'json'=>'application/json,text/x-json,application/jsonrequest,text/json',
-            'js'=>'text/javascript,application/javascript,application/x-javascript',
-            'css'=>'text/css',
-            'rss'=>'application/rss+xml',
-            'yaml'=>'application/x-yaml,text/yaml',
-            'atom'=>'application/atom+xml',
-            'pdf'=>'application/pdf',
-            'text'=>'text/plain',
-            'png'=>'image/png',
-            'jpg'=>'image/jpg,image/jpeg,image/pjpeg',
-            'gif'=>'image/gif',
-            'csv'=>'text/csv'
+            'html'  =>  'text/html,application/xhtml+xml,*/*',
+            'xml'   =>  'application/xml,text/xml,application/x-xml',
+            'json'  =>  'application/json,text/x-json,application/jsonrequest,text/json',
+            'js'    =>  'text/javascript,application/javascript,application/x-javascript',
+            'css'   =>  'text/css',
+            'rss'   =>  'application/rss+xml',
+            'yaml'  =>  'application/x-yaml,text/yaml',
+            'atom'  =>  'application/atom+xml',
+            'pdf'   =>  'application/pdf',
+            'text'  =>  'text/plain',
+            'png'   =>  'image/png',
+            'jpg'   =>  'image/jpg,image/jpeg,image/pjpeg',
+            'gif'   =>  'image/gif',
+            'csv'   =>  'text/csv'
         );
         
         foreach($type as $key=>$val){

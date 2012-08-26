@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * MSsql数据库驱动类 针对sqlserver2005
+ * MSsql数据库驱动 要求sqlserver2005
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbMssql extends Db{
     protected $selectSql  =     'SELECT T1.* FROM (SELECT ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER, thinkphp.* FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 WHERE %LIMIT%';

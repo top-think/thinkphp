@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Sqlite缓存类
+ * Sqlite缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheSqlite extends Cache {
 
@@ -24,17 +29,17 @@ class CacheSqlite extends Cache {
         }
         if(empty($options)){
             $options= array (
-                'db'        => ':memory:',
-                'table'     => 'sharedmemory',
-                'expire'    => C('DATA_CACHE_TIME'),
-                'persistent'=> false,
-                'length'   =>0,
+                'db'        =>  ':memory:',
+                'table'     =>  'sharedmemory',
+                'expire'    =>  C('DATA_CACHE_TIME'),
+                'persistent'=>  false,
+                'length'    =>  0,
             );
         }
-        $this->options = $options;
+        $this->options      = $options;
         $func = $this->options['persistent'] ? 'sqlite_popen' : 'sqlite_open';
-        $this->handler = $func($this->options['db']);
-        $this->connected = is_resource($this->handler);
+        $this->handler      = $func($this->options['db']);
+        $this->connected    = is_resource($this->handler);
     }
 
     /**

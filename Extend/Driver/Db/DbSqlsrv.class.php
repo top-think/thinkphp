@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Sqlsrv数据库驱动类 
+ * Sqlsrv数据库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbSqlsrv extends Db{
     protected $selectSql  =     'SELECT T1.* FROM (SELECT ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER, thinkphp.* FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 WHERE %LIMIT%';

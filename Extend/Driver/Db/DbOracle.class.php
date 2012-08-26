@@ -6,17 +6,22 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: ZhangXuehun <zhangxuehun@sohu.com>
+// | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
-* Oracle数据库驱动类
-*/
+ * Oracle数据库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    ZhangXuehun <zhangxuehun@sohu.com>
+ */
 class DbOracle extends Db{
 
-    private $mode = OCI_COMMIT_ON_SUCCESS;
-    private $table  =  '';
-    protected $selectSql  =     'SELECT * FROM (SELECT thinkphp.*, rownum AS numrow FROM (SELECT  %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%) thinkphp ) %LIMIT%';
+    private     $mode         = OCI_COMMIT_ON_SUCCESS;
+    private     $table        = '';
+    protected   $selectSql    = 'SELECT * FROM (SELECT thinkphp.*, rownum AS numrow FROM (SELECT  %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%) thinkphp ) %LIMIT%';
 
     /**
      * 架构函数 读取数据库配置信息

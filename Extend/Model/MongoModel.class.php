@@ -12,27 +12,27 @@
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
- * @category   Think
- * @package  Think
- * @subpackage  Core
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Model
  * @author    liu21st <liu21st@gmail.com>
  */
 class MongoModel extends Model{
     // 主键类型
-    const TYPE_OBJECT = 1; 
-    const TYPE_INT = 2;
-    const TYPE_STRING = 3;
+    const TYPE_OBJECT   = 1; 
+    const TYPE_INT      = 2;
+    const TYPE_STRING   = 3;
 
     // 主键名称
-    protected $pk  = '_id';
+    protected $pk               = '_id';
     // _id 类型 1 Object 采用MongoId对象 2 Int 整形 支持自动增长 3 String 字符串Hash
-    protected $_idType  =  self::TYPE_OBJECT;
+    protected $_idType          =  self::TYPE_OBJECT;
     // 主键是否自动增长 支持Int型主键
-    protected $_autoInc =  false;
+    protected $_autoInc         =  false;
     // Mongo默认关闭字段检测 可以动态追加字段
-    protected $autoCheckFields   =   false;
+    protected $autoCheckFields  =   false;
     // 链操作方法列表
-    protected $methods = array('table','order','auto','filter','validate');
+    protected $methods          = array('table','order','auto','filter','validate');
 
     /**
      * 利用__call方法实现一些特殊的Model方法

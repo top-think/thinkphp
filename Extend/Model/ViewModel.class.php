@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * ThinkPHP 视图模型类扩展
+ * ThinkPHP视图模型扩展 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Model
+ * @author    liu21st <liu21st@gmail.com>
  */
 class ViewModel extends Model {
 

@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * EaseTemplate模板引擎驱动类
+ * EaseTemplate模板引擎驱动 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Template
+ * @author    liu21st <liu21st@gmail.com>
  */
 class TemplateEase {
     /**
@@ -21,17 +26,17 @@ class TemplateEase {
      * @return void
      */
     public function fetch($templateFile,$var) {
-        $templateFile = substr($templateFile,strlen(TMPL_PATH),-5);
-        $CacheDir = substr(CACHE_PATH,0,-1);
-        $TemplateDir = substr(TMPL_PATH,0,-1);
+        $templateFile   = substr($templateFile,strlen(TMPL_PATH),-5);
+        $CacheDir       = substr(CACHE_PATH,0,-1);
+        $TemplateDir    = substr(TMPL_PATH,0,-1);
         vendor('EaseTemplate.template#ease');
         if(C('TMPL_ENGINE_CONFIG')) {
-            $config  =  C('TMPL_ENGINE_CONFIG');
+            $config     =  C('TMPL_ENGINE_CONFIG');
         }else{
-            $config  =                    array(
-            'CacheDir'=>$CacheDir,
-            'TemplateDir'=>$TemplateDir,
-            'TplType'=>'html'
+            $config     =  array(
+            'CacheDir'      =>  $CacheDir,
+            'TemplateDir'   =>  $TemplateDir,
+            'TplType'       =>  'html'
              );
         }
         $tpl = new EaseTemplate($config);

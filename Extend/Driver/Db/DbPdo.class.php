@@ -9,13 +9,18 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * PDO数据库驱动类
+ * PDO数据库驱动 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbPdo extends Db{
 
     protected $PDOStatement = null;
-    private   $table = '';
+    private   $table        = '';
 
     /**
      * 架构函数 读取数据库配置信息

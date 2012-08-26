@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Apc缓存驱动类
+ * Apc缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheApc extends Cache {
 

@@ -9,26 +9,31 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
  * 数据库方式Session驱动
-     CREATE TABLE think_session (
-       session_id varchar(255) NOT NULL,
-       session_expire int(11) NOT NULL,
-       session_data blob,
-       UNIQUE KEY `session_id` (`session_id`)
-     );
+ *    CREATE TABLE think_session (
+ *      session_id varchar(255) NOT NULL,
+ *      session_expire int(11) NOT NULL,
+ *      session_data blob,
+ *      UNIQUE KEY `session_id` (`session_id`)
+ *    );
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Session
+ * @author    liu21st <liu21st@gmail.com>
  */
-class SessionDb {//类定义开始
+class SessionDb {
 
     /**
      * Session有效时间
      */
-   protected $lifeTime=''; 
+   protected $lifeTime      = ''; 
 
     /**
      * session保存的数据库名
      */
-   protected $sessionTable='';
+   protected $sessionTable  = '';
 
     /**
      * 数据库句柄
@@ -44,8 +49,8 @@ class SessionDb {//类定义开始
     public function open($savePath, $sessName) { 
        $this->lifeTime = C('SESSION_EXPIRE')?C('SESSION_EXPIRE'):ini_get('session.gc_maxlifetime');
        $this->sessionTable  =   C('SESSION_TABLE')?C('SESSION_TABLE'):C("DB_PREFIX")."session";
-       $hander = mysql_connect(C('DB_HOST'),C('DB_USER'),C('DB_PWD')); 
-       $dbSel = mysql_select_db(C('DB_NAME'),$hander);
+       $hander  = mysql_connect(C('DB_HOST'),C('DB_USER'),C('DB_PWD')); 
+       $dbSel   = mysql_select_db(C('DB_NAME'),$hander);
        if(!$hander || !$dbSel) 
            return false; 
        $this->hander = $hander; 
@@ -114,8 +119,6 @@ class SessionDb {//类定义开始
     /**
      * 打开Session 
      * @access public 
-     * @param string $savePath 
-     * @param mixed $sessName  
      */
     public function execute() {
     	session_set_save_handler(array(&$this,"open"), 

@@ -9,20 +9,25 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
  * Html标签库驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Taglib
+ * @author    liu21st <liu21st@gmail.com>
  */
 class TagLibHtml extends TagLib{
     // 标签定义
     protected $tags   =  array(
         // 标签定义： attr 属性列表 close 是否闭合（0 或者1 默认1） alias 标签别名 level 嵌套层次
-        'editor'       => array('attr'=>'id,name,style,width,height,type','close'=>1),
-        'select'      => array('attr'=>'name,options,values,output,multiple,id,size,first,change,selected,dblclick','close'=>0),
-        'grid'          => array('attr'=>'id,pk,style,action,actionlist,show,datasource','close'=>0),
-        'list'           => array('attr'=>'id,pk,style,action,actionlist,show,datasource,checkbox','close'=>0),
+        'editor'    => array('attr'=>'id,name,style,width,height,type','close'=>1),
+        'select'    => array('attr'=>'name,options,values,output,multiple,id,size,first,change,selected,dblclick','close'=>0),
+        'grid'      => array('attr'=>'id,pk,style,action,actionlist,show,datasource','close'=>0),
+        'list'      => array('attr'=>'id,pk,style,action,actionlist,show,datasource,checkbox','close'=>0),
         'imagebtn'  => array('attr'=>'id,name,value,type,style,click','close'=>0),
         'checkbox'  => array('attr'=>'name,checkboxes,checked,separator','close'=>0),
-        'radio'        => array('attr'=>'name,radios,checked,separator','close'=>0)
+        'radio'     => array('attr'=>'name,radios,checked,separator','close'=>0)
         );
 
     /**

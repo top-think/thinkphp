@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Shmop缓存驱动类
+ * Shmop缓存驱动 
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheShmop extends Cache {
 
@@ -24,10 +29,10 @@ class CacheShmop extends Cache {
         }
         if(!empty($options)){
             $options = array(
-                'size' => C('SHARE_MEM_SIZE'),
-                'tmp'  => TEMP_PATH,
-                'project' => 's',
-                'length'   =>0,
+                'size'      => C('SHARE_MEM_SIZE'),
+                'tmp'       => TEMP_PATH,
+                'project'   => 's',
+                'length'    =>  0,
                 );
         }
         $this->options = $options;

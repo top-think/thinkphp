@@ -9,8 +9,13 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * WinCache 缓存驱动类
+ * Wincache缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheWincache extends Cache {
 
@@ -25,8 +30,8 @@ class CacheWincache extends Cache {
         if(!empty($options)) {
             $this->options =  $options;
         }
-        $this->options['expire'] = isset($options['expire'])?$options['expire']:C('DATA_CACHE_TIME');
-        $this->options['length']  =  isset($options['length'])?$options['length']:0;
+        $this->options['expire']    =   isset($options['expire'])?$options['expire']:C('DATA_CACHE_TIME');
+        $this->options['length']    =   isset($options['length'])?$options['length']:0;
     }
 
     /**

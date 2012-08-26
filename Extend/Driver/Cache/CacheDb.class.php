@@ -8,24 +8,28 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: CacheDb.class.php 2734 2012-02-14 06:55:15Z liu21st $
 
+defined('THINK_PATH') or exit();
 /**
- * 数据库类型缓存驱动类
-     CREATE TABLE think_cache (
-       cachekey varchar(255) NOT NULL,
-       expire int(11) NOT NULL,
-       data blob,
-       datacrc int(32),
-       UNIQUE KEY `cachekey` (`cachekey`)
-     );
+ * 数据库方式缓存驱动
+ *    CREATE TABLE think_cache (
+ *      cachekey varchar(255) NOT NULL,
+ *      expire int(11) NOT NULL,
+ *      data blob,
+ *      datacrc int(32),
+ *      UNIQUE KEY `cachekey` (`cachekey`)
+ *    );
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheDb extends Cache {
 
     /**
      * 缓存数据库对象 采用数据库方式有效
      * @var string
-     * @access protected
+     * @access private
      */
     private $db     ;
 

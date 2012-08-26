@@ -9,17 +9,22 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
+defined('THINK_PATH') or exit();
 /**
- * Mongo数据库驱动类 必须配合MongoModel使用
+ * Mongo数据库驱动 必须配合MongoModel使用
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Db
+ * @author    liu21st <liu21st@gmail.com>
  */
 class DbMongo extends Db{
 
-    protected $_mongo = null; // MongoDb Object
-    protected $_collection    = null; // MongoCollection Object
-    protected $_dbName = ''; // dbName
-    protected $_collectionName = ''; // collectionName
-    protected $_cursor   =  null; // MongoCursor Object
-    protected $comparison      = array('neq'=>'ne','ne'=>'ne','gt'=>'gt','egt'=>'gte','gte'=>'gte','lt'=>'lt','elt'=>'lte','lte'=>'lte','in'=>'in','not in'=>'nin','nin'=>'nin');
+    protected $_mongo           =   null; // MongoDb Object
+    protected $_collection      =   null; // MongoCollection Object
+    protected $_dbName          =   ''; // dbName
+    protected $_collectionName  =   ''; // collectionName
+    protected $_cursor          =   null; // MongoCursor Object
+    protected $comparison       =   array('neq'=>'ne','ne'=>'ne','gt'=>'gt','egt'=>'gte','gte'=>'gte','lt'=>'lt','elt'=>'lte','lte'=>'lte','in'=>'in','not in'=>'nin','nin'=>'nin');
 
     /**
      * 架构函数 读取数据库配置信息
