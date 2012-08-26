@@ -86,7 +86,7 @@ return  array(
     'DATA_PATH_LEVEL'       => 1,        // 子目录缓存级别
 
     /* 错误设置 */
-    'ERROR_MESSAGE'         => '您浏览的页面暂时发生了错误！请稍后再试～',//错误显示信息,非调试模式有效
+    'ERROR_MESSAGE'         => '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
     'ERROR_PAGE'            => '',	// 错误定向页面
     'SHOW_ERROR_MSG'        => false,    // 显示错误信息
 
