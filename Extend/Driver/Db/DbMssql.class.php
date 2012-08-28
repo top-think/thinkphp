@@ -18,7 +18,7 @@ defined('THINK_PATH') or exit();
  * @author    liu21st <liu21st@gmail.com>
  */
 class DbMssql extends Db{
-    protected $selectSql  =     'SELECT T1.* FROM (SELECT ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER, thinkphp.* FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 WHERE %LIMIT%';
+    protected $selectSql  =     'SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 WHERE %LIMIT%';
     /**
      * 架构函数 读取数据库配置信息
      * @access public
@@ -263,7 +263,7 @@ class DbMssql extends Db{
      * @return string
      */
     public function parseLimit($limit) {
-		if(empty($limit)) $limit=1;
+		if(empty($limit)) return '1=1';
         $limit	=	explode(',',$limit);
         if(count($limit)>1)
             $limitStr	=	'(T1.ROW_NUMBER BETWEEN '.$limit[0].' + 1 AND '.$limit[0].' + '.$limit[1].')';
