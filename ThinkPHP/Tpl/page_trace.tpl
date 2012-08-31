@@ -12,7 +12,7 @@
 	<?php 
 	if(is_array($info)){
 		foreach ($info as $k=>$val){
-		echo '<li style="border-bottom:1px solid #EEE; padding:0 12px">' . (is_numeric($k) ? '' : $k.' : ') . htmlentities($val,ENT_COMPAT,'utf-8') .'</li>';
+		echo '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k.' : ') . htmlentities($val,ENT_COMPAT,'utf-8') .'</li>';
 	    }
 	}
     ?>
