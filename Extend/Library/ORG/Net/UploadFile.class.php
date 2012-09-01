@@ -65,31 +65,12 @@ class UploadFile {//类定义开始
     /**
      * 架构函数
      * @access public
+     * @param array $config  上传参数
      */
-    public function __construct($maxSize='',$allowExts='',$allowTypes='',$savePath='',$saveRule='') {
-        if(!empty($maxSize) && is_numeric($maxSize)) {
-            $this->maxSize = $maxSize;
+    public function __construct($config=array()) {
+        if(is_array($config)) {
+            $this->config   =   array_merge($this->config,$config);
         }
-        if(!empty($allowExts)) {
-            if(is_array($allowExts)) {
-                $this->allowExts = array_map('strtolower',$allowExts);
-            }else {
-                $this->allowExts = explode(',',strtolower($allowExts));
-            }
-        }
-        if(!empty($allowTypes)) {
-            if(is_array($allowTypes)) {
-                $this->allowTypes = array_map('strtolower',$allowTypes);
-            }else {
-                $this->allowTypes = explode(',',strtolower($allowTypes));
-            }
-        }
-        if(!empty($saveRule)) {
-            $this->saveRule = $saveRule;
-        }else{
-            $this->saveRule	=	C('UPLOAD_FILE_RULE');
-        }
-        $this->savePath = $savePath;
     }
 
     /**
