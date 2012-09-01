@@ -18,11 +18,32 @@
  */
 abstract class Action {
 
-    // 视图实例对象
+    /**
+     * 视图实例对象
+     * @var view
+     * @access protected
+     */    
     protected $view     =  null;
-    // 当前Action名称
+
+    /**
+     * 当前控制器名称
+     * @var name
+     * @access protected
+     */      
     private   $name     =  '';
-    // 控制器参数
+
+    /**
+     * 模板变量
+     * @var tVar
+     * @access protected
+     */      
+    protected $tVar     =   array();
+
+    /**
+     * 控制器参数
+     * @var config
+     * @access protected
+     */      
     protected $config   =   array();
 
    /**
@@ -31,8 +52,6 @@ abstract class Action {
      */
     public function __construct() {
         tag('action_begin',$this->config);
-        //实例化视图类
-        $this->view       = Think::instance('View');
         //控制器初始化
         if(method_exists($this,'_initialize'))
             $this->_initialize();
@@ -77,6 +96,7 @@ abstract class Action {
      * @return void
      */
     protected function display($templateFile='',$charset='',$contentType='',$content='') {
+        $this->initView();
         $this->view->display($templateFile,$charset,$contentType,$content);
     }
 
@@ -89,6 +109,7 @@ abstract class Action {
      * @return mixed
      */
     protected function show($content,$charset='',$contentType='') {
+        $this->initView();       
         return $this->view->show($content,$charset,$contentType);
     }
 
@@ -101,9 +122,22 @@ abstract class Action {
      * @return string
      */
     protected function fetch($templateFile='') {
+        $this->initView();
         return $this->view->fetch($templateFile);
     }
 
+    /**
+     * 初始化视图
+     * @access private
+     * @return void
+     */
+    private function initView(){
+        //实例化视图类
+        if(!$this->view)    $this->view     = Think::instance('View');
+        // 模板变量传值
+        if($this->tVar)     $this->view->assign($this->tVar);           
+    }
+    
     /**
      *  创建静态页面
      * @access protected
@@ -133,11 +167,18 @@ abstract class Action {
      * @return void
      */
     protected function assign($name,$value='') {
-        $this->view->assign($name,$value);
+        if(is_array($name)) {
+            $this->tVar   =  array_merge($this->tVar,$name);
+        }elseif(is_object($name)){
+            foreach($name as $key =>$val)
+                $this->tVar[$key] = $val;
+        }else {
+            $this->tVar[$name] = $value;
+        }        
     }
 
     public function __set($name,$value) {
-        $this->view->assign($name,$value);
+        $this->assign($name,$value);
     }
 
     /**
@@ -146,8 +187,15 @@ abstract class Action {
      * @param string $name 模板显示变量
      * @return mixed
      */
+    public function get($name='') {
+        if('' === $name) {
+            return $this->tVar;
+        }
+        return isset($this->tVar[$name])?$this->tVar[$name]:false;        
+    }
+
     public function __get($name) {
-        return $this->view->get($name);
+        return $this->get($name);
     }
 
     /**
@@ -174,17 +222,17 @@ abstract class Action {
         }else{
             switch(strtolower($method)) {
                 // 判断提交方式
-                case 'ispost':
-                case 'isget':
-                case 'ishead':
-                case 'isdelete':
-                case 'isput':
+                case 'ispost'   :
+                case 'isget'    :
+                case 'ishead'   :
+                case 'isdelete' :
+                case 'isput'    :
                     return strtolower($_SERVER['REQUEST_METHOD']) == strtolower(substr($method,2));
                 // 获取变量 支持过滤和默认值 调用方式 $this->_post($key,$filter,$default);
-                case '_get':      $input =& $_GET;break;
-                case '_post':$input =& $_POST;break;
-                case '_put': parse_str(file_get_contents('php://input'), $input);break;
-                case '_param':  
+                case '_get'     :   $input =& $_GET;break;
+                case '_post'    :   $input =& $_POST;break;
+                case '_put'     :   parse_str(file_get_contents('php://input'), $input);break;
+                case '_param'   :  
                     switch($_SERVER['REQUEST_METHOD']) {
                         case 'POST':
                             $input  =  $_POST;
@@ -200,19 +248,19 @@ abstract class Action {
                         $input  =   array_merge($input,$params);
                     }
                     break;
-                case '_request': $input =& $_REQUEST;   break;
-                case '_session': $input =& $_SESSION;   break;
-                case '_cookie':  $input =& $_COOKIE;    break;
-                case '_server':  $input =& $_SERVER;    break;
-                case '_globals': $input =& $GLOBALS;    break;
+                case '_request' :   $input =& $_REQUEST;   break;
+                case '_session' :   $input =& $_SESSION;   break;
+                case '_cookie'  :   $input =& $_COOKIE;    break;
+                case '_server'  :   $input =& $_SERVER;    break;
+                case '_globals' :   $input =& $GLOBALS;    break;
                 default:
                     throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             }
             if(!isset($args[0])) { // 获取全局变量
-                $data   =   $input; // 由VAR_FILTERS配置进行过滤
+                $data       =   $input; // 由VAR_FILTERS配置进行过滤
             }elseif(isset($input[$args[0]])) { // 取值操作
-                $data	 =	 $input[$args[0]];
-                $filters =  isset($args[1])?$args[1]:C('DEFAULT_FILTER');
+                $data       =	$input[$args[0]];
+                $filters    =   isset($args[1])?$args[1]:C('DEFAULT_FILTER');
                 if($filters) {// 2012/3/23 增加多方法过滤支持
                     $filters    =   explode(',',$filters);
                     foreach($filters as $filter){
@@ -222,7 +270,7 @@ abstract class Action {
                     }
                 }
             }else{ // 变量默认值
-                $data	 =	 isset($args[2])?$args[2]:NULL;
+                $data       =	 isset($args[2])?$args[2]:NULL;
             }
             return $data;
         }
@@ -315,7 +363,7 @@ abstract class Action {
      */
     private function dispatchJump($message,$status=1,$jumpUrl='',$ajax=false) {
         if($ajax || $this->isAjax()) {// AJAX提交
-            $data   =   is_array($ajax)?$ajax:$this->view->get();
+            $data           =   is_array($ajax)?$ajax:$this->view->get();
             $data['info']   =   $message;
             $data['status'] =   $status;
             $data['url']    =   $jumpUrl;
@@ -325,23 +373,23 @@ abstract class Action {
         // 提示标题
         $this->assign('msgTitle',$status? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_'));
         //如果设置了关闭窗口，则提示完毕后自动关闭窗口
-        if($this->view->get('closeWin'))    $this->assign('jumpUrl','javascript:window.close();');
+        if($this->get('closeWin'))    $this->assign('jumpUrl','javascript:window.close();');
         $this->assign('status',$status);   // 状态
         //保证输出不受静态缓存影响
         C('HTML_CACHE_ON',false);
         if($status) { //发送成功信息
             $this->assign('message',$message);// 提示信息
             // 成功操作后默认停留1秒
-            if(!$this->view->get('waitSecond'))    $this->assign('waitSecond','1');
+            if(!$this->get('waitSecond'))    $this->assign('waitSecond','1');
             // 默认操作成功自动返回操作前页面
-            if(!$this->view->get('jumpUrl')) $this->assign("jumpUrl",$_SERVER["HTTP_REFERER"]);
+            if(!$this->get('jumpUrl')) $this->assign("jumpUrl",$_SERVER["HTTP_REFERER"]);
             $this->display(C('TMPL_ACTION_SUCCESS'));
         }else{
             $this->assign('error',$message);// 提示信息
             //发生错误时候默认停留3秒
-            if(!$this->view->get('waitSecond'))    $this->assign('waitSecond','3');
+            if(!$this->get('waitSecond'))    $this->assign('waitSecond','3');
             // 默认发生错误的话自动返回上页
-            if(!$this->view->get('jumpUrl')) $this->assign('jumpUrl',"javascript:history.back(-1);");
+            if(!$this->get('jumpUrl')) $this->assign('jumpUrl',"javascript:history.back(-1);");
             $this->display(C('TMPL_ACTION_ERROR'));
             // 中止执行  避免出错后继续执行
             exit ;
