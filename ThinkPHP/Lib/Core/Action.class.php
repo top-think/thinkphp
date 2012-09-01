@@ -158,7 +158,7 @@ abstract class Action {
      * @return mixed
      */
     public function __call($method,$args) {
-        if( 0 === strcasecmp($method,ACTION_NAME)) {
+        if( 0 === strcasecmp($method,ACTION_NAME.C('ACTION_SUFFIX'))) {
             if(method_exists($this,'_empty')) {
                 // 如果定义了_empty操作 则调用
                 $this->_empty($method,$args);
@@ -261,14 +261,14 @@ abstract class Action {
      */
     protected function ajaxReturn($data,$type='') {
         if(func_num_args()>2) {// 兼容3.0之前用法
-            $args   =   func_get_args();
+            $args           =   func_get_args();
             array_shift($args);
-            $info   =   array();
+            $info           =   array();
             $info['data']   =   $data;
             $info['info']   =   array_shift($args);
             $info['status'] =   array_shift($args);
-            $data   =   $info;
-            $type   =   $args?array_shift($args):'';
+            $data           =   $info;
+            $type           =   $args?array_shift($args):'';
         }
         if(empty($type)) $type  =   C('DEFAULT_AJAX_RETURN');
         if(strtoupper($type)=='JSON') {
