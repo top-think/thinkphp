@@ -8,15 +8,17 @@
 // +----------------------------------------------------------------------
 // | Author: luofei614 <www.3g4k.com>
 // +----------------------------------------------------------------------
+// $Id$
 
 /**
+ +------------------------------------------------------------------------------
  * 将Trace信息输出到火狐的firebug，从而不影响ajax效果和页面的布局。
+ +------------------------------------------------------------------------------
  * 使用前，你需要先在火狐浏览器上安装firebug和firePHP两个插件。
  * 定义项目的tags.php文件， 
  * <code>
  * <?php return array(
  *   'view_end'=>array(
- *       '_overlay'=>true,
  *       'FireShowPageTrace'
  *   )
  * );
@@ -24,94 +26,114 @@
  * 再将此文件放到项目的Behavior文件夹中即可
  * 如果trace信息没有正常输出，请查看您的日志。
  * firePHP，是通过http headers和firebug通讯的，所以要保证在输出trace信息之前不能有
- * headers输出，你可以在入口文件第一个加入代码 ob_start(); 或者配置output_buffering
+ * headers输出，你可以在入口文件第一行加入代码 ob_start(); 或者配置output_buffering
  *
+ */
+
+defined('THINK_PATH') or exit();
+/**
+ +------------------------------------------------------------------------------
+ * 系统行为扩展 页面Trace显示输出
+ +------------------------------------------------------------------------------
  */
 class FireShowPageTraceBehavior extends Behavior {
     // 行为参数定义
     protected $options   =  array(
-        'FIRE_SHOW_PAGE_TRACE'        => true,   // 显示页面Trace信息
+        'FIRE_SHOW_PAGE_TRACE'=> true,   // 显示页面Trace信息
+        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试')
     );
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
-        if(C('FIRE_SHOW_PAGE_TRACE')) {
-            $this->showTrace();
-        }
+            if(C('FIRE_SHOW_PAGE_TRACE')) $this->showTrace();
     }
 
     /**
+     +----------------------------------------------------------
      * 显示页面Trace信息
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      */
     private function showTrace() {
          // 系统默认显示信息
-        $log  =   Log::$log;
         $files =  get_included_files();
-        $trace   =  array(
-            '请求时间'=>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']),
-            '当前页面'=>  __SELF__,
-            '请求协议'=>  $_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'],
-            '运行信息'=>  $this->showTime(),
-            '会话ID'    =>  session_id(),
-            '日志记录'=>  !empty($log)?$log:'无日志记录',
-            '加载文件'=>$files,
+        $info   =   array();
+        foreach ($files as $key=>$file){
+            $info[] = $file.' ( '.number_format(filesize($file)/1024,2).' KB )';
+        }
+        $trace  =   array();
+        $base   =   array(
+            '请求信息'=>  date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.__SELF__,
+            '运行时间'=> $this->showTime(),
+            '内存开销'=> MEMORY_LIMIT_ON?number_format((memory_get_usage() - $GLOBALS['_startUseMems'])/1024,2).' kb':'不支持',
+            '查询信息'=> N('db_query').' queries '.N('db_write').' writes ',
+            '文件加载'=> count(get_included_files()),
+            '缓存信息'=> N('cache_read').' gets '.N('cache_write').' writes ',
+            '配置加载'=> count(c()),
+            '会话信息'=> 'SESSION_ID='.session_id(),
             );
-
         // 读取项目定义的Trace文件
         $traceFile  =   CONF_PATH.'trace.php';
         if(is_file($traceFile)) {
-            // 定义格式 return array('当前页面'=>$_SERVER['PHP_SELF'],'通信协议'=>$_SERVER['SERVER_PROTOCOL'],...);
-            $trace   =  array_merge(include $traceFile,$trace);
+            $base    =   array_merge($base,include $traceFile);
         }
-        // 设置trace信息
-        trace($trace);
-        $fire=array(
+        $debug  =   trace();
+        $tabs   =   C('TRACE_PAGE_TABS');
+        foreach ($tabs as $name=>$title){
+            switch(strtoupper($name)) {
+                case 'BASE':// 基本信息
+                    $trace[$title]  =   $base;
+                    break;
+                case 'FILE': // 文件信息
+                    $trace[$title]  =   $info;
+                    break;
+                default:// 调试信息
+                    if(strpos($name,'|')) {// 多组信息
+                        $array  =   explode('|',$name);
+                        $result =   array();
+                        foreach($array as $name){
+                            $result   +=   isset($debug[$name])?$debug[$name]:array();
+                        }
+                        $trace[$title]  =   $result;
+                    }else{
+                        $trace[$title]  =   isset($debug[$name])?$debug[$name]:'';
+                    }
+            }
+        }
+    foreach ($trace as $key=>$val){
+            if(!is_array($val) && empty($val))
+                $val=array();
+            if(is_array($val)){
+            $fire=array(
             array('','')
-        );
-        foreach(trace() as $key=>$value){
-            $fire[]=array($key,$value);
-        }
-        if(headers_sent($filename, $linenum)){
-            $fileInfo=!empty($filename)?"（在{$filename}文件的第{$linenum}行）":'';
-            Log::record("已经有Http Header信息头输出{$fileInfo}，请在你的入口文件加入ob_start() 或通过配置output_buffering，已确保headers不被提前输出");
+            );
+            foreach($val as $k=>$v){
+                $fire[]=array($k,$v);
+            }
+            fb(array($key,$fire),FirePHP::TABLE);
         }else{
-            fb(array('页面Trace信息',$fire),FirePHP::TABLE);
+            fb($val,$key);
         }
+     }
+    unset($files,$info,$log,$base);
     }
 
     /**
-     * 显示运行时间、数据库操作、缓存次数、内存使用信息
-     * @access private
-     * @return string
+     +----------------------------------------------------------
+     * 获取运行时间
+     +----------------------------------------------------------
      */
     private function showTime() {
         // 显示运行时间
         G('beginTime',$GLOBALS['_beginTime']);
         G('viewEndTime');
-        $showTime   =   'Process: '.G('beginTime','viewEndTime').'s ';
         // 显示详细运行时间
-        $showTime .= '( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
-        // 显示数据库操作次数
-        if(class_exists('Db',false) ) {
-            $showTime .= ' | DB :'.N('db_query').' queries '.N('db_write').' writes ';
-        }
-        // 显示缓存读写次数
-        if( class_exists('Cache',false)) {
-            $showTime .= ' | Cache :'.N('cache_read').' gets '.N('cache_write').' writes ';
-        }
-        // 显示内存开销
-        if(MEMORY_LIMIT_ON ) {
-            $showTime .= ' | UseMem:'. number_format((memory_get_usage() - $GLOBALS['_startUseMems'])/1024).' kb';
-        }
-        // 显示文件加载数
-        $showTime .= ' | LoadFile:'.count(get_included_files());
-        // 显示函数调用次数 自定义函数,内置函数
-        $fun  =  get_defined_functions();
-        $showTime .= ' | CallFun:'.count($fun['user']).','.count($fun['internal']);
-        return $showTime;
+        return G('beginTime','viewEndTime').'s ( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
     }
+
 }
+
 
 function fb()
 {
@@ -1103,22 +1125,22 @@ class FirePHP {
                 case self::TRACE:
                     return $msg->trace($Object);
                 case self::EXCEPTION:
-                	return $this->plugin('engine')->handleException($Object, $msg);
+                    return $this->plugin('engine')->handleException($Object, $msg);
                 case self::TABLE:
                     if (isset($Object[0]) && !is_string($Object[0]) && $Label) {
                         $Object = array($Label, $Object);
                     }
                     return $msg->table($Object[0], array_slice($Object[1],1), $Object[1][0]);
                 case self::GROUP_START:
-                	$insightGroupStack[] = $msg->group(md5($Label))->open();
+                    $insightGroupStack[] = $msg->group(md5($Label))->open();
                     return $msg->log($Label);
                 case self::GROUP_END:
-                	if(count($insightGroupStack)==0) {
-                	    throw new Error('Too many groupEnd() as opposed to group() calls!');
-                	}
-                	$group = array_pop($insightGroupStack);
+                    if(count($insightGroupStack)==0) {
+                        throw new Error('Too many groupEnd() as opposed to group() calls!');
+                    }
+                    $group = array_pop($insightGroupStack);
                     return $group->close();
-	            default:
+                default:
                     return $msg->log($Object);
             }
         }
