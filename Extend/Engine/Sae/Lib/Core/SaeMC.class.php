@@ -93,7 +93,8 @@ if (!class_exists('SaeMC')) {
             $error = error_get_last();
             if (!is_null($error) && strpos($error['file'], 'eval()') !== false) {
                 if(!class_exists('Think')){
-                    ob_clean();
+                    ob_end_clean();
+                    if(!ini_get('zlib.output_compression') && C('OUTPUT_ENCODE')) ob_start('ob_gzhandler');
                     if(C('SMS_ON')) Sms::send('程序出现致命错误,请在SAE日志中心查看详情',$error['message'].'[file:'.self::$current_include_file.'][line:'.$error['line'].']',Sms::ERR);
                     exit("<br /><b>SAE_error</b>:  {$error['message']} in <b>" . self::$current_include_file . "</b> on line <b>{$error['line']}</b><br />");
                 }else{
