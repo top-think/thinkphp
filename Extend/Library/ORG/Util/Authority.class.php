@@ -172,7 +172,11 @@ class Authority {
     }
     //获得用户资料,根据自己的情况读取数据库
     protected function getUserInfo($uid) {
-        return M()->table($this->_config['AUTH_USER'])->find($uid);
+        static $userinfo=array();
+        if(!isset($userinfo[$uid])){
+             $userinfo[$uid]=M()->table($this->_config['AUTH_USER'])->find($uid);
+        }
+        return $userinfo[$uid];
     }
 
 }
