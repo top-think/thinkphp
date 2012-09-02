@@ -17,7 +17,12 @@
  * @author liu21st <liu21st@gmail.com>
  */
 class View {
-    protected $tVar        =  array(); // 模板输出变量
+    /**
+     * 模板输出变量
+     * @var tVar
+     * @access protected
+     */       
+    protected $tVar        =  array();
 
     /**
      * 模板变量赋值
@@ -28,9 +33,6 @@ class View {
     public function assign($name,$value=''){
         if(is_array($name)) {
             $this->tVar   =  array_merge($this->tVar,$name);
-        }elseif(is_object($name)){
-            foreach($name as $key =>$val)
-                $this->tVar[$key] = $val;
         }else {
             $this->tVar[$name] = $value;
         }
