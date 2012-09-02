@@ -593,7 +593,7 @@ function array_define($array,$check=true) {
  * @param string $level 日志级别 
  * @return void
  */
-function trace($value='[think]',$label='',$level='DEBUG') {
+function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
     static $_trace =  array();
     if('[think]' === $value){ // 获取trace信息
         return $_trace;
@@ -602,13 +602,12 @@ function trace($value='[think]',$label='',$level='DEBUG') {
         if(APP_DEBUG && 'ERR' == $level) {// 调试模式ERR抛出异常
             throw_exception($info);
         }
-        if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')) {
-            Log::record($info,$level);
-        }else{
-            if(!isset($_trace[$level])) {
+        if(!isset($_trace[$level])) {
                 $_trace[$level] =   array();
             }
-            $_trace[$level][]   = $info;
+        $_trace[$level][]   = $info;
+        if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
+            Log::record($info,$level,$record);
         }
     }
 }
