@@ -109,8 +109,10 @@ function dump($var, $echo=true, $label=null, $strict=true) {
 }
 
 /**
- * 404处理
- * @param string $msg 404信息
+ * 404处理 
+ * 调试模式会抛异常 
+ * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
+ * @param string $msg 提示信息
  * @param string $url 跳转URL地址
  * @return void
  */
@@ -126,32 +128,6 @@ function _404($msg='',$url='') {
         send_http_status(404);
         exit;
     }
-}
-
-/**
- * 区间调试开始 记录当前标签的开始时间和内存使用
- * @param string $label 区间标签
- * @return void
- */
-function debug_start($label='') {
-    $GLOBALS[$label]['_beginTime']      = microtime(TRUE);
-    if (MEMORY_LIMIT_ON)
-        $GLOBALS[$label]['_beginMem']   = memory_get_usage();
-}
-
-/**
- * 区间调试结束，并显示指定标签区间的时间和内存使用情况
- * @param string $label 区间标签
- * @return void
- */
-function debug_end($label='') {
-    $GLOBALS[$label]['_endTime']    = microtime(TRUE);
-    echo '<div style="text-align:center;width:100%">Process ' . $label . ': Times ' . number_format($GLOBALS[$label]['_endTime'] - $GLOBALS[$label]['_beginTime'], 6) . 's ';
-    if (MEMORY_LIMIT_ON) {
-        $GLOBALS[$label]['_endMem'] = memory_get_usage();
-        echo ' Memories ' . number_format(($GLOBALS[$label]['_endMem'] - $GLOBALS[$label]['_beginMem']) / 1024) . ' k';
-    }
-    echo '</div>';
 }
 
 /**

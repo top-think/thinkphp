@@ -24,7 +24,7 @@ class CacheFile extends Cache {
      * @var string
      * @access protected
      */
-    protected $prefix='~@';
+    protected $prefix   =   '~@';
 
     /**
      * 架构函数

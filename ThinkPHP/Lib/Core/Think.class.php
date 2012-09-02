@@ -258,24 +258,4 @@ class Think {
         }
     }
 
-    /**
-     * 自动变量设置
-     * @access public
-     * @param $name 属性名称
-     * @param $value  属性值
-     */
-    public function __set($name ,$value) {
-        if(property_exists($this,$name))
-            $this->$name = $value;
-    }
-
-    /**
-     * 自动变量获取
-     * @access public
-     * @param $name 属性名称
-     * @return mixed
-     */
-    public function __get($name) {
-        return isset($this->$name)?$this->$name:null;
-    }
 }
