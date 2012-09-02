@@ -360,7 +360,7 @@ abstract class Action {
      */
     private function dispatchJump($message,$status=1,$jumpUrl='',$ajax=false) {
         if($ajax || $this->isAjax()) {// AJAX提交
-            $data           =   is_array($ajax)?$ajax:$this->view->get();
+            $data           =   is_array($ajax)?$ajax:$this->get();
             $data['info']   =   $message;
             $data['status'] =   $status;
             $data['url']    =   $jumpUrl;
