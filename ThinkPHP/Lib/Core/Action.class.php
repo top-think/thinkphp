@@ -101,7 +101,7 @@ abstract class Action {
     }
 
     /**
-     * 输出内容文本可以包括Html
+     * 输出内容文本可以包括Html 并支持内容解析
      * @access protected
      * @param string $content 输出内容
      * @param string $charset 模板输出字符集
@@ -110,7 +110,7 @@ abstract class Action {
      */
     protected function show($content,$charset='',$contentType='') {
         $this->initView();       
-        return $this->view->show($content,$charset,$contentType);
+        $this->view->display('',$charset,$contentType,$content);
     }
 
     /**

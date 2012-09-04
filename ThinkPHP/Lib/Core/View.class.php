@@ -67,20 +67,20 @@ class View {
         // 解析并获取模板内容
         $content = $this->fetch($templateFile,$content);
         // 输出模板内容
-        $this->show($content,$charset,$contentType);
+        $this->render($content,$charset,$contentType);
         // 视图结束标签
         tag('view_end');
     }
 
     /**
      * 输出内容文本可以包括Html
-     * @access public
+     * @access private
      * @param string $content 输出内容
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
      * @return mixed
      */
-    public function show($content,$charset='',$contentType=''){
+    private function render($content,$charset='',$contentType=''){
         if(empty($charset))  $charset = C('DEFAULT_CHARSET');
         if(empty($contentType)) $contentType = C('TMPL_CONTENT_TYPE');
         // 网页字符编码
