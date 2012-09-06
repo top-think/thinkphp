@@ -33,8 +33,11 @@ body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16p
 var wait = document.getElementById('wait'),href = document.getElementById('href').href;
 var interval = setInterval(function(){
 	var time = --wait.innerHTML;
-	(time == 0) && (location.href = href);
-}, 1000);	
+	if(time == 0) {
+		location.href = href;
+		clearInterval(interval);
+	};
+}, 1000);
 })();
 </script>
 </body>
