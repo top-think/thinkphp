@@ -456,6 +456,12 @@ class  ThinkTemplate {
                 $name = "$".$var;
                 preg_match('/(.+?)\[(.+?)\]/is',$var,$match);
                 $var = $match[1];
+            }elseif(false !==strpos($var,':') && false ===strpos($var,'::') && false !==strpos($var,'?')){
+                //支持 {$var:property} 方式输出对象的属性
+                $vars = explode(':',$var);
+                $var  =  str_replace(':','->',$var);
+                $name = "$".$var;
+                $var  = $vars[0];
             }else {
                 $name = "$$var";
             }
