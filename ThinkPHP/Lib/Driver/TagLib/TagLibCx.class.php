@@ -93,7 +93,7 @@ class TagLibCx extends TagLib {
 		if(isset($tag['length']) && '' !=$tag['length'] ) {
 			$parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].','.$tag['length'].',true);';
 		}elseif(isset($tag['offset'])  && '' !=$tag['offset']){
-            $parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].',count('.$name.')-'.$tag['offset'].',true);';
+            $parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].',null,true);';
         }else{
             $parseStr .= ' $__LIST__ = '.$name.';';
         }
