@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: lite.php 2702 2012-02-02 12:35:01Z liu21st $
 
 // Lite模式定义文件
 return array(
@@ -22,17 +21,17 @@ return array(
 
     // 项目别名定义文件 [支持数组直接定义或者文件名定义]
     'alias'         =>    array(
-        'Model'         =>   MODE_PATH.'Lite/Model.class.php',
-        'Db'                  =>    MODE_PATH.'Lite/Db.class.php',
-        'ThinkTemplate' => CORE_PATH.'Template/ThinkTemplate.class.php',
-        'TagLib'        => CORE_PATH.'Template/TagLib.class.php',
-        'Cache'         => CORE_PATH.'Core/Cache.class.php',
-        'Debug'         => CORE_PATH.'Util/Debug.class.php',
-        'Session'       => CORE_PATH.'Util/Session.class.php',
-        'TagLibCx'      => CORE_PATH.'Driver/TagLib/TagLibCx.class.php',
+        'Model'         =>  MODE_PATH.'Lite/Model.class.php',
+        'Db'            =>  MODE_PATH.'Lite/Db.class.php',
+        'ThinkTemplate' =>  CORE_PATH.'Template/ThinkTemplate.class.php',
+        'TagLib'        =>  CORE_PATH.'Template/TagLib.class.php',
+        'Cache'         =>  CORE_PATH.'Core/Cache.class.php',
+        'Debug'         =>  CORE_PATH.'Util/Debug.class.php',
+        'Session'       =>  CORE_PATH.'Util/Session.class.php',
+        'TagLibCx'      =>  CORE_PATH.'Driver/TagLib/TagLibCx.class.php',
     ), 
 
     // 系统行为定义文件 [必须 支持数组直接定义或者文件名定义 ]
-    'extends'    =>    MODE_PATH.'Lite/tags.php',
+    'extends'       =>    MODE_PATH.'Lite/tags.php',
 
 );

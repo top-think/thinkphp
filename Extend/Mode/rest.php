@@ -8,12 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: rest.php 2702 2012-02-02 12:35:01Z liu21st $
 
 // REST模式定义文件
 return array(
 
-    'core'         =>   array(
+    'core'          =>   array(
         THINK_PATH.'Common/functions.php', // 标准模式函数库
         CORE_PATH.'Core/Log.class.php',    // 日志处理类
         CORE_PATH.'Core/Dispatcher.class.php', // URL调度类
@@ -23,8 +22,8 @@ return array(
     ),
 
     // 系统行为定义文件 [必须 支持数组直接定义或者文件名定义 ]
-    'extends'    =>    MODE_PATH.'Rest/tags.php',
+    'extends'       =>    MODE_PATH.'Rest/tags.php',
 
     // 模式配置文件  [支持数组直接定义或者文件名定义]（如有相同则覆盖项目配置文件中的配置）
-    'config'   =>   MODE_PATH.'Rest/config.php',
+    'config'        =>   MODE_PATH.'Rest/config.php',
 );

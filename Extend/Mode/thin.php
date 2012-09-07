@@ -8,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: thin.php 2702 2012-02-02 12:35:01Z liu21st $
 
 // 简洁模式核心定义文件列表
 return array(
@@ -21,15 +20,15 @@ return array(
     ),
 
     // 项目别名定义文件 [支持数组直接定义或者文件名定义]
-    'alias'         =>    array(
-        'Model'         =>   MODE_PATH.'Thin/Model.class.php',
-        'Db'                  =>    MODE_PATH.'Thin/Db.class.php',
+    'alias'         =>  array(
+        'Model'     =>  MODE_PATH.'Thin/Model.class.php',
+        'Db'        =>  MODE_PATH.'Thin/Db.class.php',
     ), 
 
     // 系统行为定义文件 [必须 支持数组直接定义或者文件名定义 ]
-    'extends'    =>    array(), 
+    'extends'       =>  array(), 
 
     // 项目应用行为定义文件 [支持数组直接定义或者文件名定义]
-    'tags'         =>   array(), 
+    'tags'          =>  array(), 
 
 );
