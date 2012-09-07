@@ -105,7 +105,7 @@ class ReadHtmlCacheBehavior extends Behavior {
             return false;
         }elseif(!is_numeric($cacheTime) && function_exists($cacheTime)){
             return $cacheTime($cacheFile);
-        }elseif ($cacheTime != 0 && time() > filemtime($cacheFile)+$cacheTime) {
+        }elseif ($cacheTime != 0 && NOW_TIME > filemtime($cacheFile)+$cacheTime) {
             // 文件是否在有效期
             return false;
         }

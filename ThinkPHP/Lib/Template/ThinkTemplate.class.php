@@ -427,9 +427,6 @@ class  ThinkTemplate {
             $varArray = explode('|',$varStr);
             //取得变量名称
             $var = array_shift($varArray);
-            //非法变量过滤 不允许在变量里面使用 ->
-            //TODO：还需要继续完善
-            //if(preg_match('/->/is',$var))   return '';
             if('Think.' == substr($var,0,6)){
                 // 所有以Think.打头的以特殊变量对待 无需模板赋值就可以输出
                 $name = $this->parseThinkVar($var);
