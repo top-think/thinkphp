@@ -752,10 +752,10 @@ class Model {
         if(isset($this->options['field'])) { // $this->field('field1,field2...')->create()
             $fields =   $this->options['field'];
             unset($this->options['field']);
-        }elseif($type == self::MODEL_INSERT && isset($this->insert_fields)) {
-            $fields =   $this->insert_fields;
-        }elseif($type == self::MODEL_UPDATE && isset($this->update_fields)) {
-            $fields =   $this->update_fields;
+        }elseif($type == self::MODEL_INSERT && isset($this->insertFields)) {
+            $fields =   $this->insertFields;
+        }elseif($type == self::MODEL_UPDATE && isset($this->updateFields)) {
+            $fields =   $this->updateFields;
         }
         if(isset($fields)) {
             if(is_string($fields)) {
