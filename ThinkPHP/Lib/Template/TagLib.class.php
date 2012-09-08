@@ -109,14 +109,16 @@ class TagLib {
         $condition = preg_replace('/\$(\w+):(\w+)\s/is','$\\1->\\2 ',$condition);
         switch(strtolower(C('TMPL_VAR_IDENTIFY'))) {
             case 'array': // 识别为数组
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is','$\\1["\\2"] ',$condition);
+                $condition  =   preg_replace('/\$(\w+)\.(\w+)\s/is','$\\1["\\2"] ',$condition);
                 break;
             case 'obj':  // 识别为对象
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is','$\\1->\\2 ',$condition);
+                $condition  =   preg_replace('/\$(\w+)\.(\w+)\s/is','$\\1->\\2 ',$condition);
                 break;
             default:  // 自动判断数组或对象 只支持二维
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is','(is_array($\\1)?$\\1["\\2"]:$\\1->\\2) ',$condition);
+                $condition  =   preg_replace('/\$(\w+)\.(\w+)\s/is','(is_array($\\1)?$\\1["\\2"]:$\\1->\\2) ',$condition);
         }
+        if(false !== strpos($condition, '$Think'))
+            $condition      =   preg_replace('/(\$Think.*?)\s/ies',"\$this->parseThinkVar('\\1');" , $condition);        
         return $condition;
     }
 
