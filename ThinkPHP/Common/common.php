@@ -320,7 +320,7 @@ function R($url,$vars=array(),$layer='') {
         if(is_string($vars)) {
             parse_str($vars,$vars);
         }
-        return call_user_func_array(array(&$class,$action),$vars);
+        return call_user_func_array(array(&$class,$action.C('ACTION_SUFFIX')),$vars);
     }else{
         return false;
     }
