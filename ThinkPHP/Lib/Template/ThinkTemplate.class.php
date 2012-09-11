@@ -126,8 +126,9 @@ class  ThinkTemplate {
         $tmplContent =  '<?php if (!defined(\'THINK_PATH\')) exit();?>'.$tmplContent;
         if(C('TMPL_STRIP_SPACE')) {
             /* 去除html空格与换行 */
-            $find           = array("~>\s+<~","~>(\s+\n|\r)~");
-            $replace        = array('><','>');
+            /* modify by zzjin 去掉html注释,去掉"\/* *\/"形式的js/css注释 */
+            $find = array("~>\s+<~", "~>(\s+\n|\r)~", "/<!--[^!]*-->/i", '/\/\*[^*]*\*\//i');
+            $replace = array("><", ">", "", "");
             $tmplContent    = preg_replace($find, $replace, $tmplContent);
         }
         // 优化生成的php代码
