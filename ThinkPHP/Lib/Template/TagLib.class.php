@@ -89,9 +89,16 @@ class TagLib {
         $array  =   array_change_key_case($xml['@attributes']);
         if($array) {
             $attrs  = explode(',',$this->tags[strtolower($tag)]['attr']);
+            if(isset($this->tags[strtolower($tag)]['must'])){
+                $must   =   explode(',',$this->tags[strtolower($tag)]['must']);
+            }else{
+                $must   =   array();
+            }
             foreach($attrs as $name) {
                 if( isset($array[$name])) {
                     $array[$name] = str_replace('___','&',$array[$name]);
+                }elseif(false !== array_search($name,$must)){
+                    throw_exception(L('_PARAM_ERROR_').':'.$name);
                 }
             }
             return $array;
