@@ -43,6 +43,7 @@ class CacheDb extends Cache {
                 'db'        => C('DB_NAME'),
                 'table'     => C('DATA_CACHE_TABLE'),
                 'expire'    => C('DATA_CACHE_TIME'),
+                'prefix'    => C('DATA_CACHE_PREFIX'),
                 'length'    => 0,
             );
         }
@@ -68,7 +69,7 @@ class CacheDb extends Cache {
      * @return mixed
      */
     public function get($name) {
-        $name  =  addslashes($name);
+        $name  =  $this->options['prefix'].addslashes($name);
         N('cache_read',1);
         $result  =  $this->db->query('SELECT `data`,`datacrc` FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$name.'\' AND (`expire` =0 OR `expire`>'.time().') LIMIT 0,1');
         if(false !== $result ) {
@@ -101,7 +102,7 @@ class CacheDb extends Cache {
      */
     public function set($name, $value,$expire=null) {
         $data   =   serialize($value);
-        $name  =  addslashes($name);
+        $name  =  $this->options['prefix'].addslashes($name);
         N('cache_write',1);
         if( C('DATA_CACHE_COMPRESS') && function_exists('gzcompress')) {
             //数据压缩
@@ -142,7 +143,7 @@ class CacheDb extends Cache {
      * @return boolen
      */
     public function rm($name) {
-        $name  =  addslashes($name);
+        $name  =  $this->options['prefix'].addslashes($name);
         return $this->db->execute('DELETE FROM `'.$this->options['table'].'` WHERE `cachekey`=\''.$name.'\'');
     }
 

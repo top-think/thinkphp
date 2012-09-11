@@ -29,6 +29,7 @@ class CacheApachenote extends Cache {
                 'host'      =>  '127.0.0.1',
                 'port'      =>  1042,
                 'timeout'   =>  10,
+                'prefix'    =>  C('DATA_CACHE_PREFIX'),
                 'length'    =>  0
             );
         }
@@ -54,7 +55,8 @@ class CacheApachenote extends Cache {
      */
      public function get($name) {
          $this->open();
-         $s = 'F' . pack('N', strlen($name)) . $name;
+         $name  =   $this->options['prefix'].$name;
+         $s     =   'F' . pack('N', strlen($name)) . $name;
          fwrite($this->handler, $s);
 
          for ($data = ''; !feof($this->handler);) {
@@ -75,8 +77,9 @@ class CacheApachenote extends Cache {
     public function set($name, $value) {
         N('cache_write',1);
         $this->open();
-        $value = serialize($value);
-        $s = 'S' . pack('NN', strlen($name), strlen($value)) . $name . $value;
+        $value  =   serialize($value);
+        $name   =   $this->options['prefix'].$name;        
+        $s      =   'S' . pack('NN', strlen($name), strlen($value)) . $name . $value;
 
         fwrite($this->handler, $s);
         $ret = fgets($this->handler);
@@ -98,12 +101,13 @@ class CacheApachenote extends Cache {
      * @return boolen
      */
      public function rm($name) {
-         $this->open();
-         $s = 'D' . pack('N', strlen($name)) . $name;
-         fwrite($this->handler, $s);
-         $ret = fgets($this->handler);
-         $this->close();
-         return $ret === "OK\n";
+        $this->open();
+        $name   =   $this->options['prefix'].$name;         
+        $s      =   'D' . pack('N', strlen($name)) . $name;
+        fwrite($this->handler, $s);
+        $ret    = fgets($this->handler);
+        $this->close();
+        return $ret === "OK\n";
      }
 
     /**

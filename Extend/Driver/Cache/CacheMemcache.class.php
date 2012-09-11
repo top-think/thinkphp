@@ -32,6 +32,7 @@ class CacheMemcache extends Cache {
                 'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
                 'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
                 'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+                'prefix'      =>  C('DATA_CACHE_PREFIX') ? C('DATA_CACHE_PREFIX'):'',
                 'persistent'  =>  false,
                 'expire'      =>  C('DATA_CACHE_TIME'),
                 'length'      =>  0,
@@ -62,7 +63,7 @@ class CacheMemcache extends Cache {
      */
     public function get($name) {
         N('cache_read',1);
-        return $this->handler->get($name);
+        return $this->handler->get($this->options['prefix'].$name);
     }
 
     /**
@@ -78,6 +79,7 @@ class CacheMemcache extends Cache {
         if(is_null($expire)) {
             $expire  =  $this->options['expire'];
         }
+        $name   =   $this->options['prefix'].$name;
         if($this->handler->set($name, $value, 0, $expire)) {
             if($this->options['length']>0) {
                 // 记录缓存队列
@@ -95,6 +97,7 @@ class CacheMemcache extends Cache {
      * @return boolen
      */
     public function rm($name, $ttl = false) {
+        $name   =   $this->options['prefix'].$name;
         return $ttl === false ?
             $this->handler->delete($name) :
             $this->handler->delete($name, $ttl);

@@ -33,6 +33,7 @@ class CacheRedis extends Cache {
                 'host'          => C('REDIS_HOST') ? C('REDIS_HOST') : '127.0.0.1',
                 'port'          => C('REDIS_PORT') ? C('REDIS_PORT') : 6379,
                 'timeout'       => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+                'prefix'        => C('DATA_CACHE_PREFIX') ? C('DATA_CACHE_PREFIX') : '',
                 'persistent'    => false,
                 'expire'        => C('DATA_CACHE_TIME'),
                 'length'        => 0,
@@ -63,7 +64,7 @@ class CacheRedis extends Cache {
      */
     public function get($name) {
         N('cache_read',1);
-        return $this->handler->get($name);
+        return $this->handler->get($this->options['prefix'].$name);
     }
 
     /**
@@ -79,6 +80,7 @@ class CacheRedis extends Cache {
         if(is_null($expire)) {
             $expire  =  $this->options['expire'];
         }
+        $name   =   $this->options['prefix'].$name;
         if(is_int($expire)) {
             $result = $this->handler->setex($name, $expire, $value);
         }else{
@@ -98,7 +100,7 @@ class CacheRedis extends Cache {
      * @return boolen
      */
     public function rm($name) {
-        return $this->handler->delete($name);
+        return $this->handler->delete($this->options['prefix'].$name);
     }
 
     /**
