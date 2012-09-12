@@ -140,7 +140,7 @@ class DbPdo extends Db{
             $this->error();
             return false;
         } else {
-            $this->numRows = $result;
+            $this->numRows = $this->PDOStatement->rowCount();
             if($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
                 $this->lastInsID = $this->getLastInsertId();
             }
