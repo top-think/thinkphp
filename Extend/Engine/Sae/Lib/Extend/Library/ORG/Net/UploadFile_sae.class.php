@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: UploadFile_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
+// $Id: UploadFile_sae.class.php 1098 2012-09-12 05:33:22Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -19,7 +19,7 @@
  * @package  ORG
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: UploadFile_sae.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
+ * @version   $Id: UploadFile_sae.class.php 1098 2012-09-12 05:33:22Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 class UploadFile {//类定义开始
@@ -72,30 +72,10 @@ class UploadFile {//类定义开始
      * @access public
       +----------------------------------------------------------
      */
-    public function __construct($maxSize='', $allowExts='', $allowTypes='', $savePath='', $saveRule='') {
-        if (!empty($maxSize) && is_numeric($maxSize)) {
-            $this->maxSize = $maxSize;
+    public function __construct($config=array()) {
+        if(is_array($config)) {
+            $this->config   =   array_merge($this->config,$config);
         }
-        if (!empty($allowExts)) {
-            if (is_array($allowExts)) {
-                $this->allowExts = array_map('strtolower', $allowExts);
-            } else {
-                $this->allowExts = explode(',', strtolower($allowExts));
-            }
-        }
-        if (!empty($allowTypes)) {
-            if (is_array($allowTypes)) {
-                $this->allowTypes = array_map('strtolower', $allowTypes);
-            } else {
-                $this->allowTypes = explode(',', strtolower($allowTypes));
-            }
-        }
-        if (!empty($saveRule)) {
-            $this->saveRule = $saveRule;
-        } else {
-            $this->saveRule = C('UPLOAD_FILE_RULE');
-        }
-        $this->savePath = $savePath;
     }
 
     /**

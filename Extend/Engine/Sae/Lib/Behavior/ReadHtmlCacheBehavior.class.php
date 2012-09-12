@@ -8,27 +8,28 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: ReadHtmlCacheBehavior.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
+
 defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
- * 系统行为扩展 静态缓存读取
- +------------------------------------------------------------------------------
+ * 系统行为扩展：静态缓存读取
+ * @category   Think
+ * @package  Think
+ * @subpackage  Behavior
+ * @author   liu21st <liu21st@gmail.com>
  */
 class ReadHtmlCacheBehavior extends Behavior {
     protected $options   =  array(
-            'HTML_CACHE_ON'=>false,
-            'HTML_CACHE_TIME'=>60,
-            'HTML_CACHE_RULES'=>array(),
-            'HTML_FILE_SUFFIX'=>'.html',
+            'HTML_CACHE_ON'     =>  false,
+            'HTML_CACHE_TIME'   =>  60,
+            'HTML_CACHE_RULES'  =>  array(),
+            'HTML_FILE_SUFFIX'  =>  '.html',
         );
     static protected $html_content='';//[sae] 存储html内容
-
-        // 行为扩展的执行入口必须是run
+    // 行为扩展的执行入口必须是run
     public function run(&$params){
         // 开启静态缓存
         if(C('HTML_CACHE_ON'))  {
-             $cacheTime = $this->requireHtmlCache();
+            $cacheTime = $this->requireHtmlCache();
             if( false !== $cacheTime && $this->checkHTMLCache(HTML_FILE_NAME,$cacheTime)) { //静态页面有效
                 //[sae] 读取静态页面输出
                 exit(self::$html_content);
@@ -42,7 +43,7 @@ class ReadHtmlCacheBehavior extends Behavior {
          $htmls = C('HTML_CACHE_RULES'); // 读取静态规则
          if(!empty($htmls)) {
             $htmls = array_change_key_case($htmls);
-            // 静态规则文件定义格式 actionName=>array(‘静态规则’,’缓存时间’,’附加规则')
+            // 静态规则文件定义格式 actionName=>array('静态规则','缓存时间','附加规则')
             // 'read'=>array('{id},{name}',60,'md5') 必须保证静态规则的唯一性 和 可判断性
             // 检测静态规则
             $moduleName = strtolower(MODULE_NAME);
@@ -62,15 +63,15 @@ class ReadHtmlCacheBehavior extends Behavior {
             }
             if(!empty($html)) {
                 // 解读静态规则
-                $rule    = $html[0];
+                $rule   = $html[0];
                 // 以$_开头的系统变量
-                $rule  = preg_replace('/{\$(_\w+)\.(\w+)\|(\w+)}/e',"\\3(\$\\1['\\2'])",$rule);
-                $rule  = preg_replace('/{\$(_\w+)\.(\w+)}/e',"\$\\1['\\2']",$rule);
+                $rule   = preg_replace('/{\$(_\w+)\.(\w+)\|(\w+)}/e',"\\3(\$\\1['\\2'])",$rule);
+                $rule   = preg_replace('/{\$(_\w+)\.(\w+)}/e',"\$\\1['\\2']",$rule);
                 // {ID|FUN} GET变量的简写
-                $rule  = preg_replace('/{(\w+)\|(\w+)}/e',"\\2(\$_GET['\\1'])",$rule);
-                $rule  = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
+                $rule   = preg_replace('/{(\w+)\|(\w+)}/e',"\\2(\$_GET['\\1'])",$rule);
+                $rule   = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
                 // 特殊系统变量
-                $rule  = str_ireplace(
+                $rule   = str_ireplace(
                     array('{:app}','{:module}','{:action}','{:group}'),
                     array(APP_NAME,MODULE_NAME,ACTION_NAME,defined('GROUP_NAME')?GROUP_NAME:''),
                     $rule);
@@ -88,19 +89,14 @@ class ReadHtmlCacheBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 检查静态HTML文件是否有效
      * 如果无效需要重新更新
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @param string $cacheFile  静态文件名
      * @param integer $cacheTime  缓存有效期
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
-    //[sae] 检查静态缓存
+  //[sae] 检查静态缓存
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
         $kv=Think::instance('SaeKVClient');
         if(!$kv->init()) halt('您没有初始化KVDB，请在SAE平台进行初始化');
@@ -114,7 +110,7 @@ class ReadHtmlCacheBehavior extends Behavior {
             return false;
         }elseif(!is_numeric($cacheTime) && function_exists($cacheTime)){
             return $cacheTime($cacheFile);
-        }elseif ($cacheTime != 0 && time() > $mtime+$cacheTime) {
+        }elseif ($cacheTime != 0 && NOW_TIME > $mtime+$cacheTime) {
             // 文件是否在有效期
             return false;
         }
@@ -124,8 +120,8 @@ class ReadHtmlCacheBehavior extends Behavior {
 
     //检测是否是空操作
     static private function isEmptyAction($module,$action) {
-        $className =  $module.'Action';
-        $class=new $className;
+        $className  =   $module.'Action';
+        $class      =   new $className;
         return !method_exists($class,$action);
     }
 
