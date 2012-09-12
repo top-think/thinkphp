@@ -221,6 +221,7 @@ function h($text, $tags = null) {
 	}
 	//允许的HTML标签
 	$text	=	preg_replace('/<('.$tags.')( [^><\[\]]*)>/i','[\1\2]',$text);
+  $text = preg_replace('/<\/('.$tags.')>/Ui','[/\1]',$text);
 	//过滤多余html
 	$text	=	preg_replace('/<\/?(html|head|meta|link|base|basefont|body|bgsound|title|style|script|form|iframe|frame|frameset|applet|id|ilayer|layer|name|script|style|xml)[^><]*>/i','',$text);
 	//过滤合法的html标签
