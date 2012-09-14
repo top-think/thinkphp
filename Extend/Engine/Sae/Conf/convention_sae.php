@@ -25,6 +25,11 @@ return array(
         'SMS_LEVEL'=>'ERR,MYSQL_ERROR,USER',//可以设置的有：ERR,MYSQL_ERROR,USER,NOTIC
         'SMS_INTERVAL'=>15,//发送短信的间隔频率
         'SMS_SIGN'=>'',//短信签名， 如果有多个网站，可以用它来识别是哪个网站在进行短信报警
+        // 'UPGRADE_NOTICE_ON'=>false,//开启短信升级提醒功能 
+        // 'UPGRADE_NOTICE_DEBUG'=>false, 
+        // 'UPGRADE_NOTICE_MOBILE'=>'136456789',//接受短信的手机号
+        // 'UPGRADE_NOTICE_CHECK_INTERVAL' => 604800,//检测频率,单位秒,默认是一周
+        // 'UPGRADE_CURRENT_VERSION'=>'0',//升级后的版本号，会在短信中告诉你填写什么
         'SAE_SPECIALIZED_FILES'=>array(
             //SAE系统专属文件。
             'UploadFile.class.php'=>SAE_PATH.'Lib/Extend/Library/ORG/Net/UploadFile_sae.class.php',

@@ -8,17 +8,19 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: tags.php 2766 2012-02-20 15:58:21Z luofei614@gmail.com $
+// $Id: tags.php 1130 2012-09-14 03:41:45Z luofei614@126.com $
 
 // 系统默认的核心行为扩展列表文件
 //[sae]定义别名，让在SAE下时，调试模式也加载对应文件。
 alias_import(array(
     'ParseTemplateBehavior'=>SAE_PATH.'Lib/Behavior/ParseTemplateBehavior.class.php',
     'ReadHtmlCacheBehavior'=>SAE_PATH.'Lib/Behavior/ReadHtmlCacheBehavior.class.php',
-    'WriteHtmlCacheBehavior'=>SAE_PATH.'Lib/Behavior/WriteHtmlCacheBehavior.class.php'
+    'WriteHtmlCacheBehavior'=>SAE_PATH.'Lib/Behavior/WriteHtmlCacheBehavior.class.php',
+    'UpgradeNoticeBehavior'=>SAE_PATH.'Lib/Behavior/UpgradeNoticeBehavior.class.php'
 ));
 return array(
     'app_init'=>array(
+        'UpgradeNotice'=>SAE_PATH.'Lib/Behavior/UpgradeNoticeBehavior.class.php',//[sae]绑定升级通知
     ),
     'app_begin'=>array(
         'ReadHtmlCache'=>SAE_PATH.'Lib/Behavior/ReadHtmlCacheBehavior.class.php', // 读取静态缓存

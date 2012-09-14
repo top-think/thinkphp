@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: UploadFile_sae.class.php 1098 2012-09-12 05:33:22Z luofei614@126.com $
+// $Id: UploadFile_sae.class.php 1125 2012-09-13 07:37:28Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -19,7 +19,7 @@
  * @package  ORG
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: UploadFile_sae.class.php 1098 2012-09-12 05:33:22Z luofei614@126.com $
+ * @version   $Id: UploadFile_sae.class.php 1125 2012-09-13 07:37:28Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 class UploadFile {//类定义开始
@@ -50,8 +50,12 @@ class UploadFile {//类定义开始
         'saveRule'=>'',// 上传文件命名规则
         'hashType'=>'md5_file',// 上传文件Hash规则函数名
         );
-
-
+  // 错误信息
+  private $error = '';
+  // 上传成功的文件信息
+  private $uploadFileInfo ;
+  //[sae] storage的domain
+  private $domain;
   public function __get($name){
         if(isset($this->config[$name])) {
             return $this->config[$name];
@@ -107,7 +111,7 @@ class UploadFile {//类定义开始
         }
         //if(!move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
         if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name']) ) {
-                $this->error = $s->errno() == -7 ? 'domain [ ' . $this->domain . ' ] 不存在！请在SAE控制台的Storage服务中添加一个domain' : '文件上传保存错误！';
+                 $this->error = '文件上传失败'.$s->errmsg();
                 return false;
         }
         if ($this->thumb && in_array(strtolower($file['extension']), array('gif', 'jpg', 'jpeg', 'bmp', 'png'))) {
@@ -151,7 +155,7 @@ class UploadFile {//类定义开始
                     $img->resize($width, $height);
                     $new_data = $img->exec();
                     if (!$s->write($domain, $thumbPath . $thumbname.'.'.$file['extension'], $new_data)) {
-                        $this->error = $s->errno() == -7 ? 'domain [ ' . $this->domain . ' ] 不存在！请在SAE控制台的Storage服务中添加一个domain' : '生成缩略图失败！';
+                        $this->error = '生成缩略图失败！'.$this->errmsg();
                         return false;
                     }
                 }
@@ -213,7 +217,6 @@ class UploadFile {//类定义开始
                     if (!$this->check($file))
                         return false;
                 }
-
                 //保存上传文件
                 if (!$this->save($file))
                     return false;
