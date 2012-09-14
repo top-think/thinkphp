@@ -20,7 +20,7 @@ defined('THINK_PATH') or exit();
  * </code>
  *
  * 2，将此文件放在项目的Lib/Behavior文件夹下。
- * 
+ *注：在SAE上面使用时，以上两步可以省略 
  * 3，在config.php中配置：
  *  'UPGRADE_NOTICE_ON'=>true,//开启短信升级提醒功能 
  * 'UPGRADE_NOTICE_AKEY'=>'your akey',//SAE应用的AKEY，如果在SAE上使用可以不填
@@ -57,8 +57,8 @@ class UpgradeNoticeBehavior extends Behavior {
             $current_version = C('UPGRADE_CURRENT_VERSION');
             //读取接口
             $info = $this->send('http://sinaclouds.sinaapp.com/thinkapi/upgrade.php?v=' . $current_version);
-            if ($info['version'] != $current_version) {
-                    $this->send_sms($info['msg']); //发送升级短信
+             if ($info['version'] != $current_version) {
+                    if($this->send_sms($info['msg']))  trace($info['msg'], '升级通知成功', 'DEBUG', true); //发送升级短信
             }
             S('think_upgrade_interval', true, C('UPGRADE_NOTICE_CHECK_INTERVAL'));
         }
@@ -79,7 +79,9 @@ class UpgradeNoticeBehavior extends Behavior {
             'msg' => $msg,
             'encoding' => 'UTF-8'
         );
-        $ret = $this->send('http://g.apibus.io', $data, $headers);
+        if(!$ret = $this->send('http://g.apibus.io', $data, $headers)){
+            return false;
+        }
         if (isset($ret['ApiBusError'])) {
             trace('errno:' . $ret['ApiBusError']['errcode'] . ',errmsg:' . $ret['ApiBusError']['errdesc'], '升级通知出错', 'DEBUG', true);
             
