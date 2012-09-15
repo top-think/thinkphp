@@ -63,10 +63,17 @@ class  ThinkTemplate {
         $this->tVar[$name]= $value;
     }
 
-    // 加载模板
-    public function fetch($templateFile,$templateVar) {
+    /**
+     * 加载模板
+     * @access public
+     * @param string $tmplTemplateFile 模板文件
+     * @param array  $templateVar 模板变量
+     * @param string $prefix 模板标识前缀
+     * @return void
+     */
+    public function fetch($templateFile,$templateVar,$prefix='') {
         $this->tVar = $templateVar;
-        $templateCacheFile  =  $this->loadTemplate($templateFile);
+        $templateCacheFile  =  $this->loadTemplate($templateFile,$prefix);
         // 模板阵列变量分解成为独立变量
         extract($templateVar, EXTR_OVERWRITE);
         //载入模版缓存文件
@@ -77,10 +84,11 @@ class  ThinkTemplate {
      * 加载主模板并缓存
      * @access public
      * @param string $tmplTemplateFile 模板文件
+     * @param string $prefix 模板标识前缀
      * @return string
      * @throws ThinkExecption
      */
-    public function loadTemplate ($tmplTemplateFile) {
+    public function loadTemplate ($tmplTemplateFile,$prefix='') {
         if(is_file($tmplTemplateFile)) {
             $this->templateFile    =  $tmplTemplateFile;
             // 读取模板文件内容
@@ -89,7 +97,7 @@ class  ThinkTemplate {
             $tmplContent =  $tmplTemplateFile;
         }
          // 根据模版文件名定位缓存文件
-        $tmplCacheFile = $this->config['cache_path'].md5($tmplTemplateFile).$this->config['cache_suffix'];
+        $tmplCacheFile = $this->config['cache_path'].$prefix.md5($tmplTemplateFile).$this->config['cache_suffix'];
 
         // 判断是否启用布局
         if(C('LAYOUT_ON')) {
@@ -100,11 +108,12 @@ class  ThinkTemplate {
                 $tmplContent = str_replace($this->config['layout_item'],$tmplContent,file_get_contents($layoutFile));
             }
         }
-        //编译模板内容
-        $tmplContent = $this->compiler($tmplContent);
-        // 检测分组目录
-        if(!is_dir($this->config['cache_path']))
-            mkdir($this->config['cache_path'],0777,true);
+        // 编译模板内容
+        $tmplContent =  $this->compiler($tmplContent);
+        // 检测模板目录
+        $dir         =  dirname($tmplCacheFile);
+        if(!is_dir($dir))
+            mkdir($dir,0777,true);
         //重写Cache文件
         if( false === file_put_contents($tmplCacheFile,trim($tmplContent)))
             throw_exception(L('_CACHE_WRITE_ERROR_').':'.$tmplCacheFile);

@@ -57,15 +57,16 @@ class View {
      * @param string $templateFile 模板文件名
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
+     * @param string $prefix 模板缓存前缀
      * @param string $content 模板输出内容
      * @return mixed
      */
-    public function display($templateFile='',$charset='',$contentType='',$content='') {
+    public function display($templateFile='',$charset='',$contentType='',$prefix='',$content='') {
         G('viewStartTime');
         // 视图开始标签
         tag('view_begin',$templateFile);
         // 解析并获取模板内容
-        $content = $this->fetch($templateFile,$content);
+        $content = $this->fetch($templateFile,$content,$prefix);
         // 输出模板内容
         $this->render($content,$charset,$contentType);
         // 视图结束标签
@@ -96,9 +97,10 @@ class View {
      * @access public
      * @param string $templateFile 模板文件名
      * @param string $content 模板输出内容
+     * @param string $prefix 模板缓存前缀
      * @return string
      */
-    public function fetch($templateFile='',$content='') {
+    public function fetch($templateFile='',$content='',$prefix='') {
         if(empty($content)) {
             // 模板文件解析标签
             tag('view_template',$templateFile);
@@ -115,7 +117,7 @@ class View {
             empty($content)?include $templateFile:eval('?>'.$content);
         }else{
             // 视图解析标签
-            $params = array('var'=>$this->tVar,'file'=>$templateFile,'content'=>$content);
+            $params = array('var'=>$this->tVar,'file'=>$templateFile,'content'=>$content,'prefix'=>$prefix);
             tag('view_parse',$params);
         }
         // 获取并清空缓存

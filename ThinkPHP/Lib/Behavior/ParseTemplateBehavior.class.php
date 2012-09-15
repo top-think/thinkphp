@@ -48,15 +48,15 @@ class ParseTemplateBehavior extends Behavior {
         $engine     =   strtolower(C('TMPL_ENGINE_TYPE'));
         $_content   =   empty($_data['content'])?$_data['file']:$_data['content'];
         if('think'==$engine){ // 采用Think模板引擎
-            if(empty($_data['content']) && $this->checkCache($_data['file'])) { // 缓存有效
+            if(empty($_data['content']) && $this->checkCache($_data['file'],$_data['prefix'])) { // 缓存有效
                 // 分解变量并载入模板缓存
                 extract($_data['var'], EXTR_OVERWRITE);
                 //载入模版缓存文件
-                include C('CACHE_PATH').md5($_content).C('TMPL_CACHFILE_SUFFIX');
+                include C('CACHE_PATH').$_data['prefix'].md5($_content).C('TMPL_CACHFILE_SUFFIX');
             }else{
                 $tpl = Think::instance('ThinkTemplate');
                 // 编译并加载模板文件
-                $tpl->fetch($_content,$_data['var']);
+                $tpl->fetch($_content,$_data['var'],$_data['prefix']);
             }
         }else{
             // 调用第三方模板引擎解析和输出
@@ -83,10 +83,10 @@ class ParseTemplateBehavior extends Behavior {
      * @param string $tmplTemplateFile  模板文件名
      * @return boolen
      */
-    protected function checkCache($tmplTemplateFile) {
+    protected function checkCache($tmplTemplateFile,$prefix='') {
         if (!C('TMPL_CACHE_ON')) // 优先对配置设定检测
             return false;
-        $tmplCacheFile = C('CACHE_PATH').md5($tmplTemplateFile).C('TMPL_CACHFILE_SUFFIX');
+        $tmplCacheFile = C('CACHE_PATH').$prefix.md5($tmplTemplateFile).C('TMPL_CACHFILE_SUFFIX');
         if(!is_file($tmplCacheFile)){
             return false;
         }elseif (filemtime($tmplTemplateFile) > filemtime($tmplCacheFile)) {
