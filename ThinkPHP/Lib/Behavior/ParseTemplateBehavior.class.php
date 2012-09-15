@@ -52,7 +52,7 @@ class ParseTemplateBehavior extends Behavior {
                 // 分解变量并载入模板缓存
                 extract($_data['var'], EXTR_OVERWRITE);
                 //载入模版缓存文件
-                include C('CACHE_PATH').md5($_data['file']).C('TMPL_CACHFILE_SUFFIX');
+                include C('CACHE_PATH').md5($_content).C('TMPL_CACHFILE_SUFFIX');
             }else{
                 $tpl = Think::instance('ThinkTemplate');
                 // 编译并加载模板文件
