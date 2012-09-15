@@ -30,6 +30,7 @@ class ParseTemplateBehavior extends Behavior {
         'TMPL_VAR_IDENTIFY'     =>  'array',     // 模板变量识别。留空自动判断,参数为'obj'则表示对象
         'TMPL_STRIP_SPACE'      =>  true,       // 是否去除模板文件里面的html空格与换行
         'TMPL_CACHE_ON'			=>  true,        // 是否开启模板编译缓存,设为false则每次都会重新编译
+        'TMPL_CACHE_PREFIX'     =>  '',         // 模板缓存前缀标识，可以动态改变
         'TMPL_CACHE_TIME'		=>	0,         // 模板缓存有效期 0 为永久，(以数字为值，单位:秒)
         'TMPL_LAYOUT_ITEM'      =>  '{__CONTENT__}', // 布局模板的内容替换标识
         'LAYOUT_ON'             =>  false, // 是否启用布局
@@ -45,8 +46,9 @@ class ParseTemplateBehavior extends Behavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$_data){
-        $engine     =   strtolower(C('TMPL_ENGINE_TYPE'));
-        $_content   =   empty($_data['content'])?$_data['file']:$_data['content'];
+        $engine             =   strtolower(C('TMPL_ENGINE_TYPE'));
+        $_content           =   empty($_data['content'])?$_data['file']:$_data['content'];
+        $_data['prefix']    =   !empty($_data['prefix'])?$_data['prefix']:C('TMPL_CACHE_PREFIX');
         if('think'==$engine){ // 采用Think模板引擎
             if(empty($_data['content']) && $this->checkCache($_data['file'],$_data['prefix'])) { // 缓存有效
                 // 分解变量并载入模板缓存
