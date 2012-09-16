@@ -21,21 +21,24 @@ class CacheShmop extends Cache {
 
     /**
      * 架构函数
+     * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options='') {
+    public function __construct($options=array()) {
         if ( !extension_loaded('shmop') ) {
             throw_exception(L('_NOT_SUPPERT_').':shmop');
         }
         if(!empty($options)){
             $options = array(
                 'size'      => C('SHARE_MEM_SIZE'),
-                'tmp'       => TEMP_PATH,
+                'temp'      => TEMP_PATH,
                 'project'   => 's',
                 'length'    =>  0,
                 );
         }
         $this->options = $options;
+        $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        
+        $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;        
         $this->handler = $this->_ftok($this->options['project']);
     }
 
@@ -55,6 +58,7 @@ class CacheShmop extends Cache {
             if ($name === false) {
                 return $ret;
             }
+            $name   =   $this->options['prefix'].$name;
             if(isset($ret[$name])) {
                 $content   =  $ret[$name];
                 if(C('DATA_CACHE_COMPRESS') && function_exists('gzcompress')) {
@@ -86,6 +90,7 @@ class CacheShmop extends Cache {
             //数据压缩
             $value   =   gzcompress($value,3);
         }
+        $name   =   $this->options['prefix'].$name;
         $val[$name] = $value;
         $val = serialize($val);
         if($this->_write($val, $lh)) {
@@ -108,6 +113,7 @@ class CacheShmop extends Cache {
         $lh = $this->_lock();
         $val = $this->get();
         if (!is_array($val)) $val = array();
+        $name   =   $this->options['prefix'].$name;
         unset($val[$name]);
         $val = serialize($val);
         return $this->_write($val, $lh);
@@ -161,7 +167,7 @@ class CacheShmop extends Cache {
             $fp = sem_get($this->handler, 1, 0600, 1);
             sem_acquire ($fp);
         } else {
-            $fp = fopen($this->options['tmp'].$this->prefix.md5($this->handler), 'w');
+            $fp = fopen($this->options['temp'].$this->options['prefix'].md5($this->handler), 'w');
             flock($fp, LOCK_EX);
         }
         return $fp;

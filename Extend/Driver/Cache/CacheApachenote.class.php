@@ -21,21 +21,25 @@ class CacheApachenote extends Cache {
 
     /**
      * 架构函数
+     * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options='') {
-        if(empty($options)){
-            $options = array(
-                'host'      =>  '127.0.0.1',
-                'port'      =>  1042,
-                'timeout'   =>  10,
-                'prefix'    =>  C('DATA_CACHE_PREFIX'),
-                'length'    =>  0
+    public function __construct($options=array()) {
+        if(!empty($options)) {
+            $this->options =  $options;
+        }
+        if(empty($options)) {
+            $options = array (
+                'host'        =>  '127.0.0.1',
+                'port'        =>  1042,
+                'timeout'     =>  10,
             );
         }
+        $this->options  =   $options;
+        $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
+        $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;
         $this->handler = null;
         $this->open();
-        $this->options = $options;
     }
 
     /**

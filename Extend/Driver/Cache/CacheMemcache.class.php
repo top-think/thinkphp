@@ -21,9 +21,10 @@ class CacheMemcache extends Cache {
 
     /**
      * 架构函数
+     * @param array $options 缓存参数
      * @access public
      */
-    function __construct($options='') {
+    function __construct($options=array()) {
         if ( !extension_loaded('memcache') ) {
             throw_exception(L('_NOT_SUPPERT_').':memcache');
         }
@@ -32,16 +33,16 @@ class CacheMemcache extends Cache {
                 'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
                 'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
                 'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
-                'prefix'      =>  C('DATA_CACHE_PREFIX') ? C('DATA_CACHE_PREFIX'):'',
                 'persistent'  =>  false,
-                'expire'      =>  C('DATA_CACHE_TIME'),
-                'length'      =>  0,
             );
         }
-        $this->options =  $options;
-        $func = $options['persistent'] ? 'pconnect' : 'connect';
-        $this->handler  = new Memcache;
-        $this->connected = $options['timeout'] === false ?
+        $this->options      =   $options;
+        $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
+        $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        
+        $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;        
+        $func               =   $options['persistent'] ? 'pconnect' : 'connect';
+        $this->handler      =   new Memcache;
+        $this->connected    =   $options['timeout'] === false ?
             $this->handler->$func($options['host'], $options['port']) :
             $this->handler->$func($options['host'], $options['port'], $options['timeout']);
     }

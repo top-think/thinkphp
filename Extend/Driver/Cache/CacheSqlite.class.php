@@ -21,23 +21,24 @@ class CacheSqlite extends Cache {
 
     /**
      * 架构函数
+     * @param array $options 缓存参数
      * @access public
      */
-    public function __construct($options='') {
+    public function __construct($options=array()) {
         if ( !extension_loaded('sqlite') ) {
             throw_exception(L('_NOT_SUPPERT_').':sqlite');
         }
-        if(empty($options)){
-            $options= array (
+        if(empty($options)) {
+            $options = array (
                 'db'        =>  ':memory:',
                 'table'     =>  'sharedmemory',
-                'expire'    =>  C('DATA_CACHE_TIME'),
-                'prefix'    =>  C('DATA_CACHE_PREFIX'),
-                'persistent'=>  false,
-                'length'    =>  0,
             );
         }
-        $this->options      = $options;
+        $this->options  =   $options;      
+        $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
+        $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;        
+        $this->options['expire']    =   isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
+        
         $func = $this->options['persistent'] ? 'sqlite_popen' : 'sqlite_open';
         $this->handler      = $func($this->options['db']);
         $this->connected    = is_resource($this->handler);
