@@ -50,7 +50,10 @@ class App {
                 include COMMON_PATH.GROUP_NAME.'/function.php';
         }
         // 页面压缩输出支持
-        if(!ini_get('zlib.output_compression') && C('OUTPUT_ENCODE')) ob_start('ob_gzhandler');
+        if(C('OUTPUT_ENCODE')){
+            $zlib = ini_get('zlib.output_compression');
+            if(empty($zlib)) ob_start('ob_gzhandler');
+        }
         // 系统变量安全过滤
         if(C('VAR_FILTERS')) {
             $filters    =   explode(',',C('VAR_FILTERS'));
