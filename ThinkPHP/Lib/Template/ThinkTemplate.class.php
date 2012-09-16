@@ -113,7 +113,7 @@ class  ThinkTemplate {
         // 检测模板目录
         $dir         =  dirname($tmplCacheFile);
         if(!is_dir($dir))
-            mkdir($dir,0777,true);
+            mkdir($dir,0755,true);
         //重写Cache文件
         if( false === file_put_contents($tmplCacheFile,trim($tmplContent)))
             throw_exception(L('_CACHE_WRITE_ERROR_').':'.$tmplCacheFile);

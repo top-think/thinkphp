@@ -26,7 +26,7 @@ class WriteHtmlCacheBehavior extends Behavior {
             // 如果开启HTML功能 检查并重写HTML文件
             // 没有模版的操作不生成静态文件
             if(!is_dir(dirname(HTML_FILE_NAME)))
-                mkdir(dirname(HTML_FILE_NAME),0777,true);
+                mkdir(dirname(HTML_FILE_NAME),0755,true);
             if( false === file_put_contents( HTML_FILE_NAME , $content ))
                 throw_exception(L('_CACHE_WRITE_ERROR_').':'.HTML_FILE_NAME);
         }

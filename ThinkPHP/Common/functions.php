@@ -392,7 +392,7 @@ function F($name, $value='', $path=DATA_PATH) {
             $dir            =   dirname($filename);
             // 目录不存在则创建
             if (!is_dir($dir))
-                mkdir($dir,0777,true);
+                mkdir($dir,0755,true);
             $_cache[$name]  =   $value;
             return file_put_contents($filename, json_encode($value));
         }
