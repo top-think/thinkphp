@@ -57,11 +57,11 @@ class View {
      * @param string $templateFile 模板文件名
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
-     * @param string $prefix 模板缓存前缀
      * @param string $content 模板输出内容
+     * @param string $prefix 模板缓存前缀
      * @return mixed
      */
-    public function display($templateFile='',$charset='',$contentType='',$prefix='',$content='') {
+    public function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
         G('viewStartTime');
         // 视图开始标签
         tag('view_begin',$templateFile);

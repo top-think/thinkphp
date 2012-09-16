@@ -93,11 +93,12 @@ abstract class Action {
      * @param string $charset 输出编码
      * @param string $contentType 输出类型
      * @param string $content 输出内容
+     * @param string $prefix 模板缓存前缀
      * @return void
      */
-    protected function display($templateFile='',$charset='',$contentType='',$content='') {
+    protected function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
         $this->initView();
-        $this->view->display($templateFile,$charset,$contentType,$content);
+        $this->view->display($templateFile,$charset,$contentType,$content,$prefix);
     }
 
     /**
