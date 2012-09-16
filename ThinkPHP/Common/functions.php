@@ -309,20 +309,22 @@ function redirect($url, $time=0, $msg='') {
 
 /**
  * 缓存管理
- * @param string|array $name 缓存名称，如果为数组表示进行缓存设置
+ * @param mixed $name 缓存名称，如果为数组表示进行缓存设置
  * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
+ * @param mixed $expire 缓存有效期（秒）
  * @return mixed
  */
 function cache($name,$value='',$expire=0) {
     static $cache   =   '';
-    if(is_array($name)) { // 缓存初始化
-        $type       =   isset($name['type'])?$name['type']:C('DATA_CACHE_TYPE');
-        unset($name['type']);
+    if(is_array($expire)){
+        // 缓存操作的同时初始化
+        $type       =   isset($expire['type'])?$expire['type']:'';
+        $cache      =   Cache::getInstance($type,$expire);
+    }elseif(is_array($name)) { // 缓存初始化
+        $type       =   isset($name['type'])?$name['type']:'';
         $cache      =   Cache::getInstance($type,$name);
         return $cache;
-    }
-    if(empty($cache)) { // 自动初始化
+    }elseif(empty($cache)) { // 自动初始化
         $cache      =   Cache::getInstance();
     }
     if(''=== $value){ // 获取缓存值
@@ -331,6 +333,7 @@ function cache($name,$value='',$expire=0) {
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
+        $expire     =   is_numeric($expire)?$expire:NULL;
         return $cache->set($name, $value, $expire);
     }
 }
