@@ -121,9 +121,11 @@ class Think {
         // 加载模式别名定义
         if(isset($mode['alias'])) {
             $alias = is_array($mode['alias'])?$mode['alias']:include $mode['alias'];
-            alias_import($alias);
-            if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';
+        }else{
+            $alias = include THINK_PATH.'Conf/alias.php';
         }
+        alias_import($alias);
+        if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';        
         // 加载项目别名定义
         if(is_file(CONF_PATH.'alias.php')){ 
             $alias = include CONF_PATH.'alias.php';

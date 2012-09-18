@@ -99,7 +99,7 @@ function load_runtime_file() {
         if(is_file($file))  require_cache($file);
     }
     // 加载系统类库别名定义
-    alias_import(include THINK_PATH.'Conf/alias.php');
+    //alias_import(include THINK_PATH.'Conf/alias.php');
 
     // 检查项目目录结构 如果不存在则自动创建
     if(!is_dir(LIB_PATH)) {
@@ -155,11 +155,11 @@ function build_runtime_cache($append='') {
     if(C('APP_TAGS_ON')) {
         $content .= build_tags_cache();
     }
-    $alias      = include THINK_PATH.'Conf/alias.php';
-    $content   .= 'alias_import('.var_export($alias,true).');';
+    //$alias      = include THINK_PATH.'Conf/alias.php';
+    //$content   .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
     $content   .= $append."\nL(".var_export(L(),true).");C(".var_export(C(),true).');G(\'loadTime\');Think::Start();';
-    file_put_contents(RUNTIME_FILE,strip_whitespace('<?php '.$content));
+    file_put_contents(RUNTIME_FILE,strip_whitespace('<?php '.str_replace("defined('THINK_PATH') or exit();",' ',$content)));
 }
 
 // 编译系统行为扩展类库

@@ -266,6 +266,39 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
 }
 
 /**
+ * 渲染输出Widget
+ * @param string $name Widget名称
+ * @param array $data 传人的参数
+ * @param boolean $return 是否返回内容 
+ * @return void
+ */
+function W($name, $data=array(), $return=false) {
+    $class      =   $name . 'Widget';
+    require_cache(LIB_PATH . 'Widget/' . $class . '.class.php');
+    if (!class_exists($class))
+        throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
+    $widget     =   Think::instance($class);
+    $content    =   $widget->render($data);
+    if ($return)
+        return $content;
+    else
+        echo $content;
+}
+
+/**
+ * 过滤器方法 引用传值
+ * @param string $name 过滤器名称
+ * @param string $content 要过滤的内容
+ * @return void
+ */
+function filter($name, &$content) {
+    $class      =   $name . 'Filter';
+    require_cache(LIB_PATH . 'Filter/' . $class . '.class.php');
+    $filter     =   new $class();
+    $content    =   $filter->run($content);
+}
+
+/**
  * 判断是否SSL协议
  * @return boolean
  */

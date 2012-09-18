@@ -66,15 +66,18 @@ function G($start,$end='',$dec=4) {
  * @param integer $step 步进值
  * @return mixed
  */
-function N($key, $step=0) {
+function N($key, $step=0,$save=false) {
     static $_num    = array();
     if (!isset($_num[$key])) {
-        $_num[$key] = 0;
+        $_num[$key] = (false !== $save)? cache('N_'.$key) :  0;
     }
     if (empty($step))
         return $_num[$key];
     else
         $_num[$key] = $_num[$key] + (int) $step;
+    if(false !== $save){ // 保存结果
+        cache('N_'.$key,$_num[$key],$save);
+    }
 }
 
 /**
@@ -456,19 +459,6 @@ function add_tag_behavior($tag,$behavior,$path='') {
 }
 
 /**
- * 过滤器方法 引用传值
- * @param string $name 过滤器名称
- * @param string $content 要过滤的内容
- * @return void
- */
-function filter($name, &$content) {
-    $class      =   $name . 'Filter';
-    require_cache(LIB_PATH . 'Filter/' . $class . '.class.php');
-    $filter     =   new $class();
-    $content    =   $filter->run($content);
-}
-
-/**
  * 执行某个行为
  * @param string $name 行为名称
  * @param Mixed $params 传人的参数
@@ -482,26 +472,6 @@ function B($name, &$params=NULL) {
     if(APP_DEBUG) { // 记录行为的执行日志
         trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
-}
-
-/**
- * 渲染输出Widget
- * @param string $name Widget名称
- * @param array $data 传人的参数
- * @param boolean $return 是否返回内容 
- * @return void
- */
-function W($name, $data=array(), $return=false) {
-    $class      =   $name . 'Widget';
-    require_cache(LIB_PATH . 'Widget/' . $class . '.class.php');
-    if (!class_exists($class))
-        throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
-    $widget     =   Think::instance($class);
-    $content    =   $widget->render($data);
-    if ($return)
-        return $content;
-    else
-        echo $content;
 }
 
 /**

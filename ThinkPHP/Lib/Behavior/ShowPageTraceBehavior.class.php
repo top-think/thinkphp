@@ -106,7 +106,7 @@ class ShowPageTraceBehavior extends Behavior {
             }
             error_log(str_replace('<br/>',"\r\n",$content), Log::FILE,LOG_PATH.date('y_m_d').'_trace.log');
         }
-        unset($files,$info,$log,$base);
+        unset($files,$info,$base);
         // 调用Trace页面模板
         ob_start();
         include C('TMPL_TRACE_FILE')?C('TMPL_TRACE_FILE'):THINK_PATH.'Tpl/page_trace.tpl';
