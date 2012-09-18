@@ -255,11 +255,11 @@ class DbPdo extends Db{
         $info   =   array();
         if($result) {
             foreach ($result as $key => $val) {
-                $val = array_change_key_case($val);
-                $val['name'] = isset($val['name'])?$val['name']:"";
-                $val['type'] = isset($val['type'])?$val['type']:"";
-                $name= strtolower(isset($val['field'])?$val['field']:$val['name']);
-                $info[$name] = array(
+                $val            =   array_change_key_case($val);
+                $val['name']    =   isset($val['name'])?$val['name']:"";
+                $val['type']    =   isset($val['type'])?$val['type']:"";
+                $name           =   isset($val['field'])?$val['field']:$val['name'];
+                $info[$name]    =   array(
                     'name'    => $name ,
                     'type'    => $val['type'],
                     'notnull' => (bool)(((isset($val['null'])) && ($val['null'] === '')) || ((isset($val['notnull'])) && ($val['notnull'] === ''))), // not null is empty, null is yes
