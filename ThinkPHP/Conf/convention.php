@@ -120,6 +120,7 @@ return  array(
     'URL_PATHINFO_FETCH'    =>   'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL', // 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
     'URL_HTML_SUFFIX'       => '',  // URL伪静态后缀设置
     'URL_PARAMS_BIND'       =>  true, // URL变量绑定到Action方法参数
+    'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
 
     /* 系统变量名称设置 */
     'VAR_GROUP'             => 'g',     // 默认分组获取变量

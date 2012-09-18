@@ -97,7 +97,7 @@ function dump($var, $echo=true, $label=null, $strict=true) {
         var_dump($var);
         $output = ob_get_clean();
         if (!extension_loaded('xdebug')) {
-            $output = preg_replace("/\]\=\>\n(\s+)/m", '] => ', $output);
+            $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
             $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
         }
     }

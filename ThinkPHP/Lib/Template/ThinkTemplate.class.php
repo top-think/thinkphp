@@ -135,7 +135,7 @@ class  ThinkTemplate {
         $tmplContent =  '<?php if (!defined(\'THINK_PATH\')) exit();?>'.$tmplContent;
         if(C('TMPL_STRIP_SPACE')) {
             /* 去除html空格与换行 */
-            $find           = array("~>\s+<~","~>(\s+\n|\r)~");
+            $find           = array('~>\s+<~','~>(\s+\n|\r)~');
             $replace        = array('><','>');
             $tmplContent    = preg_replace($find, $replace, $tmplContent);
         }

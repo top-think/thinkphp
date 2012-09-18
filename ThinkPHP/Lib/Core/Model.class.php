@@ -700,7 +700,7 @@ class Model {
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
-                        $cols[$name]   =  is_string($sepa)?implode($sepa,array_slice($result,1)):$result;
+                        $cols[$name]   =  is_string($sepa)?implode($sepa,$result):$result;
                     }
                 }
                 return $cols;

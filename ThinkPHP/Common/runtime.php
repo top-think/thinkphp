@@ -88,7 +88,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
 function load_runtime_file() {
     // 加载系统基础函数库
     require THINK_PATH.'Common/common.php';
-    // 读取核心编译文件列表
+    // 读取核心文件列表
     $list = array(
         CORE_PATH.'Core/Think.class.php',
         CORE_PATH.'Core/ThinkException.class.php',  // 异常处理类
