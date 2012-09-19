@@ -81,7 +81,7 @@ class Page {
         $parameter      =   str_replace(array('&','='), C('URL_PATHINFO_DEPR'), $this->parameter);
 
         //增加附加参数
-        $url            =   __APP__.'/'.$module_name.C('URL_PATHINFO_DEPR').$action_name.C('URL_PATHINFO_DEPR').$parameter;
+        $url            =   rtrim(__APP__.'/'.$module_name.C('URL_PATHINFO_DEPR').$action_name.C('URL_PATHINFO_DEPR').$parameter,C('URL_PATHINFO_DEPR'));
         
         //上下翻页字符串
         $upRow          =   $this->nowPage-1;
