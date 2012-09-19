@@ -152,9 +152,8 @@ function build_runtime_cache($append='') {
         $content .= compile($file);
     }
     // 系统行为扩展文件统一编译
-    if(C('APP_TAGS_ON')) {
-        $content .= build_tags_cache();
-    }
+    $content .= build_tags_cache();
+    
     //$alias      = include THINK_PATH.'Conf/alias.php';
     //$content   .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
@@ -164,12 +163,10 @@ function build_runtime_cache($append='') {
 
 // 编译系统行为扩展类库
 function build_tags_cache() {
-    $tags = C('extends');
-    $content = '';
-    foreach ($tags as $tag=>$item){
-        foreach ($item as $key=>$name) {
-            $content .= is_int($key)?compile(CORE_PATH.'Behavior/'.$name.'Behavior.class.php'):compile($name);
-        }
+    $tags       =   C('tags');
+    $content    =   '';
+    foreach ($tags as $name=>$tag){
+        $content .= compile(CORE_PATH.'Behavior/'.$name.'Behavior.class.php');
     }
     return $content;
 }
