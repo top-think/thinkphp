@@ -405,15 +405,29 @@ function C($name=null, $value=null) {
  * @return mixed
  */
 function tag($tag, &$params=NULL) {
-    // 获取tag标签的行为扩展
-    $tags       = array_keys(C('tags'),$tag);
-    if(!empty($tags)) {
+    // 系统标签扩展
+    $extends    = C('extends.' . $tag);
+    // 应用标签扩展
+    $tags       = C('tags.' . $tag);
+    if (!empty($tags)) {
+        if(empty($tags['_overlay']) && !empty($extends)) { // 合并扩展
+            $tags = array_unique(array_merge($extends,$tags));
+        }elseif(isset($tags['_overlay'])){ // 通过设置 '_overlay'=>1 覆盖系统标签
+            unset($tags['_overlay']);
+        }
+    }elseif(!empty($extends)) {
+        $tags = $extends;
+    }
+    if($tags) {
         if(APP_DEBUG) {
             G($tag.'Start');
             trace('[ '.$tag.' ] --START--','','INFO');
         }
         // 执行扩展
-        foreach ($tags as $name) {
+        foreach ($tags as $key=>$name) {
+            if(!is_int($key)) { // 指定行为类的完整路径 用于模式扩展
+                $name   = $key;
+            }
             B($name, $params);
         }
         if(APP_DEBUG) { // 记录行为的执行日志
@@ -428,12 +442,20 @@ function tag($tag, &$params=NULL) {
  * 动态添加行为扩展到某个标签
  * @param string $tag 标签名称
  * @param string $behavior 行为名称
+ * @param string $path 行为路径 
  * @return void
  */
-function add_tag_behavior($tag,$behavior) {
-    $array      =  C('tags');
-    $array[$behavior] =  $tag;
-    C('tags',$array);
+function add_tag_behavior($tag,$behavior,$path='') {
+    $array      =  C('tags.'.$tag);
+    if(!$array) {
+        $array  =  array();
+    }
+    if($path) {
+        $array[$behavior] = $path;
+    }else{
+        $array[] =  $behavior;
+    }
+    C('tags.'.$tag,$array);
 }
 
 /**

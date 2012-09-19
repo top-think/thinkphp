@@ -68,17 +68,23 @@ class Think {
         // 加载框架底层语言包
         L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
 
-        // 加载行为定义
+        // 加载模式系统行为定义
+        if(C('APP_TAGS_ON')) {
+            if(isset($mode['extends'])) {
+                C('extends',is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
+            }else{ // 默认加载系统行为扩展定义
+                C('extends', include THINK_PATH.'Conf/tags.php');
+            }
+        }
+
+        // 加载应用行为定义
         if(isset($mode['tags'])) {
             C('tags', is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
-        }else{
+        }elseif(is_file(CONF_PATH.'tags.php')){
             // 默认加载项目配置目录的tags文件定义
-            C('tags', include THINK_PATH.'Conf/tags.php');
+            C('tags', include CONF_PATH.'tags.php');
         }
-        if(is_file(CONF_PATH.'tags.php')){
-            // 默认加载项目配置目录的tags文件定义
-            C('tags', array_merge(C('tags'),include CONF_PATH.'tags.php'));
-        }
+
         $compile   = '';
         // 读取核心编译文件列表
         if(isset($mode['core'])) {
