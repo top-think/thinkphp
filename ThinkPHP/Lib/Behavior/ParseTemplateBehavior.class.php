@@ -63,13 +63,7 @@ class ParseTemplateBehavior extends Behavior {
         }else{
             // 调用第三方模板引擎解析和输出
             $class   = 'Template'.ucwords($engine);
-            if(is_file(CORE_PATH.'Driver/Template/'.$class.'.class.php')) {
-                // 内置驱动
-                $path = CORE_PATH;
-            }else{ // 扩展驱动
-                $path = EXTEND_PATH;
-            }
-            if(require_cache($path.'Driver/Template/'.$class.'.class.php')) {
+            if(class_exists($class)) {
                 $tpl   =  new $class;
                 $tpl->fetch($_content,$_data['var']);
             }else {  // 类没有定义
