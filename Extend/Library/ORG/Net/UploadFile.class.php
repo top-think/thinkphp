@@ -62,6 +62,10 @@ class UploadFile {//类定义开始
         }
     }
 
+    public function __isset($name){
+        return isset($this->config[$name]);
+    }
+    
     /**
      * 架构函数
      * @access public
