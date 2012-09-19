@@ -47,10 +47,9 @@ class DbMysqli extends Db{
             $this->linkID[$linkNum] = new mysqli($config['hostname'],$config['username'],$config['password'],$config['database'],$config['hostport']?intval($config['hostport']):3306);
             if (mysqli_connect_errno()) throw_exception(mysqli_connect_error());
             $dbVersion = $this->linkID[$linkNum]->server_version;
-            if ($dbVersion >= '4.1') {
-                // 设置数据库编码 需要mysql 4.1.0以上支持
-                $this->linkID[$linkNum]->query("SET NAMES '".C('DB_CHARSET')."'");
-            }
+            
+            // 设置数据库编码
+            $this->linkID[$linkNum]->query("SET NAMES '".C('DB_CHARSET')."'");
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 $this->linkID[$linkNum]->query("SET sql_mode=''");
