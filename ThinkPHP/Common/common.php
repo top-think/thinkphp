@@ -561,6 +561,7 @@ function array_define($array,$check=true) {
  * @param string $value 变量
  * @param string $label 标签
  * @param string $level 日志级别 
+ * @param boolean $record 是否记录日志
  * @return void
  */
 function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
@@ -569,7 +570,7 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
         return $_trace;
     }else{
         $info   =   ($label?$label.':':'').print_r($value,true);
-        if(APP_DEBUG && 'ERR' == $level) {// 调试模式ERR抛出异常
+        if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
             throw_exception($info);
         }
         if(!isset($_trace[$level])) {

@@ -86,6 +86,7 @@ return  array(
     'ERROR_MESSAGE'         => '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
     'ERROR_PAGE'            => '',	// 错误定向页面
     'SHOW_ERROR_MSG'        => false,    // 显示错误信息
+    'TRACE_EXCEPTION'       => false,   // TRACE错误信息是否抛异常 针对trace方法 
 
     /* 日志设置 */
     'LOG_RECORD'            => false,   // 默认不记录日志
