@@ -50,6 +50,7 @@ return  array(
     'DEFAULT_CHARSET'       => 'utf-8', // 默认输出编码
     'DEFAULT_TIMEZONE'      => 'PRC',	// 默认时区
     'DEFAULT_AJAX_RETURN'   => 'JSON',  // 默认AJAX 数据返回格式,可选JSON XML ...
+    'DEFAULT_JSONP_HANDER'  => 'jsonpReturn', // 默认JSONP格式返回的处理方法
     'DEFAULT_FILTER'        => 'htmlspecialchars', // 默认参数过滤方法 用于 $this->_get('变量名');$this->_post('变量名')...
 
     /* 数据库设置 */

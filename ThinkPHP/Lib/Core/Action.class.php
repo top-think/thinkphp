@@ -325,12 +325,18 @@ abstract class Action {
             // 返回xml格式数据
             header('Content-Type:text/xml; charset=utf-8');
             exit(xml_encode($data));
+        }elseif(strtoupper($type)=='JOSNP'){
+            // 返回JSON数据格式到客户端 包含状态信息
+            header('Content-Type:text/html; charset=utf-8');
+            $hander  =   C('DEFAULT_JSONP_HANDER');
+            exit($hander.'('.json_encode($data).');');            
         }elseif(strtoupper($type)=='EVAL'){
             // 返回可执行的js脚本
             header('Content-Type:text/html; charset=utf-8');
             exit($data);
         }else{
-            // TODO 增加其它格式
+            // 用于扩展其他返回格式数据
+            tag('ajax_return',$data);
         }
     }
 
