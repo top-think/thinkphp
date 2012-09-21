@@ -253,6 +253,7 @@ class RelationModel extends Model {
                         if(!empty($val['condition'])) {
                             $mappingCondition   =   $val['condition'];
                         }else{
+                            $mappingCondition               =   array();
                             $mappingCondition[$mappingFk]   =   $pk;
                         }
                         // 获取关联model对象
