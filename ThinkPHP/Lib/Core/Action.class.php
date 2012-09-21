@@ -317,26 +317,27 @@ abstract class Action {
             $type           =   $args?array_shift($args):'';
         }
         if(empty($type)) $type  =   C('DEFAULT_AJAX_RETURN');
-        if(strtoupper($type)=='JSON') {
-            // 返回JSON数据格式到客户端 包含状态信息
-            header('Content-Type:text/html; charset=utf-8');
-            exit(json_encode($data));
-        }elseif(strtoupper($type)=='XML'){
-            // 返回xml格式数据
-            header('Content-Type:text/xml; charset=utf-8');
-            exit(xml_encode($data));
-        }elseif(strtoupper($type)=='JOSNP'){
-            // 返回JSON数据格式到客户端 包含状态信息
-            header('Content-Type:text/html; charset=utf-8');
-            $hander  =   C('DEFAULT_JSONP_HANDER');
-            exit($hander.'('.json_encode($data).');');            
-        }elseif(strtoupper($type)=='EVAL'){
-            // 返回可执行的js脚本
-            header('Content-Type:text/html; charset=utf-8');
-            exit($data);
-        }else{
-            // 用于扩展其他返回格式数据
-            tag('ajax_return',$data);
+        switch (strtoupper($type)){
+            case 'JSON' :
+                // 返回JSON数据格式到客户端 包含状态信息
+                header('Content-Type:application/json; charset=utf-8');
+                exit(json_encode($data));
+            case 'XML'  :
+                // 返回xml格式数据
+                header('Content-Type:text/xml; charset=utf-8');
+                exit(xml_encode($data));
+            case 'JSONP':
+                // 返回JSON数据格式到客户端 包含状态信息
+                header('Content-Type:application/json; charset=utf-8');
+                $handler  =   C('DEFAULT_JSONP_HANDLER');
+                exit($handler.'('.json_encode($data).');');  
+            case 'EVAL' :
+                // 返回可执行的js脚本
+                header('Content-Type:text/html; charset=utf-8');
+                exit($data);            
+            default     :
+                // 用于扩展其他返回格式数据
+                tag('ajax_return',$data);
         }
     }
 
