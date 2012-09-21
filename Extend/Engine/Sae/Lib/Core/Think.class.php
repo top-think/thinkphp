@@ -183,6 +183,26 @@ class Think {
                 || require_cache(EXTEND_PATH.'Action/'.$class.'.class.php') ) {
                 return ;
             }
+        }elseif(substr($class,0,5)=='Cache'){ // 加载缓存驱动
+            if(require_cache(EXTEND_PATH.'Driver/Cache/'.$class.'.class.php')
+                || require_cache(CORE_PATH.'Driver/Cache/'.$class.'.class.php')){
+                return ;
+            }
+        }elseif(substr($class,0,2)=='Db'){ // 加载数据库驱动
+            if(require_cache(EXTEND_PATH.'Driver/Db/'.$class.'.class.php')
+                || require_cache(CORE_PATH.'Driver/Db/'.$class.'.class.php')){
+                return ;
+            }
+        }elseif(substr($class,0,8)=='Template'){ // 加载模板引擎驱动
+            if(require_cache(EXTEND_PATH.'Driver/Template/'.$class.'.class.php')
+                || require_cache(CORE_PATH.'Driver/Template/'.$class.'.class.php')){
+                return ;
+            }
+        }elseif(substr($class,0,6)=='TagLib'){ // 加载标签库驱动
+            if(require_cache(EXTEND_PATH.'Driver/TagLib/'.$class.'.class.php')
+                || require_cache(CORE_PATH.'Driver/TagLib/'.$class.'.class.php')) {
+                return ;
+            }
         }
 
         // 根据自动加载路径设置进行尝试搜索
