@@ -70,6 +70,7 @@ class ShowPageTraceBehavior extends Behavior {
                     $trace[$title]  =   $info;
                     break;
                 default:// 调试信息
+                    $name       =   strtoupper($name);
                     if(strpos($name,'|')) {// 多组信息
                         $array  =   explode('|',$name);
                         $result =   array();

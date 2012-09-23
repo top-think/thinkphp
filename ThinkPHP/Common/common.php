@@ -573,6 +573,7 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
         if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
             throw_exception($info);
         }
+        $level  =   strtoupper($level);
         if(!isset($_trace[$level])) {
                 $_trace[$level] =   array();
             }
