@@ -42,12 +42,19 @@ class App {
         define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         if(defined('GROUP_NAME')) {
+            if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
+                $config_path    =   BASE_LIB_PATH.'Conf/';
+                $common_path    =   BASE_LIB_PATH.'Common/';
+            }else{ // 普通分组模式
+                $config_path    =   CONF_PATH.GROUP_NAME.'/';
+                $common_path    =   COMMON_PATH.GROUP_NAME.'/';             
+            }
             // 加载分组配置文件
-            if(is_file(CONF_PATH.GROUP_NAME.'/config.php'))
-                C(include CONF_PATH.GROUP_NAME.'/config.php');
+            if(is_file($config_path.'config.php'))
+                C(include $config_path.'config.php');
             // 加载分组函数文件
-            if(is_file(COMMON_PATH.GROUP_NAME.'/function.php'))
-                include COMMON_PATH.GROUP_NAME.'/function.php';
+            if(is_file($common_path.'function.php'))
+                include $common_path.'function.php';   
         }
         // 页面压缩输出支持
         if(C('OUTPUT_ENCODE')){
@@ -81,8 +88,13 @@ class App {
         /* 模板相关目录常量 */
         define('THEME_NAME',   $templateSet);                  // 当前模板主题名称
         $group   =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
-        define('THEME_PATH',   TMPL_PATH.$group.(THEME_NAME?THEME_NAME.'/':''));
-        define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.(THEME_NAME?THEME_NAME.'/':''));
+        if(1==C('APP_GROUP_MODE')){ // 独立分组模式
+            define('THEME_PATH',   BASE_LIB_PATH.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':''));
+            define('APP_TMPL_PATH',THEME_PATH);
+        }else{ 
+            define('THEME_PATH',   TMPL_PATH.$group.(THEME_NAME?THEME_NAME.'/':''));
+            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.(THEME_NAME?THEME_NAME.'/':''));
+        }        
         C('TEMPLATE_NAME',THEME_PATH.MODULE_NAME.(defined('GROUP_NAME')?C('TMPL_FILE_DEPR'):'/').ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX'));
         C('CACHE_PATH',CACHE_PATH.$group);
         //动态配置 TMPL_EXCEPTION_FILE,改为绝对地址
@@ -100,7 +112,7 @@ class App {
             $module  =  false;
         }else{
             //创建Action控制器实例
-            $group   =  defined('GROUP_NAME') ? GROUP_NAME.'/' : '';
+            $group   =  defined('GROUP_NAME') && C('APP_GROUP_MODE')==0 ? GROUP_NAME.'/' : '';
             $module  =  A($group.MODULE_NAME);
         }
 

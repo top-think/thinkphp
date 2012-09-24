@@ -151,8 +151,8 @@ function import($class, $baseUrl = '', $ext='.class.php') {
     if (empty($baseUrl)) {
         if ('@' == $class_strut[0] || APP_NAME == $class_strut[0]) {
             //加载当前项目应用类库
-            $baseUrl = dirname(LIB_PATH);
-            $class   = substr_replace($class, basename(LIB_PATH).'/', 0, strlen($class_strut[0]) + 1);
+            $baseUrl = dirname(BASE_LIB_PATH);
+            $class   = substr_replace($class, basename(BASE_LIB_PATH).'/', 0, strlen($class_strut[0]) + 1);
         }elseif ('think' == strtolower($class_strut[0])){ // think 官方基类库
             $baseUrl = CORE_PATH;
             $class   = substr($class,6);
@@ -161,7 +161,7 @@ function import($class, $baseUrl = '', $ext='.class.php') {
             $baseUrl = LIBRARY_PATH;
         }else { // 加载其他项目应用类库
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-            $baseUrl = APP_PATH . '../' . $class_strut[0] . '/'.basename(LIB_PATH).'/';
+            $baseUrl = APP_PATH . '../' . $class_strut[0] . '/'.basename(BASE_LIB_PATH).'/';
         }
     }
     if (substr($baseUrl, -1) != '/')

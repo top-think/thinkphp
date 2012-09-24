@@ -127,6 +127,8 @@ class Dispatcher {
         if (C('APP_GROUP_LIST')) {
             define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
         }
+        // 定义项目基础加载路径
+        define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? LIB_PATH.GROUP_NAME.'/' : LIB_PATH);          
         define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
         define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
         // URL常量
