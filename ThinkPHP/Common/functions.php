@@ -274,7 +274,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  */
 function W($name, $data=array(), $return=false) {
     $class      =   $name . 'Widget';
-    require_cache(LIB_PATH . 'Widget/' . $class . '.class.php');
+    require_cache(BASE_LIB_PATH . 'Widget/' . $class . '.class.php');
     if (!class_exists($class))
         throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
     $widget     =   Think::instance($class);
@@ -293,7 +293,7 @@ function W($name, $data=array(), $return=false) {
  */
 function filter($name, &$content) {
     $class      =   $name . 'Filter';
-    require_cache(LIB_PATH . 'Filter/' . $class . '.class.php');
+    require_cache(BASE_LIB_PATH . 'Filter/' . $class . '.class.php');
     $filter     =   new $class();
     $content    =   $filter->run($content);
 }
