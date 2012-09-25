@@ -105,19 +105,19 @@ class UploadFile {//类定义开始
             if(false !== $image) {
                 //是图像文件生成缩略图
                 $thumbWidth		=	explode(',',$this->thumbMaxWidth);
-                $thumbHeight		=	explode(',',$this->thumbMaxHeight);
-                $thumbPrefix		=	explode(',',$this->thumbPrefix);
-                $thumbSuffix = explode(',',$this->thumbSuffix);
-                $thumbFile			=	explode(',',$this->thumbFile);
-                $thumbPath    =  $this->thumbPath?$this->thumbPath:dirname($filename).'/';
+                $thumbHeight	=	explode(',',$this->thumbMaxHeight);
+                $thumbPrefix	=	explode(',',$this->thumbPrefix);
+                $thumbSuffix    =   explode(',',$this->thumbSuffix);
+                $thumbFile		=	explode(',',$this->thumbFile);
+                $thumbPath      =   $this->thumbPath?$this->thumbPath:dirname($filename).'/';
                 // 生成图像缩略图
                 import($this->imageClassPath);
                 for($i=0,$len=count($thumbWidth); $i<$len; $i++) {
                     if(!empty($thumbFile[$i])) {
                         $thumbname  =   $thumbFile[$i];
                     }else{
-                        $prefix =   isset($thumbPrefix[$i])?$thumbPrefix[$i]:$thumbPrefix[0];
-                        $suffix =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
+                        $prefix     =   isset($thumbPrefix[$i])?$thumbPrefix[$i]:$thumbPrefix[0];
+                        $suffix     =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
                         $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
                     }
                     Image::thumb($filename,$thumbPath.$thumbname.'.'.$file['extension'],'',$thumbWidth[$i],$thumbHeight[$i],true);
@@ -163,7 +163,7 @@ class UploadFile {//类定义开始
                 return false;
             }
         }
-        $fileInfo = array();
+        $fileInfo   = array();
         $isUpload   = false;
 
         // 获取上传的文件信息
@@ -173,10 +173,10 @@ class UploadFile {//类定义开始
             //过滤无效的上传
             if(!empty($file['name'])) {
                 //登记上传文件的扩展信息
-                $file['key']          =  $key;
-                $file['extension']  = $this->getExt($file['name']);
-                $file['savepath']   = $savePath;
-                $file['savename']   = $this->getSaveName($file);
+                if(!isset($file['key']))   $file['key']    =   $key;
+                $file['extension']  =   $this->getExt($file['name']);
+                $file['savepath']   =   $savePath;
+                $file['savename']   =   $this->getSaveName($file);
 
                 // 自动检查附件
                 if($this->autoCheck) {
@@ -277,22 +277,23 @@ class UploadFile {//类定义开始
      * @return array
      */
     private function dealFiles($files) {
-       $fileArray = array();
-       $n = 0;
-       foreach ($files as $file){
-           if(is_array($file['name'])) {
-               $keys = array_keys($file);
-               $count	 =	 count($file['name']);
-               for ($i=0; $i<$count; $i++) {
-                   foreach ($keys as $key)
-                       $fileArray[$n][$key] = $file[$key][$i];
-                   $n++;
-               }
-           }else{
-               $fileArray[$n] = $file;
-               $n++;
-           }
-       }
+        $fileArray  = array();
+        $n          = 0;
+        foreach ($files as $key=>$file){
+            if(is_array($file['name'])) {
+                $keys       =   array_keys($file);
+                $count      =   count($file['name']);
+                for ($i=0; $i<$count; $i++) {
+                    $fileArray[$n]['key'] = $key;
+                    foreach ($keys as $_key){
+                        $fileArray[$n][$_key] = $file[$_key][$i];
+                    }
+                    $n++;
+                }
+            }else{
+               $fileArray[$key] = $file;
+            }
+        }
        return $fileArray;
     }
 
@@ -364,12 +365,12 @@ class UploadFile {//类定义开始
     private function getSubName($file) {
         switch($this->subType) {
             case 'date':
-                $dir   =  date($this->dateFormat,time()).'/';
+                $dir    =   date($this->dateFormat,time()).'/';
                 break;
             case 'hash':
             default:
-                $name = md5($file['savename']);
-                $dir   =  '';
+                $name   =   md5($file['savename']);
+                $dir    =   '';
                 for($i=0;$i<$this->hashLevel;$i++) {
                     $dir   .=  $name{$i}.'/';
                 }
@@ -422,8 +423,8 @@ class UploadFile {//类定义开始
 
     // 自动转换字符集 支持数组转换
     private function autoCharset($fContents, $from='gbk', $to='utf-8') {
-        $from = strtoupper($from) == 'UTF8' ? 'utf-8' : $from;
-        $to = strtoupper($to) == 'UTF8' ? 'utf-8' : $to;
+        $from   = strtoupper($from) == 'UTF8' ? 'utf-8' : $from;
+        $to     = strtoupper($to) == 'UTF8' ? 'utf-8' : $to;
         if (strtoupper($from) === strtoupper($to) || empty($fContents) || (is_scalar($fContents) && !is_string($fContents))) {
             //如果编码相同或者非字符串标量则不转换
             return $fContents;
