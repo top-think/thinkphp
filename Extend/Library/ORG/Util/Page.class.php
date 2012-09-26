@@ -16,6 +16,8 @@ class Page {
     public $rollPage = 5;
     // 页数跳转时要带的参数
     public $parameter  ;
+    // 分页URL地址
+    public $url     =   '';
     // 默认列表每页显示行数
     public $listRows = 20;
     // 起始行数
@@ -40,7 +42,7 @@ class Page {
      * @param array $listRows  每页显示记录数
      * @param array $parameter  分页跳转的参数
      */
-    public function __construct($totalRows,$listRows='',$parameter='') {
+    public function __construct($totalRows,$listRows='',$parameter='',$url='') {
         $this->totalRows    =   $totalRows;
         $this->parameter    =   $parameter;
         $this->varPage      =   C('VAR_PAGE') ? C('VAR_PAGE') : 'p' ;
@@ -72,18 +74,23 @@ class Page {
         $nowCoolPage    =   ceil($this->nowPage/$this->rollPage);
 
         // 分析分页参数
-        if($this->parameter && is_string($this->parameter)) {
-            parse_str($this->parameter,$parameter);
-        }elseif(empty($this->parameter)){
-            unset($_GET[C('VAR_URL_PARAMS')]);
-            if(empty($_GET)) {
-                $parameter  =   array();
-            }else{
-                $parameter  =   $_GET;
+        if($this->url){
+            $depr       =   C('URL_PATHINFO_DEPR');
+            $url        =   rtrim(U('/'.$this->url),$depr).$depr.'__PAGE__';
+        }else{
+            if($this->parameter && is_string($this->parameter)) {
+                parse_str($this->parameter,$parameter);
+            }elseif(empty($this->parameter)){
+                unset($_GET[C('VAR_URL_PARAMS')]);
+                if(empty($_GET)) {
+                    $parameter  =   array();
+                }else{
+                    $parameter  =   $_GET;
+                }
             }
+            $parameter[$p]  =   '__PAGE__';
+            $url            =   U('',$parameter);
         }
-        $parameter[$p]  =   '__PAGE__';
-        $url            =   U('',$parameter);
         //上下翻页字符串
         $upRow          =   $this->nowPage-1;
         $downRow        =   $this->nowPage+1;
