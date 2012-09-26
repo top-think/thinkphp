@@ -168,15 +168,13 @@ class Think {
                 return ;
             }
         }elseif(substr($class,-5)=='Model'){ // 加载模型
-            if((defined('GROUP_NAME') && require_cache(LIB_PATH.'Model/'.GROUP_NAME.'/'.$class.'.class.php'))
-                || require_cache(LIB_PATH.'Model/'.$class.'.class.php')
+            if(require_cache(LIB_PATH.'Model/'.(defined('GROUP_NAME')?GROUP_NAME.'/':'').$class.'.class.php')
                 || require_cache(BASE_LIB_PATH.'Model/'.$class.'.class.php')
                 || require_cache(EXTEND_PATH.'Model/'.$class.'.class.php') ) {
                 return ;
             }
         }elseif(substr($class,-6)=='Action'){ // 加载控制器
-            if((defined('GROUP_NAME') && require_cache(LIB_PATH.'Action/'.GROUP_NAME.'/'.$class.'.class.php'))
-                || require_cache(LIB_PATH.'Action/'.$class.'.class.php')
+            if(require_cache(LIB_PATH.'Action/'.(defined('GROUP_NAME')?GROUP_NAME.'/':'').$class.'.class.php')
                 || require_cache(BASE_LIB_PATH.'Action/'.$class.'.class.php')
                 || require_cache(EXTEND_PATH.'Action/'.$class.'.class.php') ) {
                 return ;
