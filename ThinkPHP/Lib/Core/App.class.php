@@ -80,10 +80,10 @@ class App {
             }elseif(cookie('think_template')){
                 $templateSet = cookie('think_template');
             }
-            // 主题不存在时仍改回使用默认主题
-            if(!is_dir(TMPL_PATH.$templateSet))
-                $templateSet = C('DEFAULT_THEME');
-            cookie('think_template',$templateSet);
+            if(!in_array($templateSet,explode(',',C('THEME_LIST')))){
+                $templateSet =  C('DEFAULT_THEME');
+            }
+            cookie('think_template',$templateSet,864000);
         }
         /* 模板相关目录常量 */
         define('THEME_NAME',   $templateSet);                  // 当前模板主题名称
