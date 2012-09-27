@@ -54,7 +54,10 @@ class App {
                 C(include $config_path.'config.php');
             // 加载分组函数文件
             if(is_file($common_path.'function.php'))
-                include $common_path.'function.php';   
+                include $common_path.'function.php';
+            // 加载独立分组函数库
+            if(is_file($common_path.'common.php'))
+            	include $common_path.'common.php';
         }
         // 页面压缩输出支持
         if(C('OUTPUT_ENCODE')){
