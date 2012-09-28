@@ -54,8 +54,10 @@ class App {
                 C(include $config_path.'config.php');
             // 加载分组函数文件
             if(is_file($common_path.'function.php'))
-                include $common_path.'function.php';   
-        }
+                include $common_path.'function.php';  
+         }
+        // URL调度结束标签
+        tag('url_dispatch');         
         // 页面压缩输出支持
         if(C('OUTPUT_ENCODE')){
             $zlib = ini_get('zlib.output_compression');
