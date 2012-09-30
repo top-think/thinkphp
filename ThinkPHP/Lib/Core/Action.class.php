@@ -367,7 +367,7 @@ abstract class Action {
      * @return void
      */
     private function dispatchJump($message,$status=1,$jumpUrl='',$ajax=false) {
-        if($ajax || $this->isAjax()) {// AJAX提交
+        if($ajax || IS_AJAX) {// AJAX提交
             $data           =   is_array($ajax)?$ajax:$this->get();
             $data['info']   =   $message;
             $data['status'] =   $status;
