@@ -76,7 +76,7 @@ class Page {
         // 分析分页参数
         if($this->url){
             $depr       =   C('URL_PATHINFO_DEPR');
-            $url        =   rtrim(U('/'.$this->url),$depr).$depr.'__PAGE__';
+            $url        =   rtrim(U('/'.$this->url,'',false),$depr).$depr.'__PAGE__';
         }else{
             if($this->parameter && is_string($this->parameter)) {
                 parse_str($this->parameter,$parameter);
