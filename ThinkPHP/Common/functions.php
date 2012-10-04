@@ -149,7 +149,7 @@ function layout($layout) {
 
 /**
  * URL组装 支持不同URL模式
- * @param string $url URL表达式，格式：'[分组/模块/操作@域名]?参数1=值1&参数2=值2...'
+ * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
  * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
@@ -160,7 +160,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
-    if(false !== strpos($url,'@')) { // 解析域名
+    if(isset($info['fragment'])) { // 解析锚点
+        $anchor =   $info['fragment'];
+        if(false !== strpos($anchor,'@')) { // 解析域名
+            list($anchor,$host)    =   explode('@',$anchor, 2);
+        }
+    }elseif(false !== strpos($url,'@')) { // 解析域名
         list($url,$host)    =   explode('@',$info['path'], 2);
     }
     // 解析子域名
@@ -255,6 +260,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 $url  .=  '.'.ltrim($suffix,'.');
             }
         }
+    }
+    if($anchor){
+        $url  .= '#'.$anchor;
     }
     if($domain) {
         $url   =  (is_ssl()?'https://':'http://').$domain.$url;
