@@ -162,6 +162,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
     if(isset($info['fragment'])) { // 解析锚点
         $anchor =   $info['fragment'];
+        if(false !== strpos($anchor,'?')) { // 解析参数
+            list($anchor,$info['query']) = explode('?',$anchor,2);
+        }        
         if(false !== strpos($anchor,'@')) { // 解析域名
             list($anchor,$host)    =   explode('@',$anchor, 2);
         }
