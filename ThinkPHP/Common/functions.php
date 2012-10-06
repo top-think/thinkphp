@@ -199,7 +199,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         parse_str($info['query'],$params);
         $vars = array_merge($params,$vars);
     }
-
+    // 过滤空的参数
+    $vars = array_filter($vars);
+    
     // URL组装
     $depr = C('URL_PATHINFO_DEPR');
     if($url) {
