@@ -266,7 +266,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             }
         }
     }
-    if($anchor){
+    if(isset($anchor)){
         $url  .= '#'.$anchor;
     }
     if($domain) {
