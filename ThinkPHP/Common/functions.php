@@ -221,6 +221,19 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $var        =   array();
             $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
             $var[C('VAR_MODULE')]       =   !empty($path)?array_pop($path):MODULE_NAME;
+            if($maps = C('URL_ACTION_MAP')) {
+                if(isset($maps[strtolower($var[C('VAR_MODULE')])])) {
+                    $maps    =   $maps[strtolower($var[C('VAR_MODULE')])];
+                    if($action = array_search(strtolower($var[C('VAR_ACTION')]),$maps)){
+                        $var[C('VAR_ACTION')] = $action;
+                    }
+                }
+            }
+            if($maps = C('URL_MODULE_MAP')) {
+                if($module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
+                    $var[C('VAR_MODULE')] = $module;
+                }
+            }            
             if(C('URL_CASE_INSENSITIVE')) {
                 $var[C('VAR_MODULE')]   =   parse_name($var[C('VAR_MODULE')]);
             }

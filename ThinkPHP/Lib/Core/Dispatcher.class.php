@@ -126,6 +126,8 @@ class Dispatcher {
         // 获取分组 模块和操作名称
         if (C('APP_GROUP_LIST')) {
             define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
+            // 分组URL地址
+            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);            
         }
         // 定义项目基础加载路径
         define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);          
@@ -136,14 +138,14 @@ class Dispatcher {
         // 当前项目地址
         define('__APP__',strip_tags(PHP_FILE));
         // 当前模块和分组地址
+        $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
         if(defined('GROUP_NAME')) {
-            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);
-            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.MODULE_NAME);
+            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.$moduleName);
         }else{
-            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.MODULE_NAME);
+            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.$moduleName);
         }
         // 当前操作地址
-        define('__ACTION__',__URL__.$depr.ACTION_NAME);
+        define('__ACTION__',__URL__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
@@ -168,7 +170,17 @@ class Dispatcher {
     static private function getModule($var) {
         $module = (!empty($_GET[$var])? $_GET[$var]:C('DEFAULT_MODULE'));
         unset($_GET[$var]);
-        if(C('URL_CASE_INSENSITIVE')) {
+        if($maps = C('URL_MODULE_MAP')) {
+            if(isset($maps[strtolower($module)])) {
+                // 记录当前别名
+                define('MODULE_ALIAS',strtolower($module));
+                // 获取实际的模块名
+                $module =   $maps[MODULE_ALIAS];
+            }elseif(array_search(strtolower($module),$maps)){
+                // 禁止访问原始模块
+                $module =   '';
+            }
+        }elseif(C('URL_CASE_INSENSITIVE')) {
             // URL地址不区分大小写
             // 智能识别方式 index.php/user_type/index/ 识别到 UserTypeAction 模块
             $module = ucfirst(parse_name($module,1));
@@ -186,6 +198,20 @@ class Dispatcher {
             $_POST[$var] :
             (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_ACTION'));
         unset($_POST[$var],$_GET[$var]);
+        if($maps = C('URL_ACTION_MAP')) {
+            if(isset($maps[strtolower(MODULE_NAME)])) {
+                $maps =   $maps[strtolower(MODULE_NAME)];
+                if(isset($maps[strtolower($action)])) {
+                    // 记录当前别名
+                    define('ACTION_ALIAS',strtolower($action));
+                    // 获取实际的操作名
+                    $action =   $maps[ACTION_ALIAS];
+                }elseif(array_search(strtolower($action),$maps)){
+                    // 禁止访问原始操作
+                    $action =   '';
+                }
+            }
+        }        
         return strip_tags(C('URL_CASE_INSENSITIVE')?strtolower($action):$action);
     }
 
