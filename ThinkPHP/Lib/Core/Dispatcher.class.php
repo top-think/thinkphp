@@ -175,12 +175,13 @@ class Dispatcher {
                 // 记录当前别名
                 define('MODULE_ALIAS',strtolower($module));
                 // 获取实际的模块名
-                $module =   $maps[MODULE_ALIAS];
+                return   $maps[MODULE_ALIAS];
             }elseif(array_search(strtolower($module),$maps)){
                 // 禁止访问原始模块
-                $module =   '';
+                return   '';
             }
-        }elseif(C('URL_CASE_INSENSITIVE')) {
+        }
+        if(C('URL_CASE_INSENSITIVE')) {
             // URL地址不区分大小写
             // 智能识别方式 index.php/user_type/index/ 识别到 UserTypeAction 模块
             $module = ucfirst(parse_name($module,1));
@@ -205,10 +206,10 @@ class Dispatcher {
                     // 记录当前别名
                     define('ACTION_ALIAS',strtolower($action));
                     // 获取实际的操作名
-                    $action =   $maps[ACTION_ALIAS];
+                    return   $maps[ACTION_ALIAS];
                 }elseif(array_search(strtolower($action),$maps)){
                     // 禁止访问原始操作
-                    $action =   '';
+                    return   '';
                 }
             }
         }        
