@@ -133,7 +133,7 @@ class Model {
         // 缓存不存在则查询数据表信息
         $this->db->setModel($this->name);
         $fields =   $this->db->getFields($this->getTableName());
-        if(!$fields) { // 无法获取字段信息
+        opif(!$fields) { // 无法获取字段信息
             return false;
         }
         $this->fields   =   array_keys($fields);
@@ -761,6 +761,8 @@ class Model {
             if(is_string($fields)) {
                 $fields =   explode(',',$fields);
             }
+            // 判断令牌验证字段
+            if(C('TOKEN_ON'))   $fields[] = C('TOKEN_NAME');
             foreach ($data as $key=>$val){
                 if(!in_array($key,$fields)) {
                     unset($data[$key]);
