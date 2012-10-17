@@ -445,7 +445,7 @@ function F($name, $value='', $path=DATA_PATH) {
     if ('' !== $value) {
         if (is_null($value)) {
             // 删除缓存
-            return unlink($filename);
+            return false !== strpos($name,'*')?array_map("unlink", glob($filename)):unlink($filename);
         } else {
             // 缓存数据
             $dir            =   dirname($filename);
