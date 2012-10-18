@@ -224,6 +224,8 @@ class  ThinkTemplate {
                 // 替换布局的主体内容
                 $content    =   str_replace($replace,$content,file_get_contents($layoutFile));
             }
+        }else{
+            $content = str_replace('{__NOLAYOUT__}','',$content);
         }
         return $content;
     }
@@ -264,6 +266,8 @@ class  ThinkTemplate {
             $content    =   $this->parseTemplateName($array['name']);
             // 替换block标签
             $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
+        }else{
+            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis','"\\2"',$content);            
         }
         return $content;
     }
