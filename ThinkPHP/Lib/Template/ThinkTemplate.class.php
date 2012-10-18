@@ -28,6 +28,7 @@ class  ThinkTemplate {
     public      $tVar            =   array();
     public      $config          =   array();
     private     $literal         =   array();
+    private     $block           =   array();
 
     /**
      * 架构函数
@@ -72,8 +73,8 @@ class  ThinkTemplate {
      * @return void
      */
     public function fetch($templateFile,$templateVar,$prefix='') {
-        $this->tVar = $templateVar;
-        $templateCacheFile  =  $this->loadTemplate($templateFile,$prefix);
+        $this->tVar         =   $templateVar;
+        $templateCacheFile  =   $this->loadTemplate($templateFile,$prefix);
         // 模板阵列变量分解成为独立变量
         extract($templateVar, EXTR_OVERWRITE);
         //载入模版缓存文件
@@ -215,13 +216,7 @@ class  ThinkTemplate {
             //替换Layout标签
             $content    =   str_replace($matches[0],'',$content);
             //解析Layout标签
-            $layout     =   $matches[1];
-            $xml        =   '<tpl><tag '.$layout.' /></tpl>';
-            $xml        =   simplexml_load_string($xml);
-            if(!$xml)
-                throw_exception(L('_XML_TAG_ERROR_'));
-            $xml = (array)($xml->tag->attributes());
-            $array = array_change_key_case($xml['@attributes']);
+            $array      =   $this->parseXmlAttrs($matches[1]);
             if(!C('LAYOUT_ON') || C('LAYOUT_NAME') !=$array['name'] ) {
                 // 读取布局模板
                 $layoutFile =   THEME_PATH.$array['name'].$this->config['template_suffix'];
@@ -236,23 +231,57 @@ class  ThinkTemplate {
     // 解析模板中的include标签
     protected function parseInclude($content) {
         // 解析布局
-        $content    =  $this->parseLayout($content);
-        // 读取模板中的布局标签
-        $find = preg_match_all('/'.$this->config['taglib_begin'].'include\s(.+?)\s*?\/'.$this->config['taglib_end'].'/is',$content,$matches);
+        $content    =   $this->parseLayout($content);
+        // 解析继承
+        $content    =   $this->parseExtend($content);
+        // 读取模板中的include标签
+        $find       =   preg_match_all('/'.$this->config['taglib_begin'].'include\s(.+?)\s*?\/'.$this->config['taglib_end'].'/is',$content,$matches);
         if($find) {
             for($i=0;$i<$find;$i++) {
                 $include    =   $matches[1][$i];
-                $xml        =   '<tpl><tag '.$include.' /></tpl>';
-                $xml        =   simplexml_load_string($xml);
-                if(!$xml)   throw_exception(L('_XML_TAG_ERROR_'));
-                $xml        =   (array)($xml->tag->attributes());
-                $array      =   array_change_key_case($xml['@attributes']);
+                $array      =   $this->parseXmlAttrs($include);
                 $file       =   $array['file'];
                 unset($array['file']);
                 $content    =   str_replace($matches[0][$i],$this->parseIncludeItem($file,$array),$content);
             }
         }
         return $content;
+    }
+
+    // 解析模板中的extend标签
+    protected function parseExtend($content) {
+        $begin      =   $this->config['taglib_begin'];
+        $end        =   $this->config['taglib_end'];        
+        // 读取模板中的继承标签
+        $find       =   preg_match('/'.$begin.'extend\s(.+?)\s*?\/'.$end.'/is',$content,$matches);
+        if($find) {
+            //替换extend标签
+            $content    =   str_replace($matches[0],'',$content);
+            // 记录页面中的block标签
+            preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->parseBlock('\\1','\\2')",$content);
+            // 读取继承模板
+            $array      =   $this->parseXmlAttrs($matches[1]);
+            $content    =   $this->parseTemplateName($array['name']);
+            // 替换block标签
+            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
+        }
+        return $content;
+    }
+
+    /**
+     * 分析XML属性
+     * @access private
+     * @param string $attrs  XML属性字符串
+     * @return array
+     */
+    private function parseXmlAttrs($attrs) {
+        $xml        =   '<tpl><tag '.$attrs.' /></tpl>';
+        $xml        =   simplexml_load_string($xml);
+        if(!$xml)
+            throw_exception(L('_XML_TAG_ERROR_'));
+        $xml        =   (array)($xml->tag->attributes());
+        $array      =   array_change_key_case($xml['@attributes']);
+        return $array;
     }
 
     /**
@@ -285,6 +314,32 @@ class  ThinkTemplate {
     }
 
     /**
+     * 记录当前页面中的block标签
+     * @access private
+     * @param string $name block名称
+     * @param string $content  模板内容
+     * @return string
+     */
+    private function parseBlock($name,$content) {
+        if(trim($content)=='')  return '';
+        $this->block[$name]  =   stripslashes($content);
+        return '';
+    }
+
+    /**
+     * 替换继承模板中的block标签
+     * @access private
+     * @param string $name  block名称
+     * @param string $content  模板内容
+     * @return string
+     */
+    private function replaceBlock($name,$content) {
+        // 替换block标签 没有重新定义则使用原来的
+        $replace   =  isset($this->block[$name])?   $this->block[$name]   :   $content;
+        return $replace;
+    }
+
+    /**
      * 搜索模板页面中包含的TagLib库
      * 并返回列表
      * @access public
@@ -298,13 +353,7 @@ class  ThinkTemplate {
             //替换TagLib标签
             $content        = str_replace($matches[0],'',$content);
             //解析TagLib标签
-            $tagLibs        = $matches[1];
-            $xml            = '<tpl><tag '.$tagLibs.' /></tpl>';
-            $xml            = simplexml_load_string($xml);
-            if(!$xml)
-                throw_exception(L('_XML_TAG_ERROR_'));
-            $xml            = (array)($xml->tag->attributes());
-            $array          = array_change_key_case($xml['@attributes']);
+            $array          =   $this->parseXmlAttrs($matches[1]);
             $this->tagLib   = explode(',',$array['name']);
         }
         return;
@@ -319,18 +368,18 @@ class  ThinkTemplate {
      * @return string
      */
     public function parseTagLib($tagLib,&$content,$hide=false) {
-        $begin = $this->config['taglib_begin'];
-        $end   = $this->config['taglib_end'];
-        $className = 'TagLib'.ucwords($tagLib);
-        $tLib =  Think::instance($className);
+        $begin      =   $this->config['taglib_begin'];
+        $end        =   $this->config['taglib_end'];
+        $className  =   'TagLib'.ucwords($tagLib);
+        $tLib       =   Think::instance($className);
         foreach ($tLib->getTags() as $name=>$val){
             $tags = array($name);
             if(isset($val['alias'])) {// 别名设置
-                $tags = explode(',',$val['alias']);
-                $tags[]  =  $name;
+                $tags       = explode(',',$val['alias']);
+                $tags[]     =  $name;
             }
-            $level = isset($val['level'])?$val['level']:1;
-            $closeTag = isset($val['close'])?$val['close']:true;
+            $level      =   isset($val['level'])?$val['level']:1;
+            $closeTag   =   isset($val['close'])?$val['close']:true;
             foreach ($tags as $tag){
                 $parseTag = !$hide? $tagLib.':'.$tag: $tag;// 实际要解析的标签名称
                 if(!method_exists($tLib,'_'.$tag)) {
@@ -551,7 +600,7 @@ class  ThinkTemplate {
                     $parseStr = strtoupper($vars[2]);break;
                 case 'LANG':
                     $parseStr = 'L("'.$vars[2].'")';break;
-				case 'CONFIG':
+                case 'CONFIG':
                     if(isset($vars[3])) {
                         $vars[2] .= '.'.$vars[3];
                     }
@@ -585,21 +634,38 @@ class  ThinkTemplate {
 
     /**
      * 加载公共模板并缓存 和当前模板在同一路径，否则使用相对路径
-     * @access public
+     * @access private
      * @param string $tmplPublicName  公共模板文件名
      * @param array $vars  要传递的变量列表
      * @return string
      */
-    protected function parseIncludeItem($tmplPublicName,$vars=array()){
-        if(substr($tmplPublicName,0,1)=='$')
+    private function parseIncludeItem($tmplPublicName,$vars=array()){
+        // 分析模板文件名并读取内容
+        $parseStr = $this->parseTemplateName($tmplPublicName);
+        // 替换变量
+        foreach ($vars as $key=>$val) {
+            $parseStr = str_replace('['.$key.']',$val,$parseStr);
+        }
+        // 再次对包含文件进行模板分析
+        return $this->parseInclude($parseStr);
+    }
+
+    /**
+     * 分析加载的模板文件并读取内容 支持多个模板文件读取
+     * @access private
+     * @param string $tmplPublicName  模板文件名
+     * @return string
+     */    
+    private function parseTemplateName($templateName){
+        if(substr($templateName,0,1)=='$')
             //支持加载变量文件名
-            $tmplPublicName = $this->get(substr($tmplPublicName,1));
-        $array  =   explode(',',$tmplPublicName);
+            $templateName = $this->get(substr($templateName,1));
+        $array  =   explode(',',$templateName);
         $parseStr   =   '';
-        foreach ($array as $tmplPublicName){
-            if(false === strpos($tmplPublicName,$this->config['template_suffix'])) {
+        foreach ($array as $templateName){
+            if(false === strpos($templateName,$this->config['template_suffix'])) {
                 // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
-                $path   =  explode(':',$tmplPublicName);
+                $path   =  explode(':',$templateName);
                 $action = array_pop($path);
                 $module = !empty($path)?array_pop($path):MODULE_NAME;
                 if(!empty($path)) {// 设置模板主题
@@ -608,15 +674,11 @@ class  ThinkTemplate {
                     $path = THEME_PATH;
                 }
                 $depr = defined('GROUP_NAME')?C('TMPL_FILE_DEPR'):'/';
-                $tmplPublicName  =  $path.$module.$depr.$action.$this->config['template_suffix'];
+                $templateName  =  $path.$module.$depr.$action.$this->config['template_suffix'];
             }
             // 获取模板文件内容
-            $parseStr .= file_get_contents($tmplPublicName);
+            $parseStr .= file_get_contents($templateName);
         }
-        foreach ($vars as $key=>$val) {
-            $parseStr = str_replace('['.$key.']',$val,$parseStr);
-        }
-        //再次对包含文件进行模板分析
-        return $this->parseInclude($parseStr);
-    }
+        return $parseStr;
+    }    
 }
