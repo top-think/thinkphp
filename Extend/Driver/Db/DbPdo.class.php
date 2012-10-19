@@ -356,6 +356,25 @@ class DbPdo extends Db{
     }
 
     /**
+     * 字段和表名处理
+     * @access protected
+     * @param string $key
+     * @return string
+     */
+    protected function parseKey(&$key) {
+        if($this->dbType=='MYSQL'){
+            $key   =  trim($key);
+            if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
+               $key = '`'.$key.'`';
+            }
+            return $key;            
+        }else{
+            return parent::parseKey($key);
+        }
+
+    }
+
+    /**
      * 关闭数据库
      * @access public
      */
