@@ -413,9 +413,9 @@ class DbPdo extends Db{
             case 'PGSQL':
             case 'MSSQL':
             case 'SQLSRV':
-            case 'IBASE':
             case 'MYSQL':
                 return addslashes($str);
+            case 'IBASE':                
             case 'SQLITE':
             case 'ORACLE':
             case 'OCI':

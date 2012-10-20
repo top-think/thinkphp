@@ -308,8 +308,19 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
     }
 
     /**
+     * SQL指令安全过滤
+     * @access public
+     * @param string $str  SQL指令
+     * @return string
+     */
+    public function escapeString($str) {
+        return str_replace("'", "''", $str);
+    }
+
+    /**
      * limit
      * @access public
+     * @param $limit limit表达式
      * @return string
      */
 	public function parseLimit($limit) {

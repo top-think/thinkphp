@@ -278,7 +278,7 @@ class DbOracle extends Db{
     /**
      * SQL指令安全过滤
      * @access public
-     * @param mix $str  SQL指令
+     * @param string $str  SQL指令
      * @return string
      */
     public function escapeString($str) {
