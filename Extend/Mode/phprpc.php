@@ -11,18 +11,16 @@
 
 // PHPRPC模式定义文件
 return array(
-
     'core'          =>  array(
         THINK_PATH.'Common/functions.php',   // 系统函数库
         CORE_PATH.'Core/Log.class.php',// 日志处理
         MODE_PATH.'Phprpc/App.class.php', // 应用程序类
         MODE_PATH.'Phprpc/Action.class.php',// 控制器类
-        CORE_PATH.'Core/Model.class.php', // 模型类
     ),
 
     // 项目别名定义文件 [支持数组直接定义或者文件名定义]
     'alias'         =>  array(
-        'Model'     =>  MODE_PATH.'Amf/Model.class.php',
+        'Model'     =>  MODE_PATH.'Phprpc/Model.class.php',
         'Db'        =>  MODE_PATH.'Phprpc/Db.class.php',
     ), 
 
