@@ -52,7 +52,9 @@ class Page {
         $this->totalPages   =   ceil($this->totalRows/$this->listRows);     //总页数
         $this->coolPages    =   ceil($this->totalPages/$this->rollPage);
         $this->nowPage      =   !empty($_GET[$this->varPage])?intval($_GET[$this->varPage]):1;
-        if(!empty($this->totalPages) && $this->nowPage>$this->totalPages) {
+        if($this->nowPage<1){
+            $this->nowPage  =   1;
+        }elseif(!empty($this->totalPages) && $this->nowPage>$this->totalPages) {
             $this->nowPage  =   $this->totalPages;
         }
         $this->firstRow     =   $this->listRows*($this->nowPage-1);
