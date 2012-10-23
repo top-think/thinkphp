@@ -686,7 +686,9 @@ class Model {
         $options                =   $this->_parseOptions($options);
         $field                  =   trim($field);
         if(strpos($field,',')) { // 多字段
-            $options['limit']   =   is_numeric($sepa)?$sepa:'';
+            if(!isset($options['limit'])){
+                $options['limit']   =   is_numeric($sepa)?$sepa:'';
+            }
             $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
                 $_field         =   explode(',', $field);
