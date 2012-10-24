@@ -768,7 +768,8 @@ function send_http_status($code) {
 
 // 过滤表单中的表达式
 function filter_exp($value){
-    if (is_array($value) && 'exp'==strtolower($value[0])){
+    if (is_array($value)){
+        if('exp'==strtolower($value[0]) || (isset($value[0][0]) && 'exp'==strtolower($value[0][0])) )
         return '';
     }
     return $value;
