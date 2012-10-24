@@ -765,3 +765,11 @@ function send_http_status($code) {
         header('Status:'.$code.' '.$_status[$code]);
     }
 }
+
+// 过滤表单中的表达式
+function filter_exp($value){
+    if (is_array($value) && 'exp'==strtolower($value[0])){
+        return '';
+    }
+    return $value;
+}
