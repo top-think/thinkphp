@@ -272,6 +272,38 @@ class DbMssql extends Db{
         return $limitStr;
     }
 
+   /**
+     * 更新记录
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 表达式
+     * @return false | integer
+     */
+    public function update($data,$options) {
+        $this->model  =   $options['model'];
+        $sql   = 'UPDATE '
+            .$this->parseTable($options['table'])
+            .$this->parseSet($data)
+            .$this->parseWhere(isset($options['where'])?$options['where']:'')
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+        return $this->execute($sql);
+    }
+
+    /**
+     * 删除记录
+     * @access public
+     * @param array $options 表达式
+     * @return false | integer
+     */
+    public function delete($options=array()) {
+        $this->model  =   $options['model'];
+        $sql   = 'DELETE FROM '
+            .$this->parseTable($options['table'])
+            .$this->parseWhere(isset($options['where'])?$options['where']:'')
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+        return $this->execute($sql);
+    }
+    
     /**
      * 关闭数据库
      * @access public
