@@ -68,8 +68,8 @@ class App {
             $filters    =   explode(',',C('VAR_FILTERS'));
             foreach($filters as $filter){
                 // 全局参数过滤
-                $_POST  =   array_map($filter,$_POST);
-                $_GET   =   array_map($filter,$_GET);
+                array_walk_recursive($_POST,$filter);
+                array_walk_recursive($_GET,$filter);
             }
         }
 
