@@ -279,7 +279,7 @@ abstract class Action {
      * @access protected
      * @param string $message 错误信息
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
     protected function error($message,$jumpUrl='',$ajax=false) {
@@ -291,7 +291,7 @@ abstract class Action {
      * @access protected
      * @param string $message 提示信息
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
     protected function success($message,$jumpUrl='',$ajax=false) {
@@ -362,18 +362,19 @@ abstract class Action {
      * @param string $message 提示信息
      * @param Boolean $status 状态
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @access private
      * @return void
      */
     private function dispatchJump($message,$status=1,$jumpUrl='',$ajax=false) {
-        if($ajax || IS_AJAX) {// AJAX提交
+        if(true === $ajax || IS_AJAX) {// AJAX提交
             $data           =   is_array($ajax)?$ajax:$this->get();
             $data['info']   =   $message;
             $data['status'] =   $status;
             $data['url']    =   $jumpUrl;
             $this->ajaxReturn($data);
         }
+        if(is_int($ajax)) $this->assign('waitSecond',$ajax);
         if(!empty($jumpUrl)) $this->assign('jumpUrl',$jumpUrl);
         // 提示标题
         $this->assign('msgTitle',$status? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_'));
