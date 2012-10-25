@@ -22,8 +22,8 @@ if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
 define('THINK_VERSION', '3.1');
 
 //   系统信息
-if(version_compare(PHP_VERSION,'5.3.0','<')) {
-    set_magic_quotes_runtime(0);
+if(version_compare(PHP_VERSION,'5.4.0','<')) {
+    ini_set('magic_quotes_runtime',0);
     define('MAGIC_QUOTES_GPC',get_magic_quotes_gpc()?True:False);
 }else{
     define('MAGIC_QUOTES_GPC',false);
@@ -163,10 +163,12 @@ function build_runtime_cache($append='') {
 
 // 编译系统行为扩展类库
 function build_tags_cache() {
-    $tags       =   C('tags');
-    $content    =   '';
-    foreach ($tags as $name=>$tag){
-        $content .= compile(CORE_PATH.'Behavior/'.$name.'Behavior.class.php');
+    $tags = C('extends');
+    $content = '';
+    foreach ($tags as $tag=>$item){
+        foreach ($item as $key=>$name) {
+            $content .= is_int($key)?compile(CORE_PATH.'Behavior/'.$name.'Behavior.class.php'):compile($name);
+        }
     }
     return $content;
 }
