@@ -769,6 +769,6 @@ function send_http_status($code) {
 // 过滤表单中的表达式
 function filter_exp(&$value){
     if ('exp'==strtolower($value)){
-        $value = '';
+        $value .= ' ';
     }
 }
