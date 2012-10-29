@@ -197,6 +197,16 @@ abstract class Action {
     }
 
     /**
+     * 检测模板变量的值
+     * @access public
+     * @param string $name 名称
+     * @return boolean
+     */
+    public function __isset($name) {
+        return isset($this->tVar[$name]);
+    }
+
+    /**
      * 魔术方法 有不存在的操作的时候执行
      * @access public
      * @param string $method 方法名

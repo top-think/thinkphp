@@ -378,10 +378,11 @@ class Db {
         if(is_string($where)) {
             // 直接使用字符串条件
             $whereStr = $where;
-        }else{ // 使用数组或者对象条件表达式
-            if(isset($where['_logic'])) {
+        }else{ // 使用数组表达式
+            $operate  = isset($where['_logic'])?strtoupper($where['_logic']):'';
+            if(in_array($operate,array('AND','OR','XOR'))){
                 // 定义逻辑运算规则 例如 OR XOR AND NOT
-                $operate    =   ' '.strtoupper($where['_logic']).' ';
+                $operate    =   ' '.$operate.' ';
                 unset($where['_logic']);
             }else{
                 // 默认进行 AND 运算
@@ -437,12 +438,15 @@ class Db {
                 }elseif(preg_match('/^(NOTLIKE|LIKE)$/i',$val[0])){// 模糊查找
                     if(is_array($val[1])) {
                         $likeLogic  =   isset($val[2])?strtoupper($val[2]):'OR';
-                        $likeStr    =   $this->comparison[strtolower($val[0])];
-                        $like       =   array();
-                        foreach ($val[1] as $item){
-                            $like[] = $key.' '.$likeStr.' '.$this->parseValue($item);
+                        if(in_array($likeLogic,array('AND','OR','XOR'))){
+                            $likeStr    =   $this->comparison[strtolower($val[0])];
+                            $like       =   array();
+                            foreach ($val[1] as $item){
+                                $like[] = $key.' '.$likeStr.' '.$this->parseValue($item);
+                            }
+                            $whereStr .= '('.implode(' '.$likeLogic.' ',$like).')';                          
                         }
-                        $whereStr .= '('.implode(' '.$likeLogic.' ',$like).')';
+
                     }else{
                         $whereStr .= $key.' '.$this->comparison[strtolower($val[0])].' '.$this->parseValue($val[1]);
                     }
@@ -466,8 +470,8 @@ class Db {
                 }
             }else {
                 $count = count($val);
-                if(in_array(strtoupper(trim($val[$count-1])),array('AND','OR','XOR'))) {
-                    $rule   = strtoupper(trim($val[$count-1]));
+                $rule  = isset($val[$count-1])?strtoupper(trim($val[$count-1])):'';
+                if(in_array($rule,array('AND','OR','XOR'))) {
                     $count  = $count -1;
                 }else{
                     $rule   = 'AND';
