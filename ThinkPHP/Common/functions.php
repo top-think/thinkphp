@@ -274,7 +274,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
             }
-            if($suffix && isset($url[1])){
+            if($suffix && '/' != substr($url,-1)){
                 $url  .=  '.'.ltrim($suffix,'.');
             }
         }
