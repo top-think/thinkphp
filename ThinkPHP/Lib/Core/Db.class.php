@@ -446,7 +446,6 @@ class Db {
                             }
                             $whereStr .= '('.implode(' '.$likeLogic.' ',$like).')';                          
                         }
-
                     }else{
                         $whereStr .= $key.' '.$this->comparison[strtolower($val[0])].' '.$this->parseValue($val[1]);
                     }
@@ -470,7 +469,7 @@ class Db {
                 }
             }else {
                 $count = count($val);
-                $rule  = isset($val[$count-1])?strtoupper(trim($val[$count-1])):'';
+                $rule  = isset($val[$count-1])?strtoupper($val[$count-1]):'';
                 if(in_array($rule,array('AND','OR','XOR'))) {
                     $count  = $count -1;
                 }else{
