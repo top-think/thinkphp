@@ -648,7 +648,7 @@ function cookie($name, $value='', $option=null) {
         'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
     );
     // 参数设置(会覆盖黙认设置)
-    if (!empty($option)) {
+    if (!is_null($option)) {
         if (is_numeric($option))
             $option = array('expire' => $option);
         elseif (is_string($option))
