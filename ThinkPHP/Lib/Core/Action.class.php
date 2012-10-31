@@ -120,11 +120,13 @@ abstract class Action {
      * @access protected
      * @param string $templateFile 指定要调用的模板文件
      * 默认为空 由系统自动定位模板文件
+     * @param string $content 模板输出内容
+     * @param string $prefix 模板缓存前缀* 
      * @return string
      */
-    protected function fetch($templateFile='') {
+    protected function fetch($templateFile='',$content='',$prefix='') {
         $this->initView();
-        return $this->view->fetch($templateFile);
+        return $this->view->fetch($templateFile,$content,$prefix);
     }
 
     /**
