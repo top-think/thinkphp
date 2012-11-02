@@ -299,7 +299,7 @@ function A($name,$layer='',$common=false) {
     }
     if(isset($_action[$name]))  return $_action[$name];
     if($common){ // 独立分组情况下 加载公共目录类库
-        import(str_replace('@/','',$name),LIB_PATH);
+        import(str_replace('@/','',$name).$layer,LIB_PATH);
     }else{
         import($name.$layer); 
     }    
