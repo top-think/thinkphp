@@ -286,9 +286,10 @@ function M($name='', $tablePrefix='',$connection='') {
  * A函数用于实例化Action 格式：[项目://][分组/]模块
  * @param string $name Action资源地址
  * @param string $layer 控制层名称
+ * @param boolean $common 是否公共目录
  * @return Action|false
  */
-function A($name,$layer='') {
+function A($name,$layer='',$common=false) {
     static $_action = array();
     $layer      =   $layer?$layer:C('DEFAULT_C_LAYER');
     if(strpos($name,'://')) {// 指定项目
@@ -297,7 +298,11 @@ function A($name,$layer='') {
         $name   =  '@/'.$layer.'/'.$name;
     }
     if(isset($_action[$name]))  return $_action[$name];
-    import($name.$layer);
+    if($common){ // 独立分组情况下 加载公共目录类库
+        import(str_replace('@/','',$name),LIB_PATH);
+    }else{
+        import($name.$layer); 
+    }    
     $class      =   basename($name.$layer);
     if(class_exists($class,false)) {
         $action             = new $class();
