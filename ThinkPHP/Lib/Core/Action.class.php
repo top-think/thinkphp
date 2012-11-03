@@ -107,11 +107,12 @@ abstract class Action {
      * @param string $content 输出内容
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
+     * @param string $prefix 模板缓存前缀
      * @return mixed
      */
-    protected function show($content,$charset='',$contentType='') {
+    protected function show($content,$charset='',$contentType='',$prefix='') {
         $this->initView();       
-        $this->view->display('',$charset,$contentType,$content);
+        $this->view->display('',$charset,$contentType,$content,$prefix);
     }
 
     /**
