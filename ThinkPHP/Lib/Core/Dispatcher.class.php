@@ -132,11 +132,26 @@ class Dispatcher {
         if (C('APP_GROUP_LIST')) {
             define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
             // 分组URL地址
-            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);            
+            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);
         }
         
         // 定义项目基础加载路径
-        define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);          
+        define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);
+        if(defined('GROUP_NAME')) {
+            if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
+                $config_path    =   BASE_LIB_PATH.'Conf/';
+                $common_path    =   BASE_LIB_PATH.'Common/';
+            }else{ // 普通分组模式
+                $config_path    =   CONF_PATH.GROUP_NAME.'/';
+                $common_path    =   COMMON_PATH.GROUP_NAME.'/';             
+            }
+            // 加载分组配置文件
+            if(is_file($config_path.'config.php'))
+                C(include $config_path.'config.php');
+            // 加载分组函数文件
+            if(is_file($common_path.'function.php'))
+                include $common_path.'function.php';  
+        }        
         define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
         define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
         

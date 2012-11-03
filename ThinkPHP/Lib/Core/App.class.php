@@ -41,21 +41,6 @@ class App {
         define('IS_DELETE',     REQUEST_METHOD =='DELETE' ? true : false);
         define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
-        if(defined('GROUP_NAME')) {
-            if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
-                $config_path    =   BASE_LIB_PATH.'Conf/';
-                $common_path    =   BASE_LIB_PATH.'Common/';
-            }else{ // 普通分组模式
-                $config_path    =   CONF_PATH.GROUP_NAME.'/';
-                $common_path    =   COMMON_PATH.GROUP_NAME.'/';             
-            }
-            // 加载分组配置文件
-            if(is_file($config_path.'config.php'))
-                C(include $config_path.'config.php');
-            // 加载分组函数文件
-            if(is_file($common_path.'function.php'))
-                include $common_path.'function.php';  
-         }
         // URL调度结束标签
         tag('url_dispatch');         
         // 页面压缩输出支持
