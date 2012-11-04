@@ -199,8 +199,6 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         parse_str($info['query'],$params);
         $vars = array_merge($params,$vars);
     }
-    // 过滤空的参数
-    $vars = array_filter($vars);
     
     // URL组装
     $depr = C('URL_PATHINFO_DEPR');
@@ -266,8 +264,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $url    =   __APP__.'/'.implode($depr,array_reverse($var));
         }
         if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val)
-                $url .= $depr.$var . $depr . $val;
+            foreach ($vars as $var => $val){
+                if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
+            }                
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
