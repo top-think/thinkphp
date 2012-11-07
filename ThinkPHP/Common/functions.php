@@ -672,14 +672,26 @@ function cookie($name, $value='', $option=null) {
     }
     $name = $config['prefix'] . $name;
     if ('' === $value) {
-        return isset($_COOKIE[$name]) ? json_decode(MAGIC_QUOTES_GPC?stripslashes($_COOKIE[$name]):$_COOKIE[$name]) : null; // 获取指定Cookie
+        if(isset($_COOKIE[$name])){
+            $value =    $_COOKIE[$name];
+            if(0===strpos($value,'think:')){
+                $value  =   substr($value,6);
+                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value));
+            }else{
+                return $value;
+            }
+        }else{
+            return null;
+        }
     } else {
         if (is_null($value)) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain']);
             unset($_COOKIE[$name]); // 删除指定cookie
         } else {
             // 设置cookie
-            $value  = json_encode($value);
+            if(is_array($value)){
+                $value  = 'think:'.json_encode(array_map('urlencode',$value));
+            }
             $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
             setcookie($name, $value, $expire, $config['path'], $config['domain']);
             $_COOKIE[$name] = $value;
