@@ -326,7 +326,7 @@ class  ThinkTemplate {
      */
     private function parseBlock($name,$content) {
         if(trim($content)=='')  return '';
-        $this->block[$name]  =   stripslashes($content);
+        $this->block[$name]  =   $content;
         return '';
     }
 
@@ -340,7 +340,7 @@ class  ThinkTemplate {
     private function replaceBlock($name,$content) {
         // 替换block标签 没有重新定义则使用原来的
         $replace   =  isset($this->block[$name])?   $this->block[$name]   :   $content;
-        return $replace;
+        return stripslashes($replace);
     }
 
     /**
