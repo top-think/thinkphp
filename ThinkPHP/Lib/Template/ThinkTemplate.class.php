@@ -232,10 +232,10 @@ class  ThinkTemplate {
 
     // 解析模板中的include标签
     protected function parseInclude($content) {
-        // 解析布局
-        $content    =   $this->parseLayout($content);
         // 解析继承
         $content    =   $this->parseExtend($content);
+        // 解析布局
+        $content    =   $this->parseLayout($content);        
         // 读取模板中的include标签
         $find       =   preg_match_all('/'.$this->config['taglib_begin'].'include\s(.+?)\s*?\/'.$this->config['taglib_end'].'/is',$content,$matches);
         if($find) {
