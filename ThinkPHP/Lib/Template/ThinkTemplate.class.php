@@ -235,7 +235,7 @@ class  ThinkTemplate {
         // 解析继承
         $content    =   $this->parseExtend($content);
         // 解析布局
-        $content    =   $this->parseLayout($content);        
+        $content    =   $this->parseLayout($content);
         // 读取模板中的include标签
         $find       =   preg_match_all('/'.$this->config['taglib_begin'].'include\s(.+?)\s*?\/'.$this->config['taglib_end'].'/is',$content,$matches);
         if($find) {
@@ -325,7 +325,6 @@ class  ThinkTemplate {
      * @return string
      */
     private function parseBlock($name,$content) {
-        if(trim($content)=='')  return '';
         $this->block[$name]  =   $content;
         return '';
     }
