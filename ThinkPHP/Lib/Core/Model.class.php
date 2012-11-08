@@ -530,20 +530,27 @@ class Model {
             $options =  array_merge($this->options,$options);
         // 查询过后清空sql表达式组装 避免影响下次查询
         $this->options  =   array();
-        if(!isset($options['table']))
+        if(!isset($options['table'])){
             // 自动获取表名
             $options['table']   =   $this->getTableName();
+            $fields             =   $this->fields;
+        }else{
+            // 指定数据表 则重新获取字段列表 但不支持类型检测
+            $fields             =   $this->getDbFields();
+        }
+
         if(!empty($options['alias'])) {
             $options['table']  .=   ' '.$options['alias'];
         }
         // 记录操作的模型名称
         $options['model']       =   $this->name;
+
         // 字段类型验证
-        if(isset($options['where']) && is_array($options['where']) && !empty($this->fields)) {
+        if(isset($options['where']) && is_array($options['where']) && !empty($fields)) {
             // 对数组查询条件进行字段类型检查
             foreach ($options['where'] as $key=>$val){
                 $key            =   trim($key);
-                if(in_array($key,$this->fields,true)){
+                if(in_array($key,$fields,true)){
                     if(is_scalar($val)) {
                         $this->_parseType($options['where'],$key);
                     }
@@ -884,6 +891,10 @@ class Model {
                             break;
                         case 'field':    // 用其它字段的值进行填充
                             $data[$auto[0]] = $data[$auto[1]];
+                            break;
+                        case 'ignore': // 为空忽略
+                            if(''===$data[$auto[0]])
+                                unset($data[$auto[0]]);
                             break;
                         case 'string':
                         default: // 默认作为字符串填充
