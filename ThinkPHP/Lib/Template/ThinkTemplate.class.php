@@ -676,8 +676,7 @@ class  ThinkTemplate {
                 }else{
                     $path = THEME_PATH;
                 }
-                $depr = defined('GROUP_NAME')?C('TMPL_FILE_DEPR'):'/';
-                $templateName  =  $path.$module.$depr.$action.$this->config['template_suffix'];
+                $templateName  =  $path.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
             }
             // 获取模板文件内容
             $parseStr .= file_get_contents($templateName);
