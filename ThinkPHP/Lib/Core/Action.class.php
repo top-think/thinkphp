@@ -107,11 +107,12 @@ abstract class Action {
      * @param string $content 输出内容
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
+     * @param string $prefix 模板缓存前缀
      * @return mixed
      */
-    protected function show($content,$charset='',$contentType='') {
+    protected function show($content,$charset='',$contentType='',$prefix='') {
         $this->initView();       
-        $this->view->display('',$charset,$contentType,$content);
+        $this->view->display('',$charset,$contentType,$content,$prefix);
     }
 
     /**
@@ -120,11 +121,13 @@ abstract class Action {
      * @access protected
      * @param string $templateFile 指定要调用的模板文件
      * 默认为空 由系统自动定位模板文件
+     * @param string $content 模板输出内容
+     * @param string $prefix 模板缓存前缀* 
      * @return string
      */
-    protected function fetch($templateFile='') {
+    protected function fetch($templateFile='',$content='',$prefix='') {
         $this->initView();
-        return $this->view->fetch($templateFile);
+        return $this->view->fetch($templateFile,$content,$prefix);
     }
 
     /**
@@ -194,6 +197,16 @@ abstract class Action {
 
     public function __get($name) {
         return $this->get($name);
+    }
+
+    /**
+     * 检测模板变量的值
+     * @access public
+     * @param string $name 名称
+     * @return boolean
+     */
+    public function __isset($name) {
+        return isset($this->tVar[$name]);
     }
 
     /**
@@ -279,7 +292,7 @@ abstract class Action {
      * @access protected
      * @param string $message 错误信息
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
     protected function error($message,$jumpUrl='',$ajax=false) {
@@ -291,7 +304,7 @@ abstract class Action {
      * @access protected
      * @param string $message 提示信息
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
     protected function success($message,$jumpUrl='',$ajax=false) {
@@ -362,18 +375,19 @@ abstract class Action {
      * @param string $message 提示信息
      * @param Boolean $status 状态
      * @param string $jumpUrl 页面跳转地址
-     * @param Boolean|array $ajax 是否为Ajax方式
+     * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @access private
      * @return void
      */
     private function dispatchJump($message,$status=1,$jumpUrl='',$ajax=false) {
-        if($ajax || $this->isAjax()) {// AJAX提交
+        if(true === $ajax || IS_AJAX) {// AJAX提交
             $data           =   is_array($ajax)?$ajax:$this->get();
             $data['info']   =   $message;
             $data['status'] =   $status;
             $data['url']    =   $jumpUrl;
             $this->ajaxReturn($data);
         }
+        if(is_int($ajax)) $this->assign('waitSecond',$ajax);
         if(!empty($jumpUrl)) $this->assign('jumpUrl',$jumpUrl);
         // 提示标题
         $this->assign('msgTitle',$status? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_'));

@@ -530,20 +530,27 @@ class Model {
             $options =  array_merge($this->options,$options);
         // 查询过后清空sql表达式组装 避免影响下次查询
         $this->options  =   array();
-        if(!isset($options['table']))
+        if(!isset($options['table'])){
             // 自动获取表名
             $options['table']   =   $this->getTableName();
+            $fields             =   $this->fields;
+        }else{
+            // 指定数据表 则重新获取字段列表 但不支持类型检测
+            $fields             =   $this->getDbFields();
+        }
+
         if(!empty($options['alias'])) {
             $options['table']  .=   ' '.$options['alias'];
         }
         // 记录操作的模型名称
         $options['model']       =   $this->name;
+
         // 字段类型验证
-        if(isset($options['where']) && is_array($options['where']) && !empty($this->fields)) {
+        if(isset($options['where']) && is_array($options['where']) && !empty($fields)) {
             // 对数组查询条件进行字段类型检查
             foreach ($options['where'] as $key=>$val){
                 $key            =   trim($key);
-                if(in_array($key,$this->fields,true)){
+                if(in_array($key,$fields,true)){
                     if(is_scalar($val)) {
                         $this->_parseType($options['where'],$key);
                     }
@@ -686,7 +693,9 @@ class Model {
         $options                =   $this->_parseOptions($options);
         $field                  =   trim($field);
         if(strpos($field,',')) { // 多字段
-            $options['limit']   =   is_numeric($sepa)?$sepa:'';
+            if(!isset($options['limit'])){
+                $options['limit']   =   is_numeric($sepa)?$sepa:'';
+            }
             $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
                 $_field         =   explode(',', $field);
@@ -761,6 +770,8 @@ class Model {
             if(is_string($fields)) {
                 $fields =   explode(',',$fields);
             }
+            // 判断令牌验证字段
+            if(C('TOKEN_ON'))   $fields[] = C('TOKEN_NAME');
             foreach ($data as $key=>$val){
                 if(!in_array($key,$fields)) {
                     unset($data[$key]);
@@ -808,7 +819,7 @@ class Model {
 
             // 令牌验证
             list($key,$value)  =  explode('_',$data[$name]);
-            if($_SESSION[$name][$key] == $value) { // 防止重复提交
+            if($value && $_SESSION[$name][$key] === $value) { // 防止重复提交
                 unset($_SESSION[$name][$key]); // 验证完成销毁session
                 return true;
             }
@@ -880,6 +891,10 @@ class Model {
                             break;
                         case 'field':    // 用其它字段的值进行填充
                             $data[$auto[0]] = $data[$auto[1]];
+                            break;
+                        case 'ignore': // 为空忽略
+                            if(''===$data[$auto[0]])
+                                unset($data[$auto[0]]);
                             break;
                         case 'string':
                         default: // 默认作为字符串填充
@@ -1024,20 +1039,24 @@ class Model {
      * @return boolean
      */
     public function check($value,$rule,$type='regex'){
-        switch(strtolower(trim($type))) {
+        $type   =   strtolower(trim($type));
+        switch($type) {
             case 'in': // 验证是否在某个指定范围之内 逗号分隔字符串或者数组
-                $range   = is_array($rule)?$rule:explode(',',$rule);
-                return in_array($value ,$range);
+            case 'notin':
+                $range   = is_array($rule)? $rule : explode(',',$rule);
+                return $type == 'in' ? in_array($value ,$range) : !in_array($value ,$range);
             case 'between': // 验证是否在某个范围
+            case 'notbetween': // 验证是否不在某个范围            
                 if (is_array($rule)){
                     $min    =    $rule[0];
                     $max    =    $rule[1];
                 }else{
                     list($min,$max)   =  explode(',',$rule);
                 }
-                return $value>=$min && $value<=$max;
+                return $type == 'between' ? $value>=$min && $value<=$max : $value<$min || $value>$max;
             case 'equal': // 验证是否等于某个值
-                return $value == $rule;
+            case 'notequal': // 验证是否等于某个值            
+                return $type == 'equal' ? $value == $rule : $value != $rule;
             case 'length': // 验证长度
                 $length  =  mb_strlen($value,'utf-8'); // 当前数据长度
                 if(strpos($rule,',')) { // 长度区间
@@ -1050,7 +1069,7 @@ class Model {
                 list($start,$end)   =  explode(',',$rule);
                 if(!is_numeric($start)) $start   =  strtotime($start);
                 if(!is_numeric($end)) $end   =  strtotime($end);
-                return $_SERVER['REQUEST_TIME'] >= $start && $_SERVER['REQUEST_TIME'] <= $end;
+                return NOW_TIME >= $start && NOW_TIME <= $end;
             case 'ip_allow': // IP 操作许可验证
                 return in_array(get_client_ip(),explode(',',$rule));
             case 'ip_deny': // IP 操作禁止验证

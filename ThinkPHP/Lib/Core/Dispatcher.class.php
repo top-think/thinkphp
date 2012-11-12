@@ -123,27 +123,47 @@ class Dispatcher {
             define('__INFO__',$_SERVER['PATH_INFO']);
         }
 
-        // 获取分组 模块和操作名称
-        if (C('APP_GROUP_LIST')) {
-            define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
-        }
-        // 定义项目基础加载路径
-        define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);          
-        define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
-        define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
         // URL常量
         define('__SELF__',strip_tags($_SERVER['REQUEST_URI']));
         // 当前项目地址
         define('__APP__',strip_tags(PHP_FILE));
-        // 当前模块和分组地址
-        if(defined('GROUP_NAME')) {
+
+        // 获取分组 模块和操作名称
+        if (C('APP_GROUP_LIST')) {
+            define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
+            // 分组URL地址
             define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);
-            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.MODULE_NAME);
+        }
+        
+        // 定义项目基础加载路径
+        define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);
+        if(defined('GROUP_NAME')) {
+            if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
+                $config_path    =   BASE_LIB_PATH.'Conf/';
+                $common_path    =   BASE_LIB_PATH.'Common/';
+            }else{ // 普通分组模式
+                $config_path    =   CONF_PATH.GROUP_NAME.'/';
+                $common_path    =   COMMON_PATH.GROUP_NAME.'/';             
+            }
+            // 加载分组配置文件
+            if(is_file($config_path.'config.php'))
+                C(include $config_path.'config.php');
+            // 加载分组函数文件
+            if(is_file($common_path.'function.php'))
+                include $common_path.'function.php';  
+        }        
+        define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
+        define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
+        
+        // 当前模块和分组地址
+        $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
+        if(defined('GROUP_NAME')) {
+            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.$moduleName);
         }else{
-            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.MODULE_NAME);
+            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.$moduleName);
         }
         // 当前操作地址
-        define('__ACTION__',__URL__.$depr.ACTION_NAME);
+        define('__ACTION__',__URL__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
@@ -168,6 +188,17 @@ class Dispatcher {
     static private function getModule($var) {
         $module = (!empty($_GET[$var])? $_GET[$var]:C('DEFAULT_MODULE'));
         unset($_GET[$var]);
+        if($maps = C('URL_MODULE_MAP')) {
+            if(isset($maps[strtolower($module)])) {
+                // 记录当前别名
+                define('MODULE_ALIAS',strtolower($module));
+                // 获取实际的模块名
+                return   $maps[MODULE_ALIAS];
+            }elseif(array_search(strtolower($module),$maps)){
+                // 禁止访问原始模块
+                return   '';
+            }
+        }
         if(C('URL_CASE_INSENSITIVE')) {
             // URL地址不区分大小写
             // 智能识别方式 index.php/user_type/index/ 识别到 UserTypeAction 模块
@@ -186,6 +217,20 @@ class Dispatcher {
             $_POST[$var] :
             (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_ACTION'));
         unset($_POST[$var],$_GET[$var]);
+        if($maps = C('URL_ACTION_MAP')) {
+            if(isset($maps[strtolower(MODULE_NAME)])) {
+                $maps =   $maps[strtolower(MODULE_NAME)];
+                if(isset($maps[strtolower($action)])) {
+                    // 记录当前别名
+                    define('ACTION_ALIAS',strtolower($action));
+                    // 获取实际的操作名
+                    return   $maps[ACTION_ALIAS];
+                }elseif(array_search(strtolower($action),$maps)){
+                    // 禁止访问原始操作
+                    return   '';
+                }
+            }
+        }        
         return strip_tags(C('URL_CASE_INSENSITIVE')?strtolower($action):$action);
     }
 
