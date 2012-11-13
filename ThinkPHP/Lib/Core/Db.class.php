@@ -728,14 +728,14 @@ class Db {
         $cache  =  isset($options['cache'])?$options['cache']:false;
         if($cache) { // 查询缓存检测
             $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
-            $value  =  S($key,'','',$cache['type']);
+            $value  =  S($key,'',$cache);
             if(false !== $value) {
                 return $value;
             }
         }
         $result   = $this->query($sql);
         if($cache && false !== $result ) { // 查询缓存写入
-            S($key,$result,$cache['expire'],$cache['type']);
+            S($key,$result,$cache);
         }
         return $result;
     }
@@ -769,7 +769,7 @@ class Db {
         $sql  =   $this->parseSql($this->selectSql,$options);
         $sql .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         if(isset($key)) { // 写入SQL创建缓存
-            S($key,$sql,0,'',array('length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
+            S($key,$sql,array('expire'=>0,'length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
         }
         return $sql;
     }

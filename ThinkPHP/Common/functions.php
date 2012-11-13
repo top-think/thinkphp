@@ -369,15 +369,15 @@ function redirect($url, $time=0, $msg='') {
  * 缓存管理
  * @param mixed $name 缓存名称，如果为数组表示进行缓存设置
  * @param mixed $value 缓存值
- * @param mixed $expire 缓存有效期（秒）
+ * @param mixed $options 缓存参数
  * @return mixed
  */
-function cache($name,$value='',$expire=0) {
+function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($expire)){
+    if(is_array($options)){
         // 缓存操作的同时初始化
-        $type       =   isset($expire['type'])?$expire['type']:'';
-        $cache      =   Cache::getInstance($type,$expire);
+        $type       =   isset($options['type'])?$options['type']:'';
+        $cache      =   Cache::getInstance($type,$options);
     }elseif(is_array($name)) { // 缓存初始化
         $type       =   isset($name['type'])?$name['type']:'';
         $cache      =   Cache::getInstance($type,$name);
@@ -385,50 +385,14 @@ function cache($name,$value='',$expire=0) {
     }elseif(empty($cache)) { // 自动初始化
         $cache      =   Cache::getInstance();
     }
-    if(''=== $value){ // 获取缓存值
-        // 获取缓存数据
+    if(''=== $value){ // 获取缓存
         return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($expire)?$expire:NULL;
+        $expire     =   is_numeric($options)?$options:NULL;
         return $cache->set($name, $value, $expire);
     }
-}
-
-/**
- * 全局缓存设置和读取
- * @param string $name 缓存名称
- * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
- * @param string $type 缓存类型
- * @param array $options 缓存参数
- * @return mixed
- */
-function S($name, $value='', $expire=null, $type='',$options=null) {
-    static $_cache = array();
-    //取得缓存对象实例
-    $cache = Cache::getInstance($type,$options);
-    if ('' !== $value) {
-        if (is_null($value)) {
-            // 删除缓存
-            $result = $cache->rm($name);
-            if ($result)
-                unset($_cache[$type . '_' . $name]);
-            return $result;
-        }else {
-            // 缓存数据
-            $cache->set($name, $value, $expire);
-            $_cache[$type . '_' . $name] = $value;
-        }
-        return;
-    }
-    if (isset($_cache[$type . '_' . $name]))
-        return $_cache[$type . '_' . $name];
-    // 获取缓存数据
-    $value = $cache->get($name);
-    $_cache[$type . '_' . $name] = $value;
-    return $value;
 }
 
 /**
