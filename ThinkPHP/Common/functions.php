@@ -640,7 +640,7 @@ function cookie($name, $value='', $option=null) {
             $value =    $_COOKIE[$name];
             if(0===strpos($value,'think:')){
                 $value  =   substr($value,6);
-                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value));
+                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value,true));
             }else{
                 return $value;
             }
