@@ -69,14 +69,14 @@ function G($start,$end='',$dec=4) {
 function N($key, $step=0,$save=false) {
     static $_num    = array();
     if (!isset($_num[$key])) {
-        $_num[$key] = (false !== $save)? cache('N_'.$key) :  0;
+        $_num[$key] = (false !== $save)? S('N_'.$key) :  0;
     }
     if (empty($step))
         return $_num[$key];
     else
         $_num[$key] = $_num[$key] + (int) $step;
     if(false !== $save){ // 保存结果
-        cache('N_'.$key,$_num[$key],$save);
+        S('N_'.$key,$_num[$key],$save);
     }
 }
 
@@ -371,7 +371,7 @@ function C($name=null, $value=null) {
     static $_config = array();
     // 无参数时获取所有
     if (empty($name)) {
-        if(!empty($value) && $array = cache('c_'.$value)) {
+        if(!empty($value) && $array = S('c_'.$value)) {
             $_config = array_merge($_config, array_change_key_case($array));
         }
         return $_config;
@@ -397,7 +397,7 @@ function C($name=null, $value=null) {
     if (is_array($name)){
         $_config = array_merge($_config, array_change_key_case($name));
         if(!empty($value)) {// 保存配置值
-            cache('c_'.$value,$_config);
+            S('c_'.$value,$_config);
         }
         return;
     }
