@@ -98,7 +98,7 @@ function parse_name($name, $type=0) {
 /**
  * 优化的require_once
  * @param string $filename 文件地址
- * @return boolen
+ * @return boolean
  */
 function require_cache($filename) {
     static $_importFiles = array();
@@ -114,9 +114,22 @@ function require_cache($filename) {
 }
 
 /**
+ * 批量导入文件 成功则返回
+ * @param array $array 文件数组
+ * @param boolean $return 加载成功后是否返回
+ * @return boolean
+ */
+function require_array($array,$return=false){
+    foreach ($array as $file){
+        if (require_cache($file) && $return) return true;
+    }
+    if($return) return false;
+}
+
+/**
  * 区分大小写的文件存在判断
  * @param string $filename 文件地址
- * @return boolen
+ * @return boolean
  */
 function file_exists_case($filename) {
     if (is_file($filename)) {
@@ -134,7 +147,7 @@ function file_exists_case($filename) {
  * @param string $class 类库命名空间字符串
  * @param string $baseUrl 起始路径
  * @param string $ext 导入的文件扩展名
- * @return boolen
+ * @return boolean
  */
 function import($class, $baseUrl = '', $ext='.class.php') {
     static $_file = array();
