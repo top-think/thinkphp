@@ -109,8 +109,8 @@ function dump($var, $echo=true, $label=null, $strict=true) {
 }
 
 /**
- * 404处理 
- * 调试模式会抛异常 
+ * 404处理
+ * 调试模式会抛异常
  * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
  * @param string $msg 提示信息
  * @param string $url 跳转URL地址
@@ -164,29 +164,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         $anchor =   $info['fragment'];
         if(false !== strpos($anchor,'?')) { // 解析参数
             list($anchor,$info['query']) = explode('?',$anchor,2);
-        }        
+        }
         if(false !== strpos($anchor,'@')) { // 解析域名
             list($anchor,$host)    =   explode('@',$anchor, 2);
         }
     }elseif(false !== strpos($url,'@')) { // 解析域名
         list($url,$host)    =   explode('@',$info['path'], 2);
-    }
-    // 解析子域名
-    if(isset($host)) {
-        $domain = $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
-    }elseif($domain===true){
-        $domain = $_SERVER['HTTP_HOST'];
-        if(C('APP_SUB_DOMAIN_DEPLOY') ) { // 开启子域名部署
-            $domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
-            // '子域名'=>array('项目[/分组]');
-            foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
-                if(false === strpos($key,'*') && 0=== strpos($url,$rule[0])) {
-                    $domain = $key.strstr($domain,'.'); // 生成对应子域名
-                    $url    =  substr_replace($url,'',0,strlen($rule[0]));
-                    break;
-                }
-            }
-        }
     }
 
     // 解析参数
@@ -231,7 +214,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 if($module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
                     $var[C('VAR_MODULE')] = $module;
                 }
-            }            
+            }
             if(C('URL_CASE_INSENSITIVE')) {
                 $var[C('VAR_MODULE')]   =   parse_name($var[C('VAR_MODULE')]);
             }
@@ -246,6 +229,29 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 }
                 if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_GROUP')])) {
                     $var[C('VAR_GROUP')]    =  strtolower($var[C('VAR_GROUP')]);
+                }
+            }
+            //分组模式，开启子域名部署情况下，没有手动指定host（@xxx），则将domain设为true
+            if(!$host && C('APP_SUB_DOMAIN_DEPLOY') && C('APP_GROUP_LIST')){
+                if(!empty($path)) {
+                    if(GROUP_NAME !== $path[0])$domain = true;
+                }
+            }
+        }
+    }
+    // 解析子域名
+    if(isset($host)) {
+        $domain = $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
+    }elseif($domain===true){
+        $domain = $_SERVER['HTTP_HOST'];
+        if(C('APP_SUB_DOMAIN_DEPLOY') ) { // 开启子域名部署
+            $domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
+            // '子域名'=>array('项目[/分组]');
+            foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
+                if(false === strpos($key,'*') && 0=== strpos($url,$rule[0])) {
+                    $domain = $key.strstr($domain,'.'); // 生成对应子域名
+                    $url    =  substr_replace($url,'',0,strlen($rule[0]));
+                    break;
                 }
             }
         }
@@ -266,7 +272,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
                 if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
-            }                
+            }
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
@@ -294,7 +300,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * 渲染输出Widget
  * @param string $name Widget名称
  * @param array $data 传人的参数
- * @param boolean $return 是否返回内容 
+ * @param boolean $return 是否返回内容
  * @return void
  */
 function W($name, $data=array(), $return=false) {
@@ -546,7 +552,7 @@ function session($name,$value='') {
         }
         // 启动session
         if(C('SESSION_AUTO_START'))  session_start();
-    }elseif('' === $value){ 
+    }elseif('' === $value){
         if(0===strpos($name,'[')) { // session 操作
             if('[pause]'==$name){ // 暂停session
                 session_write_close();
