@@ -267,7 +267,7 @@ class  ThinkTemplate {
             // 替换block标签
             $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
         }else{
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis','"\\2"',$content);            
+            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);            
         }
         return $content;
     }
