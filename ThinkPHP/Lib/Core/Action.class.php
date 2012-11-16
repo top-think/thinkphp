@@ -334,20 +334,24 @@ abstract class Action {
             case 'JSON' :
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
-                exit(json_encode($data));
+                echo json_encode($data);
+                break;
             case 'XML'  :
                 // 返回xml格式数据
                 header('Content-Type:text/xml; charset=utf-8');
-                exit(xml_encode($data));
+                echo xml_encode($data);
+                break;
             case 'JSONP':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
                 $handler  =   isset($_GET[C('VAR_JSONP_HANDLER')]) ? $_GET[C('VAR_JSONP_HANDLER')] : C('DEFAULT_JSONP_HANDLER');
-                exit($handler.'('.json_encode($data).');');  
+                echo $handler.'('.json_encode($data).');';  
+                break;
             case 'EVAL' :
                 // 返回可执行的js脚本
                 header('Content-Type:text/html; charset=utf-8');
-                exit($data);            
+                echo $data;
+                break;
             default     :
                 // 用于扩展其他返回格式数据
                 tag('ajax_return',$data);
