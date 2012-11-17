@@ -394,6 +394,10 @@ function S($name,$value='',$options=null) {
         return $cache->set($name, $value, $expire);
     }
 }
+// S方法的别名 已经废除 不再建议使用
+function cache($name,$value='',$options=null){
+    return S($name,$value,$options);
+}
 
 /**
  * 快速文件数据读取和保存 针对简单类型数据 字符串、数组
