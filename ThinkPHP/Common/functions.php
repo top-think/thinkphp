@@ -420,14 +420,14 @@ function F($name, $value='', $path=DATA_PATH) {
             if (!is_dir($dir))
                 mkdir($dir,0755,true);
             $_cache[$name]  =   $value;
-            return file_put_contents($filename, json_encode($value));
+            return file_put_contents($filename, strip_whitespace("<?php\treturn " . var_export($value, true) . ";?>"));
         }
     }
     if (isset($_cache[$name]))
         return $_cache[$name];
     // 获取缓存数据
     if (is_file($filename)) {
-        $value          =   json_decode(file_get_contents($filename),true);
+        $value          =   include $filename;
         $_cache[$name]  =   $value;
     } else {
         $value          =   false;
