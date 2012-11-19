@@ -30,14 +30,13 @@ class TemplateEase {
         $CacheDir       = substr(CACHE_PATH,0,-1);
         $TemplateDir    = substr(TMPL_PATH,0,-1);
         vendor('EaseTemplate.template#ease');
+        $config     =  array(
+        'CacheDir'      =>  $CacheDir,
+        'TemplateDir'   =>  $TemplateDir,
+        'TplType'       =>  'html'
+         );        
         if(C('TMPL_ENGINE_CONFIG')) {
-            $config     =  C('TMPL_ENGINE_CONFIG');
-        }else{
-            $config     =  array(
-            'CacheDir'      =>  $CacheDir,
-            'TemplateDir'   =>  $TemplateDir,
-            'TplType'       =>  'html'
-             );
+            $config     =  array_merge($config,C('TMPL_ENGINE_CONFIG'));
         }
         $tpl = new EaseTemplate($config);
         $tpl->set_var($var);
