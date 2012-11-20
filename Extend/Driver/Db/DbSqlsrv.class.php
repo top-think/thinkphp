@@ -18,7 +18,7 @@ defined('THINK_PATH') or exit();
  * @author    liu21st <liu21st@gmail.com>
  */
 class DbSqlsrv extends Db{
-    protected $selectSql  =     'SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 %LIMIT%';
+    protected $selectSql  =     'SELECT T1.* FROM (SELECT thinkphp.*, ROW_NUMBER() OVER (%ORDER%) AS ROW_NUMBER FROM (SELECT %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%) AS thinkphp) AS T1 %LIMIT%%COMMENT%';
     /**
      * 架构函数 读取数据库配置信息
      * @access public
@@ -277,7 +277,8 @@ class DbSqlsrv extends Db{
             .$this->parseTable($options['table'])
             .$this->parseSet($data)
             .$this->parseWhere(isset($options['where'])?$options['where']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -292,7 +293,8 @@ class DbSqlsrv extends Db{
         $sql   = 'DELETE FROM '
             .$this->parseTable($options['table'])
             .$this->parseWhere(isset($options['where'])?$options['where']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
