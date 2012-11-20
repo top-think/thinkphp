@@ -51,7 +51,7 @@ class Db {
     // 数据库表达式
     protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
     // 查询表达式
-    protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%';
+    protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%COMMENT%';
 
     /**
      * 取得数据库类实例
@@ -611,6 +611,16 @@ class Db {
     }
 
     /**
+     * comment分析
+     * @access protected
+     * @param string $comment
+     * @return string
+     */
+    protected function parseComment($comment) {
+        return  !empty($comment)?   ' /* '.$comment.' */':'';
+    }
+
+    /**
      * distinct分析
      * @access protected
      * @param mixed $distinct
@@ -660,6 +670,7 @@ class Db {
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql   .= $this->parseComment(isset($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -695,7 +706,8 @@ class Db {
             .$this->parseWhere(isset($options['where'])?$options['where']:'')
             .$this->parseOrder(isset($options['order'])?$options['order']:'')
             .$this->parseLimit(isset($options['limit'])?$options['limit']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -712,7 +724,8 @@ class Db {
             .$this->parseWhere(isset($options['where'])?$options['where']:'')
             .$this->parseOrder(isset($options['order'])?$options['order']:'')
             .$this->parseLimit(isset($options['limit'])?$options['limit']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false);
+            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -782,7 +795,7 @@ class Db {
      */
     public function parseSql($sql,$options=array()){
         $sql   = str_replace(
-            array('%TABLE%','%DISTINCT%','%FIELD%','%JOIN%','%WHERE%','%GROUP%','%HAVING%','%ORDER%','%LIMIT%','%UNION%'),
+            array('%TABLE%','%DISTINCT%','%FIELD%','%JOIN%','%WHERE%','%GROUP%','%HAVING%','%ORDER%','%LIMIT%','%UNION%','%COMMENT%'),
             array(
                 $this->parseTable($options['table']),
                 $this->parseDistinct(isset($options['distinct'])?$options['distinct']:false),
@@ -793,7 +806,8 @@ class Db {
                 $this->parseHaving(isset($options['having'])?$options['having']:''),
                 $this->parseOrder(isset($options['order'])?$options['order']:''),
                 $this->parseLimit(isset($options['limit'])?$options['limit']:''),
-                $this->parseUnion(isset($options['union'])?$options['union']:'')
+                $this->parseUnion(isset($options['union'])?$options['union']:''),
+                $this->parseComment(isset($options['comment'])?$options['comment']:'')
             ),$sql);
         return $sql;
     }
