@@ -1128,7 +1128,7 @@ class Model {
         }elseif(is_array($parse)){ // SQL预处理
             $sql  = vsprintf($sql,$parse);
         }else{
-            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>C('DB_PREFIX'));
+            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>C('DB_PREFIX')));
         }
         $this->db->setModel($this->name);
         return $sql;
