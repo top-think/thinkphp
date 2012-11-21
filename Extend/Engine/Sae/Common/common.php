@@ -628,5 +628,5 @@ function sae_storage_root($domain){
     if(defined('SAE_CACHE_BUILDER'))
         return '~sae_storage_root("'.$domain.'")';
     $s=Think::instance('SaeStorage');
-    return rtrim($s->getUrl('Public',''),'/');
+    return rtrim($s->getUrl($domain,''),'/');
 }
