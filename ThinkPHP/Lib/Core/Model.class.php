@@ -1458,7 +1458,16 @@ class Model {
         }elseif(is_object($where)){
             $where  =   get_object_vars($where);
         }
-        $this->options['where'] =   $where;
+        if(is_string($where)){
+            $map    =   array();
+            $map['_string']   =   $where;
+            $where  =   $map;
+        }
+        if(isset($this->options['where'])){
+            $this->options['where'] =   array_merge($this->options['where'],$where);
+        }else{
+            $this->options['where'] =   $where;
+        }
         return $this;
     }
 
