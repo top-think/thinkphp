@@ -35,7 +35,8 @@ class UploadFile {//类定义开始
         'thumbRemoveOrigin' =>  false,// 是否移除原图
         'zipImages'         =>  false,// 压缩图片文件上传
         'autoSub'           =>  false,// 启用子目录保存文件
-        'subType'           =>  'hash',// 子目录创建方式 可以使用hash date
+        'subType'           =>  'hash',// 子目录创建方式 可以使用hash date custom
+        'subDir'            =>  '', // 子目录名称 subType为custom方式后有效
         'dateFormat'        =>  'Ymd',
         'hashLevel'         =>  1, // hash的目录层次
         'savePath'          =>  '',// 上传文件保存路径
@@ -366,6 +367,9 @@ class UploadFile {//类定义开始
      */
     private function getSubName($file) {
         switch($this->subType) {
+            case 'custom':
+                $dir    =   $this->subDir;
+                break;
             case 'date':
                 $dir    =   date($this->dateFormat,time()).'/';
                 break;
