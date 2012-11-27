@@ -96,9 +96,10 @@ class UploadFile {//类定义开始
         // 如果是图像文件 检测文件格式
         if( in_array(strtolower($file['extension']),array('gif','jpg','jpeg','bmp','png','swf'))) {
             $info   = getimagesize($file['tmp_name']);
-            if(false === $info || ('gif' == strtolower($file['extension']) && empty($info['bits'])))            
-            $this->error = '非法图像文件';
-            return false;
+            if(false === $info || ('gif' == strtolower($file['extension']) && empty($info['bits']))){
+                $this->error = '非法图像文件';
+                return false;                
+            }
         }
         if(!move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
             $this->error = '文件上传保存错误！';
