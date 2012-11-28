@@ -19,13 +19,6 @@
 class Cache {
 
     /**
-     * 是否连接
-     * @var string
-     * @access protected
-     */
-    protected $connected  ;
-
-    /**
      * 操作句柄
      * @var string
      * @access protected
