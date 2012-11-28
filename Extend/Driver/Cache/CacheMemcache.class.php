@@ -42,18 +42,9 @@ class CacheMemcache extends Cache {
         $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;        
         $func               =   $options['persistent'] ? 'pconnect' : 'connect';
         $this->handler      =   new Memcache;
-        $this->connected    =   $options['timeout'] === false ?
+        $options['timeout'] === false ?
             $this->handler->$func($options['host'], $options['port']) :
             $this->handler->$func($options['host'], $options['port'], $options['timeout']);
-    }
-
-    /**
-     * 是否连接
-     * @access private
-     * @return boolen
-     */
-    private function isConnected() {
-        return $this->connected;
     }
 
     /**

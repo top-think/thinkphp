@@ -43,15 +43,6 @@ class CacheApachenote extends Cache {
     }
 
     /**
-     * 是否连接
-     * @access public
-     * @return boolen
-     */
-    public function isConnected() {
-        return $this->connected;
-    }
-
-    /**
      * 读取缓存
      * @access public
      * @param string $name 缓存变量名
@@ -130,7 +121,6 @@ class CacheApachenote extends Cache {
      private function open() {
          if (!is_resource($this->handler)) {
              $this->handler = fsockopen($this->options['host'], $this->options['port'], $_, $_, $this->options['timeout']);
-             $this->connected = is_resource($this->handler);
          }
      }
 

@@ -43,16 +43,6 @@ class CacheDb extends Cache {
         $this->options['expire']    =   isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         import('Db');
         $this->handler   = DB::getInstance();
-        $this->connected = is_resource($this->handler);
-    }
-
-    /**
-     * 是否连接
-     * @access private
-     * @return boolen
-     */
-    private function isConnected() {
-        return $this->connected;
     }
 
     /**
