@@ -670,7 +670,7 @@ class Db {
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
-        $sql   .= $this->parseComment(isset($options['comment'])?$options['comment']:'');
+        $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -703,11 +703,11 @@ class Db {
         $sql   = 'UPDATE '
             .$this->parseTable($options['table'])
             .$this->parseSet($data)
-            .$this->parseWhere(isset($options['where'])?$options['where']:'')
-            .$this->parseOrder(isset($options['order'])?$options['order']:'')
-            .$this->parseLimit(isset($options['limit'])?$options['limit']:'')
+            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
+            .$this->parseOrder(!empty($options['order'])?$options['order']:'')
+            .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
-            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
+            .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -721,11 +721,11 @@ class Db {
         $this->model  =   $options['model'];
         $sql   = 'DELETE FROM '
             .$this->parseTable($options['table'])
-            .$this->parseWhere(isset($options['where'])?$options['where']:'')
-            .$this->parseOrder(isset($options['order'])?$options['order']:'')
-            .$this->parseLimit(isset($options['limit'])?$options['limit']:'')
+            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
+            .$this->parseOrder(!empty($options['order'])?$options['order']:'')
+            .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
-            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
+            .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -799,15 +799,15 @@ class Db {
             array(
                 $this->parseTable($options['table']),
                 $this->parseDistinct(isset($options['distinct'])?$options['distinct']:false),
-                $this->parseField(isset($options['field'])?$options['field']:'*'),
-                $this->parseJoin(isset($options['join'])?$options['join']:''),
-                $this->parseWhere(isset($options['where'])?$options['where']:''),
-                $this->parseGroup(isset($options['group'])?$options['group']:''),
-                $this->parseHaving(isset($options['having'])?$options['having']:''),
-                $this->parseOrder(isset($options['order'])?$options['order']:''),
-                $this->parseLimit(isset($options['limit'])?$options['limit']:''),
-                $this->parseUnion(isset($options['union'])?$options['union']:''),
-                $this->parseComment(isset($options['comment'])?$options['comment']:'')
+                $this->parseField(!empty($options['field'])?$options['field']:'*'),
+                $this->parseJoin(!empty($options['join'])?$options['join']:''),
+                $this->parseWhere(!empty($options['where'])?$options['where']:''),
+                $this->parseGroup(!empty($options['group'])?$options['group']:''),
+                $this->parseHaving(!empty($options['having'])?$options['having']:''),
+                $this->parseOrder(!empty($options['order'])?$options['order']:''),
+                $this->parseLimit(!empty($options['limit'])?$options['limit']:''),
+                $this->parseUnion(!empty($options['union'])?$options['union']:''),
+                $this->parseComment(!empty($options['comment'])?$options['comment']:'')
             ),$sql);
         return $sql;
     }
