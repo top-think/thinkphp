@@ -284,9 +284,9 @@ class DbMssql extends Db{
         $sql   = 'UPDATE '
             .$this->parseTable($options['table'])
             .$this->parseSet($data)
-            .$this->parseWhere(isset($options['where'])?$options['where']:'')
+            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
-            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
+            .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
@@ -300,9 +300,9 @@ class DbMssql extends Db{
         $this->model  =   $options['model'];
         $sql   = 'DELETE FROM '
             .$this->parseTable($options['table'])
-            .$this->parseWhere(isset($options['where'])?$options['where']:'')
+            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
-            .$this->parseComment(isset($options['comment'])?$options['comment']:'');
+            .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql);
     }
 
