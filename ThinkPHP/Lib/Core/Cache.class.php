@@ -94,7 +94,7 @@ class Cache {
             'apc'   =>  array('apc_fetch','apc_store'),
         );
         $queue  =  isset($this->options['queue'])?$this->options['queue']:'file';
-        $fun    =  $_handler[$queue];
+        $fun    =  isset($_handler[$queue])?$_handler[$queue]:$_handler['file'];
         $value  =  $fun[0]('think_queue');
         if(!$value) {
             $value   =  array();
