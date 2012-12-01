@@ -671,7 +671,7 @@ class  ThinkTemplate {
                 $path   =  explode(':',$templateName);
                 $action = array_pop($path);
                 $module = !empty($path)?array_pop($path):MODULE_NAME;
-                if(!empty($path)) {// 设置模板主题
+                if(!empty($path) && THEME_NAME) {// 设置模板主题
                     $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
                 }else{
                     $path = THEME_PATH;

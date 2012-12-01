@@ -265,7 +265,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         }
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
+                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
             }                
         }
         if($suffix) {

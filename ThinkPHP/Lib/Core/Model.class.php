@@ -1462,12 +1462,13 @@ class Model {
             $map    =   array();
             $map['_string']   =   $where;
             $where  =   $map;
-        }
+        }        
         if(isset($this->options['where'])){
             $this->options['where'] =   array_merge($this->options['where'],$where);
         }else{
             $this->options['where'] =   $where;
         }
+        
         return $this;
     }
 
