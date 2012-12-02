@@ -9,7 +9,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: UploadFile_sae.class.php 1125 2012-09-13 07:37:28Z luofei614@126.com $
+// $Id: UploadFile_sae.class.php 1271 2012-12-02 12:17:00Z luofei614@126.com $
 
 /**
   +------------------------------------------------------------------------------
@@ -19,7 +19,7 @@
  * @package  ORG
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
- * @version   $Id: UploadFile_sae.class.php 1125 2012-09-13 07:37:28Z luofei614@126.com $
+ * @version   $Id: UploadFile_sae.class.php 1271 2012-12-02 12:17:00Z luofei614@126.com $
   +------------------------------------------------------------------------------
  */
 class UploadFile {//类定义开始
@@ -38,6 +38,7 @@ class UploadFile {//类定义开始
         'thumbSuffix'       =>  '',
         'thumbPath'         =>  '',// 缩略图保存路径
         'thumbFile'         =>  '',// 缩略图文件名
+        'thumbExt'          =>  '',// 缩略图扩展名        
         'thumbRemoveOrigin' =>  false,// 是否移除原图
         'zipImages'         =>  false,// 压缩图片文件上传
         'autoSub'           =>  false,// 启用子目录保存文件
@@ -47,7 +48,7 @@ class UploadFile {//类定义开始
         'savePath'          =>  '',// 上传文件保存路径
         'autoCheck'         =>  true, // 是否自动检查附件
         'uploadReplace'     =>  false,// 存在同名是否覆盖
-        'saveRule'          =>  '',// 上传文件命名规则
+        'saveRule'          =>  'uniqid',// 上传文件命名规则
         'hashType'          =>  'md5_file',// 上传文件Hash规则函数名
         );
 
@@ -69,7 +70,6 @@ class UploadFile {//类定义开始
             $this->config[$name]    =   $value;
         }
     }
-
     public function __isset($name){
         return isset($this->config[$name]);
     }
@@ -129,6 +129,7 @@ class UploadFile {//类定义开始
                 $thumbSuffix = explode(',', $this->thumbSuffix);
                 $thumbFile = explode(',', $this->thumbFile);
                 $thumbPath    =  $this->thumbPath?$this->thumbPath:dirname($filename).'/';
+                $thumbExt       =   $this->thumbExt ? $this->thumbExt : $file['extension']; //自定义缩略图扩展名
                 //[sae] 定义缩略图目录时，判断doamin
                 $domain = $this->thumbPath ? $this->thumbDomain : $this->domain;
                 //[sae] 用自带image类生成缩略图
@@ -153,13 +154,13 @@ class UploadFile {//类定义开始
                     }else{
                         $prefix =   isset($thumbPrefix[$i])?$thumbPrefix[$i]:$thumbPrefix[0];
                         $suffix =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
-                        $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
+                        $thumbname  =   $prefix.basename($filename,'.'.$thumbExt).$suffix;
                     }
 
                     $img->setData(file_get_contents($file['tmp_name']));
                     $img->resize($width, $height);
                     $new_data = $img->exec();
-                    if (!$s->write($domain, $thumbPath . $thumbname.'.'.$file['extension'], $new_data)) {
+                    if (!$s->write($domain, $thumbPath . $thumbname.'.'.$thumbExt, $new_data)) {
                         $this->error = '生成缩略图失败！'.$this->errmsg();
                         return false;
                     }
@@ -212,7 +213,7 @@ class UploadFile {//类定义开始
             //过滤无效的上传
             if (!empty($file['name'])) {
                 //登记上传文件的扩展信息
-                $file['key'] = $key;
+                if(!isset($file['key']))   $file['key']    =   $key;
                 $file['extension'] = $this->getExt($file['name']);
                 $file['savepath'] = $savePath;
                 $file['savename'] = $this->getSaveName($file);
@@ -227,7 +228,7 @@ class UploadFile {//类定义开始
                     return false;
                 if (function_exists($this->hashType)) {
                     $fun = $this->hashType;
-                    $file['hash'] = $fun($this->autoCharset($file['savepath'] . $file['savename'], 'utf-8', 'gbk'));
+                    $file['hash'] = $fun($this->autoCharset($file['tmp_name'], 'utf-8', 'gbk'));
                 }
                 //上传成功后保存文件信息，供其他地方调用
                 unset($file['tmp_name'], $file['error']);
@@ -322,23 +323,24 @@ class UploadFile {//类定义开始
       +----------------------------------------------------------
      */
     private function dealFiles($files) {
-        $fileArray = array();
-        $n = 0;
-        foreach ($files as $file) {
-            if (is_array($file['name'])) {
-                $keys = array_keys($file);
-                $count = count($file['name']);
-                for ($i = 0; $i < $count; $i++) {
-                    foreach ($keys as $key)
-                        $fileArray[$n][$key] = $file[$key][$i];
+        $fileArray  = array();
+        $n          = 0;
+        foreach ($files as $key=>$file){
+            if(is_array($file['name'])) {
+                $keys       =   array_keys($file);
+                $count      =   count($file['name']);
+                for ($i=0; $i<$count; $i++) {
+                    $fileArray[$n]['key'] = $key;
+                    foreach ($keys as $_key){
+                        $fileArray[$n][$_key] = $file[$_key][$i];
+                    }
                     $n++;
                 }
-            } else {
-                $fileArray[$n] = $file;
-                $n++;
+            }else{
+               $fileArray[$key] = $file;
             }
         }
-        return $fileArray;
+       return $fileArray;
     }
 
     /**
@@ -437,9 +439,10 @@ class UploadFile {//类定义开始
                 }
                 break;
         }
-        if (!is_dir($file['savepath'] . $dir)) {
-            mkdir($file['savepath'] . $dir,0777,true);
-        }
+        //[sae] 不用建立建立子目录
+        // if (!is_dir($file['savepath'] . $dir)) {
+        //     mkdir($file['savepath'] . $dir,0777,true);
+        // }
         return $dir;
     }
 

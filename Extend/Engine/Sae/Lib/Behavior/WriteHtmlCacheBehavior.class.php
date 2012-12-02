@@ -26,7 +26,7 @@ class WriteHtmlCacheBehavior extends Behavior {
             // 如果开启HTML功能 检查并重写HTML文件
             // 没有模版的操作不生成静态文件
             //[sae] 生成静态缓存
-            $kv = Think::instance('SaeKVClient');
+            $kv = Think::instance('SaeKV');
             if (!$kv->init())
                 halt('您没有初始化KVDB，请在SAE平台进行初始化');
             if(APP_DEBUG) trace(HTML_FILE_NAME,'静态缓存','SAE');

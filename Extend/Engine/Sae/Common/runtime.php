@@ -19,15 +19,15 @@ defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
 
 //  版本信息
-define('THINK_VERSION', '3.1');
+define('THINK_VERSION', '3.1.2');
 
 //   系统信息
-if(version_compare(PHP_VERSION,'5.3.0','<')) {
+if(version_compare(PHP_VERSION,'5.4.0','<')) {
     //[sae]下不支持这个函数  
     //@set_magic_quotes_runtime (0);
     define('MAGIC_QUOTES_GPC',get_magic_quotes_gpc()?True:False);
 }else{
-    define('MAGIC_QUOTES_GPC',True);
+    define('MAGIC_QUOTES_GPC',false);
 }
 define('IS_CGI',substr(PHP_SAPI, 0,3)=='cgi' ? 1 : 0 );
 define('IS_WIN',strstr(PHP_OS, 'WIN') ? 1 : 0 );
@@ -100,7 +100,7 @@ function load_runtime_file() {
         if(is_file($file))  require_cache($file);
     }
     //[sae] 加载系统类库别名定义
-    alias_import(include SAE_PATH.'Conf/alias.php');
+    //alias_import(include SAE_PATH.'Conf/alias.php');
     //[sae]在sae下不对目录结构进行检查
     if(APP_DEBUG){
         //[sae] 调试模式切换删除编译缓存
@@ -135,16 +135,14 @@ function build_runtime_cache($append='') {
         $content .= compile($file);
     }
     // 系统行为扩展文件统一编译
-    if(C('APP_TAGS_ON')) {
-        $content .= build_tags_cache();
-    }
+    $content .= build_tags_cache();
     //[sae] 编译SAE的alias
-    $alias = include SAE_PATH.'Conf/alias.php';
-    $content .= 'alias_import('.var_export($alias,true).');';
+    //$alias = include SAE_PATH.'Conf/alias.php';
+    //$content .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
     $content .= $append."\nL(".var_export(L(),true).");C(".var_export(C(),true).');G(\'loadTime\');Think::Start();';
     //[sae] 生成编译缓存文件
-    SaeMC::set(RUNTIME_FILE, strip_whitespace('<?php '.$content));
+    SaeMC::set(RUNTIME_FILE, strip_whitespace('<?php '.str_replace("defined('THINK_PATH') or exit();",' ',$content)));
 }
 
 

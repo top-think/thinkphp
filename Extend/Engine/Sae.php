@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Sae.php 1095 2012-09-02 04:04:43Z luofei614@126.com $
+// $Id: Sae.php 1259 2012-12-02 10:55:03Z luofei614@126.com $
 // Sae版ThinkPHP 入口文件
 //-------命令行生成缓存
 if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
@@ -16,8 +16,8 @@ if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
     if(!defined('APP_PATH') || !defined('THINK_PATH') ) exit('APP_PATH or THINK_PATH  must define as relative path!');
     defined('SAE_RUNTIME') or define('SAE_RUNTIME',false);
     if(!SAE_RUNTIME) exit('SAE_RUNTIME must define as true');
-    defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Sae_Runtime/');
-    $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_runtime.php' : '~runtime.php';
+    defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Runtime/');
+    $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_sae_runtime.php' : '~sae_runtime.php';
     defined('RUNTIME_FILE') or define('RUNTIME_FILE', RUNTIME_PATH . $runtime);
     define('MEMORY_LIMIT_ON', true);//sae上的固定值
     defined('APP_DEBUG') or define('APP_DEBUG', false); //[saebuilder] 是否调试模式
@@ -60,9 +60,9 @@ if (!function_exists('saeAutoLoader')) {
         header('Content-Type:text/html; charset=utf-8');
         exit('<div style=\'font-weight:bold;float:left;width:430px;text-align:center;border:1px solid silver;background:#E8EFFF;padding:8px;color:red;font-size:14px;font-family:Tahoma\'>sae环境下请手动生成项目目录~</div>');
     }
-    defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Sae_Runtime/');
+    defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Runtime/');
     defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
-    $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_runtime.php' : '~runtime.php';
+    $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_sae_runtime.php' : '~sae_runtime.php';
     defined('RUNTIME_FILE') or define('RUNTIME_FILE', RUNTIME_PATH . $runtime);
     //[sae] 载入核心编译缓存
     if (!APP_DEBUG && SaeMC::file_exists(RUNTIME_FILE)) {

@@ -8,89 +8,83 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: CacheMemcache_sae.class.php 930 2012-06-06 15:22:49Z luofei614@126.com $
 
+defined('THINK_PATH') or exit();
 /**
- +-------------------------------------
- * Memcache缓存驱动类
- +-------------------------------------
+ * Memcache缓存驱动
+ * @category   Extend
+ * @package  Extend
+ * @subpackage  Driver.Cache
+ * @author    liu21st <liu21st@gmail.com>
  */
 class CacheMemcache extends Cache {
 
     /**
-     +----------------------------------------------------------
      * 架构函数
-     +----------------------------------------------------------
+     * @param array $options 缓存参数
      * @access public
-     +----------------------------------------------------------
      */
-    function __construct($options='') {
-        //[sae] 下不用判断memcache模块是否存在
+    function __construct($options=array()) {
+        //[sae] 下不用判断memcache是否存在
         // if ( !extension_loaded('memcache') ) {
         //     throw_exception(L('_NOT_SUPPERT_').':memcache');
         // }
         if(empty($options)) {
             $options = array (
-                'host'  => C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
-                'port'  => C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
-                //'timeout' => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
-                //'persistent' => false,
-                'expire'   =>C('DATA_CACHE_TIME'),
-                'length'   =>0,
+                'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
+                'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
+                'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+                'persistent'  =>  false,
             );
         }
-        $this->options =  $options;
-        $this->handler  = memcache_init();//[sae],实例化memcache
+        $this->options      =   $options;
+        $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
+        $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        
+        $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;        
+      //  $func               =   isset($options['persistent']) ? 'pconnect' : 'connect';
+        $this->handler      =  memcache_init();//[sae] 下实例化
+        //[sae] 下不用链接
+        $this->connected=true;
+        // $this->connected    =   $options['timeout'] === false ?
+        //     $this->handler->$func($options['host'], $options['port']) :
+        //     $this->handler->$func($options['host'], $options['port'], $options['timeout']);
     }
 
     /**
-     +----------------------------------------------------------
      * 是否连接
-     +----------------------------------------------------------
      * @access private
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
     private function isConnected() {
-        return true;//[sae] 始终返回true
+        return $this->connected;
     }
 
     /**
-     +----------------------------------------------------------
      * 读取缓存
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @param string $name 缓存变量名
-     +----------------------------------------------------------
      * @return mixed
-     +----------------------------------------------------------
      */
     public function get($name) {
         N('cache_read',1);
-        return $this->handler->get($name);
+        return $this->handler->get($_SERVER['HTTP_APPVERSION'].'/'.$this->options['prefix'].$name);
     }
 
     /**
-     +----------------------------------------------------------
      * 写入缓存
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
     public function set($name, $value, $expire = null) {
         N('cache_write',1);
         if(is_null($expire)) {
             $expire  =  $this->options['expire'];
         }
-        if($this->handler->set($name, $value, 0, $expire)) {
+        $name   =   $this->options['prefix'].$name;
+        if($this->handler->set($_SERVER['HTTP_APPVERSION'].'/'.$name, $value, 0, $expire)) {
             if($this->options['length']>0) {
                 // 记录缓存队列
                 $this->queue($name);
@@ -101,33 +95,57 @@ class CacheMemcache extends Cache {
     }
 
     /**
-     +----------------------------------------------------------
      * 删除缓存
-     *
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @param string $name 缓存变量名
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
     public function rm($name, $ttl = false) {
+        $name   =   $_SERVER['HTTP_APPVERSION'].'/'.$this->options['prefix'].$name;
         return $ttl === false ?
             $this->handler->delete($name) :
             $this->handler->delete($name, $ttl);
     }
 
     /**
-     +----------------------------------------------------------
      * 清除缓存
-     +----------------------------------------------------------
      * @access public
-     +----------------------------------------------------------
      * @return boolen
-     +----------------------------------------------------------
      */
     public function clear() {
         return $this->handler->flush();
     }
+
+    /**
+     * 队列缓存
+     * @access protected
+     * @param string $key 队列名
+     * @return mixed
+     */
+    //[sae] 下重写queque队列缓存方法
+    protected function queue($key) {
+        $queue_name=isset($this->options['queue_name'])?$this->options['queue_name']:'think_queue';
+        $value  =  F($queue_name);
+        if(!$value) {
+            $value   =  array();
+        }
+        // 进列
+        if(false===array_search($key, $value)) array_push($value,$key);
+        if(count($value) > $this->options['length']) {
+            // 出列
+            $key =  array_shift($value);
+            // 删除缓存
+            $this->rm($key);
+            if (APP_DEBUG) {
+                    //调试模式下记录出队次数
+                        $counter = Think::instance('SaeCounter');
+                        if ($counter->exists($queue_name.'_out_times'))
+                            $counter->incr($queue_name.'_out_times');
+                        else
+                            $counter->create($queue_name.'_out_times', 1);
+           }
+        }
+        return F($queue_name,$value);
+    }
+
 }
