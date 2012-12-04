@@ -37,6 +37,7 @@ class UpgradeNoticeBehavior extends Behavior {
     protected $options = array(
         'UPGRADE_NOTICE_ON' => false, // 是否开启升级提醒
         'UPGRADE_NOTICE_DEBUG'=>false,
+        'UPGRADE_NOTICE_QUEUE'=>'',//队列名称， 在SAE平台上设置
         'UPGRADE_NOTICE_AKEY' => '', //SAE应用的AKEY
         'UPGRADE_NOTICE_SKEY' => '', //SAE应用的SKEY
         'UPGRADE_NOTICE_MOBILE' => '', //接受短信的手机号
@@ -50,6 +51,14 @@ class UpgradeNoticeBehavior extends Behavior {
     protected $secretkey_;
     public function run(&$params) {
         if (C('UPGRADE_NOTICE_ON') && (!S('think_upgrade_interval') || C('UPGRADE_NOTICE_DEBUG'))) {
+            if(IS_SAE && C('UPGRADE_NOTICE_QUEUE') && !isset($_POST['think_upgrade_queque'])){
+                $queue=new SaeTaskQueue(C('UPGRADE_NOTICE_QUEUE'));
+                $queue->addTask('http://'.$_SERVER['HTTP_HOST'].__APP__,'think_upgrade_queque=1');
+                if(!$queue->push()){
+                    trace('升级提醒队列执行失败,错误原因：'.$queue->errmsg(), '升级通知出错', 'NOTIC', true);
+                }
+                return ;
+            }
             $akey = C('UPGRADE_NOTICE_AKEY');
             $skey = C('UPGRADE_NOTICE_SKEY');
             $this->accesskey_ = $akey ? $akey : (defined('SAE_ACCESSKEY') ? SAE_ACCESSKEY : '');
@@ -58,7 +67,7 @@ class UpgradeNoticeBehavior extends Behavior {
             //读取接口
             $info = $this->send('http://sinaclouds.sinaapp.com/thinkapi/upgrade.php?v=' . $current_version);
              if ($info['version'] != $current_version) {
-                    if($this->send_sms($info['msg']))  trace($info['msg'], '升级通知成功', 'DEBUG', true); //发送升级短信
+                    if($this->send_sms($info['msg']))  trace($info['msg'], '升级通知成功', 'NOTIC', true); //发送升级短信
             }
             S('think_upgrade_interval', true, C('UPGRADE_NOTICE_CHECK_INTERVAL'));
         }
@@ -83,7 +92,7 @@ class UpgradeNoticeBehavior extends Behavior {
             return false;
         }
         if (isset($ret['ApiBusError'])) {
-            trace('errno:' . $ret['ApiBusError']['errcode'] . ',errmsg:' . $ret['ApiBusError']['errdesc'], '升级通知出错', 'DEBUG', true);
+            trace('errno:' . $ret['ApiBusError']['errcode'] . ',errmsg:' . $ret['ApiBusError']['errdesc'], '升级通知出错', 'NOTIC', true);
             
             return false;
         }
@@ -101,14 +110,14 @@ class UpgradeNoticeBehavior extends Behavior {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $txt = curl_exec($ch);
         if (curl_errno($ch)) {
-            trace(curl_error($ch) , '升级通知出错', 'DEBUG', true);
+            trace(curl_error($ch) , '升级通知出错', 'NOTIC', true);
             
             return false;
         }
         curl_close($ch);
         $ret = json_decode($txt, true);
         if (!$ret) {
-            trace('接口[' . $url . ']返回格式不正确', '升级通知出错', 'DEBUG', true);
+            trace('接口[' . $url . ']返回格式不正确', '升级通知出错', 'NOTIC', true);
             
             return false;
         }
