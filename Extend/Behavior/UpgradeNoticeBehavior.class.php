@@ -51,7 +51,7 @@ class UpgradeNoticeBehavior extends Behavior {
     protected $secretkey_;
     public function run(&$params) {
         if (C('UPGRADE_NOTICE_ON') && (!S('think_upgrade_interval') || C('UPGRADE_NOTICE_DEBUG'))) {
-            if(IS_SAE && C('UPGRADE_NOTICE_QUEUE') && !isset($_POST['think_upgrade_queque'])){
+            if(defined('IS_SAE') && IS_SAE && C('UPGRADE_NOTICE_QUEUE') && !isset($_POST['think_upgrade_queque'])){
                 $queue=new SaeTaskQueue(C('UPGRADE_NOTICE_QUEUE'));
                 $queue->addTask('http://'.$_SERVER['HTTP_HOST'].__APP__,'think_upgrade_queque=1');
                 if(!$queue->push()){
