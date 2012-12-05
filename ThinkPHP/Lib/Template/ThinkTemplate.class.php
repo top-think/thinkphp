@@ -439,7 +439,7 @@ class  ThinkTemplate {
             $tagStr = stripslashes($tagStr);
         //}
         //还原非模板标签
-        if(preg_match('/^[\s|\d]/is',$tagStr))
+        if($tagStr=""||preg_match('/^[\s|\d]/is',$tagStr))
             //过滤空格和数字打头的标签
             return C('TMPL_L_DELIM') . $tagStr .C('TMPL_R_DELIM');
         $flag   =  substr($tagStr,0,1);
