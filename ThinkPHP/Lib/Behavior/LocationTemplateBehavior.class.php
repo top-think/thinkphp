@@ -40,7 +40,6 @@ class LocationTemplateBehavior extends Behavior {
             $path   =  explode(':',$templateFile);
             $action = array_pop($path);
             $module = !empty($path)?array_pop($path):MODULE_NAME;
-            if('_common'==$module)
             if(!empty($path)) {// 设置模板主题
                 $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
             }else{
