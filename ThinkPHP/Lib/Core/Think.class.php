@@ -54,11 +54,10 @@ class Think {
         }else{
             $mode   =  array();
         }
-
+        // 加载核心惯例配置文件
+        C(include THINK_PATH.'Conf/convention.php');
         if(isset($mode['config'])) {// 加载模式配置文件
             C( is_array($mode['config'])?$mode['config']:include $mode['config'] );
-        }else{ // 加载底层惯例配置文件
-            C(include THINK_PATH.'Conf/convention.php');
         }
 
         // 加载项目配置文件
