@@ -86,10 +86,11 @@ class Page {
                 $parameter      =   $this->parameter;
             }elseif(empty($this->parameter)){
                 unset($_GET[C('VAR_URL_PARAMS')]);
-                if(empty($_GET)) {
+                $var =  !empty($_POST)?$_POST:$_GET;
+                if(empty($var)) {
                     $parameter  =   array();
                 }else{
-                    $parameter  =   $_GET;
+                    $parameter  =   $var;
                 }
             }
             $parameter[$p]  =   '__PAGE__';
