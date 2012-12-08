@@ -191,7 +191,7 @@ class  ThinkTemplate {
             $this->parseTagLib($tag,$content,true);
         }
         //解析普通模板标签 {tagName}
-        $content = preg_replace('/('.$this->config['tmpl_begin'].')([^\s'.$this->config['tmpl_begin'].$this->config['tmpl_end'].'].+?)('.$this->config['tmpl_end'].')/eis',"\$this->parseTag('\\2')",$content);
+        $content = preg_replace('/('.$this->config['tmpl_begin'].')([^\d\s'.$this->config['tmpl_begin'].$this->config['tmpl_end'].'].+?)('.$this->config['tmpl_end'].')/eis',"\$this->parseTag('\\2')",$content);
         return $content;
     }
 
@@ -443,8 +443,9 @@ class  ThinkTemplate {
             //过滤空格和数字打头的标签
             return C('TMPL_L_DELIM') . $tagStr .C('TMPL_R_DELIM');
         $flag   =  substr($tagStr,0,1);
+        $flag2  =  substr($tagStr,1,1);
         $name   = substr($tagStr,1);
-        if('$' == $flag){ //解析模板变量 格式 {$varName}
+        if('$' == $flag && '.' != $flag2 && '(' != $flag2){ //解析模板变量 格式 {$varName}
             return $this->parseVar($name);
         }elseif('-' == $flag || '+'== $flag){ // 输出计算
             return  '<?php echo '.$flag.$name.';?>';
