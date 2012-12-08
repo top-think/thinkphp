@@ -82,6 +82,8 @@ class Page {
         }else{
             if($this->parameter && is_string($this->parameter)) {
                 parse_str($this->parameter,$parameter);
+            }elseif(is_array($this->parameter)){
+                $parameter      =   $this->parameter;
             }elseif(empty($this->parameter)){
                 unset($_GET[C('VAR_URL_PARAMS')]);
                 if(empty($_GET)) {
