@@ -49,7 +49,10 @@ class  ThinkTemplate {
     }
 
     private function stripPreg($str) {
-        return str_replace(array('{','}','(',')','|','[',']'),array('\{','\}','\(','\)','\|','\[','\]'),$str);
+        return str_replace(
+            array('{','}','(',')','|','[',']','-','+','*','.','^'),
+            array('\{','\}','\(','\)','\|','\[','\]','\-','\+','\*','\.','\^'),
+            $str);        
     }
 
     // 模板变量获取和设置
