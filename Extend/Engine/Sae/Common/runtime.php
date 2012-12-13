@@ -89,6 +89,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
 function load_runtime_file() {
     //[sae] 加载系统基础函数库
     require SAE_PATH.'Common/common.php';
+    require SAE_PATH.'Common/sae_common.php';
     //[sae] 读取核心编译文件列表
     $list = array(
         SAE_PATH.'Lib/Core/Think.class.php',
@@ -127,6 +128,7 @@ function build_runtime_cache($append='') {
     //[sae] 读取核心编译文件列表
     $list = array(
         SAE_PATH.'Common/common.php',
+        SAE_PATH.'Common/sae_common.php',
         SAE_PATH.'Lib/Core/Think.class.php',
         CORE_PATH.'Core/ThinkException.class.php',
         CORE_PATH.'Core/Behavior.class.php',

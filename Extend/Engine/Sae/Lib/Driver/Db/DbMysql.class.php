@@ -59,7 +59,7 @@ class DbMysql extends Db{
                 $errStr=mysql_error();
                 $errno=mysql_errno();
                 if($errno==13047 || C('SPARE_DB_DEBUG')){
-                    if(C('SMS_ON')) Sms::send('mysql超额被禁用,请在SAE日志中心查看详情', $errStr,Sms::MYSQL_ERROR);
+                    if(C('SMS_ALERT_ON')) Sms::send('mysql超额被禁用,请在SAE日志中心查看详情', $errStr,Sms::MYSQL_ERROR);
                     //[sae]启动备用数据库
                     if(C('SPARE_DB_HOST')){
                         $this->linkID[$linkNum]=mysql_connect( C('SPARE_DB_HOST').(C('SPARE_DB_PORT')?':'.C('SPARE_DB_PORT'):''), C('SPARE_DB_USER'), C('SPARE_DB_PWD'),true,CLIENT_MULTI_RESULTS);
@@ -74,7 +74,7 @@ class DbMysql extends Db{
                     }
                 }else{
                     //[sae] 短信预警
-                    if(C('SMS_ON')) Sms::send('数据库连接时出错,请在SAE日志中心查看详情', $errStr,Sms::MYSQL_ERROR);
+                    if(C('SMS_ALERT_ON')) Sms::send('数据库连接时出错,请在SAE日志中心查看详情', $errStr,Sms::MYSQL_ERROR);
                     throw_exception($errStr);
                 }
             }
@@ -350,7 +350,7 @@ class DbMysql extends Db{
         }
         trace($this->error,'','ERR');
         //[sae] 短信预警
-        if(C('SMS_ON')) Sms::send('sql语句执行时出错，请在SAE日志中心查看详情', $this->error,Sms::MYSQL_ERROR);
+        if(C('SMS_ALERT_ON')) Sms::send('sql语句执行时出错，请在SAE日志中心查看详情', $this->error,Sms::MYSQL_ERROR);
         return $this->error;
     }
 

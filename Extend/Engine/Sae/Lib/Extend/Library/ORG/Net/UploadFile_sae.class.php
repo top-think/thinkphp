@@ -50,6 +50,12 @@ class UploadFile {//类定义开始
         'uploadReplace'     =>  false,// 存在同名是否覆盖
         'saveRule'          =>  'uniqid',// 上传文件命名规则
         'hashType'          =>  'md5_file',// 上传文件Hash规则函数名
+        //sae平台下特有属性
+        'expires'=>'',
+        'encoding'=>'',
+        'type'=>'',
+        'private'=>'',
+        'compress'=>false
         );
 
   // 错误信息
@@ -114,8 +120,13 @@ class UploadFile {//类定义开始
             $this->error = '非法图像文件';
             return false;
         }
-        //if(!move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
-        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name']) ) {
+        $attr=array();
+        $attrs=array('expires','encoding','type','private');
+        foreach ($attrs as $key => $value)
+            if(!empty($this->config[$key])) $attr[$key]=$value;
+          if($this->compress) $attr['encoding']='gzip';
+        //[sae] 上传文件
+        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name'],$attr,$compress) ) {
                  $this->error = '文件上传失败'.$s->errmsg();
                 return false;
         }

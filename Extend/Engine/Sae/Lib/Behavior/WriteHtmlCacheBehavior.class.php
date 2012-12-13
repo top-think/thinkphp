@@ -29,7 +29,7 @@ class WriteHtmlCacheBehavior extends Behavior {
             $kv = Think::instance('SaeKV');
             if (!$kv->init())
                 halt('您没有初始化KVDB，请在SAE平台进行初始化');
-            if(APP_DEBUG) trace(HTML_FILE_NAME,'静态缓存','SAE');
+            if(APP_DEBUG) trace(HTML_FILE_NAME,'静态缓存KVDB KEY','SAE');
             $kv->set(HTML_FILE_NAME,time().$content);
         }
     }

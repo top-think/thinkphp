@@ -23,8 +23,7 @@
  */
 function halt($error) {
     $e = array();
-    //debug
-    if (true) {
+    if (APP_DEBUG) {
         //调试模式下输出错误信息
         if (!is_array($error)) {
             $trace          = debug_backtrace();

@@ -61,6 +61,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
 function load_runtime_file() {
     //[sae] 加载系统基础函数库
     require SAE_PATH.'Common/common.php';
+     require SAE_PATH.'Common/sae_common.php';
     //[sae] 读取核心编译文件列表
     $list = array(
         SAE_PATH.'Lib/Core/Think.class.php',
@@ -74,10 +75,6 @@ function load_runtime_file() {
     //[sae] 加载系统类库别名定义
     //alias_import(include SAE_PATH.'Conf/alias.php');
     //[sae]在sae下不对目录结构进行检查
-    if(APP_DEBUG){
-        //[sae] 调试模式切换删除编译缓存
-        if(!SAE_RUNTIME && SaeMC::file_exists(RUNTIME_FILE)) SaeMC::unlink(RUNTIME_FILE) ;
-    }
 }
 
 //[sae]下，不需要生成检查runtime目录函数
@@ -89,6 +86,7 @@ function build_runtime_cache($append='') {
     $content    =  '$GLOBALS[\'_beginTime\'] = microtime(TRUE);';
     //[sae]编译SaeMC核心
     $content.=compile(SAE_PATH.'Lib/Core/SaeMC.class.php');
+    $defs['user']['APP_DEBUG']=false;//[sae] 关闭调试
     if(defined('RUNTIME_DEF_FILE')) { //[sae] 编译后的常量文件外部引入
         SaeMC::set(RUNTIME_DEF_FILE, '<?php '.array_define($defs['user']));
         $content  .=  'SaeMC::include_file(\''.RUNTIME_DEF_FILE.'\');';
@@ -99,6 +97,7 @@ function build_runtime_cache($append='') {
     //[sae] 读取核心编译文件列表
     $list = array(
         SAE_PATH.'Common/common.php',
+        SAE_PATH.'Common/sae_common.php',
         SAE_PATH.'Lib/Core/Think.class.php',
         CORE_PATH.'Core/ThinkException.class.php',
         CORE_PATH.'Core/Behavior.class.php',
@@ -112,7 +111,7 @@ function build_runtime_cache($append='') {
     //$alias = include SAE_PATH.'Conf/alias.php';
     //$content .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
-    // [sae_runtime] 对配置中的SAE常量进行处理
+    // [sae_runtime] 对配置中的SAE常量进行处理。 配置项的值如果是 ~func() 的字符串 则会 编译为 执行func函数。主要是为了处理 sae_storage_root 函数在SAE_RUNTIME模式下的使用
     $content .= $append."\nL(".var_export(L(),true).");C(".preg_replace(array('/\'SAE_(.*?)\'/e','/\'~([a-zA-Z_][a-zA-Z0-9_]*)\((.*?)\)\'/'), array('parse_sae_define("\\1")','\\1(\\2)'), var_export(C(),true)).');G(\'loadTime\');Think::Start();';
     //[sae] 生成编译缓存文件
     SaeMC::set(RUNTIME_FILE, strip_whitespace('<?php '.str_replace("defined('THINK_PATH') or exit();",' ',$content)));
@@ -209,7 +208,7 @@ function buildApp() {
         foreach ($list as $file){
             if(is_file($file))  {
                 require_cache($file);
-                if(!APP_DEBUG)   $compile .= compile($file);
+                $compile .= compile($file);
             }
         }
 
@@ -217,7 +216,7 @@ function buildApp() {
         if(is_file(COMMON_PATH.'common.php')) {
             include COMMON_PATH.'common.php';
             // 编译文件
-            if(!APP_DEBUG)  $compile   .= compile(COMMON_PATH.'common.php');
+            $compile   .= compile(COMMON_PATH.'common.php');
         }
 
         // 加载模式别名定义
@@ -228,27 +227,15 @@ function buildApp() {
             $alias = include SAE_PATH.'Conf/alias.php';
         }
         alias_import($alias);
-        if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';
+        $compile .= 'alias_import('.var_export($alias,true).');';
         
          // 加载项目别名定义
         if(is_file(CONF_PATH.'alias.php')){ 
             $alias = include CONF_PATH.'alias.php';
             alias_import($alias);
-            if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';
+            $compile .= 'alias_import('.var_export($alias,true).');';
         }
-
-        if(APP_DEBUG) {
-            // 调试模式加载系统默认的配置文件
-            C(include THINK_PATH.'Conf/debug.php');
-            // 读取调试模式的应用状态
-            $status  =  C('APP_STATUS');
-            // 加载对应的项目配置文件
-            if(is_file(CONF_PATH.$status.'.php'))
-                // 允许项目增加开发模式配置定义
-                C(include CONF_PATH.$status.'.php');
-        }else{
             // 部署模式下面生成编译文件
-            build_runtime_cache($compile);
-        }
+        build_runtime_cache($compile);
         return ;
     }

@@ -279,6 +279,8 @@ class Think {
             }
             $errorStr = "$errstr ".$errfile." 第 $errline 行.";
             if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
+            //[sae] 短信预警
+            if(C('SMS_ALERT_ON')) Sms::send('程序出现致命错误,请在SAE日志中心查看详情',$errorStr,Sms::ERR);
             function_exists('halt')?halt($errorStr):exit('ERROR:'.$errorStr);
             break;
           case E_STRICT:
@@ -287,6 +289,8 @@ class Think {
           default:
             $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
             trace($errorStr,'','NOTIC');
+            //[sae] 短信预警
+            if(C('SMS_ALERT_ON')) Sms::send('程序出现Notice报错，请在SAE日志中心查看详情',$errorStr,Sms::NOTICE);
             break;
       }
     }
