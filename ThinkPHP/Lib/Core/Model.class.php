@@ -1459,7 +1459,7 @@ class Model {
         }elseif(is_object($where)){
             $where  =   get_object_vars($where);
         }
-        if(is_string($where)){
+        if(is_string($where) && '' != $where){
             $map    =   array();
             $map['_string']   =   $where;
             $where  =   $map;
