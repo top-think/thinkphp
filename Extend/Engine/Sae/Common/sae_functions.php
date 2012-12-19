@@ -61,7 +61,7 @@ function send_sms($mobile,$msg){
         $txt = curl_exec($ch);
         if (curl_errno($ch)) {
              if(C('LOG_RECORD'))
-                trace('短信内容：'.$msg_all.'错误信息：'.$curl_error($ch) , '发送短信错误', 'NOTIC', true);
+                trace('短信内容：'.$msg_all.'，错误信息：'.$curl_error($ch) , '发送短信错误', 'NOTIC', true);
             else
                 Log::write('短信发送错误：短信内容：'.$msg_all.'错误信息：'.$curl_error($ch),'NOTIC');
             return false;
