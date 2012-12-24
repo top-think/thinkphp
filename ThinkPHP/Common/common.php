@@ -267,7 +267,7 @@ function D($name='',$layer='') {
     import($name.$layer);
     $class          =   basename($name.$layer);
     if(class_exists($class)) {
-        $model      =   new $class();
+        $model      =   new $class(basename($name));
     }else {
         $model      =   new Model(basename($name));
     }
