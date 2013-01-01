@@ -243,24 +243,6 @@ class  ThinkTemplate {
         return $content;
     }
 
-    /**
-     * 加载公共模板并缓存 和当前模板在同一路径，否则使用相对路径
-     * @access private
-     * @param string $tmplPublicName  公共模板文件名
-     * @param array $vars  要传递的变量列表
-     * @return string
-     */
-    private function parseIncludeItem($tmplPublicName,$vars=array()){
-        // 分析模板文件名并读取内容
-        $parseStr = $this->parseTemplateName($tmplPublicName);
-        // 替换变量
-        foreach ($vars as $key=>$val) {
-            $parseStr = str_replace('['.$key.']',$val,$parseStr);
-        }
-        // 再次对包含文件进行模板分析
-        return $this->parseInclude($parseStr);
-    }
-    
     // 解析模板中的extend标签
     protected function parseExtend($content) {
         $begin      =   $this->config['taglib_begin'];
@@ -644,6 +626,24 @@ class  ThinkTemplate {
             }
         }
         return $parseStr;
+    }
+
+    /**
+     * 加载公共模板并缓存 和当前模板在同一路径，否则使用相对路径
+     * @access private
+     * @param string $tmplPublicName  公共模板文件名
+     * @param array $vars  要传递的变量列表
+     * @return string
+     */
+    private function parseIncludeItem($tmplPublicName,$vars=array()){
+        // 分析模板文件名并读取内容
+        $parseStr = $this->parseTemplateName($tmplPublicName);
+        // 替换变量
+        foreach ($vars as $key=>$val) {
+            $parseStr = str_replace('['.$key.']',$val,$parseStr);
+        }
+        // 再次对包含文件进行模板分析
+        return $this->parseInclude($parseStr);
     }
 
      /**

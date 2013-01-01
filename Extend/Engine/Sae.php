@@ -39,7 +39,10 @@ define('SAE_PATH', ENGINE_PATH . 'Sae/');
 if (!function_exists('saeAutoLoader')) {
     define('IS_SAE', FALSE);
     defined('THINK_PATH') or define('THINK_PATH', dirname(dirname(dirname(__FILE__))) . '/');
-    defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+	defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+	//创建默认项目
+    $lib_path=defined('LIB_PATH')?LIB_PATH:APP_PATH.'Lib/';
+	if(!is_dir($lib_path)) require SAE_PATH.'build_first_app.php';
     //加载平滑函数
     require SAE_PATH . 'Common/sae_functions.php';
     //加载模拟器
