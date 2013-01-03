@@ -10,8 +10,7 @@
 // +----------------------------------------------------------------------
 
 defined('THINK_PATH') or exit();
-// 系统别名定义文件
-// TODU ,加载其他Cluster的文件
+//[cluster] 系统别名定义文件
 return array(
     'Model'         => CORE_PATH.'Core/Model.class.php',
     'Db'            => CORE_PATH.'Core/Db.class.php',

@@ -13,6 +13,7 @@ function sae_copy_defaut_app($directory,$to) {
             closedir($handle);
         }
 }
+if(!is_dir(APP_PATH)) @mkdir(APP_PATH,0777);
 if(!is_writeable(APP_PATH)){
 	header("Content-Type:text/html;charset=utf-8");
 	exit('项目目录不可写，请手动建立项目目录，并设在为可写');

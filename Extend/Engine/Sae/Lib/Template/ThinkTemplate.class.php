@@ -94,7 +94,7 @@ class  ThinkTemplate {
         }else{
             $tmplContent =  $tmplTemplateFile;
         }
-        //[sae] 根据模版文件名定位缓存文件
+        // 根据模版文件名定位缓存文件
         $tmplCacheFile = $this->config['cache_path'].$prefix.md5($tmplTemplateFile).$this->config['cache_suffix'];
 
         // 判断是否启用布局
