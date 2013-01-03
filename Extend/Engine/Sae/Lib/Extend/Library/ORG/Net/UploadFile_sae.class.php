@@ -309,7 +309,7 @@ class UploadFile {//类定义开始
                     return false;
                 if (function_exists($this->hashType)) {
                     $fun = $this->hashType;
-                    $file['hash'] = $fun($this->autoCharset($file['savepath'] . $file['savename'], 'utf-8', 'gbk'));
+                    $file['hash'] = $fun($this->autoCharset($file['tmp_name'] . $file['savename'], 'utf-8', 'gbk'));
                 }
                 unset($file['tmp_name'], $file['error']);
                 $info[] = $file;
