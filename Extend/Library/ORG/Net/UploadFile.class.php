@@ -101,12 +101,12 @@ class UploadFile {//类定义开始
                 return false;                
             }
         }
-        if(!move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
+        if(!$this->thumbRemoveOrigin && !move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
             $this->error = '文件上传保存错误！';
             return false;
         }
         if($this->thumb && in_array(strtolower($file['extension']),array('gif','jpg','jpeg','bmp','png'))) {
-            $image =  getimagesize($filename);
+            $image =  getimagesize($file['tmp_name']);
             if(false !== $image) {
                 //是图像文件生成缩略图
                 $thumbWidth		=	explode(',',$this->thumbMaxWidth);
@@ -126,12 +126,9 @@ class UploadFile {//类定义开始
                         $suffix     =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
                         $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
                     }
-                    Image::thumb($filename,$thumbPath.$thumbname.'.'.$thumbExt,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
+                    Image::thumb($file['tmp_name'],$thumbPath.$thumbname.'.'.$thumbExt,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
                 }
-                if($this->thumbRemoveOrigin) {
-                    // 生成缩略图之后删除原图
-                    unlink($filename);
-                }
+
             }
         }
         if($this->zipImags) {
