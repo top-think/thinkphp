@@ -264,7 +264,13 @@ function D($name='',$layer='') {
         $name       =   C('DEFAULT_APP').'/'.$layer.'/'.$name;
     }
     if(isset($_model[$name]))   return $_model[$name];
-    import($name.$layer);
+    $path           =   explode('/',$name);
+    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+        $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }else{
+        import($name.$layer);
+    } 
     $class          =   basename($name.$layer);
     if(class_exists($class)) {
         $model      =   new $class(basename($name));
@@ -311,15 +317,19 @@ function A($name,$layer='',$common=false) {
         $name   =  '@/'.$layer.'/'.$name;
     }
     if(isset($_action[$name]))  return $_action[$name];
-    if($common){ // 独立分组情况下 加载公共目录类库
+    $path           =   explode('/',$name);
+    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+        $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif($common) { // 加载公共类库目录
         import(str_replace('@/','',$name).$layer,LIB_PATH);
     }else{
-        import($name.$layer); 
-    }    
+        import($name.$layer);
+    }
     $class      =   basename($name.$layer);
     if(class_exists($class,false)) {
-        $action             = new $class();
-        $_action[$name]     =  $action;
+        $action             =   new $class();
+        $_action[$name]     =   $action;
         return $action;
     }else {
         return false;
