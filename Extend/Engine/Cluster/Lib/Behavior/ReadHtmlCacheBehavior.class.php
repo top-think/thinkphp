@@ -98,7 +98,7 @@ class ReadHtmlCacheBehavior extends Behavior {
      */
 	static public function checkHTMLCache($cacheFile='',$cacheTime='') {
 		//[cluster] 读取静态文件
-		$content=html_read($cacheFile);
+		$content=html_get($cacheFile);
 		if(!$content) return false;
 		$mtime=substr($content,0,10);
 		self::$html_content=substr($content,10);

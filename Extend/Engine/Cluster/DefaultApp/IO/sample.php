@@ -1,13 +1,17 @@
 <?php
 //分布式环境IO操作实现函数，本文件只是示例代码，请根据自己环境的实际情况对以下函数进行修改。
+if(!extension_loaded('memcache')){
+	header('Content-Type:text/html;charset=utf-8');
+	exit('您的环境不支持Memcache，请先安装Memcache扩展或者更高IO/sample.php文件，更改其他方式实现IO操作');
+}
 $global_mc=memcache_connect('localhost',11211);
 //编译缓存文件创建方法
-function runtime_write($filename,$content){
+function runtime_set($filename,$content){
 	global $global_mc;
 	return $global_mc->set($filename,$content,MEMCACHE_COMPRESSED,0);
 }
 //编译缓存文件设置方法
-function runtime_read($filename){
+function runtime_get($filename){
 	global $global_mc;
 	return $global_mc->get($filename);
 }
@@ -48,19 +52,26 @@ function S_clear(){
 	global $global_mc;
 	return $global_mc->flush();
 }
-//文件上传
-function cluster_uploaded_file($filename,$destination){
-  //请根据自己的实际情况实现文件上传
-  dump($filename);
-  dump($destination);
-  return true;
+//文件上传,这只是示例代码，暂时以单机写入的方式举例，请根据自己的实际环境修改代码
+function file_upload($src_file,$dest_file){
+	$pdir=dirname($dest_file);
+	if(!is_dir($pdir)) @mkdir($pdir,0777);
+	return copy($src_file,$dest_file);
+}
+//删除上传的文件
+function file_delete($filename){
+	return delete($filename);
+}
+//获得文件的根地址
+function file_url_root($domain){
+	return '';
 }
 //静态缓存,强烈建议修改为可持久性的存储方式
-function html_write($filename,$content){
+function html_set($filename,$content){
 	global $global_mc;
 	return $global_mc->set($filename,$content,MEMCACHE_COMPRESSED,0);
 }
-function html_read($filename){
+function html_get($filename){
    global $global_mc;
    return $global_mc->get($filename);
 }

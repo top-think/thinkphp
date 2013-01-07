@@ -129,7 +129,7 @@ function build_runtime_cache($append='') {
         CORE_PATH.'Core/Behavior.class.php',
 	);
 	//[cluster] 判断加载IO.php文件
-	$content.='if(!function_exists(\'runtime_write\')){'.compile(IO_PATH).'}';
+	$content.='if(!function_exists(\'runtime_set\')){'.compile(IO_PATH).'}';
 	//[cluster] 判断加载ThinkFS文件
 	$content.='if(!class_exists(\'ThinkFS\')){'.compile(CLUSTER_PATH.'Lib/Core/ThinkFS.class.php').'}';
     foreach ($list as $file){

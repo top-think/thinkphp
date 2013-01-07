@@ -62,7 +62,10 @@ class Think {
 
         // 加载项目配置文件
         if(is_file(CONF_PATH.'config.php'))
-            C(include CONF_PATH.'config.php');
+			C(include CONF_PATH.'config.php');
+		//[cluster]加载IO专用配置
+		if(is_file(CONF_PATH.'config_'.IO_CONFIG.'.php'))
+			C(include CONF_PATH.'config_'.IO_CONFIG.'.php');
 
         // 加载框架底层语言包
         L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');

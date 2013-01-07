@@ -99,7 +99,7 @@ class UploadFile {//类定义开始
             }
         }
 		//[cluster] 上传文件
-        if(!$this->thumbRemoveOrigin && !cluster_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
+        if(!$this->thumbRemoveOrigin && !file_upload($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
             $this->error = '文件上传保存错误！';
             return false;
         }
@@ -126,8 +126,8 @@ class UploadFile {//类定义开始
 					}
 					//[cluster] 缩略图用临时文件实现
 					$tmp_file=sys_get_temp_dir().'/'.$thumbname.'.'.$thumbExt;
-                    Image::thumb($file['tmp_name'],$tmp_file,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
-					cluster_uploaded_file($tmp_file,$thumbPath.$thumbname.'.'.$thumbExt);
+                    $ret=Image::thumb($file['tmp_name'],$tmp_file,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
+					if(false!==$ret) file_upload($tmp_file,$thumbPath.$thumbname.'.'.$thumbExt);
 					if(file_exists($tmp_file)) unlink($tmp_file);
                 }
             }

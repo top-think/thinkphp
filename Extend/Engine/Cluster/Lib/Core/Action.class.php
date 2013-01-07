@@ -158,7 +158,7 @@ abstract class Action {
 		//[cluster] 去掉 如果静态目录不存在 则创建
 		//[cluster] 写入静态缓存
 		trace($htmlfile,'创建静态文件KEY',DEBUG);
-        if(false === html_write($htmlfile,$content))
+        if(false === html_set($htmlfile,$content))
             throw_exception(L('_CACHE_WRITE_ERROR_').':'.$htmlfile);
         return $content;
     }

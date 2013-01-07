@@ -27,7 +27,7 @@ class WriteHtmlCacheBehavior extends Behavior {
 			//[cluster] 去掉没有模版的操作不生成静态文件
 			//[cluster] 写入静态文件
 			trace(HTML_FILE_NAME,'创建静态文件KEY',DEBUG);
-            if( false === html_write( HTML_FILE_NAME , time().$content ))
+            if( false === html_set( HTML_FILE_NAME , time().$content ))
                 throw_exception(L('_CACHE_WRITE_ERROR_').':'.HTML_FILE_NAME);
         }
     }

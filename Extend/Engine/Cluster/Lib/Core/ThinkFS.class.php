@@ -12,7 +12,7 @@ class ThinkFS{
 	//创建文件
 	static public function set($filename,$content){
 		//写入文件时，会将文件的创建时间放在内容的最前面
-	  return runtime_write($filename,time().$content);
+	  return runtime_set($filename,time().$content);
 	}
 	//包含文件
 	static public function include_file($_filename,$_vars=null){
@@ -44,7 +44,7 @@ class ThinkFS{
 	}
 
 	static private function get_value($filename,$type='mtime'){
-		$content=runtime_read($filename);
+		$content=runtime_get($filename);
 		if(!$content) return false;
 		$ret=array(
 			'mtime'=>substr($content,0,10),
