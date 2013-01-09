@@ -14,7 +14,7 @@
 //[cluster] 定义路径常量
 defined('CLUSTER_PATH') or define('CLUSTER_PATH',ENGINE_PATH.'Cluster/');
 //[cluster] 提前系统目录定义
-defined('IO_NAME') or define('IO_NAME','sample');
+defined('IO_NAME') or define('IO_NAME','auto');
 defined('IO_PATH') or define('IO_PATH',APP_PATH.'IO/'.IO_NAME.'.php');
 //[cluster] 建立默认应用
 if(!file_exists(IO_PATH)) require CLUSTER_PATH.'build_first_app.php';
