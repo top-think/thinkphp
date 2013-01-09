@@ -21,7 +21,8 @@ defined('APP_PATH') 	or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']).
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',APP_PATH.'Runtime/');
 defined('APP_DEBUG') 	or define('APP_DEBUG',false); // 是否调试模式
 if(defined('ENGINE_NAME')) {
-	require THINK_PATH.'Extend/'.strtolower(ENGINE_NAME).'.php';
+    defined('ENGINE_PATH') or define('ENGINE_PATH',THINK_PATH.'Extend/Engine/');
+	require ENGINE_PATH.strtolower(ENGINE_NAME).'.php';
 }else{
 	$runtime = defined('MODE_NAME')?'~'.strtolower(MODE_NAME).'_runtime.php':'~runtime.php';
 	defined('RUNTIME_FILE') or define('RUNTIME_FILE',RUNTIME_PATH.$runtime);
