@@ -64,8 +64,8 @@ class Think {
         if(is_file(CONF_PATH.'config.php'))
 			C(include CONF_PATH.'config.php');
 		//[cluster]加载IO专用配置
-		if(is_file(CONF_PATH.'config_'.IO_CONFIG.'.php'))
-			C(include CONF_PATH.'config_'.IO_CONFIG.'.php');
+		if(is_file(CONF_PATH.'config_'.IO_TRUE_NAME.'.php'))
+			C(include CONF_PATH.'config_'.IO_TRUE_NAME.'.php');
 
         // 加载框架底层语言包
         L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
@@ -119,6 +119,11 @@ class Think {
             // 编译文件
             if(!APP_DEBUG)  $compile   .= compile(COMMON_PATH.'common.php');
         }
+		//[cluster] 加载cluster的IO专属文件
+		if(is_file(COMMON_PATH.'common_'.IO_TRUE_NAME.'.php')){
+			include COMMON_PATH.'common_'.IO_TRUE_NAME.'.php';
+			if(!APP_DEBUG) $compile.=complie(COMMON_PATH.'common_'.IO_TRUE_NAME.'.php');
+		}
 
         // 加载模式别名定义
         if(isset($mode['alias'])) {

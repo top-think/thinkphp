@@ -63,7 +63,7 @@ function file_delete($filename){
 	return delete($filename);
 }
 //获得文件的根地址
-function file_url_root($domain){
+function file_url_root(){
 	return '';
 }
 //静态缓存,强烈建议修改为可持久性的存储方式

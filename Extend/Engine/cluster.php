@@ -12,11 +12,8 @@
 // ThinkPHP 入口文件
 
 //[cluster] 定义路径常量
-defined('ENGINE_PATH') or define('ENGINE_PATH',dirname(__FILE__).'/');
 defined('CLUSTER_PATH') or define('CLUSTER_PATH',ENGINE_PATH.'Cluster/');
 //[cluster] 提前系统目录定义
-defined('THINK_PATH') or define('THINK_PATH', dirname(__FILE__).'/');
-defined('APP_PATH') 	or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('IO_NAME') or define('IO_NAME','sample');
 defined('IO_PATH') or define('IO_PATH',APP_PATH.'IO/'.IO_NAME.'.php');
 //[cluster] 建立默认应用
@@ -28,7 +25,7 @@ $GLOBALS['_beginTime'] = microtime(TRUE);
 define('MEMORY_LIMIT_ON',function_exists('memory_get_usage'));
 if(MEMORY_LIMIT_ON) $GLOBALS['_startUseMems'] = memory_get_usage();
 //[cluster] 定义加载IO配置
-defined('IO_CONFIG') or define('IO_CONFIG',IO_NAME);
+defined('IO_TRUE_NAME') or define('IO_TRUE_NAME',IO_NAME);
 require CLUSTER_PATH.'Lib/Core/ThinkFS.class.php';
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',APP_PATH.'Runtime/');
 defined('APP_DEBUG') 	or define('APP_DEBUG',false); // 是否调试模式
