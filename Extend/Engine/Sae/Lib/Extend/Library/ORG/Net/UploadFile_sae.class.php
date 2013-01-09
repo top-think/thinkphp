@@ -126,7 +126,7 @@ class UploadFile {//类定义开始
             if(!empty($this->config[$key])) $attr[$key]=$value;
           if($this->compress) $attr['encoding']='gzip';
         //[sae] 上传文件
-        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name'],$attr,$compress) ) {
+        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name'],$attr,$this->compress) ) {
                  $this->error = '文件上传失败'.$s->errmsg();
                 return false;
         }
