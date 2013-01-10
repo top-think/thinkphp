@@ -3,7 +3,6 @@
 if(!function_exists('saeAutoLoader')){
 	//如果是普通环境，加载普通核心文件
 	define('IS_SAE',false);
-	define('IS_CLOUD',false);
 	$runtime = defined('MODE_NAME')?'~'.strtolower(MODE_NAME).'_runtime.php':'~runtime.php';
 	defined('RUNTIME_FILE') or define('RUNTIME_FILE',RUNTIME_PATH.$runtime);
 	if(!APP_DEBUG && is_file(RUNTIME_FILE)) {
@@ -16,7 +15,6 @@ if(!function_exists('saeAutoLoader')){
 	exit();
 }
 define('IS_SAE',true);
-define('IS_CLOUD',true);
 $global_mc=@memcache_init();
 if(!$global_mc){
 	header('Content-Type:text/html;charset=utf-8');

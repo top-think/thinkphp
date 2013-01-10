@@ -1,17 +1,24 @@
 <?php
 if(function_exists('saeAutoLoader')){
+	define('IS_CLOUD',true);
+	define('IS_BAE',false);
 	require dirname(__FILE__).'/sae.php';
 	define('IO_TRUE_NAME','sae');
 }elseif(isset($_SERVER['HTTP_BAE_ENV_APPID'])){
+	define('IS_CLOUD',true);
+	define('IS_SAE',false);
 	require dirname(__FILE__).'/bae.php';
 	define('IO_TRUE_NAME','bae');
 }else{	
 	define('IS_SAE',false);
 	define('IS_BAE',false);
-	define('IS_ACE',false);
 	define('IS_CLOUD',false);
 	$runtime = defined('MODE_NAME')?'~'.strtolower(MODE_NAME).'_runtime.php':'~runtime.php';
 	defined('RUNTIME_FILE') or define('RUNTIME_FILE',RUNTIME_PATH.$runtime);
+	//加载 common_local 文件
+	if(is_file(APP_PATH.'Common/common_local.php')){
+		require APP_PATH.'Common/common_local.php';
+	}
 	if(!APP_DEBUG && is_file(RUNTIME_FILE)) {
 	    // 部署模式直接载入运行缓存
 	    require RUNTIME_FILE;
