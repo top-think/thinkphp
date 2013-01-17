@@ -521,7 +521,7 @@ class Model {
 
     /**
      * 分析表达式
-     * @access proteced
+     * @access protected
      * @param array $options 表达式参数
      * @return array
      */
@@ -554,7 +554,7 @@ class Model {
                     if(is_scalar($val)) {
                         $this->_parseType($options['where'],$key);
                     }
-                }elseif('_' != substr($key,0,1) && false === strpos($key,'.') && false === strpos($key,'|') && false === strpos($key,'&')){
+                }elseif('_' != substr($key,0,1) && false === strpos($key,'.') && false === strpos($key,'(') && false === strpos($key,'|') && false === strpos($key,'&')){
                     unset($options['where'][$key]);
                 }
             }
