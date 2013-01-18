@@ -54,10 +54,10 @@ class IpLocation {
      */
     public function __construct($filename = "UTFWry.dat") {
         $this->fp = 0;
-        if (($this->fp = fopen(dirname(__FILE__).'/'.$filename, 'rb')) !== false) {
-            $this->firstip = $this->getlong();
-            $this->lastip = $this->getlong();
-            $this->totalip = ($this->lastip - $this->firstip) / 7;
+        if (($this->fp      = fopen(dirname(__FILE__).'/'.$filename, 'rb')) !== false) {
+            $this->firstip  = $this->getlong();
+            $this->lastip   = $this->getlong();
+            $this->totalip  = ($this->lastip - $this->firstip) / 7;
         }
     }
 
@@ -108,8 +108,8 @@ class IpLocation {
     private function getstring($data = "") {
         $char = fread($this->fp, 1);
         while (ord($char) > 0) {        // 字符串按照C格式保存，以\0结束
-            $data .= $char;             // 将读取的字符连接到给定字符串之后
-            $char = fread($this->fp, 1);
+            $data  .= $char;             // 将读取的字符连接到给定字符串之后
+            $char   = fread($this->fp, 1);
         }
         return $data;
     }
@@ -192,32 +192,32 @@ class IpLocation {
                 switch (ord($byte)) {
                     case 2:             // 标志字节为2，表示国家信息又被重定向
                         fseek($this->fp, $this->getlong3());
-                        $location['country'] = $this->getstring();
+                        $location['country']    = $this->getstring();
                         fseek($this->fp, $countryOffset + 4);
-                        $location['area'] = $this->getarea();
+                        $location['area']       = $this->getarea();
                         break;
                     default:            // 否则，表示国家信息没有被重定向
-                        $location['country'] = $this->getstring($byte);
-                        $location['area'] = $this->getarea();
+                        $location['country']    = $this->getstring($byte);
+                        $location['area']       = $this->getarea();
                         break;
                 }
                 break;
             case 2:                     // 标志字节为2，表示国家信息被重定向
                 fseek($this->fp, $this->getlong3());
-                $location['country'] = $this->getstring();
+                $location['country']    = $this->getstring();
                 fseek($this->fp, $offset + 8);
-                $location['area'] = $this->getarea();
+                $location['area']       = $this->getarea();
                 break;
             default:                    // 否则，表示国家信息没有被重定向
-                $location['country'] = $this->getstring($byte);
-                $location['area'] = $this->getarea();
+                $location['country']    = $this->getstring($byte);
+                $location['area']       = $this->getarea();
                 break;
         }
-        if ($location['country'] == " CZ88.NET") {  // CZ88.NET表示没有有效信息
-            $location['country'] = "未知";
+        if (trim($location['country']) == 'CZ88.NET') {  // CZ88.NET表示没有有效信息
+            $location['country'] = '未知';
         }
-        if ($location['area'] == " CZ88.NET") {
-            $location['area'] = "";
+        if (trim($location['area']) == 'CZ88.NET') {
+            $location['area'] = '';
         }
         return $location;
     }

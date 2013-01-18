@@ -98,7 +98,7 @@ class ReadHtmlCacheBehavior extends Behavior {
      */
   //[sae] 检查静态缓存
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
-        $kv=Think::instance('SaeKVClient');
+        $kv=Think::instance('SaeKV');
         if(!$kv->init()) halt('您没有初始化KVDB，请在SAE平台进行初始化');
         $content=$kv->get($cacheFile);
         if(!$content)

@@ -97,7 +97,7 @@ function dump($var, $echo=true, $label=null, $strict=true) {
         var_dump($var);
         $output = ob_get_clean();
         if (!extension_loaded('xdebug')) {
-            $output = preg_replace("/\]\=\>\n(\s+)/m", '] => ', $output);
+            $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
             $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
         }
     }
@@ -149,7 +149,7 @@ function layout($layout) {
 
 /**
  * URL组装 支持不同URL模式
- * @param string $url URL表达式，格式：'[分组/模块/操作@域名]?参数1=值1&参数2=值2...'
+ * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
  * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
@@ -160,7 +160,15 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
-    if(false !== strpos($url,'@')) { // 解析域名
+    if(isset($info['fragment'])) { // 解析锚点
+        $anchor =   $info['fragment'];
+        if(false !== strpos($anchor,'?')) { // 解析参数
+            list($anchor,$info['query']) = explode('?',$anchor,2);
+        }        
+        if(false !== strpos($anchor,'@')) { // 解析域名
+            list($anchor,$host)    =   explode('@',$anchor, 2);
+        }
+    }elseif(false !== strpos($url,'@')) { // 解析域名
         list($url,$host)    =   explode('@',$info['path'], 2);
     }
     // 解析子域名
@@ -191,7 +199,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         parse_str($info['query'],$params);
         $vars = array_merge($params,$vars);
     }
-
+    
     // URL组装
     $depr = C('URL_PATHINFO_DEPR');
     if($url) {
@@ -211,6 +219,19 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $var        =   array();
             $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
             $var[C('VAR_MODULE')]       =   !empty($path)?array_pop($path):MODULE_NAME;
+            if($maps = C('URL_ACTION_MAP')) {
+                if(isset($maps[strtolower($var[C('VAR_MODULE')])])) {
+                    $maps    =   $maps[strtolower($var[C('VAR_MODULE')])];
+                    if($action = array_search(strtolower($var[C('VAR_ACTION')]),$maps)){
+                        $var[C('VAR_ACTION')] = $action;
+                    }
+                }
+            }
+            if($maps = C('URL_MODULE_MAP')) {
+                if($module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
+                    $var[C('VAR_MODULE')] = $module;
+                }
+            }            
             if(C('URL_CASE_INSENSITIVE')) {
                 $var[C('VAR_MODULE')]   =   parse_name($var[C('VAR_MODULE')]);
             }
@@ -243,18 +264,22 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $url    =   __APP__.'/'.implode($depr,array_reverse($var));
         }
         if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val)
-                $url .= $depr.$var . $depr . $val;
+            foreach ($vars as $var => $val){
+                if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
+            }                
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
             }
-            if($suffix && $url[1]){
+            if($suffix && '/' != substr($url,-1)){
                 $url  .=  '.'.ltrim($suffix,'.');
             }
         }
+    }
+    if(isset($anchor)){
+        $url  .= '#'.$anchor;
     }
     if($domain) {
         $url   =  (is_ssl()?'https://':'http://').$domain.$url;
@@ -263,6 +288,39 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         redirect($url);
     else
         return $url;
+}
+
+/**
+ * 渲染输出Widget
+ * @param string $name Widget名称
+ * @param array $data 传人的参数
+ * @param boolean $return 是否返回内容 
+ * @return void
+ */
+function W($name, $data=array(), $return=false) {
+    $class      =   $name . 'Widget';
+    require_cache(BASE_LIB_PATH . 'Widget/' . $class . '.class.php');
+    if (!class_exists($class))
+        throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
+    $widget     =   Think::instance($class);
+    $content    =   $widget->render($data);
+    if ($return)
+        return $content;
+    else
+        echo $content;
+}
+
+/**
+ * 过滤器方法 引用传值
+ * @param string $name 过滤器名称
+ * @param string $content 要过滤的内容
+ * @return void
+ */
+function filter($name, &$content) {
+    $class      =   $name . 'Filter';
+    require_cache(BASE_LIB_PATH . 'Filter/' . $class . '.class.php');
+    $filter     =   new $class();
+    $content    =   $filter->run($content);
 }
 
 /**
@@ -307,33 +365,6 @@ function redirect($url, $time=0, $msg='') {
     }
 }
 
-/**
- * 缓存管理
- * @param string|array $name 缓存名称，如果为数组表示进行缓存设置
- * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
- * @return mixed
- */
-function cache($name,$value='',$expire=0) {
-    static $cache   =   '';
-    if(is_array($name)) { // 缓存初始化
-        $type   = 'Memcache';//[sae],SAE下是否要设置DATA_CACHE_TYPE的默认值
-        unset($name['type']);
-        $cache      =   Cache::getInstance($type,$name);
-        return $cache;
-    }
-    if(empty($cache)) { // 自动初始化
-        $cache      =   Cache::getInstance();
-    }
-    if(''=== $value){ // 获取缓存值
-        // 获取缓存数据
-        return $cache->get($name);
-    }elseif(is_null($value)) { // 删除缓存
-        return $cache->rm($name);
-    }else { // 缓存数据
-        return $cache->set($name, $value, $expire);
-    }
-}
 
 /**
  * 全局缓存设置和读取
@@ -345,55 +376,34 @@ function cache($name,$value='',$expire=0) {
  * @return mixed
  */
 //[sae] 在sae下S缓存固定用memcache实现。
-function S($name, $value='', $expire=0, $type='', $options=null) {
-    static $_cache = array();
-    static $mc;
-    //取得缓存对象实例
-    if (!is_object($mc)) {
-        $mc = memcache_init();
+function S($name,$value='',$options=null) {
+    static $cache   =   '';
+    if(is_array($options)){
+        // 缓存操作的同时初始化
+        $type       =   'Memcache';//[sae]固定Type为Memcache
+        $cache      =   Cache::getInstance($type,$options);
+    }elseif(is_array($name)) { // 缓存初始化
+        $type       =   'Memcache';//[sae] 固定Type为Memcche
+        $cache      =   Cache::getInstance($type,$name);
+        return $cache;
+    }elseif(empty($cache)) { // 自动初始化
+        $cache      =   Cache::getInstance('Memcache');//[sae] 固定Type为Memcche
     }
-    if ('' !== $value) {
-        if (is_null($value)) {
-            // 删除缓存
-            $result = $mc->delete($_SERVER['HTTP_APPVERSION'] . '/' . $name);
-            if ($result)
-                unset($_cache[$name]);
-            return $result;
-        }else {
-            // 缓存数据
-            $mc->set($_SERVER['HTTP_APPVERSION'] . '/' . $name, $value, MEMCACHE_COMPRESSED, $expire);
-            $_cache[$name] = $value;
-            //[sae]  实现列队
-            if (!is_null($options['length']) && $options['length'] > 0) {
-                $queue = F('think_queue');
-                if (!$queue) {
-                    $queue = array();
-                }
-                array_push($queue, $name);
-                if (count($queue) > $options['length']) {
-                    $key = array_shift($queue);
-                    $mc->delete($key);
-                    //[sae] 在调试模式下，统计出队次数
-                    if (APP_DEBUG) {
-                        $counter = Think::instance('SaeCounter');
-                        if ($counter->exists('think_queue_out_times'))
-                            $counter->incr('think_queue_out_times');
-                        else
-                            $counter->create('think_queue_out_times', 1);
-                    }
-                }
-                F('think_queue', $queue);
-            }
-        }
-        return;
+    if(''=== $value){ // 获取缓存
+        return $cache->get($name);
+    }elseif(is_null($value)) { // 删除缓存
+        return $cache->rm($name);
+    }else { // 缓存数据
+        $expire     =   is_numeric($options)?$options:NULL;
+        return $cache->set($name, $value, $expire);
     }
-    if (isset($_cache[$name]))
-        return $_cache[$name];
-    // 获取缓存数据
-    $value = $mc->get($_SERVER['HTTP_APPVERSION'] . '/' . $name);
-    $_cache[$name] = $value;
-    return $value;
 }
+
+// S方法的别名 已经废除 不再建议使用
+function cache($name,$value='',$options=null){
+    return S($name,$value,$options);
+}
+
 
 /**
  * 快速文件数据读取和保存 针对简单类型数据 字符串、数组
@@ -408,13 +418,25 @@ function F($name, $value='', $path=DATA_PATH) {
     static $_cache = array();
     static $kv;
     if (!is_object($kv)) {
-        $kv = Think::instance('SaeKVClient');
+        $kv = Think::instance('SaeKV');
         if(!$kv->init()) halt('您没有初始化KVDB，请在SAE平台进行初始化');
     }
     if ('' !== $value) {
         if (is_null($value)) {
             // 删除缓存
+            if(false!=strpos($name, '*')){
+                //[sae]批量删除
+                //TODU支持100以上
+                $keys=$kv->pkrget(rtrim($_SERVER['HTTP_APPVERSION'] . '/' . $name,'*'),100);
+                if(is_array($keys)){
+                    foreach ($keys as $key => $value) {
+                        $kv->delete($key);
+                    }
+                }
+                return true;
+            }else{
             return $kv->delete($_SERVER['HTTP_APPVERSION'] . '/' . $name);
+            }
         } else {
             return $kv->set($_SERVER['HTTP_APPVERSION'] . '/' . $name, $value);
         }
@@ -605,7 +627,7 @@ function cookie($name, $value='', $option=null) {
         'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
     );
     // 参数设置(会覆盖黙认设置)
-    if (!empty($option)) {
+    if (!is_null($option)) {
         if (is_numeric($option))
             $option = array('expire' => $option);
         elseif (is_string($option))
@@ -630,14 +652,26 @@ function cookie($name, $value='', $option=null) {
     }
     $name = $config['prefix'] . $name;
     if ('' === $value) {
-        return isset($_COOKIE[$name]) ? json_decode(MAGIC_QUOTES_GPC?stripslashes($_COOKIE[$name]):$_COOKIE[$name]) : null; // 获取指定Cookie
+        if(isset($_COOKIE[$name])){
+            $value =    $_COOKIE[$name];
+            if(0===strpos($value,'think:')){
+                $value  =   substr($value,6);
+                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value,true));
+            }else{
+                return $value;
+            }
+        }else{
+            return null;
+        }
     } else {
         if (is_null($value)) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain']);
             unset($_COOKIE[$name]); // 删除指定cookie
         } else {
             // 设置cookie
-            $value  = json_encode($value);
+            if(is_array($value)){
+                $value  = 'think:'.json_encode(array_map('urlencode',$value));
+            }
             $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
             setcookie($name, $value, $expire, $config['path'], $config['domain']);
             $_COOKIE[$name] = $value;
@@ -691,7 +725,7 @@ function get_client_ip($type = 0) {
         $ip     =   $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
-    $long = ip2long($ip);
+    $long = sprintf("%u",ip2long($ip));
     $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
     return $ip[$type];
 }
@@ -720,5 +754,12 @@ function send_http_status($code) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);
         // 确保FastCGI模式下正常
         header('Status:'.$code.' '.$_status[$code]);
+    }
+}
+
+// 过滤表单中的表达式
+function filter_exp(&$value){
+    if (in_array(strtolower($value),array('exp','or'))){
+        $value .= ' ';
     }
 }

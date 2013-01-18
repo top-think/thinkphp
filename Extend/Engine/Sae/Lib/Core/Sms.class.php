@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-// $Id: Sms.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
+// $Id: Sms.class.php 1275 2012-12-04 03:13:00Z luofei614@126.com $
 
 /**
  +------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
  * @package  Think
  * @subpackage  Core
  * @author    luofei614 <www.3g4k.com>
- * @version   $Id: Sms.class.php 1090 2012-08-23 08:33:46Z luofei614@126.com $
+ * @version   $Id: Sms.class.php 1275 2012-12-04 03:13:00Z luofei614@126.com $
  +------------------------------------------------------------------------------
  */
 
@@ -27,10 +27,9 @@ class Sms {
     const ERR = 'ERR'; // 一般错误: 一般性错误
     const NOTICE = 'NOTIC'; // 通知: 程序可以运行但是还不够完美的错误
     const MYSQL_ERROR = 'MYSQL_ERROR'; //mysql错误
-    const USER = 'USER'; //用户自定义信息，使用send_sms函数发送
-    static public function send($msg,$detail, $level = self::USER, $mobile = null) {
+    static public function send($msg,$detail, $level = self::NOTIC, $mobile = null) {
         //判断是否定义需要发送短信
-        if (!in_array($level, explode(',', C('SMS_LEVEL')))) 
+        if (!in_array($level, explode(',', C('SMS_ALERT_LEVEL')))) 
         	return;
             //判断发送频率
             $mc = memcache_init();
@@ -39,16 +38,15 @@ class Sms {
             if ($is_send ==='true') {
                 $status = 'not send';
             } else {
-                //TODU,如果apibus类调整，此类也得调整
                 $sms = apibus::init('sms');
-                if (is_null($mobile)) $mobile = C('SMS_MOBILE');
+                if (is_null($mobile)) $mobile = C('SMS_ALERT_MOBILE');
                 $mc = memcache_init();
-                $obj = $sms->send($mobile, mb_substr(C('SMS_SIGN').$msg, 0,65,'utf-8'), "UTF-8");
+                $obj = $sms->send($mobile, mb_substr(C('SMS_ALERT_SIGN').$msg, 0,65,'utf-8'), "UTF-8");
                 if($sms->isError($obj)){
                     $status='failed';
                 }else{
                     $status='success';
-                    $mc->set('think_sms_send', 'true', 0, C('SMS_INTERVAL'));
+                    $mc->set('think_sms_send', 'true', 0, C('SMS_ALERT_INTERVAL'));
                 }
                 
             }

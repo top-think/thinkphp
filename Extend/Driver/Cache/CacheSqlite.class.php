@@ -41,16 +41,6 @@ class CacheSqlite extends Cache {
         
         $func = $this->options['persistent'] ? 'sqlite_popen' : 'sqlite_open';
         $this->handler      = $func($this->options['db']);
-        $this->connected    = is_resource($this->handler);
-    }
-
-    /**
-     * 是否连接
-     * @access private
-     * @return boolen
-     */
-    private function isConnected() {
-        return $this->connected;
     }
 
     /**

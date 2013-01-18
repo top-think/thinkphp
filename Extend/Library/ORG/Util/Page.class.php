@@ -52,7 +52,9 @@ class Page {
         $this->totalPages   =   ceil($this->totalRows/$this->listRows);     //总页数
         $this->coolPages    =   ceil($this->totalPages/$this->rollPage);
         $this->nowPage      =   !empty($_GET[$this->varPage])?intval($_GET[$this->varPage]):1;
-        if(!empty($this->totalPages) && $this->nowPage>$this->totalPages) {
+        if($this->nowPage<1){
+            $this->nowPage  =   1;
+        }elseif(!empty($this->totalPages) && $this->nowPage>$this->totalPages) {
             $this->nowPage  =   $this->totalPages;
         }
         $this->firstRow     =   $this->listRows*($this->nowPage-1);
@@ -76,16 +78,19 @@ class Page {
         // 分析分页参数
         if($this->url){
             $depr       =   C('URL_PATHINFO_DEPR');
-            $url        =   rtrim(U('/'.$this->url),$depr).$depr.'__PAGE__';
+            $url        =   rtrim(U('/'.$this->url,'',false),$depr).$depr.'__PAGE__';
         }else{
             if($this->parameter && is_string($this->parameter)) {
                 parse_str($this->parameter,$parameter);
+            }elseif(is_array($this->parameter)){
+                $parameter      =   $this->parameter;
             }elseif(empty($this->parameter)){
                 unset($_GET[C('VAR_URL_PARAMS')]);
-                if(empty($_GET)) {
+                $var =  !empty($_POST)?$_POST:$_GET;
+                if(empty($var)) {
                     $parameter  =   array();
                 }else{
-                    $parameter  =   $_GET;
+                    $parameter  =   $var;
                 }
             }
             $parameter[$p]  =   '__PAGE__';

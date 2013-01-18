@@ -98,7 +98,7 @@ if (!class_exists('SaeMC')) {
                         $zlib = ini_get('zlib.output_compression');
                         if(empty($zlib)) ob_start('ob_gzhandler');
                     }
-                    if(C('SMS_ON')) Sms::send('程序出现致命错误,请在SAE日志中心查看详情',$error['message'].'[file:'.self::$current_include_file.'][line:'.$error['line'].']',Sms::ERR);
+                    if(C('SMS_ALERT_ON')) Sms::send('程序出现致命错误,请在SAE日志中心查看详情',$error['message'].'[file:'.self::$current_include_file.'][line:'.$error['line'].']',Sms::ERR);
                     exit("<br /><b>SAE_error</b>:  {$error['message']} in <b>" . self::$current_include_file . "</b> on line <b>{$error['line']}</b><br />");
                 }else{
                     Think::appError($error['type'], $error['message'], self::$current_include_file, $error['line']);

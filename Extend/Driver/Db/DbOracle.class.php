@@ -21,7 +21,7 @@ class DbOracle extends Db{
 
     private     $mode         = OCI_COMMIT_ON_SUCCESS;
     private     $table        = '';
-    protected   $selectSql    = 'SELECT * FROM (SELECT thinkphp.*, rownum AS numrow FROM (SELECT  %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%) thinkphp ) %LIMIT%';
+    protected   $selectSql    = 'SELECT * FROM (SELECT thinkphp.*, rownum AS numrow FROM (SELECT  %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%) thinkphp ) %LIMIT%%COMMENT%';
 
     /**
      * 架构函数 读取数据库配置信息
@@ -278,7 +278,7 @@ class DbOracle extends Db{
     /**
      * SQL指令安全过滤
      * @access public
-     * @param mix $str  SQL指令
+     * @param string $str  SQL指令
      * @return string
      */
     public function escapeString($str) {

@@ -68,6 +68,7 @@ class Log {
      */
     //[sae]保存日志
     static function save($type='',$destination='',$extra='') {
+        if(empty(self::$log)) return ;
         self::sae_set_display_errors(false);
         sae_debug('###---｛'.get_client_ip().' REQUEST_URI:'.$_SERVER['REQUEST_URI'].'｝---###');
         foreach (self::$log as $log)

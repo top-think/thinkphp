@@ -31,10 +31,12 @@ class UploadFile {//类定义开始
         'thumbSuffix'       =>  '',
         'thumbPath'         =>  '',// 缩略图保存路径
         'thumbFile'         =>  '',// 缩略图文件名
+        'thumbExt'          =>  '',// 缩略图扩展名        
         'thumbRemoveOrigin' =>  false,// 是否移除原图
         'zipImages'         =>  false,// 压缩图片文件上传
         'autoSub'           =>  false,// 启用子目录保存文件
-        'subType'           =>  'hash',// 子目录创建方式 可以使用hash date
+        'subType'           =>  'hash',// 子目录创建方式 可以使用hash date custom
+        'subDir'            =>  '', // 子目录名称 subType为custom方式后有效
         'dateFormat'        =>  'Ymd',
         'hashLevel'         =>  1, // hash的目录层次
         'savePath'          =>  '',// 上传文件保存路径
@@ -92,9 +94,12 @@ class UploadFile {//类定义开始
             return false;
         }
         // 如果是图像文件 检测文件格式
-        if( in_array(strtolower($file['extension']),array('gif','jpg','jpeg','bmp','png','swf')) && false === getimagesize($file['tmp_name'])) {
-            $this->error = '非法图像文件';
-            return false;
+        if( in_array(strtolower($file['extension']),array('gif','jpg','jpeg','bmp','png','swf'))) {
+            $info   = getimagesize($file['tmp_name']);
+            if(false === $info || ('gif' == strtolower($file['extension']) && empty($info['bits']))){
+                $this->error = '非法图像文件';
+                return false;                
+            }
         }
         if(!move_uploaded_file($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
             $this->error = '文件上传保存错误！';
@@ -110,6 +115,7 @@ class UploadFile {//类定义开始
                 $thumbSuffix    =   explode(',',$this->thumbSuffix);
                 $thumbFile		=	explode(',',$this->thumbFile);
                 $thumbPath      =   $this->thumbPath?$this->thumbPath:dirname($filename).'/';
+                $thumbExt       =   $this->thumbExt ? $this->thumbExt : $file['extension']; //自定义缩略图扩展名
                 // 生成图像缩略图
                 import($this->imageClassPath);
                 for($i=0,$len=count($thumbWidth); $i<$len; $i++) {
@@ -120,7 +126,7 @@ class UploadFile {//类定义开始
                         $suffix     =   isset($thumbSuffix[$i])?$thumbSuffix[$i]:$thumbSuffix[0];
                         $thumbname  =   $prefix.basename($filename,'.'.$file['extension']).$suffix;
                     }
-                    Image::thumb($filename,$thumbPath.$thumbname.'.'.$file['extension'],'',$thumbWidth[$i],$thumbHeight[$i],true);
+                    Image::thumb($filename,$thumbPath.$thumbname.'.'.$thumbExt,'',$thumbWidth[$i],$thumbHeight[$i],true);                    
                 }
                 if($this->thumbRemoveOrigin) {
                     // 生成缩略图之后删除原图
@@ -364,6 +370,9 @@ class UploadFile {//类定义开始
      */
     private function getSubName($file) {
         switch($this->subType) {
+            case 'custom':
+                $dir    =   $this->subDir;
+                break;
             case 'date':
                 $dir    =   date($this->dateFormat,time()).'/';
                 break;

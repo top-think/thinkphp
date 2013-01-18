@@ -205,7 +205,7 @@ class DbPdo extends Db{
      */
     private function getAll() {
         //返回数据集
-        $result =   $this->PDOStatement->fetchAll(constant('PDO::FETCH_ASSOC'));
+        $result =   $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
         $this->numRows = count( $result );
         return $result;
     }
@@ -356,6 +356,25 @@ class DbPdo extends Db{
     }
 
     /**
+     * 字段和表名处理
+     * @access protected
+     * @param string $key
+     * @return string
+     */
+    protected function parseKey(&$key) {
+        if($this->dbType=='MYSQL'){
+            $key   =  trim($key);
+            if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
+               $key = '`'.$key.'`';
+            }
+            return $key;            
+        }else{
+            return parent::parseKey($key);
+        }
+
+    }
+
+    /**
      * 关闭数据库
      * @access public
      */
@@ -394,9 +413,9 @@ class DbPdo extends Db{
             case 'PGSQL':
             case 'MSSQL':
             case 'SQLSRV':
-            case 'IBASE':
             case 'MYSQL':
                 return addslashes($str);
+            case 'IBASE':                
             case 'SQLITE':
             case 'ORACLE':
             case 'OCI':
