@@ -5,8 +5,9 @@ function copy_defaut_app($directory,$to) {
         }
         $handle = opendir($directory);
         while (($file = readdir($handle)) !== false) {
-            if ($file != "." && $file != "..") {
-                is_dir("$directory/$file") ?copy_defaut_app("$directory/$file","$to/$file") :copy("$directory/$file","$to/$file");
+            if ($file != '.' && $file != '..') {
+				if(is_file($to.'/'.$file)) continue;
+                is_dir($directory.'/'.$file) ?copy_defaut_app($directory.'/'.$file,$to.'/'.$file) :copy($directory.'/'.$file,$to.'/'.$file);
             }
         }
         if (readdir($handle) == false) {

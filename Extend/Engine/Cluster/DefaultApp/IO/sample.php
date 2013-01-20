@@ -141,7 +141,7 @@ function file_upload($src_file,$dest_file){
  * @return void
  */
 function file_delete($filename){
-	return delete($filename);
+	return unlink($filename);
 }
 
 /**

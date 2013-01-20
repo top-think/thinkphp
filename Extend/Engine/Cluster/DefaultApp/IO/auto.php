@@ -19,12 +19,22 @@ if(function_exists('saeAutoLoader')){
 	if(is_file(APP_PATH.'Common/common_local.php')){
 		require APP_PATH.'Common/common_local.php';
 	}
+	//本地上传文件的IO操作
+	function file_upload($src_file,$dest_file){
+		$pdir=dirname($dest_file);
+		if(!is_dir($pdir)) @mkdir($pdir,0777);
+		return copy($src_file,$dest_file);
+	}
+	function file_delete($filename){
+		return unlink($filename);
+	}
+
 	if(!APP_DEBUG && is_file(RUNTIME_FILE)) {
 	    // 部署模式直接载入运行缓存
 	    require RUNTIME_FILE;
 	}else{
 	    // 加载运行时文件
 	    require THINK_PATH.'Common/runtime.php';
-	}	
+	}
 	exit();
 }

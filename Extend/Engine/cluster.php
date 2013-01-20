@@ -21,9 +21,6 @@ if(!file_exists(IO_PATH)) require CLUSTER_PATH.'build_first_app.php';
 require IO_PATH;
 //[cluster] 记录开始运行时间 移动到加载IO文件之后
 $GLOBALS['_beginTime'] = microtime(TRUE);
-// 记录内存初始使用
-define('MEMORY_LIMIT_ON',function_exists('memory_get_usage'));
-if(MEMORY_LIMIT_ON) $GLOBALS['_startUseMems'] = memory_get_usage();
 //[cluster] 定义加载IO配置
 defined('IO_TRUE_NAME') or define('IO_TRUE_NAME',IO_NAME);
 require CLUSTER_PATH.'Lib/Core/ThinkFS.class.php';
