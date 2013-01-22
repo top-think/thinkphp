@@ -172,7 +172,7 @@ class UploadFile {//类定义开始
                     $img->resize($width, $height);
                     $new_data = $img->exec();
                     if (!$s->write($domain, $thumbPath . $thumbname.'.'.$thumbExt, $new_data)) {
-                        $this->error = '生成缩略图失败！'.$this->errmsg();
+                        $this->error = '生成缩略图失败！'.$s->errmsg();
                         return false;
                     }
                 }
