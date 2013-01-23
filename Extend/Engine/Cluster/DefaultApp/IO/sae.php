@@ -110,7 +110,7 @@ function file_delete($filename){
     }
 }
 //一般在IO专用配置中使用
-function file_url_root($domain=''){
+function file_domain($domain=''){
 	if(!IS_SAE) return '';
 	$s=new SaeStorage();
 	return rtrim($s->getUrl($domain,''),'/');

@@ -151,7 +151,7 @@ function file_delete($filename){
  * @access public
  * @return string
  */
-function file_url_root($domain=''){
+function file_domain($domain=''){
 	return '';
 }
 

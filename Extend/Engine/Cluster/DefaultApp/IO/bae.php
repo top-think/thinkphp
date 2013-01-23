@@ -101,7 +101,7 @@ function file_delete($filename){
 	}
 }
 //获得文件的根地址
-function file_url_root($bucket){
+function file_domain($bucket){
 	if(!IS_BAE) return '';
 	return 'http://'.HTTP_BAE_ENV_ADDR_BCS.'/'.strtolower($bucket);
 }
