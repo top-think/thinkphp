@@ -199,8 +199,6 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         parse_str($info['query'],$params);
         $vars = array_merge($params,$vars);
     }
-    // 过滤空的参数
-    $vars = array_filter($vars);
     
     // URL组装
     $depr = C('URL_PATHINFO_DEPR');
@@ -266,15 +264,16 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $url    =   __APP__.'/'.implode($depr,array_reverse($var));
         }
         if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val)
-                $url .= $depr.$var . $depr . $val;
+            foreach ($vars as $var => $val){
+                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
+            }                
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
             }
-            if($suffix && $url[1]){
+            if($suffix && '/' != substr($url,-1)){
                 $url  .=  '.'.ltrim($suffix,'.');
             }
         }
@@ -370,15 +369,15 @@ function redirect($url, $time=0, $msg='') {
  * 缓存管理
  * @param mixed $name 缓存名称，如果为数组表示进行缓存设置
  * @param mixed $value 缓存值
- * @param mixed $expire 缓存有效期（秒）
+ * @param mixed $options 缓存参数
  * @return mixed
  */
-function cache($name,$value='',$expire=0) {
+function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($expire)){
+    if(is_array($options)){
         // 缓存操作的同时初始化
-        $type       =   isset($expire['type'])?$expire['type']:'';
-        $cache      =   Cache::getInstance($type,$expire);
+        $type       =   isset($options['type'])?$options['type']:'';
+        $cache      =   Cache::getInstance($type,$options);
     }elseif(is_array($name)) { // 缓存初始化
         $type       =   isset($name['type'])?$name['type']:'';
         $cache      =   Cache::getInstance($type,$name);
@@ -386,50 +385,18 @@ function cache($name,$value='',$expire=0) {
     }elseif(empty($cache)) { // 自动初始化
         $cache      =   Cache::getInstance();
     }
-    if(''=== $value){ // 获取缓存值
-        // 获取缓存数据
+    if(''=== $value){ // 获取缓存
         return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($expire)?$expire:NULL;
+        $expire     =   is_numeric($options)?$options:NULL;
         return $cache->set($name, $value, $expire);
     }
 }
-
-/**
- * 全局缓存设置和读取
- * @param string $name 缓存名称
- * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
- * @param string $type 缓存类型
- * @param array $options 缓存参数
- * @return mixed
- */
-function S($name, $value='', $expire=null, $type='',$options=null) {
-    static $_cache = array();
-    //取得缓存对象实例
-    $cache = Cache::getInstance($type,$options);
-    if ('' !== $value) {
-        if (is_null($value)) {
-            // 删除缓存
-            $result = $cache->rm($name);
-            if ($result)
-                unset($_cache[$type . '_' . $name]);
-            return $result;
-        }else {
-            // 缓存数据
-            $cache->set($name, $value, $expire);
-            $_cache[$type . '_' . $name] = $value;
-        }
-        return;
-    }
-    if (isset($_cache[$type . '_' . $name]))
-        return $_cache[$type . '_' . $name];
-    // 获取缓存数据
-    $value = $cache->get($name);
-    $_cache[$type . '_' . $name] = $value;
-    return $value;
+// S方法的别名 已经废除 不再建议使用
+function cache($name,$value='',$options=null){
+    return S($name,$value,$options);
 }
 
 /**
@@ -445,7 +412,7 @@ function F($name, $value='', $path=DATA_PATH) {
     if ('' !== $value) {
         if (is_null($value)) {
             // 删除缓存
-            return unlink($filename);
+            return false !== strpos($name,'*')?array_map("unlink", glob($filename)):unlink($filename);
         } else {
             // 缓存数据
             $dir            =   dirname($filename);
@@ -453,14 +420,14 @@ function F($name, $value='', $path=DATA_PATH) {
             if (!is_dir($dir))
                 mkdir($dir,0755,true);
             $_cache[$name]  =   $value;
-            return file_put_contents($filename, json_encode($value));
+            return file_put_contents($filename, strip_whitespace("<?php\treturn " . var_export($value, true) . ";?>"));
         }
     }
     if (isset($_cache[$name]))
         return $_cache[$name];
     // 获取缓存数据
     if (is_file($filename)) {
-        $value          =   json_decode(file_get_contents($filename),true);
+        $value          =   include $filename;
         $_cache[$name]  =   $value;
     } else {
         $value          =   false;
@@ -516,31 +483,47 @@ function to_guid_string($mix) {
 /**
  * XML编码
  * @param mixed $data 数据
- * @param string $encoding 数据编码
  * @param string $root 根节点名
+ * @param string $item 数字索引的子节点名
+ * @param string $attr 根节点属性
+ * @param string $id   数字索引子节点key转换的属性名
+ * @param string $encoding 数据编码
  * @return string
  */
-function xml_encode($data, $encoding='utf-8', $root='think') {
-    $xml    = '<?xml version="1.0" encoding="' . $encoding . '"?>';
-    $xml   .= '<' . $root . '>';
-    $xml   .= data_to_xml($data);
-    $xml   .= '</' . $root . '>';
+function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $encoding='utf-8') {
+    if(is_array($attr)){
+        $_attr = array();
+        foreach ($attr as $key => $value) {
+            $_attr[] = "{$key}=\"{$value}\"";
+        }
+        $attr = implode(' ', $_attr);
+    }
+    $attr   = trim($attr);
+    $attr   = empty($attr) ? '' : " {$attr}";
+    $xml    = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
+    $xml   .= "<{$root}{$attr}>";
+    $xml   .= data_to_xml($data, $item, $id);
+    $xml   .= "</{$root}>";
     return $xml;
 }
 
 /**
  * 数据XML编码
- * @param mixed $data 数据
+ * @param mixed  $data 数据
+ * @param string $item 数字索引时的节点名称
+ * @param string $id   数字索引key转换为的属性名
  * @return string
  */
-function data_to_xml($data) {
-    $xml = '';
+function data_to_xml($data, $item='item', $id='id') {
+    $xml = $attr = '';
     foreach ($data as $key => $val) {
-        is_numeric($key) && $key = "item id=\"$key\"";
-        $xml    .=  "<$key>";
-        $xml    .=  ( is_array($val) || is_object($val)) ? data_to_xml($val) : $val;
-        list($key, ) = explode(' ', $key);
-        $xml    .=  "</$key>";
+        if(is_numeric($key)){
+            $id && $attr = " {$id}=\"{$key}\"";
+            $key  = $item;
+        }
+        $xml    .=  "<{$key}{$attr}>";
+        $xml    .=  (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
+        $xml    .=  "</{$key}>";
     }
     return $xml;
 }
@@ -648,7 +631,7 @@ function cookie($name, $value='', $option=null) {
         'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
     );
     // 参数设置(会覆盖黙认设置)
-    if (!empty($option)) {
+    if (!is_null($option)) {
         if (is_numeric($option))
             $option = array('expire' => $option);
         elseif (is_string($option))
@@ -673,14 +656,26 @@ function cookie($name, $value='', $option=null) {
     }
     $name = $config['prefix'] . $name;
     if ('' === $value) {
-        return isset($_COOKIE[$name]) ? json_decode(MAGIC_QUOTES_GPC?stripslashes($_COOKIE[$name]):$_COOKIE[$name]) : null; // 获取指定Cookie
+        if(isset($_COOKIE[$name])){
+            $value =    $_COOKIE[$name];
+            if(0===strpos($value,'think:')){
+                $value  =   substr($value,6);
+                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value,true));
+            }else{
+                return $value;
+            }
+        }else{
+            return null;
+        }
     } else {
         if (is_null($value)) {
             setcookie($name, '', time() - 3600, $config['path'], $config['domain']);
             unset($_COOKIE[$name]); // 删除指定cookie
         } else {
             // 设置cookie
-            $value  = json_encode($value);
+            if(is_array($value)){
+                $value  = 'think:'.json_encode(array_map('urlencode',$value));
+            }
             $expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
             setcookie($name, $value, $expire, $config['path'], $config['domain']);
             $_COOKIE[$name] = $value;
@@ -734,7 +729,7 @@ function get_client_ip($type = 0) {
         $ip     =   $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
-    $long = ip2long($ip);
+    $long = sprintf("%u",ip2long($ip));
     $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
     return $ip[$type];
 }
@@ -763,5 +758,12 @@ function send_http_status($code) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);
         // 确保FastCGI模式下正常
         header('Status:'.$code.' '.$_status[$code]);
+    }
+}
+
+// 过滤表单中的表达式
+function filter_exp(&$value){
+    if (in_array(strtolower($value),array('exp','or'))){
+        $value .= ' ';
     }
 }

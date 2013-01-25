@@ -32,7 +32,6 @@ class CacheFile extends Cache {
         $this->options['expire']    =   isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;
         if(substr($this->options['temp'], -1) != '/')    $this->options['temp'] .= '/';
-        $this->connected = is_dir($this->options['temp']) && is_writeable($this->options['temp']);
         $this->init();
     }
 
@@ -52,15 +51,6 @@ class CacheFile extends Cache {
                 return false;
              chmod($this->options['temp'], $dir_perms);
         }
-    }
-
-    /**
-     * 是否连接
-     * @access public
-     * @return boolen
-     */
-    private function isConnected() {
-        return $this->connected;
     }
 
     /**
@@ -95,7 +85,7 @@ class CacheFile extends Cache {
      */
     public function get($name) {
         $filename   =   $this->filename($name);
-        if (!$this->isConnected() || !is_file($filename)) {
+        if (!is_file($filename)) {
            return false;
         }
         N('cache_read',1);
