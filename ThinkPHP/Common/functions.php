@@ -494,12 +494,12 @@ function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $enc
     if(is_array($attr)){
         $_attr = array();
         foreach ($attr as $key => $value) {
-            $_attr[] = "{$key}={$value}";
+            $_attr[] = "{$key}=\"{$value}\"";
         }
         $attr = implode(' ', $_attr);
     }
     $attr   = trim($attr);
-    $attr   = empty($attr) ? " {$attr}" : '';
+    $attr   = empty($attr) ? '' : " {$attr}";
     $xml    = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
     $xml   .= "<{$root}{$attr}>";
     $xml   .= data_to_xml($data, $item, $id);
