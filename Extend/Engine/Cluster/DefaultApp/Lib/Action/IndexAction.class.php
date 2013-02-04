@@ -30,6 +30,7 @@ class IndexAction extends Action {
             $upload->thumb=true;
             $upload->thumbMaxHeight=100;
             $upload->thumbMaxWidth=100;
+			$upload->water='./ThinkPHP/logo.png';//水印
             if (!$upload->upload()) {
                 $this->error($upload->getErrorMsg());
             } else {

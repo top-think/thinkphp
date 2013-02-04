@@ -100,6 +100,29 @@ function file_delete($filename){
 		return false;
 	}
 }
+//获得文件内容
+function file_get($filename){
+	if(IS_BAE){
+		$arr=explode('/',ltrim($filename,'./'));
+		$bucket=C('BUCKET_PREFIX').strtolower(array_shift($arr));
+		$file=implode('/',$arr);
+		try{
+			$bcs=new BaiduBCS();
+			$tmp_name=sys_get_temp_dir().'/'.uniqid();
+			$response=$bcs->get_object($bucket,'/'.$file,array('fileWriteTo'=>$tmp_name));
+			if($response->isOK()){
+				$content=file_get_contents($tmp_name);
+				unlink($tmp_name);
+				return $content;
+			}
+			return false;
+		}catch(Exception $e){
+			return false;
+		}
+	}else{
+		return file_get_contents($filename);
+	}
+}
 //获得文件的根地址
 function file_domain($bucket){
 	if(!IS_BAE) return '';

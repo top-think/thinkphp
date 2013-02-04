@@ -28,7 +28,9 @@ if(function_exists('saeAutoLoader')){
 	function file_delete($filename){
 		return unlink($filename);
 	}
-
+	function file_get($filename){
+		return file_get_contents($filename);
+	}
 	if(!APP_DEBUG && is_file(RUNTIME_FILE)) {
 	    // 部署模式直接载入运行缓存
 	    require RUNTIME_FILE;

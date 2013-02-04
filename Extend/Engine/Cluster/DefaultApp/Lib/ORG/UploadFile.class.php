@@ -44,6 +44,10 @@ class UploadFile {//类定义开始
         'uploadReplace'     =>  false,// 存在同名是否覆盖
         'saveRule'          =>  'uniqid',// 上传文件命名规则
         'hashType'          =>  'md5_file',// 上传文件Hash规则函数名
+		//生成水印的属性
+		'water'				=>	'',
+		'water_savename'	=>	false,
+		'water_alpha'		=>	80
         );
 
     // 错误信息
@@ -97,12 +101,28 @@ class UploadFile {//类定义开始
                 $this->error = '非法图像文件';
                 return false;                
             }
-        }
+		}
+		$uploadfile=$file['tmp_name'];
+		//[cluster] 生成水印图片
+		if(!empty($this->water)){
+			import($this->imageClassPath);
+			$tmp_water=tempnam(sys_get_temp_dir(),'tp_');
+			Image::water($file['tmp_name'],$this->water,$tmp_water,$this->water_alpha,false);
+			if($this->water_savename){
+				file_upload($tmp_water,$this->water_savename);
+			}else{
+				$uploadfile=$tmp_water;
+			}
+		}
 		//[cluster] 上传文件
-        if(!$this->thumbRemoveOrigin && !file_upload($file['tmp_name'], $this->autoCharset($filename,'utf-8','gbk'))) {
+        if(!$this->thumbRemoveOrigin && !file_upload($uploadfile, $this->autoCharset($filename,'utf-8','gbk'))) {
             $this->error = '文件上传保存错误！';
             return false;
         }
+		//[cluster] 删除水印临时文件
+		if(isset($tmp_water) && file_exists($tmp_water)){
+			unlink($tmp_water);
+		}
         if($this->thumb && in_array(strtolower($file['extension']),array('gif','jpg','jpeg','bmp','png'))) {
             $image =  getimagesize($file['tmp_name']);
             if(false !== $image) {

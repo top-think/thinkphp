@@ -144,6 +144,17 @@ function file_delete($filename){
 	return unlink($filename);
 }
 
+
+/**
+ * 获得文件内容
+ * 
+ * @param string $filename 
+ * @access public
+ * @return void
+ */ 
+function file_get($filename){
+	return file_get_contents($filename);
+}
 /**
  * 获得文件显示地址的根路径
  * 

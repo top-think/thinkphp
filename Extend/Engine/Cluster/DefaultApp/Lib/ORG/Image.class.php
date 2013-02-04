@@ -53,7 +53,14 @@ class Image {
      * @param string $alpha  水印的透明度
      * @return void
      */
-    static public function water($source, $water, $savename=null, $alpha=80) {
+    static public function water($source, $water, $savename=null, $alpha=80,$get_source=true) {
+		//[cluster] 
+		if($get_source){
+			$source_tmp_name=tempnam(sys_get_temp_dir(),'tp_');
+			file_put_contents($source_tmp_name,file_get($source));
+			$origin_savename=is_null($savename)?$source:$savename;
+			$source=$source_tmp_name;
+		}
         //检查文件是否存在
         if (!file_exists($source) || !file_exists($water))
             return false;
@@ -88,10 +95,19 @@ class Image {
         if (!$savename) {
             $savename = $source;
             @unlink($source);
-        }
+        }elseif($get_source){
+			//[cluster] 临时保存文件
+			$savename=tempnam(sys_get_temp_dir(),'tp_');
+			@unlink($source);
+		}
         //保存图像
         $ImageFun($sImage, $savename);
         imagedestroy($sImage);
+		//[cluster] 上传文件
+		if($get_source){
+			file_upload($savename,$origin_savename);
+			@unlink($savename);
+		}
     }
 
     function showImg($imgFile, $text='', $x='10', $y='10', $alpha='50') {
