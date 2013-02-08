@@ -135,9 +135,15 @@ return  array(
     'VAR_PATHINFO'          => 's',	// PATHINFO 兼容模式获取变量例如 ?s=/module/action/id/1 后面的参数取决于URL_PATHINFO_DEPR
     'VAR_URL_PARAMS'        => '_URL_', // PATHINFO URL参数变量
     'VAR_TEMPLATE'          => 't',		// 默认模板切换变量
-    'VAR_FILTERS'           =>  'filter_exp',     // 全局系统变量的默认过滤方法 多个用逗号分割
+    'VAR_FILTERS'           => 'filter_exp',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
     'OUTPUT_ENCODE'         =>  true, // 页面压缩输出
     'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
+
+    /* URL 跳转设置 */
+    'JUMP_MODE'             => 0, // 跳转方式，0(普通模式)，1(直接模式)
+    'JUMP_SESSION'          => false,
+    'JUMP_SESSION_INFO'     => 'jump_session_info',
+    'JUMP_SESSION_STATUS'   => 'jump_session_status'
 
 );
