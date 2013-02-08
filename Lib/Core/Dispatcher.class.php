@@ -162,7 +162,9 @@ class Dispatcher {
         define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
         
         // 当前模块和分组地址
-        $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
+        $moduleName = defined('MODULE_ALIAS') ? MODULE_ALIAS : MODULE_NAME;
+        if(C('URL_CASE_INSENSITIVE')) $moduleName = strtolower($moduleName);
+
         if(defined('GROUP_NAME')) {
             define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.$moduleName);
         }else{
