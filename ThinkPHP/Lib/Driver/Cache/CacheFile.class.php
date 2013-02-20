@@ -11,8 +11,7 @@
 
 defined('THINK_PATH') or exit();
 /**
- * 文件类型缓存类
- * @category   Think
+ * ??��类�?�??�? * @category   Think
  * @package  Think
  * @subpackage  Driver.Cache
  * @author    liu21st <liu21st@gmail.com>
@@ -20,7 +19,7 @@ defined('THINK_PATH') or exit();
 class CacheFile extends Cache {
 
     /**
-     * 架构函数
+     * ?��??��?
      * @access public
      */
     public function __construct($options=array()) {
@@ -36,16 +35,15 @@ class CacheFile extends Cache {
     }
 
     /**
-     * 初始化检查
-     * @access private
+     * ????????     * @access private
      * @return boolen
      */
     private function init() {
         $stat = stat($this->options['temp']);
-        $dir_perms = $stat['mode'] & 0007777; // Get the permission bits.
+        $dir_perms = $stat? $stat['mode'] & 0007777 : 0007777; // Get the permission bits.
         $file_perms = $dir_perms & 0000666; // Remove execute bits for files.
 
-        // 创建项目缓存目录
+        // ??��项�?�?????
         if (!is_dir($this->options['temp'])) {
             if (!  mkdir($this->options['temp']))
                 return false;
@@ -54,16 +52,14 @@ class CacheFile extends Cache {
     }
 
     /**
-     * 取得变量的存储文件名
+     * ??????????��?件�?
      * @access private
-     * @param string $name 缓存变量名
-     * @return string
+     * @param string $name �???????     * @return string
      */
     private function filename($name) {
         $name	=	md5($name);
         if(C('DATA_CACHE_SUBDIR')) {
-            // 使用子目录
-            $dir   ='';
+            // 使�?�??�?            $dir   ='';
             for($i=0;$i<C('DATA_PATH_LEVEL');$i++) {
                 $dir	.=	$name{$i}.'/';
             }
@@ -78,10 +74,9 @@ class CacheFile extends Cache {
     }
 
     /**
-     * 读取缓存
+     * 读�?�??
      * @access public
-     * @param string $name 缓存变量名
-     * @return mixed
+     * @param string $name �???????     * @return mixed
      */
     public function get($name) {
         $filename   =   $this->filename($name);
@@ -93,21 +88,21 @@ class CacheFile extends Cache {
         if( false !== $content) {
             $expire  =  (int)substr($content,8, 12);
             if($expire != 0 && time() > filemtime($filename) + $expire) {
-                //缓存过期删除缓存文件
+                //�??�?????�????��
                 unlink($filename);
                 return false;
             }
-            if(C('DATA_CACHE_CHECK')) {//开启数据校验
+            if(C('DATA_CACHE_CHECK')) {//�???��??��?
                 $check  =  substr($content,20, 32);
                 $content   =  substr($content,52, -3);
-                if($check != md5($content)) {//校验错误
+                if($check != md5($content)) {//?��????
                     return false;
                 }
             }else {
             	$content   =  substr($content,20, -3);
             }
             if(C('DATA_CACHE_COMPRESS') && function_exists('gzcompress')) {
-                //启用数据压缩
+                //????��???��
                 $content   =   gzuncompress($content);
             }
             $content    =   unserialize($content);
@@ -119,12 +114,10 @@ class CacheFile extends Cache {
     }
 
     /**
-     * 写入缓存
+     * ???�??
      * @access public
-     * @param string $name 缓存变量名
-     * @param mixed $value  存储数据
-     * @param int $expire  有效时间 0为永久
-     * @return boolen
+     * @param string $name �???????     * @param mixed $value  �???��?
+     * @param int $expire  ????��? 0为永�?     * @return boolen
      */
     public function set($name,$value,$expire=null) {
         N('cache_write',1);
@@ -134,10 +127,10 @@ class CacheFile extends Cache {
         $filename   =   $this->filename($name);
         $data   =   serialize($value);
         if( C('DATA_CACHE_COMPRESS') && function_exists('gzcompress')) {
-            //数据压缩
+            //?��???��
             $data   =   gzcompress($data,3);
         }
-        if(C('DATA_CACHE_CHECK')) {//开启数据校验
+        if(C('DATA_CACHE_CHECK')) {//�???��??��?
             $check  =  md5($data);
         }else {
             $check  =  '';
@@ -146,7 +139,7 @@ class CacheFile extends Cache {
         $result  =   file_put_contents($filename,$data);
         if($result) {
             if($this->options['length']>0) {
-                // 记录缓存队列
+                // 记�?�?????
                 $this->queue($name);
             }
             clearstatcache();
@@ -157,20 +150,18 @@ class CacheFile extends Cache {
     }
 
     /**
-     * 删除缓存
+     * ???�??
      * @access public
-     * @param string $name 缓存变量名
-     * @return boolen
+     * @param string $name �???????     * @return boolen
      */
     public function rm($name) {
         return unlink($this->filename($name));
     }
 
     /**
-     * 清除缓存
+     * �??�??
      * @access public
-     * @param string $name 缓存变量名
-     * @return boolen
+     * @param string $name �???????     * @return boolen
      */
     public function clear() {
         $path   =  $this->options['temp'];
