@@ -64,7 +64,7 @@ class CacheFile extends Cache {
      */
     private function init() {
         $stat = stat($this->options['temp']);
-        $dir_perms = $stat['mode'] & 0007777; // Get the permission bits.
+        $dir_perms = $stat? $stat['mode'] & 0007777 : 0007777; // Get the permission bits.
         $file_perms = $dir_perms & 0000666; // Remove execute bits for files.
 
         // 创建项目缓存目录
