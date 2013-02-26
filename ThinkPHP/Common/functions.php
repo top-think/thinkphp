@@ -295,10 +295,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * @param string $name Widget名称
  * @param array $data 传人的参数
  * @param boolean $return 是否返回内容 
+ * @param string $path Widget所在路径
  * @return void
  */
-function W($name, $data=array(), $return=false) {
+function W($name, $data=array(), $return=false,$path='') {
     $class      =   $name . 'Widget';
+    $path       =   empty($path) ? BASE_LIB_PATH : $path;
     require_cache(BASE_LIB_PATH . 'Widget/' . $class . '.class.php');
     if (!class_exists($class))
         throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
