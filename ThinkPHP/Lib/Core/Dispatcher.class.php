@@ -121,6 +121,8 @@ class Dispatcher {
                 $_GET   =  array_merge($var,$_GET);
             }
             define('__INFO__',$_SERVER['PATH_INFO']);
+        }else{
+            define('__INFO__','');
         }
 
         // URL常量
