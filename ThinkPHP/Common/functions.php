@@ -530,6 +530,8 @@ function session($name,$value='') {
         ini_set('session.auto_start', 0);
         if(isset($name['name']))            session_name($name['name']);
         if(isset($name['path']))            session_save_path($name['path']);
+        if(isset($name['save_handler']))    ini_set('session.save_handler', $name['save_handler']);
+        if(isset($name['save_path']))       ini_set('session.save_path', $name['save_path']);
         if(isset($name['domain']))          ini_set('session.cookie_domain', $name['domain']);
         if(isset($name['expire']))          ini_set('session.gc_maxlifetime', $name['expire']);
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
