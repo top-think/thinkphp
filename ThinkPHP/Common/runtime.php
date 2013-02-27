@@ -19,7 +19,7 @@ defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
 
 //  版本信息
-define('THINK_VERSION', '3.1');
+define('THINK_VERSION', '3.1.2');
 
 //   系统信息
 if(version_compare(PHP_VERSION,'5.4.0','<')) {
@@ -99,7 +99,7 @@ function load_runtime_file() {
         if(is_file($file))  require_cache($file);
     }
     // 加载系统类库别名定义
-    //alias_import(include THINK_PATH.'Conf/alias.php');
+    alias_import(include THINK_PATH.'Conf/alias.php');
 
     // 检查项目目录结构 如果不存在则自动创建
     if(!is_dir(LIB_PATH)) {
@@ -123,9 +123,9 @@ function check_runtime() {
         exit('目录 [ '.RUNTIME_PATH.' ] 不可写！');
     }
     mkdir(CACHE_PATH);  // 模板缓存目录
-    if(!is_dir(LOG_PATH))	mkdir(LOG_PATH);    // 日志目录
-    if(!is_dir(TEMP_PATH))  mkdir(TEMP_PATH);	// 数据缓存目录
-    if(!is_dir(DATA_PATH))	mkdir(DATA_PATH);	// 数据文件目录
+    if(!is_dir(LOG_PATH))   mkdir(LOG_PATH);    // 日志目录
+    if(!is_dir(TEMP_PATH))  mkdir(TEMP_PATH);   // 数据缓存目录
+    if(!is_dir(DATA_PATH))  mkdir(DATA_PATH);   // 数据文件目录
     return true;
 }
 
@@ -154,8 +154,8 @@ function build_runtime_cache($append='') {
     // 系统行为扩展文件统一编译
     $content .= build_tags_cache();
     
-    //$alias      = include THINK_PATH.'Conf/alias.php';
-    //$content   .= 'alias_import('.var_export($alias,true).');';
+    $alias      = include THINK_PATH.'Conf/alias.php';
+    $content   .= 'alias_import('.var_export($alias,true).');';
     // 编译框架默认语言包和配置参数
     $content   .= $append."\nL(".var_export(L(),true).");C(".var_export(C(),true).');G(\'loadTime\');Think::Start();';
     file_put_contents(RUNTIME_FILE,strip_whitespace('<?php '.str_replace("defined('THINK_PATH') or exit();",' ',$content)));

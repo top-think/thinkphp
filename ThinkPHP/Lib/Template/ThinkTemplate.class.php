@@ -49,7 +49,10 @@ class  ThinkTemplate {
     }
 
     private function stripPreg($str) {
-        return str_replace(array('{','}','(',')','|','[',']'),array('\{','\}','\(','\)','\|','\[','\]'),$str);
+        return str_replace(
+            array('{','}','(',')','|','[',']','-','+','*','.','^','?'),
+            array('\{','\}','\(','\)','\|','\[','\]','\-','\+','\*','\.','\^','\?'),
+            $str);        
     }
 
     // 模板变量获取和设置
@@ -191,7 +194,7 @@ class  ThinkTemplate {
             $this->parseTagLib($tag,$content,true);
         }
         //解析普通模板标签 {tagName}
-        $content = preg_replace('/('.$this->config['tmpl_begin'].')(\S.+?)('.$this->config['tmpl_end'].')/eis',"\$this->parseTag('\\2')",$content);
+        $content = preg_replace('/('.$this->config['tmpl_begin'].')([^\d\s'.$this->config['tmpl_begin'].$this->config['tmpl_end'].'].+?)('.$this->config['tmpl_end'].')/eis',"\$this->parseTag('\\2')",$content);
         return $content;
     }
 
@@ -267,7 +270,7 @@ class  ThinkTemplate {
             // 替换block标签
             $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
         }else{
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis','"\\2"',$content);            
+            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);            
         }
         return $content;
     }
@@ -443,8 +446,9 @@ class  ThinkTemplate {
             //过滤空格和数字打头的标签
             return C('TMPL_L_DELIM') . $tagStr .C('TMPL_R_DELIM');
         $flag   =  substr($tagStr,0,1);
+        $flag2  =  substr($tagStr,1,1);
         $name   = substr($tagStr,1);
-        if('$' == $flag){ //解析模板变量 格式 {$varName}
+        if('$' == $flag && '.' != $flag2 && '(' != $flag2){ //解析模板变量 格式 {$varName}
             return $this->parseVar($name);
         }elseif('-' == $flag || '+'== $flag){ // 输出计算
             return  '<?php echo '.$flag.$name.';?>';
@@ -671,7 +675,7 @@ class  ThinkTemplate {
                 $path   =  explode(':',$templateName);
                 $action = array_pop($path);
                 $module = !empty($path)?array_pop($path):MODULE_NAME;
-                if(!empty($path)) {// 设置模板主题
+                if(!empty($path) && THEME_NAME) {// 设置模板主题
                     $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
                 }else{
                     $path = THEME_PATH;

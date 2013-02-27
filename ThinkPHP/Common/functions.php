@@ -265,7 +265,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         }
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
+                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
             }                
         }
         if($suffix) {
@@ -369,15 +369,15 @@ function redirect($url, $time=0, $msg='') {
  * 缓存管理
  * @param mixed $name 缓存名称，如果为数组表示进行缓存设置
  * @param mixed $value 缓存值
- * @param mixed $expire 缓存有效期（秒）
+ * @param mixed $options 缓存参数
  * @return mixed
  */
-function cache($name,$value='',$expire=0) {
+function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($expire)){
+    if(is_array($options)){
         // 缓存操作的同时初始化
-        $type       =   isset($expire['type'])?$expire['type']:'';
-        $cache      =   Cache::getInstance($type,$expire);
+        $type       =   isset($options['type'])?$options['type']:'';
+        $cache      =   Cache::getInstance($type,$options);
     }elseif(is_array($name)) { // 缓存初始化
         $type       =   isset($name['type'])?$name['type']:'';
         $cache      =   Cache::getInstance($type,$name);
@@ -385,50 +385,18 @@ function cache($name,$value='',$expire=0) {
     }elseif(empty($cache)) { // 自动初始化
         $cache      =   Cache::getInstance();
     }
-    if(''=== $value){ // 获取缓存值
-        // 获取缓存数据
+    if(''=== $value){ // 获取缓存
         return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($expire)?$expire:NULL;
+        $expire     =   is_numeric($options)?$options:NULL;
         return $cache->set($name, $value, $expire);
     }
 }
-
-/**
- * 全局缓存设置和读取
- * @param string $name 缓存名称
- * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
- * @param string $type 缓存类型
- * @param array $options 缓存参数
- * @return mixed
- */
-function S($name, $value='', $expire=null, $type='',$options=null) {
-    static $_cache = array();
-    //取得缓存对象实例
-    $cache = Cache::getInstance($type,$options);
-    if ('' !== $value) {
-        if (is_null($value)) {
-            // 删除缓存
-            $result = $cache->rm($name);
-            if ($result)
-                unset($_cache[$type . '_' . $name]);
-            return $result;
-        }else {
-            // 缓存数据
-            $cache->set($name, $value, $expire);
-            $_cache[$type . '_' . $name] = $value;
-        }
-        return;
-    }
-    if (isset($_cache[$type . '_' . $name]))
-        return $_cache[$type . '_' . $name];
-    // 获取缓存数据
-    $value = $cache->get($name);
-    $_cache[$type . '_' . $name] = $value;
-    return $value;
+// S方法的别名 已经废除 不再建议使用
+function cache($name,$value='',$options=null){
+    return S($name,$value,$options);
 }
 
 /**
@@ -452,14 +420,14 @@ function F($name, $value='', $path=DATA_PATH) {
             if (!is_dir($dir))
                 mkdir($dir,0755,true);
             $_cache[$name]  =   $value;
-            return file_put_contents($filename, json_encode($value));
+            return file_put_contents($filename, strip_whitespace("<?php\treturn " . var_export($value, true) . ";?>"));
         }
     }
     if (isset($_cache[$name]))
         return $_cache[$name];
     // 获取缓存数据
     if (is_file($filename)) {
-        $value          =   json_decode(file_get_contents($filename),true);
+        $value          =   include $filename;
         $_cache[$name]  =   $value;
     } else {
         $value          =   false;
@@ -676,7 +644,7 @@ function cookie($name, $value='', $option=null) {
             $value =    $_COOKIE[$name];
             if(0===strpos($value,'think:')){
                 $value  =   substr($value,6);
-                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value));
+                return array_map('urldecode',json_decode(MAGIC_QUOTES_GPC?stripslashes($value):$value,true));
             }else{
                 return $value;
             }
@@ -745,7 +713,7 @@ function get_client_ip($type = 0) {
         $ip     =   $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
-    $long = ip2long($ip);
+    $long = sprintf("%u",ip2long($ip));
     $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
     return $ip[$type];
 }

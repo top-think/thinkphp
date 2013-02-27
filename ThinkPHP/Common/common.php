@@ -69,14 +69,14 @@ function G($start,$end='',$dec=4) {
 function N($key, $step=0,$save=false) {
     static $_num    = array();
     if (!isset($_num[$key])) {
-        $_num[$key] = (false !== $save)? cache('N_'.$key) :  0;
+        $_num[$key] = (false !== $save)? S('N_'.$key) :  0;
     }
     if (empty($step))
         return $_num[$key];
     else
         $_num[$key] = $_num[$key] + (int) $step;
     if(false !== $save){ // 保存结果
-        cache('N_'.$key,$_num[$key],$save);
+        S('N_'.$key,$_num[$key],$save);
     }
 }
 
@@ -98,7 +98,7 @@ function parse_name($name, $type=0) {
 /**
  * 优化的require_once
  * @param string $filename 文件地址
- * @return boolen
+ * @return boolean
  */
 function require_cache($filename) {
     static $_importFiles = array();
@@ -114,9 +114,22 @@ function require_cache($filename) {
 }
 
 /**
+ * 批量导入文件 成功则返回
+ * @param array $array 文件数组
+ * @param boolean $return 加载成功后是否返回
+ * @return boolean
+ */
+function require_array($array,$return=false){
+    foreach ($array as $file){
+        if (require_cache($file) && $return) return true;
+    }
+    if($return) return false;
+}
+
+/**
  * 区分大小写的文件存在判断
  * @param string $filename 文件地址
- * @return boolen
+ * @return boolean
  */
 function file_exists_case($filename) {
     if (is_file($filename)) {
@@ -134,7 +147,7 @@ function file_exists_case($filename) {
  * @param string $class 类库命名空间字符串
  * @param string $baseUrl 起始路径
  * @param string $ext 导入的文件扩展名
- * @return boolen
+ * @return boolean
  */
 function import($class, $baseUrl = '', $ext='.class.php') {
     static $_file = array();
@@ -254,7 +267,7 @@ function D($name='',$layer='') {
     import($name.$layer);
     $class          =   basename($name.$layer);
     if(class_exists($class)) {
-        $model      =   new $class();
+        $model      =   new $class(basename($name));
     }else {
         $model      =   new Model(basename($name));
     }
@@ -371,7 +384,7 @@ function C($name=null, $value=null) {
     static $_config = array();
     // 无参数时获取所有
     if (empty($name)) {
-        if(!empty($value) && $array = cache('c_'.$value)) {
+        if(!empty($value) && $array = S('c_'.$value)) {
             $_config = array_merge($_config, array_change_key_case($array));
         }
         return $_config;
@@ -397,7 +410,7 @@ function C($name=null, $value=null) {
     if (is_array($name)){
         $_config = array_merge($_config, array_change_key_case($name));
         if(!empty($value)) {// 保存配置值
-            cache('c_'.$value,$_config);
+            S('c_'.$value,$_config);
         }
         return;
     }
@@ -472,10 +485,13 @@ function add_tag_behavior($tag,$behavior,$path='') {
  */
 function B($name, &$params=NULL) {
     $class      = $name.'Behavior';
-    G('behaviorStart');
+    if(APP_DEBUG) {
+        G('behaviorStart');
+    }
     $behavior   = new $class();
     $behavior->run($params);
     if(APP_DEBUG) { // 记录行为的执行日志
+        G('behaviorEnd');
         trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
 }

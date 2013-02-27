@@ -1128,8 +1128,7 @@ class Model {
         }elseif(is_array($parse)){ // SQL预处理
             $sql  = vsprintf($sql,$parse);
         }else{
-            if(strpos($sql,'__TABLE__'))
-                $sql    =   str_replace('__TABLE__',$this->getTableName(),$sql);
+            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>C('DB_PREFIX')));
         }
         $this->db->setModel($this->name);
         return $sql;
@@ -1380,7 +1379,8 @@ class Model {
      * @return Model
      */
     public function cache($key=true,$expire=null,$type=''){
-        $this->options['cache']  =  array('key'=>$key,'expire'=>$expire,'type'=>$type);
+        if(false !== $key)
+            $this->options['cache']  =  array('key'=>$key,'expire'=>$expire,'type'=>$type);
         return $this;
     }
 
@@ -1459,7 +1459,17 @@ class Model {
         }elseif(is_object($where)){
             $where  =   get_object_vars($where);
         }
-        $this->options['where'] =   $where;
+        if(is_string($where) && '' != $where){
+            $map    =   array();
+            $map['_string']   =   $where;
+            $where  =   $map;
+        }        
+        if(isset($this->options['where'])){
+            $this->options['where'] =   array_merge($this->options['where'],$where);
+        }else{
+            $this->options['where'] =   $where;
+        }
+        
         return $this;
     }
 
@@ -1484,6 +1494,17 @@ class Model {
      */
     public function page($page,$listRows=null){
         $this->options['page'] =   is_null($listRows)?$page:$page.','.$listRows;
+        return $this;
+    }
+
+    /**
+     * 查询注释
+     * @access public
+     * @param string $comment 注释
+     * @return Model
+     */
+    public function comment($comment){
+        $this->options['comment'] =   $comment;
         return $this;
     }
 
