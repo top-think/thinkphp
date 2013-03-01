@@ -147,7 +147,7 @@ class App {
                 if(C('URL_PARAMS_BIND') && $method->getNumberOfParameters()>0){
                     switch($_SERVER['REQUEST_METHOD']) {
                         case 'POST':
-                            $vars    =  $_POST;
+                            $vars    =  array_merge($_GET,$_POST);
                             break;
                         case 'PUT':
                             parse_str(file_get_contents('php://input'), $vars);
