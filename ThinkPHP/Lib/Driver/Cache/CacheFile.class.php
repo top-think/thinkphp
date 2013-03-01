@@ -174,14 +174,17 @@ class CacheFile extends Cache {
      */
     public function clear() {
         $path   =  $this->options['temp'];
-        if ( $dir = opendir( $path ) ) {
-            while ( $file = readdir( $dir ) ) {
-                $check = is_dir( $file );
-                if ( !$check )
+        $files  =   scandir($path);
+        if($files){
+            foreach($files as $file){
+                if ($file != '.' && $file != '..' && is_dir($path.$file) ){
+                    array_map( 'unlink', glob( $path.$file.'/*.*' ) );
+                }elseif(is_file($path.$file)){
                     unlink( $path . $file );
+                }
             }
-            closedir( $dir );
             return true;
         }
+        return false;
     }
 }
