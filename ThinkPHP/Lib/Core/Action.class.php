@@ -334,20 +334,20 @@ abstract class Action {
             case 'JSON' :
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
-                exit(json_encode($data));
+                $this->_exit(json_encode($data));
             case 'XML'  :
                 // 返回xml格式数据
                 header('Content-Type:text/xml; charset=utf-8');
-                exit(xml_encode($data));
+	            $this->_exit(xml_encode($data));
             case 'JSONP':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
                 $handler  =   isset($_GET[C('VAR_JSONP_HANDLER')]) ? $_GET[C('VAR_JSONP_HANDLER')] : C('DEFAULT_JSONP_HANDLER');
-                exit($handler.'('.json_encode($data).');');  
+	            $this->_exit($handler.'('.json_encode($data).');');
             case 'EVAL' :
                 // 返回可执行的js脚本
                 header('Content-Type:text/html; charset=utf-8');
-                exit($data);            
+	            $this->_exit($data);
             default     :
                 // 用于扩展其他返回格式数据
                 tag('ajax_return',$data);
@@ -411,18 +411,15 @@ abstract class Action {
             if(!isset($this->jumpUrl)) $this->assign('jumpUrl',"javascript:history.back(-1);");
             $this->display(C('TMPL_ACTION_ERROR'));
             // 中止执行  避免出错后继续执行
-            exit ;
+	        $this->_exit() ;
         }
     }
 
-   /**
-     * 析构方法
-     * @access public
-     */
-    public function __destruct() {
-        // 保存日志
-        if(C('LOG_RECORD')) Log::save();
-        // 执行后续操作
-        tag('action_end');
-    }
+	protected function _exit($status=0){
+		// 保存日志
+		if(C('LOG_RECORD')) Log::save();
+		// 执行后续操作
+		tag('action_end');
+		exit($status);
+	}
 }
