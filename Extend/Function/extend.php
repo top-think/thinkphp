@@ -208,6 +208,7 @@ function h($text, $tags = null) {
 	$text	=	preg_replace('/\r?\n/','',$text);
 	//br
 	$text	=	preg_replace('/<br(\s\/)?'.'>/i','[br]',$text);
+	$text	=	preg_replace('/<p(\s\/)?'.'>/i','[br]',$text);
 	$text	=	preg_replace('/(\[br\]\s*){10,}/i','[br]',$text);
 	//过滤危险的属性，如：过滤on事件lang js
 	while(preg_match('/(<[^><]+)( lang|on|action|background|codebase|dynsrc|lowsrc)[^><]+/i',$text,$mat)){
@@ -221,7 +222,7 @@ function h($text, $tags = null) {
 	}
 	//允许的HTML标签
 	$text	=	preg_replace('/<('.$tags.')( [^><\[\]]*)>/i','[\1\2]',$text);
-  $text = preg_replace('/<\/('.$tags.')>/Ui','[/\1]',$text);
+	$text = preg_replace('/<\/('.$tags.')>/Ui','[/\1]',$text);
 	//过滤多余html
 	$text	=	preg_replace('/<\/?(html|head|meta|link|base|basefont|body|bgsound|title|style|script|form|iframe|frame|frameset|applet|id|ilayer|layer|name|script|style|xml)[^><]*>/i','',$text);
 	//过滤合法的html标签

@@ -10,18 +10,18 @@
 // +----------------------------------------------------------------------
 
 defined('THINK_PATH') or exit();
+
 /**
  * Redis缓存驱动 
- * 要求安装phpredis扩展：https://github.com/owlient/phpredis
+ * 要求安装phpredis扩展：https://github.com/nicolasff/phpredis
  * @category   Extend
  * @package  Extend
  * @subpackage  Driver.Cache
  * @author    尘缘 <130775@qq.com>
  */
 class CacheRedis extends Cache {
-
-    /**
-     * 架构函数
+	 /**
+	 * 架构函数
      * @param array $options 缓存参数
      * @access public
      */
@@ -103,4 +103,5 @@ class CacheRedis extends Cache {
     public function clear() {
         return $this->handler->flushDB();
     }
+
 }

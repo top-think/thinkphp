@@ -126,7 +126,7 @@ class UploadFile {//类定义开始
             if(!empty($this->config[$key])) $attr[$key]=$value;
           if($this->compress) $attr['encoding']='gzip';
         //[sae] 上传文件
-        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name'],$attr,$compress) ) {
+        if (!$this->thumbRemoveOrigin && !$s->upload($this->domain, $filename, $file['tmp_name'],$attr,$this->compress) ) {
                  $this->error = '文件上传失败'.$s->errmsg();
                 return false;
         }
@@ -172,7 +172,7 @@ class UploadFile {//类定义开始
                     $img->resize($width, $height);
                     $new_data = $img->exec();
                     if (!$s->write($domain, $thumbPath . $thumbname.'.'.$thumbExt, $new_data)) {
-                        $this->error = '生成缩略图失败！'.$this->errmsg();
+                        $this->error = '生成缩略图失败！'.$s->errmsg();
                         return false;
                     }
                 }
@@ -309,7 +309,7 @@ class UploadFile {//类定义开始
                     return false;
                 if (function_exists($this->hashType)) {
                     $fun = $this->hashType;
-                    $file['hash'] = $fun($this->autoCharset($file['savepath'] . $file['savename'], 'utf-8', 'gbk'));
+                    $file['hash'] = $fun($this->autoCharset($file['tmp_name'] . $file['savename'], 'utf-8', 'gbk'));
                 }
                 unset($file['tmp_name'], $file['error']);
                 $info[] = $file;
