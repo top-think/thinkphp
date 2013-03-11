@@ -64,7 +64,7 @@ class ThinkImage{
         }
 
         /* 引入处理库，实例化图片处理对象 */
-        require_once "img/{$class}.class.php";
+        require_once "Driver/{$class}.class.php";
         $this->img = new $class($imgname);
     }
 
