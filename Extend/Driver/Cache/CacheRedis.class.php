@@ -56,7 +56,9 @@ class CacheRedis extends Cache {
      */
     public function get($name) {
         N('cache_read',1);
-        return $this->handler->get($this->options['prefix'].$name);
+        $value = $this->handler->get($this->options['prefix'].$name);
+        $jsonData  = json_decode( $value, true );
+        return ($jsonData === NULL) ? $value : $jsonData;	//检测是否为JSON数据 true 返回JSON解析数组, false返回源数据
     }
 
     /**
@@ -73,6 +75,8 @@ class CacheRedis extends Cache {
             $expire  =  $this->options['expire'];
         }
         $name   =   $this->options['prefix'].$name;
+        //对数组/对象数据进行缓存处理，保证数据完整性
+        $value  =  (is_object($value) || is_array($value)) ? json_encode($value) : $value;
         if(is_int($expire)) {
             $result = $this->handler->setex($name, $expire, $value);
         }else{
