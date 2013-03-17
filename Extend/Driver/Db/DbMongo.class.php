@@ -32,8 +32,8 @@ class DbMongo extends Db{
      * @param array $config 数据库配置数组
      */
     public function __construct($config=''){
-        if ( !class_exists('mongo') ) {
-            throw_exception(L('_NOT_SUPPERT_').':mongo');
+        if ( !class_exists('mongoClient') ) {
+            throw_exception(L('_NOT_SUPPERT_').':mongoClient');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -52,7 +52,7 @@ class DbMongo extends Db{
             if(empty($config))  $config =   $this->config;
             $host = 'mongodb://'.($config['username']?"{$config['username']}":'').($config['password']?":{$config['password']}@":'').$config['hostname'].($config['hostport']?":{$config['hostport']}":'').'/'.($config['database']?"{$config['database']}":'');
             try{
-                $this->linkID[$linkNum] = new mongo( $host,$config['params']);
+                $this->linkID[$linkNum] = new mongoClient( $host,$config['params']);
             }catch (MongoConnectionException $e){
                 throw_exception($e->getmessage());
             }
@@ -193,7 +193,7 @@ class DbMongo extends Db{
         try{
             // 记录开始执行时间
             G('queryStartTime');
-            $result =  $replace?   $this->_collection->save($data,true):  $this->_collection->insert($data,true);
+            $result =  $replace?   $this->_collection->save($data):  $this->_collection->insert($data);
             $this->debug();
             if($result) {
                $_id    = $data['_id'];
