@@ -391,7 +391,7 @@ class DbPdo extends Db{
     public function error() {
         if($this->PDOStatement) {
             $error = $this->PDOStatement->errorInfo();
-            $this->error = $error[2];
+            $this->error = $error[1].':'.$error[2];
         }else{
             $this->error = '';
         }

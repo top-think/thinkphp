@@ -246,7 +246,8 @@ class DbSqlite extends Db {
      * @return string
      */
     public function error() {
-        $this->error = sqlite_error_string(sqlite_last_error($this->_linkID));
+        $code   =   sqlite_last_error($this->_linkID);
+        $this->error = $code.':'.sqlite_error_string($code);
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }

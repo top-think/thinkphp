@@ -319,12 +319,12 @@ class DbSqlsrv extends Db{
         $errors = sqlsrv_errors();
         $this->error    =   '';
         foreach( $errors as $error ) {
-            $this->error .= $error['message'];
+            $this->error .= $error['code'].':'.$error['message'];
         }
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        $result? trace($error['message'],'','ERR'):throw_exception($this->error);
+        $result? trace($this->error,'','ERR'):throw_exception($this->error);
         return $this->error;
     }
 }
