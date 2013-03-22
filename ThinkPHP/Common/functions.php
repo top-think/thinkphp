@@ -394,7 +394,6 @@ function S($name,$value='',$options=null) {
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        //$expire     =   is_numeric($options)?$options:NULL;	//原始语句
         return $cache->set($name, $value, $expire);
     }
 }
