@@ -63,6 +63,8 @@ function I($name,$default='',$filter='') {
         default:
             return NULL;
     }
+    // 全局过滤
+    // array_walk_recursive($input,'filter_exp');
     if(C('VAR_FILTERS')) {
         $_filters    =   explode(',',C('VAR_FILTERS'));
         foreach($_filters as $_filter){
@@ -83,7 +85,7 @@ function I($name,$default='',$filter='') {
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
-                        return	 isset($args[2])?$args[2]:NULL;
+                        return	 isset($default)?$default:NULL;
                     }
                 }
             }
