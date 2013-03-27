@@ -64,10 +64,10 @@ function I($name,$default='',$filter='') {
             return NULL;
     }
     if(C('VAR_FILTERS')) {
-        $filters    =   explode(',',C('VAR_FILTERS'));
-        foreach($filters as $filter){
+        $_filters    =   explode(',',C('VAR_FILTERS'));
+        foreach($_filters as $_filter){
             // 全局参数过滤
-            array_walk_recursive($input,$filter);
+            array_walk_recursive($input,$_filter);
         }
     }
     if(empty($name)) { // 获取全部变量
