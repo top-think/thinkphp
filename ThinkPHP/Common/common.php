@@ -80,6 +80,11 @@ function I($name,$default='',$filter='') {
             foreach($filters as $filter){
                 if(function_exists($filter)) {
                     $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                }else{
+                    $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
+                    if(false === $data) {
+                        return	 isset($args[2])?$args[2]:NULL;
+                    }
                 }
             }
         }
