@@ -312,7 +312,7 @@ class DbMysql extends Db{
      * @return string
      */
     public function error() {
-        $this->error = mysql_error($this->_linkID);
+        $this->error = mysql_errno().':'.mysql_error($this->_linkID);
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }

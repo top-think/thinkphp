@@ -60,7 +60,7 @@ class Model {
     // 是否批处理验证
     protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate');
+    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result');
 
     /**
      * 架构函数
@@ -610,17 +610,18 @@ class Model {
         }
         $this->data         =   $resultSet[0];
         $this->_after_find($this->data,$options);
-        return $this->returnResult($this->data);
+        if(!empty($this->options['result'])) {
+            return $this->returnResult($this->data,$this->options['result']);
+        }
+        return $this->data;
     }
     // 查询成功的回调方法
     protected function _after_find(&$result,$options) {}
 
     protected function returnResult($data,$type=''){
-        $type = $type?$type:$this->options['result'];
         if ($type){
-            if(is_array($type)){
-                $handler =  $type[1];
-                return $handler($data);
+            if(is_callable($type)){
+                return call_user_func($type,$data);
             }
             switch (strtolower($type)){
                 case 'json':
@@ -1511,18 +1512,6 @@ class Model {
      */
     public function page($page,$listRows=null){
         $this->options['page'] =   is_null($listRows)?$page:$page.','.$listRows;
-        return $this;
-    }
-
-    /**
-     * 指定返回结果类型
-     * @access public
-     * @param string $result 类型
-     * @param string $handler 类型处理方法
-     * @return Model
-     */
-    public function result($result,$handler=null){
-        $this->options['result'] =   is_null($handler)?$result:array($result,$handler);
         return $this;
     }
 

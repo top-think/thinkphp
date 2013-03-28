@@ -306,7 +306,7 @@ class DbMysqli extends Db{
      * @return string
      */
     public function error() {
-        $this->error = $this->_linkID->error;
+        $this->error = $this->_linkID->errno.':'.$this->_linkID->error;
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
