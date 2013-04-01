@@ -278,7 +278,12 @@ class DbMongo extends Db{
         try{
             // 记录开始执行时间
             G('queryStartTime');
-            $result   = $this->_collection->update($query,$set,array("multiple" => true));
+            if(isset($options['limit']) && $options['limit'] == 1) {
+                $multiple   =   array("multiple" => false);
+            }else{
+                $multiple   =   array("multiple" => true);
+            }
+            $result   = $this->_collection->update($query,$set,$multiple);
             $this->debug();
             return $result;
         } catch (MongoCursorException $e) {
