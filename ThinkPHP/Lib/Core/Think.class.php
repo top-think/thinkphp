@@ -246,21 +246,11 @@ class Think {
      */
     static public function appException($e) {
         $error = array();
-        $trace = $e->getTrace();
         $error['message']   = $e->getMessage();
         $error['file']      = $e->getFile();
-        $error['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-        $error['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
         $error['line']      = $e->getLine();
-        $error['trace']     = '';
-        $time = date('y-m-d H:i:m');
-        foreach ($trace as $t) {
-            $error['trace'] .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-            $error['trace'] .= $t['class'] . $t['type'] . $t['function'] . '(';
-            $error['trace'] .= implode(', ', $t['args']);
-            $error['trace'] .=')<br/>';
-        }
-
+        $error['trace']     = $e->getTraceAsString();
+        Log::record($error['message'],Log::ERR);
         halt($error);
     }
 
@@ -302,6 +292,7 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
+        Log::save();
         if ($e = error_get_last()) {
             Think::appError($e['type'],$e['message'],$e['file'],$e['line']);
         }
