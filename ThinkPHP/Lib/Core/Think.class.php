@@ -294,7 +294,8 @@ class Think {
     static public function fatalError() {
         Log::save();
         if ($e = error_get_last()) {
-            Think::appError($e['type'],$e['message'],$e['file'],$e['line']);
+            ob_end_clean();
+            function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
         }
     }
 

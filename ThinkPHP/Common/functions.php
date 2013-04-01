@@ -29,18 +29,10 @@ function halt($error) {
             $trace          = debug_backtrace();
             $e['message']   = $error;
             $e['file']      = $trace[0]['file'];
-            $e['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-            $e['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
             $e['line']      = $trace[0]['line'];
-            $traceInfo      = '';
-            $time = date('y-m-d H:i:m');
-            foreach ($trace as $t) {
-                $traceInfo .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-                $traceInfo .= $t['class'] . $t['type'] . $t['function'] . '(';
-                $traceInfo .= implode(', ', $t['args']);
-                $traceInfo .=')<br/>';
-            }
-            $e['trace']     = $traceInfo;
+            ob_start();
+            debug_print_backtrace();
+            $e['trace']     = ob_get_clean();
         } else {
             $e              = $error;
         }
@@ -70,7 +62,7 @@ function halt($error) {
  */
 function throw_exception($msg, $type='ThinkException', $code=0) {
     if (class_exists($type, false))
-        throw new $type($msg, $code, true);
+        throw new $type($msg, $code);
     else
         halt($msg);        // 异常类型不存在则输出错误信息字串
 }
