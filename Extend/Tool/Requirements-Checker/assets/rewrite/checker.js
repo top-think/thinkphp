@@ -1,0 +1,1 @@
+modRewriteChecker = true;
