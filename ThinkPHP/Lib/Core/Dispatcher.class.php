@@ -26,7 +26,7 @@ class Dispatcher {
      */
     static public function dispatch() {
         $urlMode  =  C('URL_MODEL');
-        if(!empty($_GET[C('VAR_PATHINFO')])) { // 判断URL里面是否有兼容模式参数
+        if(isset($_GET[C('VAR_PATHINFO')])) { // 判断URL里面是否有兼容模式参数
             $_SERVER['PATH_INFO']   = $_GET[C('VAR_PATHINFO')];
             unset($_GET[C('VAR_PATHINFO')]);
         }
@@ -75,7 +75,7 @@ class Dispatcher {
             }
         }
         // 分析PATHINFO信息
-        if(empty($_SERVER['PATH_INFO'])) {
+        if(!isset($_SERVER['PATH_INFO'])) {
             $types   =  explode(',',C('URL_PATHINFO_FETCH'));
             foreach ($types as $type){
                 if(0===strpos($type,':')) {// 支持函数判断
