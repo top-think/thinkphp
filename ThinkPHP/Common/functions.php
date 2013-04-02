@@ -372,20 +372,23 @@ function S($name,$value='',$options=null) {
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
         $cache      =   Cache::getInstance($type,$options);
-        $expire     =   is_numeric($options['expire'])?$options['expire']:NULL;	//修复查询缓存无法设置过期时间
     }elseif(is_array($name)) { // 缓存初始化
         $type       =   isset($name['type'])?$name['type']:'';
         $cache      =   Cache::getInstance($type,$name);
         return $cache;
     }elseif(empty($cache)) { // 自动初始化
         $cache      =   Cache::getInstance();
-        $expire     =   is_numeric($options)?$options:NULL;	//默认快捷缓存设置过期时间
     }
     if(''=== $value){ // 获取缓存
         return $cache->get($name);
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
+        if(is_array($options)) {
+            $expire     =   isset($options['expire'])?$options['expire']:NULL;
+        }else{
+            $expire     =   is_numeric($options)?$options:NULL;
+        }
         return $cache->set($name, $value, $expire);
     }
 }
