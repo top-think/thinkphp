@@ -407,7 +407,8 @@ function A($name,$layer='',$common=false) {
         import($name.$layer);
     }
     $class      =   basename($name.$layer);
-    if(class_exists($class,false)) {
+    // 修正分组中不能调用共用方法
+    if(class_exists($class,true)) {
         $action             =   new $class();
         $_action[$name]     =   $action;
         return $action;
