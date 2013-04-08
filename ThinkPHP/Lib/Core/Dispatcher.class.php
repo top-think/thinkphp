@@ -134,7 +134,7 @@ class Dispatcher {
         if (C('APP_GROUP_LIST')) {
             define('GROUP_NAME', self::getGroup(C('VAR_GROUP')));
             // 分组URL地址
-            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.GROUP_NAME);
+            define('__GROUP__',(!empty($domainGroup) || strtolower(GROUP_NAME) == strtolower(C('DEFAULT_GROUP')) )?__APP__ : __APP__.'/'.(C('URL_CASE_INSENSITIVE') ? strtolower(GROUP_NAME) : GROUP_NAME));
         }
         
         // 定义项目基础加载路径
@@ -166,9 +166,9 @@ class Dispatcher {
         // 当前模块和分组地址
         $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
         if(defined('GROUP_NAME')) {
-            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.$moduleName);
+            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.( C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName );
         }else{
-            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.$moduleName);
+            define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.( C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName) );
         }
         // 当前操作地址
         define('__ACTION__',__URL__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));
