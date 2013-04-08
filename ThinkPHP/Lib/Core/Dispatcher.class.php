@@ -166,7 +166,7 @@ class Dispatcher {
         // 当前模块和分组地址
         $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
         if(defined('GROUP_NAME')) {
-            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.( C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName );
+            define('__URL__',!empty($domainModule)?__GROUP__.$depr : __GROUP__.$depr.( C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName ) );
         }else{
             define('__URL__',!empty($domainModule)?__APP__.'/' : __APP__.'/'.( C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName) );
         }
