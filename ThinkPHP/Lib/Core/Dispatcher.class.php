@@ -26,7 +26,7 @@ class Dispatcher {
      */
     static public function dispatch() {
         $urlMode  =  C('URL_MODEL');
-        if(!empty($_GET[C('VAR_PATHINFO')])) { // 判断URL里面是否有兼容模式参数
+        if(isset($_GET[C('VAR_PATHINFO')])) { // 判断URL里面是否有兼容模式参数
             $_SERVER['PATH_INFO']   = $_GET[C('VAR_PATHINFO')];
             unset($_GET[C('VAR_PATHINFO')]);
         }
@@ -75,7 +75,7 @@ class Dispatcher {
             }
         }
         // 分析PATHINFO信息
-        if(empty($_SERVER['PATH_INFO'])) {
+        if(!isset($_SERVER['PATH_INFO'])) {
             $types   =  explode(',',C('URL_PATHINFO_FETCH'));
             foreach ($types as $type){
                 if(0===strpos($type,':')) {// 支持函数判断
@@ -121,6 +121,8 @@ class Dispatcher {
                 $_GET   =  array_merge($var,$_GET);
             }
             define('__INFO__',$_SERVER['PATH_INFO']);
+        }else{
+            define('__INFO__','');
         }
 
         // URL常量
@@ -150,11 +152,13 @@ class Dispatcher {
                 C(include $config_path.'config.php');
             // 加载分组别名定义
             if(is_file($config_path.'alias.php'))
-                alias_import(include $config_path.'alias.php');            
+                alias_import(include $config_path.'alias.php');
+            // 加载分组tags文件定义
+            if(is_file($config_path.'tags.php'))
+                C('tags', include $config_path.'tags.php');
             // 加载分组函数文件
             if(is_file($common_path.'function.php'))
                 include $common_path.'function.php';
-
         }        
         define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
         define('ACTION_NAME',self::getAction(C('VAR_ACTION')));

@@ -245,7 +245,13 @@ class Think {
      * @param mixed $e 异常对象
      */
     static public function appException($e) {
-        halt($e->__toString());
+        $error = array();
+        $error['message']   = $e->getMessage();
+        $error['file']      = $e->getFile();
+        $error['line']      = $e->getLine();
+        $error['trace']     = $e->getTraceAsString();
+        Log::record($error['message'],Log::ERR);
+        halt($error);
     }
 
     /**
@@ -286,8 +292,10 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
+        Log::save();
         if ($e = error_get_last()) {
-            Think::appError($e['type'],$e['message'],$e['file'],$e['line']);
+            ob_end_clean();
+            function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
         }
     }
 

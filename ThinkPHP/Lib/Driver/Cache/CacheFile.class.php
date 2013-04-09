@@ -41,15 +41,9 @@ class CacheFile extends Cache {
      * @return boolen
      */
     private function init() {
-        $stat = stat($this->options['temp']);
-        $dir_perms = $stat['mode'] & 0007777; // Get the permission bits.
-        $file_perms = $dir_perms & 0000666; // Remove execute bits for files.
-
         // 创建项目缓存目录
         if (!is_dir($this->options['temp'])) {
-            if (!  mkdir($this->options['temp']))
-                return false;
-             chmod($this->options['temp'], $dir_perms);
+            mkdir($this->options['temp']);
         }
     }
 
@@ -174,14 +168,17 @@ class CacheFile extends Cache {
      */
     public function clear() {
         $path   =  $this->options['temp'];
-        if ( $dir = opendir( $path ) ) {
-            while ( $file = readdir( $dir ) ) {
-                $check = is_dir( $file );
-                if ( !$check )
+        $files  =   scandir($path);
+        if($files){
+            foreach($files as $file){
+                if ($file != '.' && $file != '..' && is_dir($path.$file) ){
+                    array_map( 'unlink', glob( $path.$file.'/*.*' ) );
+                }elseif(is_file($path.$file)){
                     unlink( $path . $file );
+                }
             }
-            closedir( $dir );
             return true;
         }
+        return false;
     }
 }

@@ -29,18 +29,10 @@ function halt($error) {
             $trace          = debug_backtrace();
             $e['message']   = $error;
             $e['file']      = $trace[0]['file'];
-            $e['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-            $e['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
             $e['line']      = $trace[0]['line'];
-            $traceInfo      = '';
-            $time = date('y-m-d H:i:m');
-            foreach ($trace as $t) {
-                $traceInfo .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-                $traceInfo .= $t['class'] . $t['type'] . $t['function'] . '(';
-                $traceInfo .= implode(', ', $t['args']);
-                $traceInfo .=')<br/>';
-            }
-            $e['trace']     = $traceInfo;
+            ob_start();
+            debug_print_backtrace();
+            $e['trace']     = ob_get_clean();
         } else {
             $e              = $error;
         }
@@ -70,7 +62,7 @@ function halt($error) {
  */
 function throw_exception($msg, $type='ThinkException', $code=0) {
     if (class_exists($type, false))
-        throw new $type($msg, $code, true);
+        throw new $type($msg, $code);
     else
         halt($msg);        // 异常类型不存在则输出错误信息字串
 }
@@ -295,11 +287,13 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * @param string $name Widget名称
  * @param array $data 传人的参数
  * @param boolean $return 是否返回内容 
+ * @param string $path Widget所在路径
  * @return void
  */
-function W($name, $data=array(), $return=false) {
+function W($name, $data=array(), $return=false,$path='') {
     $class      =   $name . 'Widget';
-    require_cache(BASE_LIB_PATH . 'Widget/' . $class . '.class.php');
+    $path       =   empty($path) ? BASE_LIB_PATH : $path;
+    require_cache($path . 'Widget/' . $class . '.class.php');
     if (!class_exists($class))
         throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
     $widget     =   Think::instance($class);
@@ -390,7 +384,11 @@ function S($name,$value='',$options=null) {
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($options)?$options:NULL;
+        if(is_array($options)) {
+            $expire     =   isset($options['expire'])?$options['expire']:NULL;
+        }else{
+            $expire     =   is_numeric($options)?$options:NULL;
+        }
         return $cache->set($name, $value, $expire);
     }
 }
@@ -483,31 +481,47 @@ function to_guid_string($mix) {
 /**
  * XML编码
  * @param mixed $data 数据
- * @param string $encoding 数据编码
  * @param string $root 根节点名
+ * @param string $item 数字索引的子节点名
+ * @param string $attr 根节点属性
+ * @param string $id   数字索引子节点key转换的属性名
+ * @param string $encoding 数据编码
  * @return string
  */
-function xml_encode($data, $encoding='utf-8', $root='think') {
-    $xml    = '<?xml version="1.0" encoding="' . $encoding . '"?>';
-    $xml   .= '<' . $root . '>';
-    $xml   .= data_to_xml($data);
-    $xml   .= '</' . $root . '>';
+function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $encoding='utf-8') {
+    if(is_array($attr)){
+        $_attr = array();
+        foreach ($attr as $key => $value) {
+            $_attr[] = "{$key}=\"{$value}\"";
+        }
+        $attr = implode(' ', $_attr);
+    }
+    $attr   = trim($attr);
+    $attr   = empty($attr) ? '' : " {$attr}";
+    $xml    = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
+    $xml   .= "<{$root}{$attr}>";
+    $xml   .= data_to_xml($data, $item, $id);
+    $xml   .= "</{$root}>";
     return $xml;
 }
 
 /**
  * 数据XML编码
- * @param mixed $data 数据
+ * @param mixed  $data 数据
+ * @param string $item 数字索引时的节点名称
+ * @param string $id   数字索引key转换为的属性名
  * @return string
  */
-function data_to_xml($data) {
-    $xml = '';
+function data_to_xml($data, $item='item', $id='id') {
+    $xml = $attr = '';
     foreach ($data as $key => $val) {
-        is_numeric($key) && $key = "item id=\"$key\"";
-        $xml    .=  "<$key>";
-        $xml    .=  ( is_array($val) || is_object($val)) ? data_to_xml($val) : $val;
-        list($key, ) = explode(' ', $key);
-        $xml    .=  "</$key>";
+        if(is_numeric($key)){
+            $id && $attr = " {$id}=\"{$key}\"";
+            $key  = $item;
+        }
+        $xml    .=  "<{$key}{$attr}>";
+        $xml    .=  (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
+        $xml    .=  "</{$key}>";
     }
     return $xml;
 }
