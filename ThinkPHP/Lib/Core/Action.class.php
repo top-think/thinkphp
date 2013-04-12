@@ -175,7 +175,8 @@ abstract class Action {
             $this->tVar   =  array_merge($this->tVar,$name);
         }else {
             $this->tVar[$name] = $value;
-        }        
+        }
+        return $this;
     }
 
     public function __set($name,$value) {
