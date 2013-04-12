@@ -247,9 +247,14 @@ class Think {
     static public function appException($e) {
         $error = array();
         $error['message']   = $e->getMessage();
-        $error['file']      = $e->getFile();
-        $error['line']      = $e->getLine();
-        $error['trace']     = $e->getTraceAsString();
+        $trace  =   $e->getTrace();
+        if('throw_exception'==$trace[0]['function']) {
+            $error['file']  =   $trace[0]['file'];
+            $error['line']  =   $trace[0]['line'];
+        }else{
+            $error['file']      = $e->getFile();
+            $error['line']      = $e->getLine();
+        }
         Log::record($error['message'],Log::ERR);
         halt($error);
     }
