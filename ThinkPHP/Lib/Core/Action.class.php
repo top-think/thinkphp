@@ -421,8 +421,6 @@ abstract class Action {
      * @access public
      */
     public function __destruct() {
-        // 保存日志
-        if(C('LOG_RECORD')) Log::save();
         // 执行后续操作
         tag('action_end');
     }

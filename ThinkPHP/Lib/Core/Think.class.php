@@ -292,7 +292,8 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
-        Log::save();
+        // 保存日志记录
+        if(C('LOG_RECORD')) Log::save();
         if ($e = error_get_last()) {
             ob_end_clean();
             function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
