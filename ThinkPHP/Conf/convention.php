@@ -137,7 +137,7 @@ return  array(
     'VAR_TEMPLATE'          => 't',		// 默认模板切换变量
     'VAR_FILTERS'           =>  'filter_exp',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
-    'OUTPUT_ENCODE'         =>  true, // 页面压缩输出
+    'OUTPUT_ENCODE'         =>  false, // 页面压缩输出
     'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
 
 );

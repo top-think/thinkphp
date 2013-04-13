@@ -207,8 +207,6 @@ class App {
         App::exec();
         // 项目结束标签
         tag('app_end');
-        // 保存日志记录
-        if(C('LOG_RECORD')) Log::save();
         return ;
     }
 

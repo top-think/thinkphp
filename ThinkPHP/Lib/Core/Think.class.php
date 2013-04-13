@@ -247,9 +247,14 @@ class Think {
     static public function appException($e) {
         $error = array();
         $error['message']   = $e->getMessage();
-        $error['file']      = $e->getFile();
-        $error['line']      = $e->getLine();
-        $error['trace']     = $e->getTraceAsString();
+        $trace  =   $e->getTrace();
+        if('throw_exception'==$trace[0]['function']) {
+            $error['file']  =   $trace[0]['file'];
+            $error['line']  =   $trace[0]['line'];
+        }else{
+            $error['file']      = $e->getFile();
+            $error['line']      = $e->getLine();
+        }
         Log::record($error['message'],Log::ERR);
         halt($error);
     }
@@ -292,7 +297,8 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
-        Log::save();
+        // 保存日志记录
+        if(C('LOG_RECORD')) Log::save();
         if ($e = error_get_last()) {
             ob_end_clean();
             function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
