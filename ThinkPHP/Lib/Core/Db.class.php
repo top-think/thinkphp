@@ -671,7 +671,7 @@ class Db {
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
     }
 
     /**
@@ -688,7 +688,7 @@ class Db {
         array_walk($fields, array($this, 'parseKey'));
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
-        return $this->execute($sql);
+        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
     }
 
     /**
@@ -708,7 +708,7 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
     }
 
     /**
@@ -726,7 +726,7 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
     }
 
     /**
@@ -746,7 +746,7 @@ class Db {
                 return $value;
             }
         }
-        $result   = $this->query($sql);
+        $result   = $this->query($sql,!empty($options['bind'])?$options['bind']:array());
         if($cache && false !== $result ) { // 查询缓存写入
             S($key,$result,$cache);
         }

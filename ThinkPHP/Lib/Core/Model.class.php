@@ -60,7 +60,7 @@ class Model {
     // 是否批处理验证
     protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result');
+    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result','bind');
 
     /**
      * 架构函数
