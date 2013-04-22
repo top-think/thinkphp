@@ -76,9 +76,9 @@ function I($name,$default='',$filter='') {
         $data       =   $input; 
     }elseif(isset($input[$name])) { // 取值操作
         $data       =	$input[$name];
-        $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
+        $filters = isset($filter)?$filter.','.C('DEFAULT_FILTER'):C('DEFAULT_FILTER');
         if($filters) {
-            $filters    =   explode(',',$filters);
+            $filters = array_unique(explode(',',$filters));
             foreach($filters as $filter){
                 if(function_exists($filter)) {
                     $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
