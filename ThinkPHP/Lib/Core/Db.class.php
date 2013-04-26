@@ -52,6 +52,8 @@ class Db {
     protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
     // 查询表达式
     protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%COMMENT%';
+    // 参数绑定
+    protected $bind       = array();
 
     /**
      * 取得数据库类实例
@@ -277,10 +279,38 @@ class Db {
     protected function parseSet($data) {
         foreach ($data as $key=>$val){
             $value   =  $this->parseValue($val);
-            if(is_scalar($value)) // 过滤非标量数据
+            if(is_scalar($value)) { // 过滤非标量数据
+              if(C('DB_BIND_PARAM') && 0 !== strpos($value,':')){
+                $name   =   md5($key);
+                $set[]  =   $this->parseKey($key).'=:T'.$name;
+                $this->bindParam($name,$value);
+              }else{
                 $set[]    = $this->parseKey($key).'='.$value;
+              }
+            }
         }
         return ' SET '.implode(',',$set);
+    }
+
+     /**
+     * 参数绑定
+     * @access protected
+     * @param string $name 绑定参数名
+     * @param mixed $value 绑定值
+     * @return void
+     */
+    protected function bindParam($name,$value){
+        $this->bind[':T'.$name]  =   $value;
+    }
+
+     /**
+     * 参数绑定分析
+     * @access protected
+     * @param array $bind
+     * @return array
+     */
+    protected function parseBind($bind){
+        return array_merge($this->bind,$bind);
     }
 
     /**
@@ -664,14 +694,20 @@ class Db {
         foreach ($data as $key=>$val){
             $value   =  $this->parseValue($val);
             if(is_scalar($value)) { // 过滤非标量数据
+              $fields[]   =  $this->parseKey($key);
+              if(C('DB_BIND_PARAM') && 0 !== strpos($value,':')){
+                $name       =   md5($key);
+                $values[]   =   ':T'.$name;
+                $this->bindParam($name,$value);
+              }else{
                 $values[]   =  $value;
-                $fields[]   =  $this->parseKey($key);
+              }                
             }
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
@@ -688,7 +724,7 @@ class Db {
         array_walk($fields, array($this, 'parseKey'));
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
@@ -708,7 +744,7 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
@@ -726,7 +762,7 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,!empty($options['bind'])?$options['bind']:array());
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
@@ -746,7 +782,7 @@ class Db {
                 return $value;
             }
         }
-        $result   = $this->query($sql,!empty($options['bind'])?$options['bind']:array());
+        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
         if($cache && false !== $result ) { // 查询缓存写入
             S($key,$result,$cache);
         }
