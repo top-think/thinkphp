@@ -575,13 +575,15 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        $fieldType = strtolower($this->fields['_type'][$key]);
-        if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
-            $data[$key]   =  intval($data[$key]);
-        }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
-            $data[$key]   =  floatval($data[$key]);
-        }elseif(false !== strpos($fieldType,'bool')){
-            $data[$key]   =  (bool)$data[$key];
+        if(empty($this->options['bind'][':'.$key])){
+            $fieldType = strtolower($this->fields['_type'][$key]);
+            if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
+                $data[$key]   =  intval($data[$key]);
+            }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
+                $data[$key]   =  floatval($data[$key]);
+            }elseif(false !== strpos($fieldType,'bool')){
+                $data[$key]   =  (bool)$data[$key];
+            }
         }
     }
 
