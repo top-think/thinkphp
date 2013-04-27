@@ -112,7 +112,7 @@ class Model {
                 $db   =  $this->dbName?$this->dbName:C('DB_NAME');
                 $fields = F('_fields/'.strtolower($db.'.'.$this->name));
                 if($fields) {
-                    $version    =   C('DB_FIELD_VERISON');
+                    $version    =   C('DB_FIELD_VERSION');
                     if(empty($version) || $fields['_version']== $version) {
                         $this->fields   =   $fields;
                         return ;
@@ -148,7 +148,7 @@ class Model {
         }
         // 记录字段类型信息
         $this->fields['_type'] =  $type;
-        if(C('DB_FIELD_VERISON')) $this->fields['_version'] =   C('DB_FIELD_VERISON');
+        if(C('DB_FIELD_VERSION')) $this->fields['_version'] =   C('DB_FIELD_VERSION');
 
         // 2008-3-7 增加缓存开关控制
         if(C('DB_FIELDS_CACHE')){
@@ -575,13 +575,15 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        $fieldType = strtolower($this->fields['_type'][$key]);
-        if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
-            $data[$key]   =  intval($data[$key]);
-        }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
-            $data[$key]   =  floatval($data[$key]);
-        }elseif(false !== strpos($fieldType,'bool')){
-            $data[$key]   =  (bool)$data[$key];
+        if(empty($this->options['bind'][':'.$key])){
+            $fieldType = strtolower($this->fields['_type'][$key]);
+            if(false === strpos($fieldType,'bigint') && false !== strpos($fieldType,'int')) {
+                $data[$key]   =  intval($data[$key]);
+            }elseif(false !== strpos($fieldType,'float') || false !== strpos($fieldType,'double')){
+                $data[$key]   =  floatval($data[$key]);
+            }elseif(false !== strpos($fieldType,'bool')){
+                $data[$key]   =  (bool)$data[$key];
+            }
         }
     }
 
