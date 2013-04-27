@@ -278,14 +278,13 @@ class Db {
      */
     protected function parseSet($data) {
         foreach ($data as $key=>$val){
-            $value   =  $this->parseValue($val);
-            if(is_scalar($value)) { // 过滤非标量数据
-              if(C('DB_BIND_PARAM') && 0 !== strpos($value,':')){
+            if(is_scalar($val)) { // 过滤非标量数据
+              if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name   =   md5($key);
                 $set[]  =   $this->parseKey($key).'=:T'.$name;
-                $this->bindParam($name,$value);
+                $this->bindParam($name,$val);
               }else{
-                $set[]    = $this->parseKey($key).'='.$value;
+                $set[]  =   $this->parseKey($key).'='.$this->parseValue($val);
               }
             }
         }
@@ -694,15 +693,14 @@ class Db {
         $values  =  $fields    = array();
         $this->model  =   $options['model'];
         foreach ($data as $key=>$val){
-            $value   =  $this->parseValue($val);
-            if(is_scalar($value)) { // 过滤非标量数据
+            if(is_scalar($val)) { // 过滤非标量数据
               $fields[]   =  $this->parseKey($key);
-              if(C('DB_BIND_PARAM') && 0 !== strpos($value,':')){
+              if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name       =   md5($key);
                 $values[]   =   ':T'.$name;
-                $this->bindParam($name,$value);
+                $this->bindParam($name,$val);
               }else{
-                $values[]   =  $value;
+                $values[]   =  $this->parseValue($val);
               }                
             }
         }
