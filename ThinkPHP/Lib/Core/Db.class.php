@@ -309,8 +309,8 @@ class Db {
      * @return array
      */
     protected function parseBind($bind){
-        $bind   =   array_merge($this->bind,$bind);
-        $this->bind     =   [];
+        $bind           =   array_merge($this->bind,$bind);
+        $this->bind     =   array();
         return $bind;
     }
 
