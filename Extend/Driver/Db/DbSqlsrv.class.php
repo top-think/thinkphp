@@ -71,12 +71,14 @@ class DbSqlsrv extends Db{
     public function query($str,$bind=array()) {
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
-        $this->queryStr = $str;
         //释放前次的查询结果
         if ( $this->queryID ) $this->free();
         N('db_query',1);
         // 记录开始执行时间
         G('queryStartTime');
+        $str    =   str_replace(array_keys($bind),'?',$str);
+        $bind   =   array_values($bind);
+        $this->queryStr = $str;
         $this->queryID = sqlsrv_query($this->_linkID,$str,$bind, array( "Scrollable" => SQLSRV_CURSOR_KEYSET));
         $this->debug();
         if ( false === $this->queryID ) {
@@ -98,12 +100,14 @@ class DbSqlsrv extends Db{
     public function execute($str,$bind=array()) {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
-        $this->queryStr = $str;
         //释放前次的查询结果
         if ( $this->queryID ) $this->free();
         N('db_write',1);
         // 记录开始执行时间
         G('queryStartTime');
+        $str    =   str_replace(array_keys($bind),'?',$str);
+        $bind   =   array_values($bind);
+        $this->queryStr = $str;
         $this->queryID=	sqlsrv_query($this->_linkID,$str,$bind);
         $this->debug();
         if ( false === $this->queryID ) {
