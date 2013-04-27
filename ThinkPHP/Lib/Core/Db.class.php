@@ -280,7 +280,7 @@ class Db {
         foreach ($data as $key=>$val){
             if(is_scalar($val)) { // 过滤非标量数据
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
-                $name   =   count($this->bind);
+                $name   =   md5($key);
                 $set[]  =   $this->parseKey($key).'=:'.$name;
                 $this->bindParam($name,$val);
               }else{
@@ -696,7 +696,7 @@ class Db {
             if(is_scalar($val)) { // 过滤非标量数据
               $fields[]   =  $this->parseKey($key);
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
-                $name       =   count($this->bind);
+                $name       =   md5($key);
                 $values[]   =   ':'.$name;
                 $this->bindParam($name,$val);
               }else{
