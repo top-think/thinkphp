@@ -281,7 +281,7 @@ class DbSqlsrv extends Db{
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
@@ -297,7 +297,7 @@ class DbSqlsrv extends Db{
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql);
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
     /**
