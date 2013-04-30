@@ -58,6 +58,7 @@ class Page {
             $this->nowPage  =   $this->totalPages;
         }
         $this->firstRow     =   $this->listRows*($this->nowPage-1);
+        if(!empty($url))    $this->url  =   $url; 
     }
 
     public function setConfig($name,$value) {
