@@ -63,13 +63,14 @@ class CheckLangBehavior extends Behavior {
         }
         // 定义当前语言
         define('LANG_SET',strtolower($langSet));
-        // 读取项目公共语言包
-        if (is_file(LANG_PATH.LANG_SET.'/common.php'))
-            L(include LANG_PATH.LANG_SET.'/common.php');
+
         $group = '';
-        $lang_path    =   C('APP_GROUP_MODE')==1 ? BASE_LIB_PATH.'Lang/'.LANG_SET.'/' : LANG_PATH.LANG_SET.'/';        
-        // 读取当前分组公共语言包
-        if (defined('GROUP_NAME')){
+        $lang_path    =   (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? BASE_LIB_PATH.'Lang/'.LANG_SET.'/' : LANG_PATH.LANG_SET.'/';
+        // 读取项目或者独立分组公共语言包
+        if (is_file($lang_path.'common.php'))
+            L(include $lang_path.'common.php');
+        // 普通分组公共语言包
+        if (defined('GROUP_NAME') && C('APP_GROUP_MODE')==0){
             if (is_file($lang_path.GROUP_NAME.'.php'))
                 L(include $lang_path.GROUP_NAME.'.php');
             $group = GROUP_NAME.C('TMPL_FILE_DEPR');
