@@ -47,15 +47,20 @@ class Dispatcher {
         // 开启子域名部署
         if(C('APP_SUB_DOMAIN_DEPLOY')) {
             $rules      = C('APP_SUB_DOMAIN_RULES');
-            $subDomain  = strtolower(substr($_SERVER['HTTP_HOST'],0,strpos($_SERVER['HTTP_HOST'],'.')));
-            define('SUB_DOMAIN',$subDomain); // 二级域名定义
-            if($subDomain && isset($rules[$subDomain])) {
-                $rule =  $rules[$subDomain];
-            }elseif(isset($rules['*'])){ // 泛域名支持
-                if('www' != $subDomain && !in_array($subDomain,C('APP_SUB_DOMAIN_DENY'))) {
-                    $rule =  $rules['*'];
-                }
+            if(isset($rules[$_SERVER['HTTP_HOST']])) { // 完整域名或者IP配置
+                $rule = $rules[$_SERVER['HTTP_HOST']];
+            }else{
+                $subDomain  = strtolower(substr($_SERVER['HTTP_HOST'],0,strpos($_SERVER['HTTP_HOST'],'.')));
+                define('SUB_DOMAIN',$subDomain); // 二级域名定义
+                if($subDomain && isset($rules[$subDomain])) {
+                    $rule =  $rules[$subDomain];
+                }elseif(isset($rules['*'])){ // 泛域名支持
+                    if('www' != $subDomain && !in_array($subDomain,C('APP_SUB_DOMAIN_DENY'))) {
+                        $rule =  $rules['*'];
+                    }
+                }                
             }
+
             if(!empty($rule)) {
                 // 子域名部署规则 '子域名'=>array('分组名/[模块名]','var1=a&var2=b');
                 $array  =   explode('/',$rule[0]);
