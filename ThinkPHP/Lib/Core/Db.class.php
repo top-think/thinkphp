@@ -278,7 +278,9 @@ class Db {
      */
     protected function parseSet($data) {
         foreach ($data as $key=>$val){
-            if(is_scalar($val)) { // 过滤非标量数据
+            if(is_array($val) && 'exp' == $val[0]){
+                $set[]  =   $this->parseKey($key).'='.$this->escapeString($val[1]);
+            }elseif(is_scalar($val)) { // 过滤非标量数据
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name   =   md5($key);
                 $set[]  =   $this->parseKey($key).'=:'.$name;
@@ -693,7 +695,10 @@ class Db {
         $values  =  $fields    = array();
         $this->model  =   $options['model'];
         foreach ($data as $key=>$val){
-            if(is_scalar($val)) { // 过滤非标量数据
+            if(is_array($val) && 'exp' == $val[0]){
+                $fields[]   =  $this->parseKey($key);
+                $values[]   =  $this->escapeString($val[1]);
+            }elseif(is_scalar($val)) { // 过滤非标量数据
               $fields[]   =  $this->parseKey($key);
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name       =   md5($key);
