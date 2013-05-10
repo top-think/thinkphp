@@ -33,13 +33,6 @@ abstract class Action {
     private   $name     =  '';
 
     /**
-     * 模板变量
-     * @var tVar
-     * @access protected
-     */      
-    protected $tVar     =   array();
-
-    /**
      * 控制器参数
      * @var config
      * @access protected
@@ -137,9 +130,7 @@ abstract class Action {
      */
     private function initView(){
         //实例化视图类
-        if(!$this->view)    $this->view     = Think::instance('View');
-        // 模板变量传值
-        if($this->tVar)     $this->view->assign($this->tVar);           
+        if(!$this->view)    $this->view     = Think::instance('View');        
     }
     
     /**
@@ -171,11 +162,7 @@ abstract class Action {
      * @return void
      */
     protected function assign($name,$value='') {
-        if(is_array($name)) {
-            $this->tVar   =  array_merge($this->tVar,$name);
-        }else {
-            $this->tVar[$name] = $value;
-        }
+        $this->view->assign($name,$value);
         return $this;
     }
 
@@ -190,10 +177,7 @@ abstract class Action {
      * @return mixed
      */
     public function get($name='') {
-        if('' === $name) {
-            return $this->tVar;
-        }
-        return isset($this->tVar[$name])?$this->tVar[$name]:false;        
+        return $this->view->get($name);      
     }
 
     public function __get($name) {
@@ -207,7 +191,7 @@ abstract class Action {
      * @return boolean
      */
     public function __isset($name) {
-        return isset($this->tVar[$name]);
+        return $this->get($name);
     }
 
     /**
