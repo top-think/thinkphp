@@ -45,6 +45,8 @@ abstract class Action {
      */
     public function __construct() {
         tag('action_begin',$this->config);
+        //实例化视图类
+        $this->view     = Think::instance('View');           
         //控制器初始化
         if(method_exists($this,'_initialize'))
             $this->_initialize();
@@ -90,7 +92,6 @@ abstract class Action {
      * @return void
      */
     protected function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
-        $this->initView();
         $this->view->display($templateFile,$charset,$contentType,$content,$prefix);
     }
 
@@ -104,7 +105,6 @@ abstract class Action {
      * @return mixed
      */
     protected function show($content,$charset='',$contentType='',$prefix='') {
-        $this->initView();       
         $this->view->display('',$charset,$contentType,$content,$prefix);
     }
 
@@ -119,20 +119,9 @@ abstract class Action {
      * @return string
      */
     protected function fetch($templateFile='',$content='',$prefix='') {
-        $this->initView();
         return $this->view->fetch($templateFile,$content,$prefix);
     }
 
-    /**
-     * 初始化视图
-     * @access private
-     * @return void
-     */
-    private function initView(){
-        //实例化视图类
-        if(!$this->view)    $this->view     = Think::instance('View');        
-    }
-    
     /**
      *  创建静态页面
      * @access protected
