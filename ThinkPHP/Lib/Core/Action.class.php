@@ -257,6 +257,7 @@ abstract class Action {
             }else{ // 变量默认值
                 $data       =	 isset($args[2])?$args[2]:NULL;
             }
+            Log::record('建议使用I方法替代'.$method,Log::NOTICE);
             return $data;
         }
     }

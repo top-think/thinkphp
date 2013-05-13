@@ -29,7 +29,7 @@
  * @param mixed $filter 参数过滤方法
  * @return mixed
  */
-function I($name,$default='',$filter='') {
+function I($name,$default='',$filter=null) {
     if(strpos($name,'.')) { // 指定参数来源
         list($method,$name) =   explode('.',$name);
     }else{ // 默认为自动判断
