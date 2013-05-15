@@ -219,15 +219,11 @@ abstract class Action {
                 case '_put'     :   parse_str(file_get_contents('php://input'), $input);break;
                 case '_param'   :  
                     switch($_SERVER['REQUEST_METHOD']) {
-                        case 'POST':
-                            $input  =  $_POST;
-                            break;
                         case 'PUT':
                             parse_str(file_get_contents('php://input'), $input);
                             break;
-                        default:
-                            $input  =  $_GET;
                     }
+                    $input      =   array_merge($input,$_POST,$_GET);
                     if(C('VAR_URL_PARAMS')){
                         $params = $_GET[C('VAR_URL_PARAMS')];
                         $input  =   array_merge($input,$params);
