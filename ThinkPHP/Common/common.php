@@ -50,9 +50,8 @@ function I($name,$default='',$filter=null) {
                 default:
                     $input  =  $_GET;
             }
-            if(C('VAR_URL_PARAMS')){
-                $params = $_GET[C('VAR_URL_PARAMS')];
-                $input  =   array_merge($input,$params);
+            if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
+                $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
             }
             break;
         case 'request' :   $input =& $_REQUEST;   break;
