@@ -12,6 +12,7 @@
 // ThinkPHP 入口文件
 
 //[cluster] 定义路径常量
+defined('RUNTIME_PATH') or define('RUNTIME_PATH',APP_PATH.'Runtime/');
 defined('CLUSTER_PATH') or define('CLUSTER_PATH',ENGINE_PATH.'Cluster/');
 //[cluster] 提前系统目录定义
 defined('IO_NAME') or define('IO_NAME','auto');
@@ -24,7 +25,6 @@ $GLOBALS['_beginTime'] = microtime(TRUE);
 //[cluster] 定义加载IO配置
 defined('IO_TRUE_NAME') or define('IO_TRUE_NAME',IO_NAME);
 require CLUSTER_PATH.'Lib/Core/ThinkFS.class.php';
-defined('RUNTIME_PATH') or define('RUNTIME_PATH',APP_PATH.'Runtime/');
 defined('APP_DEBUG') 	or define('APP_DEBUG',false); // 是否调试模式
 $runtime = defined('MODE_NAME')?'~'.strtolower(MODE_NAME).'_runtime.php':'~runtime.php';
 defined('RUNTIME_FILE') or define('RUNTIME_FILE',RUNTIME_PATH.$runtime);
