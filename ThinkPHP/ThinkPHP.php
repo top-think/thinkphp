@@ -18,12 +18,12 @@ if(MEMORY_LIMIT_ON) $GLOBALS['_startUseMems'] = memory_get_usage();
 // 系统目录定义
 defined('THINK_PATH') 	or define('THINK_PATH', dirname(__FILE__).'/');
 defined('APP_PATH') 	or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('RUNTIME_PATH') or define('RUNTIME_PATH',realpath(APP_PATH).'/Runtime/');
 defined('APP_DEBUG') 	or define('APP_DEBUG',false); // 是否调试模式
 if(defined('ENGINE_NAME')) {
     defined('ENGINE_PATH') or define('ENGINE_PATH',THINK_PATH.'Extend/Engine/');
 	require ENGINE_PATH.strtolower(ENGINE_NAME).'.php';
 }else{
+    defined('RUNTIME_PATH') or define('RUNTIME_PATH',realpath(APP_PATH).'/Runtime/');
 	$runtime = defined('MODE_NAME')?'~'.strtolower(MODE_NAME).'_runtime.php':'~runtime.php';
 	defined('RUNTIME_FILE') or define('RUNTIME_FILE',RUNTIME_PATH.$runtime);
 	if(!APP_DEBUG && is_file(RUNTIME_FILE)) {
