@@ -36,16 +36,25 @@ class LocationTemplateBehavior extends Behavior {
             // 如果模板文件名为空 按照默认规则定位
             $templateFile = C('TEMPLATE_NAME');
         }elseif(false === strpos($templateFile,C('TMPL_TEMPLATE_SUFFIX'))){
-            // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
-            $path   =  explode(':',$templateFile);
-            $action = array_pop($path);
-            $module = !empty($path)?array_pop($path):MODULE_NAME;
-            if(!empty($path)) {// 设置模板主题
-                $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
+            if(strpos($templateFile,'@')){
+                list($group,$templateFile) =    explode('@',$templateFile);
+                if(1==C('APP_GROUP_MODE')){
+                    $basePath   =   dirname(BASE_LIB_PATH).'/';
+                }else{
+                    $basePath   =   TMPL_PATH;
+                }
+                $basePath  .=   $group.'/'.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':'');
             }else{
-                $path = THEME_PATH;
+                $basePath   =   THEME_PATH;
             }
-            $templateFile  =  $path.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
+            // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
+            $path   =   explode(':',$templateFile);
+            $action =   array_pop($path);
+            $module =   !empty($path)?array_pop($path):MODULE_NAME;
+            if(!empty($path)) {// 设置模板主题
+                $basePath = dirname($basePath).'/'.array_pop($path).'/';
+            }
+            $templateFile  =  $basePath.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
         }
         if(!file_exists_case($templateFile))
             throw_exception(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
