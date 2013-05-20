@@ -19,7 +19,7 @@ defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
 
 //  版本信息
-define('THINK_VERSION', '3.1.2');
+define('THINK_VERSION', '3.1.3');
 
 //   系统信息
 if(version_compare(PHP_VERSION,'5.4.0','<')) {

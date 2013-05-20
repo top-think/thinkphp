@@ -29,7 +29,7 @@
  * @param mixed $filter 参数过滤方法
  * @return mixed
  */
-function I($name,$default='',$filter='') {
+function I($name,$default='',$filter=null) {
     if(strpos($name,'.')) { // 指定参数来源
         list($method,$name) =   explode('.',$name);
     }else{ // 默认为自动判断
@@ -50,9 +50,8 @@ function I($name,$default='',$filter='') {
                 default:
                     $input  =  $_GET;
             }
-            if(C('VAR_URL_PARAMS')){
-                $params = $_GET[C('VAR_URL_PARAMS')];
-                $input  =   array_merge($input,$params);
+            if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
+                $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
             }
             break;
         case 'request' :   $input =& $_REQUEST;   break;

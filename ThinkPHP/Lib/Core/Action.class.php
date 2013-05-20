@@ -33,13 +33,6 @@ abstract class Action {
     private   $name     =  '';
 
     /**
-     * 模板变量
-     * @var tVar
-     * @access protected
-     */      
-    protected $tVar     =   array();
-
-    /**
      * 控制器参数
      * @var config
      * @access protected
@@ -52,6 +45,8 @@ abstract class Action {
      */
     public function __construct() {
         tag('action_begin',$this->config);
+        //实例化视图类
+        $this->view     = Think::instance('View');           
         //控制器初始化
         if(method_exists($this,'_initialize'))
             $this->_initialize();
@@ -97,7 +92,6 @@ abstract class Action {
      * @return void
      */
     protected function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
-        $this->initView();
         $this->view->display($templateFile,$charset,$contentType,$content,$prefix);
     }
 
@@ -111,7 +105,6 @@ abstract class Action {
      * @return mixed
      */
     protected function show($content,$charset='',$contentType='',$prefix='') {
-        $this->initView();       
         $this->view->display('',$charset,$contentType,$content,$prefix);
     }
 
@@ -126,22 +119,9 @@ abstract class Action {
      * @return string
      */
     protected function fetch($templateFile='',$content='',$prefix='') {
-        $this->initView();
         return $this->view->fetch($templateFile,$content,$prefix);
     }
 
-    /**
-     * 初始化视图
-     * @access private
-     * @return void
-     */
-    private function initView(){
-        //实例化视图类
-        if(!$this->view)    $this->view     = Think::instance('View');
-        // 模板变量传值
-        if($this->tVar)     $this->view->assign($this->tVar);           
-    }
-    
     /**
      *  创建静态页面
      * @access protected
@@ -171,11 +151,7 @@ abstract class Action {
      * @return void
      */
     protected function assign($name,$value='') {
-        if(is_array($name)) {
-            $this->tVar   =  array_merge($this->tVar,$name);
-        }else {
-            $this->tVar[$name] = $value;
-        }
+        $this->view->assign($name,$value);
         return $this;
     }
 
@@ -190,10 +166,7 @@ abstract class Action {
      * @return mixed
      */
     public function get($name='') {
-        if('' === $name) {
-            return $this->tVar;
-        }
-        return isset($this->tVar[$name])?$this->tVar[$name]:false;        
+        return $this->view->get($name);      
     }
 
     public function __get($name) {
@@ -207,7 +180,7 @@ abstract class Action {
      * @return boolean
      */
     public function __isset($name) {
-        return isset($this->tVar[$name]);
+        return $this->get($name);
     }
 
     /**
@@ -255,9 +228,8 @@ abstract class Action {
                         default:
                             $input  =  $_GET;
                     }
-                    if(C('VAR_URL_PARAMS')){
-                        $params = $_GET[C('VAR_URL_PARAMS')];
-                        $input  =   array_merge($input,$params);
+                    if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
+                        $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
                     }
                     break;
                 case '_request' :   $input =& $_REQUEST;   break;
@@ -284,6 +256,7 @@ abstract class Action {
             }else{ // 变量默认值
                 $data       =	 isset($args[2])?$args[2]:NULL;
             }
+            Log::record('建议使用I方法替代'.$method,Log::NOTICE);
             return $data;
         }
     }
@@ -296,7 +269,7 @@ abstract class Action {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    protected function error($message,$jumpUrl='',$ajax=false) {
+    protected function error($message='',$jumpUrl='',$ajax=false) {
         $this->dispatchJump($message,0,$jumpUrl,$ajax);
     }
 
@@ -308,7 +281,7 @@ abstract class Action {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    protected function success($message,$jumpUrl='',$ajax=false) {
+    protected function success($message='',$jumpUrl='',$ajax=false) {
         $this->dispatchJump($message,1,$jumpUrl,$ajax);
     }
 
