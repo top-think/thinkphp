@@ -17,6 +17,85 @@
  */
 
 /**
+ * 获取输入参数 支持过滤和默认值
+ * 使用方法:
+ * <code>
+ * I('id',0); 获取id参数 自动判断get或者post
+ * I('post.name','','htmlspecialchars'); 获取$_POST['name']
+ * I('get.'); 获取$_GET
+ * </code> 
+ * @param string $name 变量的名称 支持指定类型
+ * @param mixed $default 不存在的时候默认值
+ * @param mixed $filter 参数过滤方法
+ * @return mixed
+ */
+function I($name,$default='',$filter=null) {
+    if(strpos($name,'.')) { // 指定参数来源
+        list($method,$name) =   explode('.',$name);
+    }else{ // 默认为自动判断
+        $method =   'param';
+    }
+    switch(strtolower($method)) {
+        case 'get'     :   $input =& $_GET;break;
+        case 'post'    :   $input =& $_POST;break;
+        case 'put'     :   parse_str(file_get_contents('php://input'), $input);break;
+        case 'param'   :  
+            switch($_SERVER['REQUEST_METHOD']) {
+                case 'POST':
+                    $input  =  $_POST;
+                    break;
+                case 'PUT':
+                    parse_str(file_get_contents('php://input'), $input);
+                    break;
+                default:
+                    $input  =  $_GET;
+            }
+            if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
+                $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
+            }
+            break;
+        case 'request' :   $input =& $_REQUEST;   break;
+        case 'session' :   $input =& $_SESSION;   break;
+        case 'cookie'  :   $input =& $_COOKIE;    break;
+        case 'server'  :   $input =& $_SERVER;    break;
+        case 'globals' :   $input =& $GLOBALS;    break;
+        default:
+            return NULL;
+    }
+    // 全局过滤
+    // array_walk_recursive($input,'filter_exp');
+    if(C('VAR_FILTERS')) {
+        $_filters    =   explode(',',C('VAR_FILTERS'));
+        foreach($_filters as $_filter){
+            // 全局参数过滤
+            array_walk_recursive($input,$_filter);
+        }
+    }
+    if(empty($name)) { // 获取全部变量
+        $data       =   $input; 
+    }elseif(isset($input[$name])) { // 取值操作
+        $data       =	$input[$name];
+        $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
+        if($filters) {
+            $filters    =   explode(',',$filters);
+            foreach($filters as $filter){
+                if(function_exists($filter)) {
+                    $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                }else{
+                    $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
+                    if(false === $data) {
+                        return	 isset($default)?$default:NULL;
+                    }
+                }
+            }
+        }
+    }else{ // 变量默认值
+        $data       =	 isset($default)?$default:NULL;
+    }
+    return $data;
+}
+
+/**
  * 记录和统计时间（微秒）和内存使用情况
  * 使用方法:
  * <code>
@@ -157,7 +236,7 @@ function file_exists_case($filename) {
  * @param string $class 类库命名空间字符串
  * @param string $baseUrl 起始路径
  * @param string $ext 导入的文件扩展名
- * @return boolen
+ * @return boolean
  */
 function import($class, $baseUrl = '', $ext='.class.php') {
     static $_file = array();
@@ -274,10 +353,16 @@ function D($name='',$layer='') {
         $name       =   C('DEFAULT_APP').'/'.$layer.'/'.$name;
     }
     if(isset($_model[$name]))   return $_model[$name];
-    import($name.$layer);
+    $path           =   explode('/',$name);
+    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+        $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }else{
+        import($name.$layer);
+    } 
     $class          =   basename($name.$layer);
     if(class_exists($class)) {
-        $model      =   new $class();
+        $model      =   new $class(basename($name));
     }else {
         $model      =   new Model(basename($name));
     }
@@ -309,6 +394,7 @@ function M($name='', $tablePrefix='',$connection='') {
  * A函数用于实例化Action 格式：[项目://][分组/]模块
  * @param string $name Action资源地址
  * @param string $layer 控制层名称
+ * @param boolean $common 是否公共目录
  * @return Action|false
  */
 function A($name,$layer='',$common=false) {
@@ -320,15 +406,19 @@ function A($name,$layer='',$common=false) {
         $name   =  '@/'.$layer.'/'.$name;
     }
     if(isset($_action[$name]))  return $_action[$name];
-    if($common){ // 独立分组情况下 加载公共目录类库
+    $path           =   explode('/',$name);
+    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+        $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif($common) { // 加载公共类库目录
         import(str_replace('@/','',$name).$layer,LIB_PATH);
     }else{
-        import($name.$layer); 
-    }    
+        import($name.$layer);
+    }
     $class      =   basename($name.$layer);
     if(class_exists($class,false)) {
-        $action             = new $class();
-        $_action[$name]     =  $action;
+        $action             =   new $class();
+        $_action[$name]     =   $action;
         return $action;
     }else {
         return false;
@@ -504,8 +594,6 @@ function B($name, &$params=NULL) {
         trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
 }
-
-
 
 /**
  * 去除代码中的空白和注释

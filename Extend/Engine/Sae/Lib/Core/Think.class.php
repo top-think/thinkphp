@@ -47,18 +47,19 @@ class Think {
      * @return string
      */
     static private function buildApp() {
+        
         // 读取运行模式
         if(defined('MODE_NAME')) { // 读取模式的设置
             $mode   = include MODE_PATH.strtolower(MODE_NAME).'.php';
         }else{
             $mode   =  array();
         }
-
+        // 加载核心惯例配置文件
+        C(include THINK_PATH.'Conf/convention.php');
         if(isset($mode['config'])) {// 加载模式配置文件
             C( is_array($mode['config'])?$mode['config']:include $mode['config'] );
-        }else{ // 加载底层惯例配置文件
-            C(include THINK_PATH.'Conf/convention.php');
         }
+
         // 加载项目配置文件
         if(is_file(CONF_PATH.'config.php'))
             C(include CONF_PATH.'config.php');
@@ -90,7 +91,7 @@ class Think {
         $compile   = '';
         // 读取核心编译文件列表
         if(isset($mode['core'])) {
-            $list   =  $mode['core'];
+            $list  =  $mode['core'];
         }else{
             $list  =  array(
                 SAE_PATH.'Common/functions.php', //[sae] 标准模式函数库
@@ -124,14 +125,11 @@ class Think {
         // 加载模式别名定义
         if(isset($mode['alias'])) {
             $alias = is_array($mode['alias'])?$mode['alias']:include $mode['alias'];
-        }else{
-            //[sae] 别名文件
-            $alias = include SAE_PATH.'Conf/alias.php';
+            alias_import($alias);
+            if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';               
         }
-        alias_import($alias);
-        if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';
-        
-         // 加载项目别名定义
+     
+        // 加载项目别名定义
         if(is_file(CONF_PATH.'alias.php')){ 
             $alias = include CONF_PATH.'alias.php';
             alias_import($alias);
@@ -253,7 +251,18 @@ class Think {
      * @param mixed $e 异常对象
      */
     static public function appException($e) {
-        halt($e->__toString());
+        $error = array();
+        $error['message']   = $e->getMessage();
+        $trace  =   $e->getTrace();
+        if('throw_exception'==$trace[0]['function']) {
+            $error['file']  =   $trace[0]['file'];
+            $error['line']  =   $trace[0]['line'];
+        }else{
+            $error['file']      = $e->getFile();
+            $error['line']      = $e->getLine();
+        }
+        Log::record($error['message'],Log::ERR);
+        halt($error);
     }
 
     /**
@@ -273,6 +282,7 @@ class Think {
           case E_COMPILE_ERROR:
           case E_USER_ERROR:
             ob_end_clean();
+            // 页面压缩输出支持
             if(C('OUTPUT_ENCODE')){
                 $zlib = ini_get('zlib.output_compression');
                 if(empty($zlib)) ob_start('ob_gzhandler');
@@ -297,8 +307,19 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
+        // 保存日志记录
+        if(C('LOG_RECORD')) Log::save();
         if ($e = error_get_last()) {
-            Think::appError($e['type'],$e['message'],$e['file'],$e['line']);
+            switch($e['type']){
+              case E_ERROR:
+              case E_PARSE:
+              case E_CORE_ERROR:
+              case E_COMPILE_ERROR:
+              case E_USER_ERROR:  
+                ob_end_clean();
+                function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
+                break;
+            }
         }
     }
 

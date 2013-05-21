@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 defined('THINK_PATH') or exit();
-define('CLIENT_MULTI_RESULTS', 131072);
+
 /**
  * Mysql数据库驱动类
  * @category   Think
@@ -79,10 +79,8 @@ class DbMysql extends Db{
                 }
             }
             $dbVersion = mysql_get_server_info($this->linkID[$linkNum]);
-            if ($dbVersion >= '4.1') {
-                //使用UTF8存取数据库 需要mysql 4.1.0以上支持
-                mysql_query("SET NAMES '".C('DB_CHARSET')."'", $this->linkID[$linkNum]);
-            }
+            //使用UTF8存取数据库
+            mysql_query("SET NAMES '".C('DB_CHARSET')."'", $this->linkID[$linkNum]);
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 mysql_query("SET sql_mode=''",$this->linkID[$linkNum]);
@@ -113,6 +111,7 @@ class DbMysql extends Db{
     public function query($str) {
         if(0===stripos($str, 'call')){ // 存储过程查询支持
             $this->close();
+            $this->connected    =   false;
         }
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
@@ -250,7 +249,7 @@ class DbMysql extends Db{
                 $info[$val['Field']] = array(
                     'name'    => $val['Field'],
                     'type'    => $val['Type'],
-                    'notnull' => (bool) ($val['Null'] === ''), // not null is empty, null is yes
+                    'notnull' => (bool) (strtoupper($val['Null']) === 'NO'), // not null is empty, null is yes
                     'default' => $val['Default'],
                     'primary' => (strtolower($val['Key']) == 'pri'),
                     'autoinc' => (strtolower($val['Extra']) == 'auto_increment'),
@@ -344,7 +343,7 @@ class DbMysql extends Db{
      * @return string
      */
     public function error() {
-        $this->error = mysql_error($this->_linkID);
+        $this->error = mysql_errno().':'.mysql_error($this->_linkID);
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }

@@ -69,10 +69,9 @@ class DbMysqli extends Db{
                 }
          }
             $dbVersion = $this->linkID[$linkNum]->server_version;
-            if ($dbVersion >= '4.1') {
-                // 设置数据库编码 需要mysql 4.1.0以上支持
-                $this->linkID[$linkNum]->query("SET NAMES '".C('DB_CHARSET')."'");
-            }
+            
+            // 设置数据库编码
+            $this->linkID[$linkNum]->query("SET NAMES '".C('DB_CHARSET')."'");
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 $this->linkID[$linkNum]->query("SET sql_mode=''");
@@ -339,7 +338,7 @@ class DbMysqli extends Db{
      * @return string
      */
     public function error() {
-        $this->error = $this->_linkID->error;
+        $this->error = $this->_linkID->errno.':'.$this->_linkID->error;
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }

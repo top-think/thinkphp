@@ -11,12 +11,12 @@
 // $Id: Sae.php 1259 2012-12-02 10:55:03Z luofei614@126.com $
 // Sae版ThinkPHP 入口文件
 //-------命令行生成缓存
+defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Runtime/');
 if(PHP_SAPI=='cli' && (!defined('MODE_NAME') || strtolower(MODE_NAME)!='cli')){
     //如果没有定义APP_PATH， 报错
     if(!defined('APP_PATH') || !defined('THINK_PATH') ) exit('APP_PATH or THINK_PATH  must define as relative path!');
     defined('SAE_RUNTIME') or define('SAE_RUNTIME',false);
     if(!SAE_RUNTIME) exit('SAE_RUNTIME must define as true');
-    defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Runtime/');
     $runtime = defined('MODE_NAME') ? '~' . strtolower(MODE_NAME) . '_sae_runtime.php' : '~sae_runtime.php';
     defined('RUNTIME_FILE') or define('RUNTIME_FILE', RUNTIME_PATH . $runtime);
     define('MEMORY_LIMIT_ON', true);//sae上的固定值

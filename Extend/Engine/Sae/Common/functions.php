@@ -29,18 +29,10 @@ function halt($error) {
             $trace          = debug_backtrace();
             $e['message']   = $error;
             $e['file']      = $trace[0]['file'];
-            $e['class']     = isset($trace[0]['class'])?$trace[0]['class']:'';
-            $e['function']  = isset($trace[0]['function'])?$trace[0]['function']:'';
             $e['line']      = $trace[0]['line'];
-            $traceInfo      = '';
-            $time = date('y-m-d H:i:m');
-            foreach ($trace as $t) {
-                $traceInfo .= '[' . $time . '] ' . $t['file'] . ' (' . $t['line'] . ') ';
-                $traceInfo .= $t['class'] . $t['type'] . $t['function'] . '(';
-                $traceInfo .= implode(', ', $t['args']);
-                $traceInfo .=')<br/>';
-            }
-            $e['trace']     = $traceInfo;
+            ob_start();
+            debug_print_backtrace();
+            $e['trace']     = ob_get_clean();
         } else {
             $e              = $error;
         }
@@ -70,7 +62,7 @@ function halt($error) {
  */
 function throw_exception($msg, $type='ThinkException', $code=0) {
     if (class_exists($type, false))
-        throw new $type($msg, $code, true);
+        throw new $type($msg, $code);
     else
         halt($msg);        // 异常类型不存在则输出错误信息字串
 }
@@ -265,7 +257,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         }
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . $val;
+                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
             }                
         }
         if($suffix) {
@@ -295,11 +287,13 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * @param string $name Widget名称
  * @param array $data 传人的参数
  * @param boolean $return 是否返回内容 
+ * @param string $path Widget所在路径
  * @return void
  */
 function W($name, $data=array(), $return=false) {
     $class      =   $name . 'Widget';
-    require_cache(BASE_LIB_PATH . 'Widget/' . $class . '.class.php');
+    $path       =   empty($path) ? BASE_LIB_PATH : $path;
+    require_cache($path . 'Widget/' . $class . '.class.php');
     if (!class_exists($class))
         throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
     $widget     =   Think::instance($class);
@@ -365,13 +359,10 @@ function redirect($url, $time=0, $msg='') {
     }
 }
 
-
 /**
- * 全局缓存设置和读取
+ *  缓存管理
  * @param string $name 缓存名称
  * @param mixed $value 缓存值
- * @param integer $expire 缓存有效期（秒）
- * @param string $type 缓存类型
  * @param array $options 缓存参数
  * @return mixed
  */
@@ -394,16 +385,18 @@ function S($name,$value='',$options=null) {
     }elseif(is_null($value)) { // 删除缓存
         return $cache->rm($name);
     }else { // 缓存数据
-        $expire     =   is_numeric($options)?$options:NULL;
+        if(is_array($options)) {
+            $expire     =   isset($options['expire'])?$options['expire']:NULL;
+        }else{
+            $expire     =   is_numeric($options)?$options:NULL;
+        }
         return $cache->set($name, $value, $expire);
     }
 }
-
 // S方法的别名 已经废除 不再建议使用
 function cache($name,$value='',$options=null){
     return S($name,$value,$options);
 }
-
 
 /**
  * 快速文件数据读取和保存 针对简单类型数据 字符串、数组
@@ -495,31 +488,47 @@ function to_guid_string($mix) {
 /**
  * XML编码
  * @param mixed $data 数据
- * @param string $encoding 数据编码
  * @param string $root 根节点名
+ * @param string $item 数字索引的子节点名
+ * @param string $attr 根节点属性
+ * @param string $id   数字索引子节点key转换的属性名
+ * @param string $encoding 数据编码
  * @return string
  */
-function xml_encode($data, $encoding='utf-8', $root='think') {
-    $xml    = '<?xml version="1.0" encoding="' . $encoding . '"?>';
-    $xml   .= '<' . $root . '>';
-    $xml   .= data_to_xml($data);
-    $xml   .= '</' . $root . '>';
+function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $encoding='utf-8') {
+    if(is_array($attr)){
+        $_attr = array();
+        foreach ($attr as $key => $value) {
+            $_attr[] = "{$key}=\"{$value}\"";
+        }
+        $attr = implode(' ', $_attr);
+    }
+    $attr   = trim($attr);
+    $attr   = empty($attr) ? '' : " {$attr}";
+    $xml    = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
+    $xml   .= "<{$root}{$attr}>";
+    $xml   .= data_to_xml($data, $item, $id);
+    $xml   .= "</{$root}>";
     return $xml;
 }
 
 /**
  * 数据XML编码
- * @param mixed $data 数据
+ * @param mixed  $data 数据
+ * @param string $item 数字索引时的节点名称
+ * @param string $id   数字索引key转换为的属性名
  * @return string
  */
-function data_to_xml($data) {
-    $xml = '';
+function data_to_xml($data, $item='item', $id='id') {
+    $xml = $attr = '';
     foreach ($data as $key => $val) {
-        is_numeric($key) && $key = "item id=\"$key\"";
-        $xml    .=  "<$key>";
-        $xml    .=  ( is_array($val) || is_object($val)) ? data_to_xml($val) : $val;
-        list($key, ) = explode(' ', $key);
-        $xml    .=  "</$key>";
+        if(is_numeric($key)){
+            $id && $attr = " {$id}=\"{$key}\"";
+            $key  = $item;
+        }
+        $xml    .=  "<{$key}{$attr}>";
+        $xml    .=  (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
+        $xml    .=  "</{$key}>";
     }
     return $xml;
 }
@@ -711,7 +720,7 @@ function load_ext_file() {
  * @return mixed
  */
 function get_client_ip($type = 0) {
-    $type       =  $type ? 1 : 0;
+	$type       =  $type ? 1 : 0;
     static $ip  =   NULL;
     if ($ip !== NULL) return $ip[$type];
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
