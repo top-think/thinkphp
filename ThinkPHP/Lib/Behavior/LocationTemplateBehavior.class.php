@@ -36,6 +36,7 @@ class LocationTemplateBehavior extends Behavior {
             // 如果模板文件名为空 按照默认规则定位
             $templateFile = C('TEMPLATE_NAME');
         }elseif(false === strpos($templateFile,C('TMPL_TEMPLATE_SUFFIX'))){
+            // 解析规则为 分组@模板主题:模块:操作
             if(strpos($templateFile,'@')){
                 list($group,$templateFile) =    explode('@',$templateFile);
                 if(1==C('APP_GROUP_MODE')){
@@ -47,7 +48,6 @@ class LocationTemplateBehavior extends Behavior {
             }else{
                 $basePath   =   THEME_PATH;
             }
-            // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
             $path   =   explode(':',$templateFile);
             $action =   array_pop($path);
             $module =   !empty($path)?array_pop($path):MODULE_NAME;

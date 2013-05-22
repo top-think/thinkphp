@@ -671,16 +671,25 @@ class  ThinkTemplate {
         $parseStr   =   '';
         foreach ($array as $templateName){
             if(false === strpos($templateName,$this->config['template_suffix'])) {
-                // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
-                $path   =  explode(':',$templateName);
-                $action = array_pop($path);
-                $module = !empty($path)?array_pop($path):MODULE_NAME;
-                if(!empty($path) && THEME_NAME) {// 设置模板主题
-                    $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
+                // 解析规则为 分组@模板主题:模块:操作
+                if(strpos($templateName,'@')){
+                    list($group,$templateName) =    explode('@',$templateName);
+                    if(1==C('APP_GROUP_MODE')){
+                        $basePath   =   dirname(BASE_LIB_PATH).'/';
+                    }else{
+                        $basePath   =   TMPL_PATH;
+                    }
+                    $basePath  .=   $group.'/'.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':'');
                 }else{
-                    $path = THEME_PATH;
+                    $basePath   =   THEME_PATH;
                 }
-                $templateName  =  $path.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
+                $path   =   explode(':',$templateName);
+                $action =   array_pop($path);
+                $module =   !empty($path)?array_pop($path):MODULE_NAME;
+                if(!empty($path)) {// 设置模板主题
+                    $basePath = dirname($basePath).'/'.array_pop($path).'/';
+                }
+                $templateName  =  $basePath.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
             }
             // 获取模板文件内容
             $parseStr .= file_get_contents($templateName);
