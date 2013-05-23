@@ -579,10 +579,11 @@ function session($name,$value='') {
             }
         }elseif(0===strpos($name,'?')){ // 检查session
             $name   =  substr($name,1);
-            if($prefix) {
-                return isset($_SESSION[$prefix][$name]);
+            if(strpos($name,'.')){ // 支持数组
+                list($name1,$name2) =   explode('.',$name);
+                return $prefix?isset($_SESSION[$prefix][$name1][$name2]):isset($_SESSION[$name1][$name2]);
             }else{
-                return isset($_SESSION[$name]);
+                return $prefix?isset($_SESSION[$prefix][$name]):isset($_SESSION[$name]);
             }
         }elseif(is_null($name)){ // 清空session
             if($prefix) {
@@ -591,9 +592,19 @@ function session($name,$value='') {
                 $_SESSION = array();
             }
         }elseif($prefix){ // 获取session
-            return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                return isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;  
+            }else{
+                return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;                
+            }            
         }else{
-            return isset($_SESSION[$name])?$_SESSION[$name]:null;
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                return isset($_SESSION[$name1][$name2])?$_SESSION[$name1][$name2]:null;  
+            }else{
+                return isset($_SESSION[$name])?$_SESSION[$name]:null;
+            }            
         }
     }elseif(is_null($value)){ // 删除session
         if($prefix){
