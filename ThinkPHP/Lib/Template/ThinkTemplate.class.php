@@ -675,11 +675,10 @@ class  ThinkTemplate {
                 if(strpos($templateName,'@')){
                     list($group,$templateName) =    explode('@',$templateName);
                     if(1==C('APP_GROUP_MODE')){
-                        $basePath   =   dirname(BASE_LIB_PATH).'/';
-                    }else{
-                        $basePath   =   TMPL_PATH;
-                    }
-                    $basePath  .=   $group.'/'.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':'');
+	                      $basePath   =   dirname(BASE_LIB_PATH).'/'.$group.'/'.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':'');
+	                }else{
+	                      $basePath   =   TMPL_PATH.'/'.$group.'/'.(THEME_NAME?THEME_NAME.'/':'');
+	                }
                 }else{
                     $basePath   =   THEME_PATH;
                 }
