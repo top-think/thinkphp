@@ -51,9 +51,9 @@ class DbMysql extends Db{
             // 是否长连接
             $pconnect   = !empty($config['params']['persist'])? $config['params']['persist']:$this->pconnect;
             if($pconnect) {
-                $this->linkID[$linkNum] = mysql_pconnect( $host, $config['username'], $config['password'],CLIENT_MULTI_RESULTS);
+                $this->linkID[$linkNum] = mysql_pconnect( $host, $config['username'], $config['password'],131072);
             }else{
-                $this->linkID[$linkNum] = mysql_connect( $host, $config['username'], $config['password'],true,CLIENT_MULTI_RESULTS);
+                $this->linkID[$linkNum] = mysql_connect( $host, $config['username'], $config['password'],true,131072);
             }
             if ( !$this->linkID[$linkNum] || (!empty($config['database']) && !mysql_select_db($config['database'], $this->linkID[$linkNum])) || C('SPARE_DB_DEBUG') ) {
                 $errStr=mysql_error();
@@ -62,7 +62,7 @@ class DbMysql extends Db{
                     if(C('SMS_ALERT_ON')) Sms::send('mysql超额被禁用,请在SAE日志中心查看详情', $errStr,Sms::MYSQL_ERROR);
                     //[sae]启动备用数据库
                     if(C('SPARE_DB_HOST')){
-                        $this->linkID[$linkNum]=mysql_connect( C('SPARE_DB_HOST').(C('SPARE_DB_PORT')?':'.C('SPARE_DB_PORT'):''), C('SPARE_DB_USER'), C('SPARE_DB_PWD'),true,CLIENT_MULTI_RESULTS);
+                        $this->linkID[$linkNum]=mysql_connect( C('SPARE_DB_HOST').(C('SPARE_DB_PORT')?':'.C('SPARE_DB_PORT'):''), C('SPARE_DB_USER'), C('SPARE_DB_PWD'),true,131072);
                         if(!$this->linkID[$linkNum]){
                             throw_exception('备用数据库连接失败');
                         }
