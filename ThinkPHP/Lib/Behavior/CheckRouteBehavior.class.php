@@ -167,7 +167,7 @@ class CheckRouteBehavior extends Behavior {
             if($paths) {
                 preg_replace('@(\w+)\/([^\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', implode('/',$paths));
             }
-            // 解析路由自动传人参数
+            // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
                 parse_str($route[1],$params);
                 $var   =   array_merge($var,$params);
@@ -200,7 +200,7 @@ class CheckRouteBehavior extends Behavior {
             if($regx) {
                 preg_replace('@(\w+)\/([^,\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', $regx);
             }
-            // 解析路由自动传人参数
+            // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
                 parse_str($route[1],$params);
                 $var   =   array_merge($var,$params);
