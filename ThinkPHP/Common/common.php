@@ -569,7 +569,7 @@ function add_tag_behavior($tag,$behavior,$path='') {
 /**
  * 执行某个行为
  * @param string $name 行为名称
- * @param Mixed $params 传人的参数
+ * @param Mixed $params 传入的参数
  * @return void
  */
 function B($name, &$params=NULL) {
