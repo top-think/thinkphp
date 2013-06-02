@@ -58,31 +58,6 @@ class App {
             }
         }
 
-        /* 获取模板主题名称 */
-        $templateSet =  C('DEFAULT_THEME');
-        if(C('TMPL_DETECT_THEME')) {// 自动侦测模板主题
-            $t = C('VAR_TEMPLATE');
-            if (isset($_GET[$t])){
-                $templateSet = $_GET[$t];
-            }elseif(cookie('think_template')){
-                $templateSet = cookie('think_template');
-            }
-            if(!in_array($templateSet,explode(',',C('THEME_LIST')))){
-                $templateSet =  C('DEFAULT_THEME');
-            }
-            cookie('think_template',$templateSet,864000);
-        }
-        /* 模板相关目录常量 */
-        define('THEME_NAME',   $templateSet);                  // 当前模板主题名称
-        $group   =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
-        if(1==C('APP_GROUP_MODE')){ // 独立分组模式
-            define('THEME_PATH',   BASE_LIB_PATH.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':''));
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':''));
-        }else{ 
-            define('THEME_PATH',   TMPL_PATH.$group.(THEME_NAME?THEME_NAME.'/':''));
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.(THEME_NAME?THEME_NAME.'/':''));
-        }        
-
         C('CACHE_PATH',CACHE_PATH.$group);
         //动态配置 TMPL_EXCEPTION_FILE,改为绝对地址
         C('TMPL_EXCEPTION_FILE',realpath(C('TMPL_EXCEPTION_FILE')));
@@ -125,7 +100,6 @@ class App {
         }
         // 获取当前操作名 支持动态路由
         $action = C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
-        C('TEMPLATE_NAME',THEME_PATH.MODULE_NAME.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX'));
         $action .=  C('ACTION_SUFFIX');
         try{
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){

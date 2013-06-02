@@ -144,11 +144,22 @@ abstract class Action {
     }
 
     /**
+     * 模板主题设置
+     * @access protected
+     * @param string $theme 模版主题
+     * @return Action
+     */
+    protected function theme($theme){
+        $this->view->theme($theme);
+        return $this;
+    }
+
+    /**
      * 模板变量赋值
      * @access protected
      * @param mixed $name 要显示的模板变量
      * @param mixed $value 变量的值
-     * @return void
+     * @return Action
      */
     protected function assign($name,$value='') {
         $this->view->assign($name,$value);
@@ -195,7 +206,7 @@ abstract class Action {
             if(method_exists($this,'_empty')) {
                 // 如果定义了_empty操作 则调用
                 $this->_empty($method,$args);
-            }elseif(file_exists_case(C('TEMPLATE_NAME'))){
+            }elseif(file_exists_case($this->view->parseTemplate())){
                 // 检查是否存在默认模版 如果有直接输出模版
                 $this->display();
             }elseif(function_exists('__hack_action')) {
