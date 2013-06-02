@@ -17,7 +17,7 @@
  * @subpackage  Core
  * @author    liu21st <liu21st@gmail.com>
  */
-class Model {
+class Model implements ArrayAccess {
     // 操作状态
     const MODEL_INSERT          =   1;      //  插入模型数据
     const MODEL_UPDATE          =   2;      //  更新模型数据
@@ -1543,4 +1543,44 @@ class Model {
         return $this;
     }
 
+    /**
+    * 实现ArrayAccess接口offsetExists
+    * @access public
+    * @param string $key 名称
+    * @return bool
+    */
+    public function offsetExists($key){
+        return isset($this->data[$key]);
+    }
+
+    /**
+    * 实现ArrayAccess接口offsetGet
+    * @access public
+    * @param string $key 名称
+    * @return mixed 值
+    */
+    public function offsetGet($key){
+        return $this->data[$key];
+    }
+
+    /**
+    * 实现ArrayAccess接口offsetSet
+    * @access public
+    * @param string $key 名称
+    * @param mixed $value 值
+    * @return void
+    */
+    public function offsetSet($key,$value){
+        $this->data[$key] = $value;
+    }
+
+    /**
+    * 实现ArrayAccess接口offsetUnset
+    * @access public
+    * @param string $key 名称
+    * @return void
+    */
+    public function offsetUnset($key){
+        unset($this->data[$key]);
+    }
 }
