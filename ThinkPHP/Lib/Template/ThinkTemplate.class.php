@@ -682,7 +682,8 @@ class  ThinkTemplate {
                 }else{
                     $basePath   =   THEME_PATH;
                 }
-                $path   =   explode(':',$templateName);
+				$templateName = str_replace(':', '/', $templateName);
+                $path   =   explode('/',$templateName);
                 $action =   array_pop($path);
                 $module =   !empty($path)?array_pop($path):MODULE_NAME;
                 if(!empty($path)) {// 设置模板主题
