@@ -140,7 +140,7 @@ class View {
      * @param string $template 模板文件规则
      * @return string
      */
-    protected function parseTemplate($template='') {
+    public function parseTemplate($template='') {
         if(is_file($template)) {
             return $template;
         }
