@@ -346,8 +346,8 @@ function D($name='',$layer='') {
     }
     if(isset($_model[$name]))   return $_model[$name];
     $path           =   explode('/',$name);
-    if(C('EXTEND_GROUP_LIST') && in_array($app,C('EXTEND_GROUP_LIST'))){ // 扩展分组
-        $baseUrl    =   APP_PATH.$app;
+    if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
+        $baseUrl    =   $list[$app];
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
@@ -404,8 +404,8 @@ function A($name,$layer='',$common=false) {
     }
     if(isset($_action[$name]))  return $_action[$name];
     $path           =   explode('/',$name);
-    if(C('EXTEND_GROUP_LIST') && in_array($app,C('EXTEND_GROUP_LIST'))){ // 扩展分组
-        $baseUrl    =   APP_PATH.$app;
+    if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
+        $baseUrl    =   $list[$app];
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
