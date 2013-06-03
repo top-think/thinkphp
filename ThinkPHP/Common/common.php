@@ -338,13 +338,18 @@ function D($name='',$layer='') {
     static $_model  =   array();
     $layer          =   $layer?$layer:C('DEFAULT_M_LAYER');
     if(strpos($name,'://')) {// 指定项目
+        list($app)  =   explode('://',$name);
         $name       =   str_replace('://','/'.$layer.'/',$name);
     }else{
-        $name       =   C('DEFAULT_APP').'/'.$layer.'/'.$name;
+        $app        =   C('DEFAULT_APP');
+        $name       =   $app.'/'.$layer.'/'.$name;
     }
     if(isset($_model[$name]))   return $_model[$name];
     $path           =   explode('/',$name);
-    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+    if(C('EXTEND_GROUP_LIST') && in_array($app,C('EXTEND_GROUP_LIST'))){ // 扩展分组
+        $baseUrl    =   APP_PATH.$app;
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }else{
@@ -391,13 +396,18 @@ function A($name,$layer='',$common=false) {
     static $_action = array();
     $layer      =   $layer?$layer:C('DEFAULT_C_LAYER');
     if(strpos($name,'://')) {// 指定项目
+        list($app)  =   explode('://',$name);
         $name   =  str_replace('://','/'.$layer.'/',$name);
     }else{
+        $app    =   '@';
         $name   =  '@/'.$layer.'/'.$name;
     }
     if(isset($_action[$name]))  return $_action[$name];
     $path           =   explode('/',$name);
-    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+    if(C('EXTEND_GROUP_LIST') && in_array($app,C('EXTEND_GROUP_LIST'))){ // 扩展分组
+        $baseUrl    =   APP_PATH.$app;
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }elseif($common) { // 加载公共类库目录
