@@ -22,10 +22,11 @@
  * @param string $layer 视图层（目录）名称
  * @return string
  */
-function T($template='',$layer='Tpl'){
+function T($template='',$layer=''){
         if(is_file($template)) {
             return $template;
         }
+        // 解析模版资源地址
         if(false === strpos($template,'://')){
             $template   =   APP_NAME.'://'.$template;
         }        
@@ -33,7 +34,8 @@ function T($template='',$layer='Tpl'){
         $file   =   $info['host'].($info['path']?$info['path']:'');
         $group  =   $info['user']?$info['user'].'/':(defined('GROUP_NAME')?GROUP_NAME.'/':'');
         $app    =   $info['scheme']?$info['scheme']:'';
-  
+        $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
+
         // 获取当前主题的模版路径
         if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
             $baseUrl    =   $list[$app].'/'.$group.$layer.'/';
