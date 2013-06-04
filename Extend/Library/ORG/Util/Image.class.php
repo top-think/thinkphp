@@ -226,22 +226,18 @@ class Image {
         }
         return false;
     }
+
     /**
-      +----------------------------------------------------------
      * 生成特定尺寸缩略图 解决原版缩略图不能满足特定尺寸的问题 PS：会裁掉图片不符合缩略图比例的部分
-      +----------------------------------------------------------
      * @static
      * @access public
-      +----------------------------------------------------------
      * @param string $image  原图
      * @param string $type 图像格式
      * @param string $thumbname 缩略图文件名
      * @param string $maxWidth  宽度
      * @param string $maxHeight  高度
      * @param boolean $interlace 启用隔行扫描
-      +----------------------------------------------------------
      * @return void
-      +----------------------------------------------------------
      */
     static function thumb2($image, $thumbname, $type='', $maxWidth=200, $maxHeight=50, $interlace=true) {
         // 获取原图信息
@@ -304,6 +300,7 @@ class Image {
         }
         return false;
     }
+    
     /**
      * 根据给定的字符串生成图像
      * @static
