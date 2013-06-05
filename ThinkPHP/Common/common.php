@@ -31,9 +31,9 @@ function T($template='',$layer=''){
             $template   =   APP_NAME.'://'.$template;
         }        
         $info   =   parse_url($template);
-        $file   =   $info['host'].($info['path']?$info['path']:'');
-        $group  =   $info['user']?$info['user'].'/':(defined('GROUP_NAME')?GROUP_NAME.'/':'');
-        $app    =   $info['scheme']?$info['scheme']:'';
+        $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
+        $group  =   isset($info['user'])?$info['user'].'/':(defined('GROUP_NAME')?GROUP_NAME.'/':'');
+        $app    =   isset($info['scheme'])?$info['scheme']:'';
         $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
 
         // 获取当前主题的模版路径
