@@ -33,11 +33,11 @@ function T($template='',$layer=''){
         $info   =   parse_url($template);
         $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
         $group  =   isset($info['user'])?$info['user'].'/':(defined('GROUP_NAME')?GROUP_NAME.'/':'');
-        $app    =   isset($info['scheme'])?$info['scheme']:'';
+        $app    =   $info['scheme'];
         $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
 
         // 获取当前主题的模版路径
-        if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
+        if(($list = C('EXTEND_GROUP_LIST')) && isset($list[$app])){ // 扩展分组
             $baseUrl    =   $list[$app].'/'.$group.$layer.'/';
         }elseif(1==C('APP_GROUP_MODE')){ // 独立分组模式
             $baseUrl    =   dirname(BASE_LIB_PATH).'/'.$group.$layer.'/';
