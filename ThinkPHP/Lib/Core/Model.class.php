@@ -1214,16 +1214,13 @@ class Model {
      * @return string
      */
     public function getTableName() {
-        if(empty($this->trueTableName)) {
-            $tableName  = !empty($this->tablePrefix) ? $this->tablePrefix : '';
-            if(!empty($this->tableName)) {
-                $tableName .= $this->tableName;
-            }else{
-                $tableName .= parse_name($this->name);
-            }
-            $this->trueTableName    =   strtolower($tableName);
+        if (empty($this->tableName)) {
+            $this->tableName = parse_name($this->name);
         }
-        return (!empty($this->dbName)?$this->dbName.'.':'').$this->trueTableName;
+        if (empty($this->trueTableName)) {
+            $this->trueTableName = strtolower((empty($this->tablePrefix) ? '' : $this->tablePrefix) . $this->tableName);
+        }
+        return (!empty($this->dbName) ? $this->dbName . '.' : '') . $this->trueTableName;
     }
 
     /**
