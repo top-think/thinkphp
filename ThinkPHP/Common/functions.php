@@ -368,7 +368,7 @@ function redirect($url, $time=0, $msg='') {
  */
 function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($options)){
+    if(is_array($options) && empty($cache)){
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
         $cache      =   Cache::getInstance($type,$options);

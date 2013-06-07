@@ -622,15 +622,20 @@ function add_tag_behavior($tag,$behavior,$path='') {
  * @return void
  */
 function B($name, &$params=NULL) {
+    if(strpos($name,'/')){
+        list($name,$method) = explode('/',$name);
+    }else{
+        $method     =   'run';
+    }
     $class      = $name.'Behavior';
     if(APP_DEBUG) {
         G('behaviorStart');
     }
     $behavior   = new $class();
-    $behavior->run($params);
+    $behavior->$method($params);
     if(APP_DEBUG) { // 记录行为的执行日志
         G('behaviorEnd');
-        trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
+        trace($name.' Behavior ::'.$method.' [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
 }
 
