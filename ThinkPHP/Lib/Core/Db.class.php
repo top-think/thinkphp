@@ -550,7 +550,7 @@ class Db {
                 break;
             case '_complex':
                 // 复合查询条件
-                $whereStr = substr($this->parseWhere($val),6);
+                $whereStr   =   is_string($val)? $val : substr($this->parseWhere($val),6);
                 break;
             case '_query':
                 // 字符串模式查询条件
