@@ -423,6 +423,9 @@ class Db {
             }
             foreach ($where as $key=>$val){
                 $whereStr .= '( ';
+                if(is_numeric($key)){
+                    $key  = '_complex';
+                }                    
                 if(0===strpos($key,'_')) {
                     // 解析特殊条件表达式
                     $whereStr   .= $this->parseThinkWhere($key,$val);
