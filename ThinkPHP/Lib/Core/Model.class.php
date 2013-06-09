@@ -861,7 +861,7 @@ class Model {
      */
     public function regex($value,$rule) {
         $validate = array(
-            'require'   =>  '/.+/',
+            'require'   =>  '/[^\s]+/',
             'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
             'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
             'currency'  =>  '/^\d+(\.\d+)?$/',
