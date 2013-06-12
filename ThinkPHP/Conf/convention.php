@@ -29,10 +29,9 @@ return  array(
     'APP_SUB_DOMAIN_DEPLOY' => false,   // 是否开启子域名部署
     'APP_SUB_DOMAIN_RULES'  => array(), // 子域名部署规则
     'APP_SUB_DOMAIN_DENY'   => array(), //  子域名禁用列表
-    'APP_GROUP_LIST'        => '',      // 项目分组设定,多个组之间用逗号分隔,例如'Home,Admin'
-    'APP_GROUP_MODE'        =>  0,  // 分组模式 0 普通分组 1 独立分组
-    'APP_GROUP_PATH'        =>  'Modules', // 分组目录 独立分组模式下面有效
     'ACTION_SUFFIX'         =>  '', // 操作方法后缀
+    'MULIT_MODULE'          =>  true, // 是否允许多模块 如果为false 则必须设置 DEFAULT_MODULE
+    'COMMON_MODULE'         =>  'Common',
 
     /* Cookie设置 */
     'COOKIE_EXPIRE'         => 0,    // Coodie有效期
@@ -42,13 +41,13 @@ return  array(
 
     /* 默认设定 */
     'DEFAULT_M_LAYER'       =>  'Model', // 默认的模型层名称
-    'DEFAULT_C_LAYER'       =>  'Action', // 默认的控制器层名称
-    'DEFAULT_V_LAYER'       =>  'Tpl', // 默认的视图层名称
+    'DEFAULT_C_LAYER'       =>  'Controller', // 默认的控制器层名称
+    'DEFAULT_V_LAYER'       =>  'View', // 默认的视图层名称
     'DEFAULT_APP'           => '@',     // 默认项目名称，@表示当前项目
     'DEFAULT_LANG'          => 'zh-cn', // 默认语言
     'DEFAULT_THEME'         => '',	// 默认模板主题名称
-    'DEFAULT_GROUP'         => 'Home',  // 默认分组
-    'DEFAULT_MODULE'        => 'Index', // 默认模块名称
+    'DEFAULT_MODULE'        => 'Home',  // 默认模块
+    'DEFAULT_CONTROLLER'    => 'Index', // 默认控制器名称
     'DEFAULT_ACTION'        => 'index', // 默认操作名称
     'DEFAULT_CHARSET'       => 'utf-8', // 默认输出编码
     'DEFAULT_TIMEZONE'      => 'PRC',	// 默认时区
@@ -115,7 +114,7 @@ return  array(
     'TMPL_EXCEPTION_FILE'   => THINK_PATH.'Tpl/think_exception.tpl',// 异常页面的模板文件
     'TMPL_DETECT_THEME'     => false,       // 自动侦测模板主题
     'TMPL_TEMPLATE_SUFFIX'  => '.html',     // 默认模板文件后缀
-    'TMPL_FILE_DEPR'        =>  '/', //模板文件MODULE_NAME与ACTION_NAME之间的分割符
+    'TMPL_FILE_DEPR'        =>  '/', //模板文件CONTROLLER_NAME与ACTION_NAME之间的分割符
 
     /* URL设置 */
     'URL_CASE_INSENSITIVE'  => false,   // 默认false 表示URL区分大小写 true则表示不区分大小写
@@ -129,8 +128,8 @@ return  array(
     'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
 
     /* 系统变量名称设置 */
-    'VAR_GROUP'             => 'g',     // 默认分组获取变量
-    'VAR_MODULE'            => 'm',		// 默认模块获取变量
+    'VAR_MODULE'             => 'm',     // 默认分组获取变量
+    'VAR_CONTROLLER'         => 'c',		// 默认模块获取变量
     'VAR_ACTION'            => 'a',		// 默认操作获取变量
     'VAR_AJAX_SUBMIT'       => 'ajax',  // 默认的AJAX提交变量
 	'VAR_JSONP_HANDLER'     => 'callback',

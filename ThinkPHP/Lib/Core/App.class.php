@@ -57,9 +57,9 @@ class App {
                 array_walk_recursive($_GET,$filter);
             }
         }
-
-        C('CACHE_PATH',CACHE_PATH.$group);
-        //动态配置 TMPL_EXCEPTION_FILE,改为绝对地址
+        // 日志目录转换为绝对路径
+        C('LOG_PATH',realpath(LOG_PATH).'/');
+        // TMPL_EXCEPTION_FILE 改为绝对地址
         C('TMPL_EXCEPTION_FILE',realpath(C('TMPL_EXCEPTION_FILE')));
         return ;
     }
@@ -70,16 +70,15 @@ class App {
      * @return void
      */
     static public function exec() {
-        if(!preg_match('/^[A-Za-z](\w)*$/',MODULE_NAME)){ // 安全检测
+        if(!preg_match('/^[A-Za-z](\w)*$/',CONTROLLER_NAME)){ // 安全检测
             $module  =  false;
         }else{
             //创建Action控制器实例
-            $group   =  defined('GROUP_NAME') && C('APP_GROUP_MODE')==0 ? GROUP_NAME.'/' : '';
-            $module  =  A($group.MODULE_NAME);
+            $module  =  A(CONTROLLER_NAME);
         }
 
         if(!$module) {
-            if('4e5e5d7364f443e28fbf0d3ae744a59a' == MODULE_NAME) {
+            if('4e5e5d7364f443e28fbf0d3ae744a59a' == CONTROLLER_NAME) {
                 header("Content-type:image/png");
                 exit(base64_decode(App::logo()));
             }
@@ -92,9 +91,9 @@ class App {
                 }
             }else{
                 // 是否定义Empty模块
-                $module = A($group.'Empty');
+                $module = A('Empty');
                 if(!$module){
-                    _404(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
+                    E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
                 }
             }
         }
@@ -137,7 +136,7 @@ class App {
                         }elseif($param->isDefaultValueAvailable()){
                             $args[] = $param->getDefaultValue();
                         }else{
-                            throw_exception(L('_PARAM_ERROR_').':'.$name);
+                            E(L('_PARAM_ERROR_').':'.$name);
                         }
                     }
                     $method->invokeArgs($module,$args);

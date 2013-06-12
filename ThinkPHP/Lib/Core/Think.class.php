@@ -54,8 +54,6 @@ class Think {
         }else{
             $mode   =  array();
         }
-        // 加载核心惯例配置文件
-        C(include THINK_PATH.'Conf/convention.php');
         if(isset($mode['config'])) {// 加载模式配置文件
             C( is_array($mode['config'])?$mode['config']:include $mode['config'] );
         }
@@ -156,29 +154,24 @@ class Think {
     public static function autoload($class) {
         // 检查是否存在别名定义
         if(alias_import($class)) return ;
-        $libPath    =   defined('BASE_LIB_PATH')?BASE_LIB_PATH:LIB_PATH;
-        $group      =   defined('GROUP_NAME') && C('APP_GROUP_MODE')==0 ?GROUP_NAME.'/':'';
         $file       =   $class.'.class.php';
         if(substr($class,-8)=='Behavior') { // 加载行为
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
                 EXTEND_PATH.'Behavior/'.$file,
-                LIB_PATH.'Behavior/'.$file,
-                $libPath.'Behavior/'.$file),true)
+                MODULE_PATH.'Behavior/'.$file),true)
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
                 return ;
             }
         }elseif(substr($class,-5)=='Model'){ // 加载模型
             if(require_array(array(
-                LIB_PATH.'Model/'.$group.$file,
-                $libPath.'Model/'.$file,
+                MODULE_PATH.'Model/'.$file,
                 EXTEND_PATH.'Model/'.$file),true)) {
                 return ;
             }
         }elseif(substr($class,-6)=='Action'){ // 加载控制器
             if(require_array(array(
-                LIB_PATH.'Action/'.$group.$file,
-                $libPath.'Action/'.$file,
+                MODULE_PATH.'Action/'.$file,
                 EXTEND_PATH.'Action/'.$file),true)) {
                 return ;
             }
@@ -248,14 +241,18 @@ class Think {
         $error = array();
         $error['message']   = $e->getMessage();
         $trace  =   $e->getTrace();
-        if('throw_exception'==$trace[0]['function']) {
+        if('E'==$trace[0]['function']) {
             $error['file']  =   $trace[0]['file'];
             $error['line']  =   $trace[0]['line'];
         }else{
             $error['file']      = $e->getFile();
             $error['line']      = $e->getLine();
         }
+        $error['trace'] = $e->getTraceAsString();
         Log::record($error['message'],Log::ERR);
+        // 发送404信息
+        header('HTTP/1.1 404 Not Found');
+        header('Status:404 Not Found');
         halt($error);
     }
 

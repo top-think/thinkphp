@@ -76,7 +76,7 @@ class Db {
         // 读取数据库配置
         $db_config = $this->parseConfig($db_config);
         if(empty($db_config['dbms']))
-            throw_exception(L('_NO_DB_CONFIG_'));
+            E(L('_NO_DB_CONFIG_'));
         // 数据库类型
         $this->dbType = ucwords(strtolower($db_config['dbms']));
         $class = 'Db'. $this->dbType;
@@ -90,7 +90,7 @@ class Db {
                 $db->dbType = $this->_getDsnType($db_config['dsn']);
         }else {
             // 类没有定义
-            throw_exception(L('_NO_DB_DRIVER_').': ' . $class);
+            E(L('_NO_DB_DRIVER_').': ' . $class);
         }
         return $db;
     }
@@ -432,7 +432,7 @@ class Db {
                 }else{
                     // 查询字段的安全过滤
                     if(!preg_match('/^[A-Z_\|\&\-.a-z0-9\(\)\,]+$/',trim($key))){
-                        throw_exception(L('_EXPRESS_ERROR_').':'.$key);
+                        E(L('_EXPRESS_ERROR_').':'.$key);
                     }
                     // 多条件支持
                     $multi  = is_array($val) &&  isset($val['_multi']);
@@ -501,7 +501,7 @@ class Db {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  ' ('.$key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]).' )';
                 }else{
-                    throw_exception(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    E(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
             }else {
                 $count = count($val);

@@ -111,7 +111,7 @@ class View {
         if(empty($content)) {
             $templateFile   =   $this->parseTemplate($templateFile);
             // 模板文件不存在直接返回
-            if(!is_file($templateFile)) return NULL;
+            if(!is_file($templateFile)) E(L('_TEMPLATE_NOT_EXIST_').':'.$templateFile);
         }
         // 页面缓存
         ob_start();
@@ -147,27 +147,21 @@ class View {
         $template = str_replace(':', '/', $template);
         // 获取当前主题名称
         $theme = $this->getTemplateTheme();
-        // 获取当前模版分组
-        $group   =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
-        if(defined('GROUP_NAME') && strpos($template,'@')){ // 跨分组调用模版文件
-            list($group,$template)  =   explode('@',$template);
-            $group  .=   '/';
+
+        // 获取当前模块
+        $module   =  MODULE_NAME;
+        if(strpos($template,'@')){ // 跨分组调用模版文件
+            list($module,$template)  =   explode('@',$template);
         }
         // 获取当前主题的模版路径
-        if(1==C('APP_GROUP_MODE')){ // 独立分组模式
-            define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
-        }else{ 
-            define('THEME_PATH',   TMPL_PATH.$group.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
-        }
+        define('THEME_PATH',   MODULES_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
 
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = MODULE_NAME . '/' . ACTION_NAME;
+            $template = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
         }elseif(false === strpos($template, '/')){
-            $template = MODULE_NAME . '/' . $template;
+            $template = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . $template;
         }
         return THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
     }

@@ -105,10 +105,10 @@ class CheckRouteBehavior extends Behavior {
         if(isset($path)) {
             $var[C('VAR_ACTION')] = array_pop($path);
             if(!empty($path)) {
-                $var[C('VAR_MODULE')] = array_pop($path);
+                $var[C('VAR_CONTROLLER')] = array_pop($path);
             }
             if(!empty($path)) {
-                $var[C('VAR_GROUP')]  = array_pop($path);
+                $var[C('VAR_MODULE')]  = array_pop($path);
             }
         }
         return $var;

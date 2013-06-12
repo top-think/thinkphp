@@ -83,7 +83,7 @@ class TagLib {
         $xml    =   '<tpl><tag '.$attr.' /></tpl>';
         $xml    =   simplexml_load_string($xml);
         if(!$xml) {
-            throw_exception(L('_XML_TAG_ERROR_').' : '.$attr);
+            E(L('_XML_TAG_ERROR_').' : '.$attr);
         }
         $xml    =   (array)($xml->tag->attributes());
         $array  =   array_change_key_case($xml['@attributes']);
@@ -98,7 +98,7 @@ class TagLib {
                 if( isset($array[$name])) {
                     $array[$name] = str_replace('___','&',$array[$name]);
                 }elseif(false !== array_search($name,$must)){
-                    throw_exception(L('_PARAM_ERROR_').':'.$name);
+                    E(L('_PARAM_ERROR_').':'.$name);
                 }
             }
             return $array;
