@@ -444,8 +444,7 @@ function parse_res_name($name,$layer){
     }
     if(!$result){
         // 类库不存在 加载公共模块下面的类库
-        $class  =   basename($name.$layer);
-        import(C('COMMON_MODULE').strstr($name,'/').$layer);
+        import(ltrim(strstr($name,'/'),'/').$layer,LIB_PATH);
     }
     return $extend.'_'.$name.$layer;
 }

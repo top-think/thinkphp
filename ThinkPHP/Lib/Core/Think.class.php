@@ -159,19 +159,19 @@ class Think {
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
                 EXTEND_PATH.'Behavior/'.$file,
-                MODULE_PATH.'Behavior/'.$file),true)
+                LIB_PATH.'Behavior/'.$file),true)
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
                 return ;
             }
         }elseif(substr($class,-5)=='Model'){ // 加载模型
             if(require_array(array(
-                MODULE_PATH.'Model/'.$file,
+                LIB_PATH.'Model/'.$file,
                 EXTEND_PATH.'Model/'.$file),true)) {
                 return ;
             }
         }elseif(substr($class,-6)=='Action'){ // 加载控制器
             if(require_array(array(
-                MODULE_PATH.'Action/'.$file,
+                LIB_PATH.'Action/'.$file,
                 EXTEND_PATH.'Action/'.$file),true)) {
                 return ;
             }
