@@ -25,6 +25,7 @@ return  array(
     'APP_STATUS'            => 'debug',  // 应用调试模式状态 调试模式开启后有效 默认为debug 可扩展 并自动加载对应的配置文件
     'APP_FILE_CASE'         => false,   // 是否检查文件的大小写 对Windows平台有效
     'APP_AUTOLOAD_PATH'     => '',// 自动加载机制的自动搜索路径,注意搜索顺序
+    'APP_AUTOLOAD_LAYER'    =>  'Model,Controller', // 自动加载的类库层
     'APP_TAGS_ON'           => true, // 系统标签扩展开关
     'APP_SUB_DOMAIN_DEPLOY' => false,   // 是否开启子域名部署
     'APP_SUB_DOMAIN_RULES'  => array(), // 子域名部署规则

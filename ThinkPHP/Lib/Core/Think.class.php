@@ -155,28 +155,22 @@ class Think {
         // 检查是否存在别名定义
         if(alias_import($class)) return ;
         $file       =   $class.'.class.php';
-        $cLayer  =   C('DEFAULT_C_LAYER');
-        $mLayer  =   C('DEFAULT_M_LAYER');
+        foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
+            if(substr($class,-strlen($layer))==$layer){ // 加载模型
+                if(require_array(array(
+                    MODULE_PATH.$layer.'/'.$file, // 当前模块目录
+                    LIB_PATH.$layer.'/'.$file, // 公共类库目录
+                    ),true)) {
+                    return ;
+                }
+            }            
+        }
         if(substr($class,-8)=='Behavior') { // 加载行为
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
                 EXTEND_PATH.'Behavior/'.$file,
                 LIB_PATH.'Behavior/'.$file),true)
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
-                return ;
-            }
-        }elseif(substr($class,-strlen($mLayer))==$mLayer){ // 加载模型
-            if(require_array(array(
-                LIB_PATH.$mLayer.'/'.$file,
-                MODULE_PATH.$mLayer.'/'.$file,
-                EXTEND_PATH.$mLayer.'/'.$file),true)) {
-                return ;
-            }
-        }elseif(substr($class,-strlen($cLayer))==$cLayer){ // 加载控制器
-            if(require_array(array(
-                LIB_PATH.$cLayer.'/'.$file,
-                MODULE_PATH.$cLayer.'/'.$file,
-                EXTEND_PATH.$cLayer.'/'.$file),true)) {
                 return ;
             }
         }elseif(substr($class,0,5)=='Cache'){ // 加载缓存驱动
