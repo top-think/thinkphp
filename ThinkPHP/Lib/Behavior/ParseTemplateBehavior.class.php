@@ -109,7 +109,7 @@ class ParseTemplateBehavior extends Behavior {
      * 如果无效则需要重新编译
      * @access public
      * @param string $tmplContent  模板内容
-     * @return boolen
+     * @return boolean
      */
     protected function checkContentCache($tmplContent,$prefix='') {
         if(is_file(C('CACHE_PATH').$prefix.md5($tmplContent).C('TMPL_CACHFILE_SUFFIX'))){
