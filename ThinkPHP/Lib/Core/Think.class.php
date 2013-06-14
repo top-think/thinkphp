@@ -155,8 +155,9 @@ class Think {
         // 检查是否存在别名定义
         if(alias_import($class)) return ;
         $file       =   $class.'.class.php';
+        // 自动加载的类库层
         foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
-            if(substr($class,-strlen($layer))==$layer){ // 加载模型
+            if(substr($class,-strlen($layer))==$layer){
                 if(require_array(array(
                     MODULE_PATH.$layer.'/'.$file, // 当前模块目录
                     LIB_PATH.$layer.'/'.$file, // 公共类库目录
@@ -165,6 +166,17 @@ class Think {
                 }
             }            
         }
+        // 自动加载的驱动类库
+        foreach(explode(',',C('APP_AUTOLOAD_DRIVER')) as $driver){
+            if(substr($class,strlen($driver))==$driver){
+                if(require_array(array(
+                    EXTEND_PATH.'Driver/'.$driver.'/'.$file,
+                    CORE_PATH.'Driver/'.$driver.'/'.$file),true)){
+                    return ;
+                }
+            }            
+        }        
+        // 自动加载行为
         if(substr($class,-8)=='Behavior') { // 加载行为
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
@@ -173,35 +185,10 @@ class Think {
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
                 return ;
             }
-        }elseif(substr($class,0,5)=='Cache'){ // 加载缓存驱动
-            if(require_array(array(
-                EXTEND_PATH.'Driver/Cache/'.$file,
-                CORE_PATH.'Driver/Cache/'.$file),true)){
-                return ;
-            }
-        }elseif(substr($class,0,2)=='Db'){ // 加载数据库驱动
-            if(require_array(array(
-                EXTEND_PATH.'Driver/Db/'.$file,
-                CORE_PATH.'Driver/Db/'.$file),true)){
-                return ;
-            }
-        }elseif(substr($class,0,8)=='Template'){ // 加载模板引擎驱动
-            if(require_array(array(
-                EXTEND_PATH.'Driver/Template/'.$file,
-                CORE_PATH.'Driver/Template/'.$file),true)){
-                return ;
-            }
-        }elseif(substr($class,0,6)=='TagLib'){ // 加载标签库驱动
-            if(require_array(array(
-                EXTEND_PATH.'Driver/TagLib/'.$file,
-                CORE_PATH.'Driver/TagLib/'.$file),true)) {
-                return ;
-            }
         }
 
         // 根据自动加载路径设置进行尝试搜索
-        $paths  =   explode(',',C('APP_AUTOLOAD_PATH'));
-        foreach ($paths as $path){
+        foreach (explode(',',C('APP_AUTOLOAD_PATH')) as $path){
             if(import($path.'.'.$class))
                 // 如果加载类成功则返回
                 return ;
