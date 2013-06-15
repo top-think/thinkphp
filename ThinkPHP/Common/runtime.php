@@ -43,7 +43,10 @@ if(!IS_CLI) {
             define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
         }
     }
-    define('__ROOT__',   rtrim(dirname(str_replace('\\','\/',_PHP_FILE_)),'/'));
+    if(!defined('__ROOT__')) {
+        $_root  =   rtrim(dirname(_PHP_FILE_),'/');
+        define('__ROOT__',  (($_root=='/' || $_root=='\\')?'':$_root));
+    }
 
     //支持的URL模式
     define('URL_COMMON',      0);   //普通模式
