@@ -68,7 +68,7 @@ class ParseTemplateBehavior extends Behavior {
                 $tpl   =  new $class;
                 $tpl->fetch($_content,$_data['var']);
             }else {  // 类没有定义
-                E(L('_NOT_SUPPERT_').': ' . $class);
+                throw_exception(L('_NOT_SUPPERT_').': ' . $class);
             }
         }
     }

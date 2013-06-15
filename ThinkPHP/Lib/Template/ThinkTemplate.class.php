@@ -120,7 +120,7 @@ class  ThinkTemplate {
             mkdir($dir,0755,true);
         //重写Cache文件
         if( false === file_put_contents($tmplCacheFile,trim($tmplContent)))
-            E(L('_CACHE_WRITE_ERROR_').':'.$tmplCacheFile);
+            throw_exception(L('_CACHE_WRITE_ERROR_').':'.$tmplCacheFile);
         return $tmplCacheFile;
     }
 
@@ -206,7 +206,7 @@ class  ThinkTemplate {
         }
         // PHP语法检查
         if(C('TMPL_DENY_PHP') && false !== strpos($content,'<?php')) {
-            E(L('_NOT_ALLOW_PHP_'));
+            throw_exception(L('_NOT_ALLOW_PHP_'));
         }
         return $content;
     }
@@ -285,7 +285,7 @@ class  ThinkTemplate {
         $xml        =   '<tpl><tag '.$attrs.' /></tpl>';
         $xml        =   simplexml_load_string($xml);
         if(!$xml)
-            E(L('_XML_TAG_ERROR_'));
+            throw_exception(L('_XML_TAG_ERROR_'));
         $xml        =   (array)($xml->tag->attributes());
         $array      =   array_change_key_case($xml['@attributes']);
         return $array;
@@ -672,7 +672,24 @@ class  ThinkTemplate {
         foreach ($array as $templateName){
             if(false === strpos($templateName,$this->config['template_suffix'])) {
                 // 解析规则为 分组@模板主题:模块:操作
-                $templateName   =   T($templateName);
+                if(strpos($templateName,'@')){
+                    list($group,$templateName) =    explode('@',$templateName);
+                    if(1==C('APP_GROUP_MODE')){
+	                      $basePath   =   dirname(BASE_LIB_PATH).'/'.$group.'/'.basename(TMPL_PATH).'/'.(THEME_NAME?THEME_NAME.'/':'');
+	                }else{
+	                      $basePath   =   TMPL_PATH.'/'.$group.'/'.(THEME_NAME?THEME_NAME.'/':'');
+	                }
+                }else{
+                    $basePath   =   THEME_PATH;
+                }
+				$templateName = str_replace(':', '/', $templateName);
+                $path   =   explode('/',$templateName);
+                $action =   array_pop($path);
+                $module =   !empty($path)?array_pop($path):MODULE_NAME;
+                if(!empty($path)) {// 设置模板主题
+                    $basePath = dirname($basePath).'/'.array_pop($path).'/';
+                }
+                $templateName  =  $basePath.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
             }
             // 获取模板文件内容
             $parseStr .= file_get_contents($templateName);

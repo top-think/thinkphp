@@ -101,6 +101,28 @@ function dump($var, $echo=true, $label=null, $strict=true) {
 }
 
 /**
+ * 404处理 
+ * 调试模式会抛异常 
+ * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
+ * @param string $msg 提示信息
+ * @param string $url 跳转URL地址
+ * @return void
+ */
+function _404($msg='',$url='') {
+    APP_DEBUG && throw_exception($msg);
+    if($msg && C('LOG_EXCEPTION_RECORD')) Log::write($msg);
+    if(empty($url) && C('URL_404_REDIRECT')) {
+        $url    =   C('URL_404_REDIRECT');
+    }
+    if($url) {
+        redirect($url);
+    }else{
+        send_http_status(404);
+        exit;
+    }
+}
+
+/**
  * 设置当前页面的布局
  * @param string|false $layout 布局名称 为false的时候表示关闭布局
  * @return void
@@ -119,7 +141,7 @@ function layout($layout) {
 
 /**
  * URL组装 支持不同URL模式
- * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
+ * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
  * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
@@ -188,34 +210,34 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $path       =   explode($depr,$url);
             $var        =   array();
             $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
-            $var[C('VAR_CONTROLLER')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
+            $var[C('VAR_MODULE')]       =   !empty($path)?array_pop($path):MODULE_NAME;
             if($maps = C('URL_ACTION_MAP')) {
-                if(isset($maps[strtolower($var[C('VAR_CONTROLLER')])])) {
-                    $maps    =   $maps[strtolower($var[C('VAR_CONTROLLER')])];
+                if(isset($maps[strtolower($var[C('VAR_MODULE')])])) {
+                    $maps    =   $maps[strtolower($var[C('VAR_MODULE')])];
                     if($action = array_search(strtolower($var[C('VAR_ACTION')]),$maps)){
                         $var[C('VAR_ACTION')] = $action;
                     }
                 }
             }
-            if($maps = C('URL_CONTROLLER_MAP')) {
-                if($controller = array_search(strtolower($var[C('VAR_CONTROLLER')]),$maps)){
-                    $var[C('VAR_CONTROLLER')] = $controller;
+            if($maps = C('URL_MODULE_MAP')) {
+                if($module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
+                    $var[C('VAR_MODULE')] = $module;
                 }
             }            
             if(C('URL_CASE_INSENSITIVE')) {
-                $var[C('VAR_CONTROLLER')]   =   parse_name($var[C('VAR_CONTROLLER')]);
+                $var[C('VAR_MODULE')]   =   parse_name($var[C('VAR_MODULE')]);
             }
-            if(!C('APP_SUB_DOMAIN_DEPLOY')) {
+            if(!C('APP_SUB_DOMAIN_DEPLOY') && C('APP_GROUP_LIST')) {
                 if(!empty($path)) {
-                    $module                  =   array_pop($path);
-                    $var[C('VAR_MODULE')]    =   $module;
+                    $group                  =   array_pop($path);
+                    $var[C('VAR_GROUP')]    =   $group;
                 }else{
-                    if(C('MULTI_MODULE')) {
-                        $var[C('VAR_MODULE')]=   MODULE_NAME;
+                    if(GROUP_NAME != C('DEFAULT_GROUP')) {
+                        $var[C('VAR_GROUP')]=   GROUP_NAME;
                     }
                 }
-                if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_MODULE')])) {
-                    $var[C('VAR_MODULE')]    =  strtolower($var[C('VAR_MODULE')]);
+                if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_GROUP')])) {
+                    $var[C('VAR_GROUP')]    =  strtolower($var[C('VAR_GROUP')]);
                 }
             }
         }
@@ -264,10 +286,22 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * 渲染输出Widget
  * @param string $name Widget名称
  * @param array $data 传入的参数
+ * @param boolean $return 是否返回内容 
+ * @param string $path Widget所在路径
  * @return void
  */
-function W($name, $data=array()) {
-    return R($name,$data,'Widget');
+function W($name, $data=array(), $return=false,$path='') {
+    $class      =   $name . 'Widget';
+    $path       =   empty($path) ? BASE_LIB_PATH : $path;
+    require_cache($path . 'Widget/' . $class . '.class.php');
+    if (!class_exists($class))
+        throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
+    $widget     =   Think::instance($class);
+    $content    =   $widget->render($data);
+    if ($return)
+        return $content;
+    else
+        echo $content;
 }
 
 /**
@@ -278,7 +312,7 @@ function W($name, $data=array()) {
  */
 function filter($name, &$content) {
     $class      =   $name . 'Filter';
-    require_cache(MODULE_PATH . 'Filter/' . $class . '.class.php');
+    require_cache(BASE_LIB_PATH . 'Filter/' . $class . '.class.php');
     $filter     =   new $class();
     $content    =   $filter->run($content);
 }
@@ -358,6 +392,10 @@ function S($name,$value='',$options=null) {
         return $cache->set($name, $value, $expire);
     }
 }
+// S方法的别名 已经废除 不再建议使用
+function cache($name,$value='',$options=null){
+    return S($name,$value,$options);
+}
 
 /**
  * 快速文件数据读取和保存 针对简单类型数据 字符串、数组
@@ -419,7 +457,7 @@ function get_instance_of($name, $method='', $args=array()) {
                 $_instance[$identify] = $o;
         }
         else
-            E(L('_CLASS_NOT_EXIST_') . ':' . $name);
+            halt(L('_CLASS_NOT_EXIST_') . ':' . $name);
     }
     return $_instance[$identify];
 }
@@ -521,7 +559,7 @@ function session($name,$value='') {
                 $hander->execute();
             }else {
                 // 类没有定义
-                E(L('_CLASS_NOT_EXIST_').': ' . $class);
+                throw_exception(L('_CLASS_NOT_EXIST_').': ' . $class);
             }
         }
         // 启动session

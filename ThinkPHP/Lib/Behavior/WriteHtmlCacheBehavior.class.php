@@ -28,7 +28,7 @@ class WriteHtmlCacheBehavior extends Behavior {
             if(!is_dir(dirname(HTML_FILE_NAME)))
                 mkdir(dirname(HTML_FILE_NAME),0755,true);
             if( false === file_put_contents( HTML_FILE_NAME , $content ))
-                E(L('_CACHE_WRITE_ERROR_').':'.HTML_FILE_NAME);
+                throw_exception(L('_CACHE_WRITE_ERROR_').':'.HTML_FILE_NAME);
         }
     }
 }

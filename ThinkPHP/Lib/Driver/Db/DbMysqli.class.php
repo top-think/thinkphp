@@ -26,7 +26,7 @@ class DbMysqli extends Db{
      */
     public function __construct($config=''){
         if ( !extension_loaded('mysqli') ) {
-            E(L('_NOT_SUPPERT_').':mysqli');
+            throw_exception(L('_NOT_SUPPERT_').':mysqli');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -45,7 +45,7 @@ class DbMysqli extends Db{
         if ( !isset($this->linkID[$linkNum]) ) {
             if(empty($config))  $config =   $this->config;
             $this->linkID[$linkNum] = new mysqli($config['hostname'],$config['username'],$config['password'],$config['database'],$config['hostport']?intval($config['hostport']):3306);
-            if (mysqli_connect_errno()) E(mysqli_connect_error());
+            if (mysqli_connect_errno()) throw_exception(mysqli_connect_error());
             $dbVersion = $this->linkID[$linkNum]->server_version;
             
             // 设置数据库编码

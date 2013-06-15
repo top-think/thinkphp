@@ -139,7 +139,7 @@ abstract class Action {
             // 如果静态目录不存在 则创建
             mkdir(dirname($htmlfile),0755,true);
         if(false === file_put_contents($htmlfile,$content))
-            E(L('_CACHE_WRITE_ERROR_').':'.$htmlfile);
+            throw_exception(L('_CACHE_WRITE_ERROR_').':'.$htmlfile);
         return $content;
     }
 
@@ -213,7 +213,7 @@ abstract class Action {
                 // hack 方式定义扩展操作
                 __hack_action();
             }else{
-                E(L('_ERROR_ACTION_').':'.ACTION_NAME);
+                _404(L('_ERROR_ACTION_').':'.ACTION_NAME);
             }
         }else{
             switch(strtolower($method)) {
@@ -249,7 +249,7 @@ abstract class Action {
                 case '_server'  :   $input =& $_SERVER;    break;
                 case '_globals' :   $input =& $GLOBALS;    break;
                 default:
-                    E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+                    throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             }
             if(!isset($args[0])) { // 获取全局变量
                 $data       =   $input; // 由VAR_FILTERS配置进行过滤

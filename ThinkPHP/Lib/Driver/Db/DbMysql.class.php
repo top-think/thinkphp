@@ -27,7 +27,7 @@ class DbMysql extends Db{
      */
     public function __construct($config=''){
         if ( !extension_loaded('mysql') ) {
-            E(L('_NOT_SUPPERT_').':mysql');
+            throw_exception(L('_NOT_SUPPERT_').':mysql');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -55,7 +55,7 @@ class DbMysql extends Db{
                 $this->linkID[$linkNum] = mysql_connect( $host, $config['username'], $config['password'],true,131072);
             }
             if ( !$this->linkID[$linkNum] || (!empty($config['database']) && !mysql_select_db($config['database'], $this->linkID[$linkNum])) ) {
-                E(mysql_error());
+                throw_exception(mysql_error());
             }
             $dbVersion = mysql_get_server_info($this->linkID[$linkNum]);
             //使用UTF8存取数据库

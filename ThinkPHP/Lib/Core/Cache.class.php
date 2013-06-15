@@ -46,7 +46,7 @@ class Cache {
         if(class_exists($class))
             $cache = new $class($options);
         else
-            E(L('_CACHE_TYPE_INVALID_').':'.$type);
+            throw_exception(L('_CACHE_TYPE_INVALID_').':'.$type);
         return $cache;
     }
 
@@ -120,7 +120,7 @@ class Cache {
         if(method_exists($this->handler, $method)){
            return call_user_func_array(array($this->handler,$method), $args);
         }else{
-            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }

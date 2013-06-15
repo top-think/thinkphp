@@ -54,6 +54,8 @@ class Think {
         }else{
             $mode   =  array();
         }
+        // 加载核心惯例配置文件
+        C(include THINK_PATH.'Conf/convention.php');
         if(isset($mode['config'])) {// 加载模式配置文件
             C( is_array($mode['config'])?$mode['config']:include $mode['config'] );
         }
@@ -154,41 +156,61 @@ class Think {
     public static function autoload($class) {
         // 检查是否存在别名定义
         if(alias_import($class)) return ;
+        $libPath    =   defined('BASE_LIB_PATH')?BASE_LIB_PATH:LIB_PATH;
+        $group      =   defined('GROUP_NAME') && C('APP_GROUP_MODE')==0 ?GROUP_NAME.'/':'';
         $file       =   $class.'.class.php';
-        // 自动加载的类库层
-        foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
-            if(substr($class,-strlen($layer))==$layer){
-                if(require_array(array(
-                    MODULE_PATH.$layer.'/'.$file, // 当前模块目录
-                    LIB_PATH.$layer.'/'.$file, // 公共类库目录
-                    ),true)) {
-                    return ;
-                }
-            }            
-        }
-        // 自动加载的驱动类库
-        foreach(explode(',',C('APP_AUTOLOAD_DRIVER')) as $driver){
-            if(substr($class,strlen($driver))==$driver){
-                if(require_array(array(
-                    EXTEND_PATH.'Driver/'.$driver.'/'.$file,
-                    CORE_PATH.'Driver/'.$driver.'/'.$file),true)){
-                    return ;
-                }
-            }            
-        }        
-        // 自动加载行为
         if(substr($class,-8)=='Behavior') { // 加载行为
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
                 EXTEND_PATH.'Behavior/'.$file,
-                LIB_PATH.'Behavior/'.$file),true)
+                LIB_PATH.'Behavior/'.$file,
+                $libPath.'Behavior/'.$file),true)
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
+                return ;
+            }
+        }elseif(substr($class,-5)=='Model'){ // 加载模型
+            if(require_array(array(
+                LIB_PATH.'Model/'.$group.$file,
+                $libPath.'Model/'.$file,
+                EXTEND_PATH.'Model/'.$file),true)) {
+                return ;
+            }
+        }elseif(substr($class,-6)=='Action'){ // 加载控制器
+            if(require_array(array(
+                LIB_PATH.'Action/'.$group.$file,
+                $libPath.'Action/'.$file,
+                EXTEND_PATH.'Action/'.$file),true)) {
+                return ;
+            }
+        }elseif(substr($class,0,5)=='Cache'){ // 加载缓存驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/Cache/'.$file,
+                CORE_PATH.'Driver/Cache/'.$file),true)){
+                return ;
+            }
+        }elseif(substr($class,0,2)=='Db'){ // 加载数据库驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/Db/'.$file,
+                CORE_PATH.'Driver/Db/'.$file),true)){
+                return ;
+            }
+        }elseif(substr($class,0,8)=='Template'){ // 加载模板引擎驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/Template/'.$file,
+                CORE_PATH.'Driver/Template/'.$file),true)){
+                return ;
+            }
+        }elseif(substr($class,0,6)=='TagLib'){ // 加载标签库驱动
+            if(require_array(array(
+                EXTEND_PATH.'Driver/TagLib/'.$file,
+                CORE_PATH.'Driver/TagLib/'.$file),true)) {
                 return ;
             }
         }
 
         // 根据自动加载路径设置进行尝试搜索
-        foreach (explode(',',C('APP_AUTOLOAD_PATH')) as $path){
+        $paths  =   explode(',',C('APP_AUTOLOAD_PATH'));
+        foreach ($paths as $path){
             if(import($path.'.'.$class))
                 // 如果加载类成功则返回
                 return ;
@@ -226,18 +248,14 @@ class Think {
         $error = array();
         $error['message']   = $e->getMessage();
         $trace  =   $e->getTrace();
-        if('E'==$trace[0]['function']) {
+        if('throw_exception'==$trace[0]['function']) {
             $error['file']  =   $trace[0]['file'];
             $error['line']  =   $trace[0]['line'];
         }else{
             $error['file']      = $e->getFile();
             $error['line']      = $e->getLine();
         }
-        $error['trace'] = $e->getTraceAsString();
         Log::record($error['message'],Log::ERR);
-        // 发送404信息
-        header('HTTP/1.1 404 Not Found');
-        header('Status:404 Not Found');
         halt($error);
     }
 

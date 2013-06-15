@@ -47,7 +47,7 @@ class ReadHtmlCacheBehavior extends Behavior {
             // 静态规则文件定义格式 actionName=>array('静态规则','缓存时间','附加规则')
             // 'read'=>array('{id},{name}',60,'md5') 必须保证静态规则的唯一性 和 可判断性
             // 检测静态规则
-            $moduleName = strtolower(CONTROLLER_NAME);
+            $moduleName = strtolower(MODULE_NAME);
             $actionName = strtolower(ACTION_NAME);
             if(isset($htmls[$moduleName.':'.$actionName])) {
                 $html   =   $htmls[$moduleName.':'.$actionName];   // 某个模块的操作的静态规则
@@ -57,9 +57,9 @@ class ReadHtmlCacheBehavior extends Behavior {
                 $html   =   $htmls[$actionName]; // 所有操作的静态规则
             }elseif(isset($htmls['*'])){
                 $html   =   $htmls['*']; // 全局静态规则
-            }elseif(isset($htmls['empty:index']) && !class_exists(CONTROLLER_NAME.'Action')){
+            }elseif(isset($htmls['empty:index']) && !class_exists(MODULE_NAME.'Action')){
                 $html   =    $htmls['empty:index']; // 空模块静态规则
-            }elseif(isset($htmls[$moduleName.':_empty']) && $this->isEmptyAction(CONTROLLER_NAME,ACTION_NAME)){
+            }elseif(isset($htmls[$moduleName.':_empty']) && $this->isEmptyAction(MODULE_NAME,ACTION_NAME)){
                 $html   =    $htmls[$moduleName.':_empty']; // 空操作静态规则
             }
             if(!empty($html)) {
@@ -73,8 +73,8 @@ class ReadHtmlCacheBehavior extends Behavior {
                 $rule   = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
                 // 特殊系统变量
                 $rule   = str_ireplace(
-                    array('{:app}','{:controller}','{:action}','{:module}'),
-                    array(APP_NAME,CONTROLLER_NAME,ACTION_NAME,MODULE_NAME),
+                    array('{:app}','{:module}','{:action}','{:group}'),
+                    array(APP_NAME,MODULE_NAME,ACTION_NAME,defined('GROUP_NAME')?GROUP_NAME:''),
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace('/{|(\w+)}/e',"\\1()",$rule);

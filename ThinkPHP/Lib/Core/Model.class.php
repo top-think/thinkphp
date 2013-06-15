@@ -168,7 +168,7 @@ class Model {
     public function switchModel($type,$vars=array()) {
         $class = ucwords(strtolower($type)).'Model';
         if(!class_exists($class))
-            E($class.L('_MODEL_NOT_EXIST_'));
+            throw_exception($class.L('_MODEL_NOT_EXIST_'));
         // 实例化扩展模型
         $this->_extModel   = new $class($this->name);
         if(!empty($vars)) {
@@ -250,7 +250,7 @@ class Model {
         }elseif(isset($this->_scope[$method])){// 命名范围的单独调用支持
             return $this->scope($method,$args[0]);
         }else{
-            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -861,7 +861,7 @@ class Model {
      */
     public function regex($value,$rule) {
         $validate = array(
-            'require'   =>  '/\S+/',
+            'require'   =>  '/.+/',
             'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
             'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
             'currency'  =>  '/^\d+(\.\d+)?$/',
@@ -991,8 +991,6 @@ class Model {
      * @return boolean
      */
     protected function _validationField($data,$val) {
-        if($this->patchValidate && isset($this->error[$val[0]]))
-            return ; //当前字段已经有规则验证没有通过
         if(false === $this->_validationFieldItem($data,$val)){
             if($this->patchValidate) {
                 $this->error[$val[0]]   =   $val[2];
@@ -1341,7 +1339,7 @@ class Model {
         }elseif(is_string($data)){
             parse_str($data,$data);
         }elseif(!is_array($data)){
-            E(L('_DATA_TYPE_INVALID_'));
+            throw_exception(L('_DATA_TYPE_INVALID_'));
         }
         $this->data = $data;
         return $this;
@@ -1388,7 +1386,7 @@ class Model {
                 $options =  $union;
             }
         }else{
-            E(L('_DATA_TYPE_INVALID_'));
+            throw_exception(L('_DATA_TYPE_INVALID_'));
         }
         $this->options['union'][]  =   $options;
         return $this;

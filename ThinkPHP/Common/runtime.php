@@ -19,7 +19,7 @@ defined('THINK_PATH') or exit();
 if(version_compare(PHP_VERSION,'5.2.0','<'))  die('require PHP > 5.2.0 !');
 
 //  版本信息
-define('THINK_VERSION', '3.2.0beta');
+define('THINK_VERSION', '3.1.3');
 
 //   系统信息
 if(version_compare(PHP_VERSION,'5.4.0','<')) {
@@ -32,6 +32,9 @@ define('IS_CGI',substr(PHP_SAPI, 0,3)=='cgi' ? 1 : 0 );
 define('IS_WIN',strstr(PHP_OS, 'WIN') ? 1 : 0 );
 define('IS_CLI',PHP_SAPI=='cli'? 1   :   0);
 
+// 项目名称
+defined('APP_NAME') or define('APP_NAME', basename(dirname($_SERVER['SCRIPT_FILENAME'])));
+
 if(!IS_CLI) {
     // 当前文件名
     if(!defined('_PHP_FILE_')) {
@@ -43,7 +46,15 @@ if(!IS_CLI) {
             define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
         }
     }
-    define('__ROOT__',   rtrim(dirname(str_replace('\\','\/',_PHP_FILE_)),'/'));
+    if(!defined('__ROOT__')) {
+        // 网站URL根目录
+        if( strtoupper(APP_NAME) == strtoupper(basename(dirname(_PHP_FILE_))) ) {
+            $_root = dirname(dirname(_PHP_FILE_));
+        }else {
+            $_root = dirname(_PHP_FILE_);
+        }
+        define('__ROOT__',   (($_root=='/' || $_root=='\\')?'':$_root));
+    }
 
     //支持的URL模式
     define('URL_COMMON',      0);   //普通模式
@@ -60,11 +71,11 @@ defined('ENGINE_PATH')  or define('ENGINE_PATH',    EXTEND_PATH.'Engine/'); // �
 defined('VENDOR_PATH')  or define('VENDOR_PATH',    EXTEND_PATH.'Vendor/'); // 第三方类库目录
 defined('LIBRARY_PATH') or define('LIBRARY_PATH',   EXTEND_PATH.'Library/'); // 扩展类库目录
 defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
-defined('MODULES_PATH') or define('MODULES_PATH',   APP_PATH.'Module/'); // 项目模块目录
+defined('LIB_PATH')     or define('LIB_PATH',       APP_PATH.'Lib/'); // 项目类库目录
 defined('CONF_PATH')    or define('CONF_PATH',      APP_PATH.'Conf/'); // 项目配置目录
 defined('LANG_PATH')    or define('LANG_PATH',      APP_PATH.'Lang/'); // 项目语言包目录
+defined('TMPL_PATH')    or define('TMPL_PATH',      APP_PATH.'Tpl/'); // 项目模板目录
 defined('HTML_PATH')    or define('HTML_PATH',      APP_PATH.'Html/'); // 项目静态目录
-defined('LIB_PATH')     or define('LIB_PATH',       APP_PATH.'Lib/'); // 项目公共类库目录
 defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 项目日志目录
 defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 项目缓存目录
 defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 项目数据目录
@@ -77,8 +88,6 @@ set_include_path(get_include_path() . PATH_SEPARATOR . VENDOR_PATH);
 function load_runtime_file() {
     // 加载系统基础函数库
     require THINK_PATH.'Common/common.php';
-    // 加载惯例配置
-    C(include THINK_PATH.'Conf/convention.php');
     // 读取核心文件列表
     $list = array(
         CORE_PATH.'Core/Think.class.php',
@@ -93,7 +102,7 @@ function load_runtime_file() {
     alias_import(include THINK_PATH.'Conf/alias.php');
 
     // 检查项目目录结构 如果不存在则自动创建
-    if(!is_dir(MODULES_PATH)) {
+    if(!is_dir(LIB_PATH)) {
         // 创建项目目录结构
         build_app_dir();
     }elseif(!is_dir(CACHE_PATH)){
@@ -170,20 +179,21 @@ function build_app_dir() {
     if(!is_dir(APP_PATH)) mkdir(APP_PATH,0755,true);
     if(is_writeable(APP_PATH)) {
         $dirs  = array(
-            MODULES_PATH,
-            MODULES_PATH.C('DEFAULT_MODULE').'/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Controller/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Model/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Conf/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/View/',
+            LIB_PATH,
             RUNTIME_PATH,
             CONF_PATH,
             COMMON_PATH,
             LANG_PATH,
             CACHE_PATH,
+            TMPL_PATH,
+            TMPL_PATH.C('DEFAULT_THEME').'/',
             LOG_PATH,
             TEMP_PATH,
             DATA_PATH,
+            LIB_PATH.'Model/',
+            LIB_PATH.'Action/',
+            LIB_PATH.'Behavior/',
+            LIB_PATH.'Widget/',
             );
         foreach ($dirs as $dir){
             if(!is_dir($dir))  mkdir($dir,0755,true);
@@ -192,9 +202,9 @@ function build_app_dir() {
         build_dir_secure($dirs);
         // 写入初始配置文件
         if(!is_file(CONF_PATH.'config.php'))
-            file_put_contents(CONF_PATH.'config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
+            file_put_contents(CONF_PATH.'config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);\n?>");
         // 写入测试Action
-        if(!is_file(MODULES_PATH.C('DEFAULT_MODULE').'/Controller/IndexController.class.php'))
+        if(!is_file(LIB_PATH.'Action/IndexAction.class.php'))
             build_first_action();
     }else{
         header('Content-Type:text/html; charset=utf-8');
@@ -205,7 +215,7 @@ function build_app_dir() {
 // 创建测试Action
 function build_first_action() {
     $content = file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
-    file_put_contents(MODULES_PATH.C('DEFAULT_MODULE').'/Controller/IndexController.class.php',$content);
+    file_put_contents(LIB_PATH.'Action/IndexAction.class.php',$content);
 }
 
 // 生成目录安全文件

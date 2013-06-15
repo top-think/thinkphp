@@ -76,7 +76,7 @@ class Db {
         // 读取数据库配置
         $db_config = $this->parseConfig($db_config);
         if(empty($db_config['dbms']))
-            E(L('_NO_DB_CONFIG_'));
+            throw_exception(L('_NO_DB_CONFIG_'));
         // 数据库类型
         $this->dbType = ucwords(strtolower($db_config['dbms']));
         $class = 'Db'. $this->dbType;
@@ -90,7 +90,7 @@ class Db {
                 $db->dbType = $this->_getDsnType($db_config['dsn']);
         }else {
             // 类没有定义
-            E(L('_NO_DB_DRIVER_').': ' . $class);
+            throw_exception(L('_NO_DB_DRIVER_').': ' . $class);
         }
         return $db;
     }
@@ -280,7 +280,7 @@ class Db {
         foreach ($data as $key=>$val){
             if(is_array($val) && 'exp' == $val[0]){
                 $set[]  =   $this->parseKey($key).'='.$val[1];
-            }elseif(is_scalar($val) || is_null($val)) { // 过滤非标量数据
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name   =   md5($key);
                 $set[]  =   $this->parseKey($key).'=:'.$name;
@@ -432,7 +432,7 @@ class Db {
                 }else{
                     // 查询字段的安全过滤
                     if(!preg_match('/^[A-Z_\|\&\-.a-z0-9\(\)\,]+$/',trim($key))){
-                        E(L('_EXPRESS_ERROR_').':'.$key);
+                        throw_exception(L('_EXPRESS_ERROR_').':'.$key);
                     }
                     // 多条件支持
                     $multi  = is_array($val) &&  isset($val['_multi']);
@@ -501,7 +501,7 @@ class Db {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  ' ('.$key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]).' )';
                 }else{
-                    E(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    throw_exception(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
             }else {
                 $count = count($val);
@@ -701,7 +701,7 @@ class Db {
             if(is_array($val) && 'exp' == $val[0]){
                 $fields[]   =  $this->parseKey($key);
                 $values[]   =  $val[1];
-            }elseif(is_scalar($val) || is_null($val)) { // 过滤非标量数据
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
               $fields[]   =  $this->parseKey($key);
               if(C('DB_BIND_PARAM') && 0 !== strpos($val,':')){
                 $name       =   md5($key);

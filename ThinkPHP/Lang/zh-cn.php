@@ -18,7 +18,6 @@
 return array(
     //  核心
     '_MODULE_NOT_EXIST_'    =>  '无法加载模块',
-	'_CONTROLLER_NOT_EXIST_'=>	'无法加载控制器',
     '_ERROR_ACTION_'        =>  '非法操作',
     '_LANGUAGE_NOT_LOAD_'   =>  '无法加载语言包',
     '_TEMPLATE_NOT_EXIST_'  =>  '模板不存在',

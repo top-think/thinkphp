@@ -37,13 +37,14 @@ class ContentReplaceBehavior extends Behavior {
     protected function templateContentReplace($content) {
         // 系统默认的特殊变量替换
         $replace =  array(
+            '__TMPL__'      =>  APP_TMPL_PATH,  // 项目模板目录
             '__ROOT__'      =>  __ROOT__,       // 当前网站地址
             '__APP__'       =>  __APP__,        // 当前项目地址
-            '__MODULE__'    =>  __MODULE__,
+            '__GROUP__'     =>  defined('GROUP_NAME')?__GROUP__:__APP__,
             '__ACTION__'    =>  __ACTION__,     // 当前操作地址
             '__SELF__'      =>  __SELF__,       // 当前页面地址
-            '__CONTROLLER__'=>  __CONTROLLER__,
-            '__URL__'       =>  __CONTROLLER__,
+            '__URL__'       =>  __URL__,
+            '../Public'     =>  APP_TMPL_PATH.'Public',// 项目公共模板目录
             '__PUBLIC__'    =>  __ROOT__.'/Public',// 站点公共目录
         );
         // 允许用户自定义模板的字符串替换
