@@ -78,7 +78,7 @@ function T($template='',$layer=''){
  */
 function I($name,$default='',$filter=null) {
     if(strpos($name,'.')) { // 指定参数来源
-        list($method,$name) =   explode('.',$name);
+        list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
         $method =   'param';
     }
@@ -290,8 +290,8 @@ function import($class, $baseUrl = '', $ext='.class.php') {
     if (empty($baseUrl)) {
         if ('@' == $class_strut[0] || MODULE_NAME == $class_strut[0]) {
             //加载当前模块的类库
-            $baseUrl = dirname(MODULE_PATH);
-            $class   = substr_replace($class, basename(MODULE_PATH).'/', 0, strlen($class_strut[0]) + 1);
+            $baseUrl = MODULE_PATH;
+            $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
         }elseif ('think' == strtolower($class_strut[0])){ // think 官方基类库
             $baseUrl = CORE_PATH;
             $class   = substr($class,6);
