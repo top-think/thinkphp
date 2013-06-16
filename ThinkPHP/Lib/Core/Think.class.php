@@ -168,7 +168,7 @@ class Think {
         }
         // 自动加载的驱动类库
         foreach(explode(',',C('APP_AUTOLOAD_DRIVER')) as $driver){
-            if(substr($class,strlen($driver))==$driver){
+            if(substr($class, 0, strlen($driver))==$driver){
                 if(require_array(array(
                     EXTEND_PATH.'Driver/'.$driver.'/'.$file,
                     CORE_PATH.'Driver/'.$driver.'/'.$file),true)){
