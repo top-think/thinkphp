@@ -234,9 +234,10 @@ class  ThinkTemplate {
     }
 
     // 解析模板中的include标签
-    protected function parseInclude($content) {
+    protected function parseInclude($content, $extend = true) {
         // 解析继承
-        $content    =   $this->parseExtend($content);
+        if($extend)
+            $content    =   $this->parseExtend($content);
         // 解析布局
         $content    =   $this->parseLayout($content);
         // 读取模板中的include标签
@@ -247,7 +248,7 @@ class  ThinkTemplate {
                 $array      =   $this->parseXmlAttrs($include);
                 $file       =   $array['file'];
                 unset($array['file']);
-                $content    =   str_replace($matches[0][$i],$this->parseIncludeItem($file,$array),$content);
+                $content    =   str_replace($matches[0][$i],$this->parseIncludeItem($file,$array,$extend),$content);
             }
         }
         return $content;
@@ -267,8 +268,9 @@ class  ThinkTemplate {
             // 读取继承模板
             $array      =   $this->parseXmlAttrs($matches[1]);
             $content    =   $this->parseTemplateName($array['name']);
+            $content    =   $this->parseInclude($content, false); //对继承模板中的include进行分析
             // 替换block标签
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
+            $content = $this->replaceBlock($content);
         }else{
             $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);            
         }
@@ -335,14 +337,31 @@ class  ThinkTemplate {
     /**
      * 替换继承模板中的block标签
      * @access private
-     * @param string $name  block名称
      * @param string $content  模板内容
      * @return string
      */
-    private function replaceBlock($name,$content) {
-        // 替换block标签 没有重新定义则使用原来的
-        $replace   =  isset($this->block[$name])?   $this->block[$name]   :   $content;
-        return stripslashes($replace);
+    private function replaceBlock($content){
+        static $parse = 0;
+        $begin = $this->config['taglib_begin'];
+        $end   = $this->config['taglib_end'];
+        $reg   = '/('.$begin.'block\sname=(.+?)\s*?'.$end.')(.*?)'.$begin.'\/block'.$end.'/is';
+        if(is_string($content)){
+            do{
+                $content = preg_replace_callback($reg, array($this, 'replaceBlock'), $content);
+            } while ($parse && $parse--);
+            return $content;
+        } elseif(is_array($content)){
+            if(preg_match('/'.$begin.'block\sname=(.+?)\s*?'.$end.'/is', $content[3])){ //存在嵌套，进一步解析
+                $parse = 1;
+                $content[3] = preg_replace_callback($reg, array($this, 'replaceBlock'), "{$content[3]}{$begin}/block{$end}");
+                return $content[1] . $content[3];
+            } else {
+                $name    = addslashes($content[2]);
+                $content = $content[3];
+                $content = isset($this->block[$name]) ? $this->block[$name] : $content;
+                return stripslashes($content);
+            }
+        }
     }
 
     /**
@@ -646,7 +665,7 @@ class  ThinkTemplate {
      * @param array $vars  要传递的变量列表
      * @return string
      */
-    private function parseIncludeItem($tmplPublicName,$vars=array()){
+    private function parseIncludeItem($tmplPublicName,$vars=array(),$extend){
         // 分析模板文件名并读取内容
         $parseStr = $this->parseTemplateName($tmplPublicName);
         // 替换变量
@@ -654,7 +673,7 @@ class  ThinkTemplate {
             $parseStr = str_replace('['.$key.']',$val,$parseStr);
         }
         // 再次对包含文件进行模板分析
-        return $this->parseInclude($parseStr);
+        return $this->parseInclude($parseStr,$extend);
     }
 
     /**
