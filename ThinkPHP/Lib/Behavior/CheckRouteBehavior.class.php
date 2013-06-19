@@ -39,7 +39,7 @@ class CheckRouteBehavior extends Behavior {
             // 分隔符替换 确保路由定义使用统一的分隔符
             $regx = str_replace($depr,'/',$regx);
             foreach ($routes as $rule=>$route){
-                if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
+                if(0===strpos($rule,'/') && preg_match($rule,$regx.(defined('__EXT__')?'.'.__EXT__:''),$matches)) { // 正则路由
                     return $return = $this->parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
