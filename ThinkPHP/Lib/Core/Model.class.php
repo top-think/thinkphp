@@ -264,6 +264,15 @@ class Model {
      * @return boolean
      */
      protected function _facade($data) {
+        // 检查字段映射
+        if(!empty($this->_map)) {
+            foreach ($this->_map as $key=>$val){
+                if(isset($data[$key])) {
+                    $data[$val] =   $data[$key];
+                    unset($data[$key]);
+                }
+            }
+        }
         // 检查非数据字段
         if(!empty($this->fields)) {
             foreach ($data as $key=>$val){
@@ -501,6 +510,7 @@ class Model {
         if(empty($resultSet)) { // 查询结果为空
             return null;
         }
+        $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
         $this->_after_select($resultSet,$options);
         return $resultSet;
     }
@@ -588,6 +598,25 @@ class Model {
     }
 
     /**
+     * 数据读取后的处理
+     * @access protected
+     * @param array $data 当前数据
+     * @return array
+     */
+    protected function _read_data($data) {
+        // 检查字段映射
+        if(!empty($this->_map)) {
+            foreach ($this->_map as $key=>$val){
+                if(isset($data[$val])) {
+                    $data[$key] =   $data[$val];
+                    unset($data[$val]);
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
      * 查询数据
      * @access public
      * @param mixed $options 表达式参数
@@ -610,11 +639,13 @@ class Model {
         if(empty($resultSet)) {// 查询结果为空
             return null;
         }
-        $this->data         =   $resultSet[0];
-        $this->_after_find($this->data,$options);
+        // 读取数据后的处理
+        $data   =   $this->_read_data($resultSet[0]);
+        $this->_after_find($data,$options);
         if(!empty($this->options['result'])) {
-            return $this->returnResult($this->data,$this->options['result']);
+            return $this->returnResult($data,$this->options['result']);
         }
+        $this->data     =   $data;
         return $this->data;
     }
     // 查询成功的回调方法
@@ -770,9 +801,6 @@ class Model {
             $this->error = L('_DATA_TYPE_INVALID_');
             return false;
         }
-
-        // 检查字段映射
-        $data = $this->parseFieldsMap($data,0);
 
         // 状态
         $type = $type?$type:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
