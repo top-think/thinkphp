@@ -28,7 +28,7 @@ function T($template='',$layer=''){
         }
         // 解析模版资源地址
         if(false === strpos($template,'://')){
-            $template   =   APP_NAME.'://'.$template;
+            $template   =   APP_NAME.'://'.str_replace(':', '/',$template);
         }        
         $info   =   parse_url($template);
         $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
