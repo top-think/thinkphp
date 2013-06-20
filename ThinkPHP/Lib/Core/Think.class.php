@@ -155,6 +155,16 @@ class Think {
         // 检查是否存在别名定义
         if(alias_import($class)) return ;
         $file       =   $class.'.class.php';
+        // 自动加载行为
+        if(substr($class,-8)=='Behavior') { // 加载行为
+            if(require_array(array(
+                CORE_PATH.'Behavior/'.$file,
+                EXTEND_PATH.'Behavior/'.$file,
+                LIB_PATH.'Behavior/'.$file),true)
+                || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
+                return ;
+            }
+        }        
         // 自动加载的类库层
         foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
             if(substr($class,-strlen($layer))==$layer){
@@ -176,16 +186,6 @@ class Think {
                 }
             }            
         }        
-        // 自动加载行为
-        if(substr($class,-8)=='Behavior') { // 加载行为
-            if(require_array(array(
-                CORE_PATH.'Behavior/'.$file,
-                EXTEND_PATH.'Behavior/'.$file,
-                LIB_PATH.'Behavior/'.$file),true)
-                || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
-                return ;
-            }
-        }
 
         // 根据自动加载路径设置进行尝试搜索
         foreach (explode(',',C('APP_AUTOLOAD_PATH')) as $path){
