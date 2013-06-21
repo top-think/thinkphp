@@ -143,6 +143,16 @@ class View {
      */
     public function parseTemplate($template='') {
         if(is_file($template)) {
+            $group  =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
+            $theme  =   C('DEFAULT_THEME');
+            // 获取当前主题的模版路径
+            if(1==C('APP_GROUP_MODE')){ // 独立分组模式
+                define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            }else{ 
+                define('THEME_PATH',   TMPL_PATH.$group.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+            }
             return $template;
         }
         $template = str_replace(':', '/', $template);

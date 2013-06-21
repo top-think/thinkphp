@@ -152,6 +152,7 @@ class Dispatcher {
         // 定义项目基础加载路径
         define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);
         if(defined('GROUP_NAME')) {
+            C('CACHE_PATH',CACHE_PATH.GROUP_NAME.'/');
             if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
                 $config_path    =   BASE_LIB_PATH.'Conf/';
                 $common_path    =   BASE_LIB_PATH.'Common/';
