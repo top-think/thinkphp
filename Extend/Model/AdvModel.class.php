@@ -25,6 +25,7 @@ class AdvModel extends Model {
     protected $serializeField   =   array();
     protected $readonlyField    =   array();
     protected $_filter          =   array();
+    protected $partition        =   array();
 
     public function __construct($name='',$tablePrefix='',$connection='') {
         if('' !== $name || is_subclass_of($this,'AdvModel') ){
