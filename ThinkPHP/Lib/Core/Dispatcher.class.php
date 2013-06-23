@@ -123,7 +123,7 @@ class Dispatcher {
                     $_GET[C('VAR_URL_PARAMS')]   =  $paths;
                 }
                 $var  =  array();
-                if (C('MULIT_MODULE') && !isset($_GET[$varModule])){ // 获取模块
+                if (C('MULTI_MODULE') && !isset($_GET[$varModule])){ // 获取模块
                     $var[$varModule] = array_shift($paths);
                     if(C('APP_MODULE_DENY') && in_array(strtolower($var[$varModule]),explode(',',strtolower(C('APP_MODULE_DENY'))))) {
                         // 禁止直接访问模块
