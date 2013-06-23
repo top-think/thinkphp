@@ -173,8 +173,8 @@ class Model {
         $this->_extModel   = new $class($this->name);
         if(!empty($vars)) {
             // 传入当前模型的属性到扩展模型
-            foreach ($vars as $var)
-                $this->_extModel->setProperty($var,$this->$var);
+            foreach ($vars as $key=>$var)
+                $this->_extModel->setProperty($key, $var);
         }
         return $this->_extModel;
     }
