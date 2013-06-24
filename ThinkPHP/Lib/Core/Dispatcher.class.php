@@ -98,11 +98,18 @@ class Dispatcher {
             tag('path_info');
             $part =  pathinfo($_SERVER['PATH_INFO']);
             define('__EXT__', isset($part['extension'])?strtolower($part['extension']):'');
-            if(C('URL_HTML_SUFFIX')) {
-                $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim(C('URL_HTML_SUFFIX'),'.').')$/i', '', $_SERVER['PATH_INFO']);
-            }elseif(__EXT__) {
-                $_SERVER['PATH_INFO'] = preg_replace('/.'.__EXT__.'$/i','',$_SERVER['PATH_INFO']);
+            if(__EXT__){
+                if(C('URL_DENY_SUFFIX') && preg_match('/\.('.trim(C('URL_DENY_SUFFIX'),'.').')$/i', $_SERVER['PATH_INFO'])){
+                    send_http_status(404);
+                    exit;
+                }
+                if(C('URL_HTML_SUFFIX')) {
+                    $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim(C('URL_HTML_SUFFIX'),'.').')$/i', '', $_SERVER['PATH_INFO']);
+                }else{
+                    $_SERVER['PATH_INFO'] = preg_replace('/.'.__EXT__.'$/i','',$_SERVER['PATH_INFO']);
+                }
             }
+
             if(!self::routerCheck()){   // 检测路由规则 如果没有则按默认规则调度URL
                 $paths = explode($depr,trim($_SERVER['PATH_INFO'],'/'));
                 if(C('VAR_URL_PARAMS')) {
@@ -145,6 +152,7 @@ class Dispatcher {
         // 定义项目基础加载路径
         define('BASE_LIB_PATH', (defined('GROUP_NAME') && C('APP_GROUP_MODE')==1) ? APP_PATH.C('APP_GROUP_PATH').'/'.GROUP_NAME.'/' : LIB_PATH);
         if(defined('GROUP_NAME')) {
+            C('CACHE_PATH',CACHE_PATH.GROUP_NAME.'/');
             if(1 == C('APP_GROUP_MODE')){ // 独立分组模式
                 $config_path    =   BASE_LIB_PATH.'Conf/';
                 $common_path    =   BASE_LIB_PATH.'Common/';

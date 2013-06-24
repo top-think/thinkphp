@@ -43,6 +43,7 @@ return  array(
     /* 默认设定 */
     'DEFAULT_M_LAYER'       =>  'Model', // 默认的模型层名称
     'DEFAULT_C_LAYER'       =>  'Action', // 默认的控制器层名称
+    'DEFAULT_V_LAYER'       =>  'Tpl', // 默认的视图层名称
     'DEFAULT_APP'           => '@',     // 默认项目名称，@表示当前项目
     'DEFAULT_LANG'          => 'zh-cn', // 默认语言
     'DEFAULT_THEME'         => '',	// 默认模板主题名称
@@ -123,6 +124,7 @@ return  array(
     'URL_PATHINFO_DEPR'     => '/',	// PATHINFO模式下，各参数之间的分割符号
     'URL_PATHINFO_FETCH'    =>   'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL', // 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
     'URL_HTML_SUFFIX'       => 'html',  // URL伪静态后缀设置
+    'URL_DENY_SUFFIX'       =>  'ico|png|gif|jpg', // URL禁止访问的后缀设置
     'URL_PARAMS_BIND'       =>  true, // URL变量绑定到Action方法参数
     'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
 

@@ -17,6 +17,45 @@
  */
 
 /**
+ * 获取模版文件 格式 项目://分组@主题/模块/操作
+ * @param string $name 模版资源地址
+ * @param string $layer 视图层（目录）名称
+ * @return string
+ */
+function T($template='',$layer=''){
+        if(is_file($template)) {
+            return $template;
+        }
+        // 解析模版资源地址
+        if(false === strpos($template,'://')){
+            $template   =   APP_NAME.'://'.str_replace(':', '/',$template);
+        }        
+        $info   =   parse_url($template);
+        $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
+        $group  =   isset($info['user'])?$info['user'].'/':(defined('GROUP_NAME')?GROUP_NAME.'/':'');
+        $app    =   $info['scheme'];
+        $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
+
+        // 获取当前主题的模版路径
+        if(($list = C('EXTEND_GROUP_LIST')) && isset($list[$app])){ // 扩展分组
+            $baseUrl    =   $list[$app].'/'.$group.$layer.'/';
+        }elseif(1==C('APP_GROUP_MODE')){ // 独立分组模式
+            $baseUrl    =   dirname(BASE_LIB_PATH).'/'.$group.$layer.'/';
+        }else{ 
+            $baseUrl    =   TMPL_PATH.$group;
+        }
+
+        // 分析模板文件规则
+        if('' == $file) {
+            // 如果模板文件名为空 按照默认规则定位
+            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
+        }elseif(false === strpos($file, '/')){
+            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . $file;
+        }
+        return $baseUrl.$file.C('TMPL_TEMPLATE_SUFFIX');
+}
+
+/**
  * 获取输入参数 支持过滤和默认值
  * 使用方法:
  * <code>
@@ -31,7 +70,7 @@
  */
 function I($name,$default='',$filter=null) {
     if(strpos($name,'.')) { // 指定参数来源
-        list($method,$name) =   explode('.',$name);
+        list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
         $method =   'param';
     }
@@ -73,6 +112,13 @@ function I($name,$default='',$filter=null) {
     }
     if(empty($name)) { // 获取全部变量
         $data       =   $input; 
+        $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
+        if($filters) {
+            $filters    =   explode(',',$filters);
+            foreach($filters as $filter){
+                $data   =   array_map($filter,$data); // 参数过滤
+            }
+        }        
     }elseif(isset($input[$name])) { // 取值操作
         $data       =	$input[$name];
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
@@ -338,13 +384,18 @@ function D($name='',$layer='') {
     static $_model  =   array();
     $layer          =   $layer?$layer:C('DEFAULT_M_LAYER');
     if(strpos($name,'://')) {// 指定项目
+        list($app)  =   explode('://',$name);
         $name       =   str_replace('://','/'.$layer.'/',$name);
     }else{
-        $name       =   C('DEFAULT_APP').'/'.$layer.'/'.$name;
+        $app        =   C('DEFAULT_APP');
+        $name       =   $app.'/'.$layer.'/'.$name;
     }
     if(isset($_model[$name]))   return $_model[$name];
     $path           =   explode('/',$name);
-    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+    if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
+        $baseUrl    =   $list[$app];
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }else{
@@ -391,13 +442,18 @@ function A($name,$layer='',$common=false) {
     static $_action = array();
     $layer      =   $layer?$layer:C('DEFAULT_C_LAYER');
     if(strpos($name,'://')) {// 指定项目
+        list($app)  =   explode('://',$name);
         $name   =  str_replace('://','/'.$layer.'/',$name);
     }else{
+        $app    =   '@';
         $name   =  '@/'.$layer.'/'.$name;
     }
     if(isset($_action[$name]))  return $_action[$name];
     $path           =   explode('/',$name);
-    if(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
+    if($list = C('EXTEND_GROUP_LIST') && isset($list[$app])){ // 扩展分组
+        $baseUrl    =   $list[$app];
+        import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
+    }elseif(count($path)>3 && 1 == C('APP_GROUP_MODE')) { // 独立分组
         $baseUrl    =   $path[0]== '@' ? dirname(BASE_LIB_PATH) : APP_PATH.'../'.$path[0].'/'.C('APP_GROUP_PATH').'/';
         import($path[2].'/'.$path[1].'/'.$path[3].$layer,$baseUrl);
     }elseif($common) { // 加载公共类库目录
@@ -569,19 +625,24 @@ function add_tag_behavior($tag,$behavior,$path='') {
 /**
  * 执行某个行为
  * @param string $name 行为名称
- * @param Mixed $params 传人的参数
+ * @param Mixed $params 传入的参数
  * @return void
  */
 function B($name, &$params=NULL) {
+    if(strpos($name,'/')){
+        list($name,$method) = explode('/',$name);
+    }else{
+        $method     =   'run';
+    }
     $class      = $name.'Behavior';
     if(APP_DEBUG) {
         G('behaviorStart');
     }
     $behavior   = new $class();
-    $behavior->run($params);
+    $behavior->$method($params);
     if(APP_DEBUG) { // 记录行为的执行日志
         G('behaviorEnd');
-        trace('Run '.$name.' Behavior [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
+        trace($name.' Behavior ::'.$method.' [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
     }
 }
 

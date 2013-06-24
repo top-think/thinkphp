@@ -21,8 +21,15 @@ class View {
      * 模板输出变量
      * @var tVar
      * @access protected
-     */       
-    protected $tVar        =  array();
+     */ 
+    protected $tVar     =   array();
+
+    /**
+     * 模板主题
+     * @var theme
+     * @access protected
+     */ 
+    protected $theme    =   '';
 
     /**
      * 模板变量赋值
@@ -102,10 +109,10 @@ class View {
      */
     public function fetch($templateFile='',$content='',$prefix='') {
         if(empty($content)) {
-            // 模板文件解析标签
-            tag('view_template',$templateFile);
+            $templateFile   =   $this->parseTemplate($templateFile);
             // 模板文件不存在直接返回
-            if(!is_file($templateFile)) return NULL;
+            if(!is_file($templateFile)) 
+                throw_exception(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
         }
         // 页面缓存
         ob_start();
@@ -127,4 +134,92 @@ class View {
         // 输出模板文件
         return $content;
     }
+
+    /**
+     * 自动定位模板文件
+     * @access protected
+     * @param string $template 模板文件规则
+     * @return string
+     */
+    public function parseTemplate($template='') {
+        if(is_file($template)) {
+            $group  =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
+            $theme  =   C('DEFAULT_THEME');
+            // 获取当前主题的模版路径
+            if(1==C('APP_GROUP_MODE')){ // 独立分组模式
+                define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            }else{ 
+                define('THEME_PATH',   TMPL_PATH.$group.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+            }
+            return $template;
+        }
+        $template = str_replace(':', '/', $template);
+        // 获取当前主题名称
+        $theme = $this->getTemplateTheme();
+        // 获取当前模版分组
+        $group   =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
+        if(defined('GROUP_NAME') && strpos($template,'@')){ // 跨分组调用模版文件
+            list($group,$template)  =   explode('@',$template);
+            $group  .=   '/';
+        }
+        // 获取当前主题的模版路径
+        if(1==C('APP_GROUP_MODE')){ // 独立分组模式
+            define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+        }else{ 
+            define('THEME_PATH',   TMPL_PATH.$group.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+        }
+
+        // 分析模板文件规则
+        if('' == $template) {
+            // 如果模板文件名为空 按照默认规则定位
+            $template = MODULE_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
+        }elseif(false === strpos($template, '/')){
+            $template = MODULE_NAME . C('TMPL_FILE_DEPR') . $template;
+        }
+        return THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
+    }
+
+    /**
+     * 设置当前输出的模板主题
+     * @access public
+     * @param  mixed $theme 主题名称
+     * @return View
+     */
+    public function theme($theme){
+        $this->theme = $theme;
+        return $this;
+    }
+
+    /**
+     * 获取当前的模板主题
+     * @access private
+     * @return string
+     */
+    private function getTemplateTheme() {
+        if($this->theme) { // 指定模板主题
+            $theme = $this->theme;
+        }else{
+            /* 获取模板主题名称 */
+            $theme =  C('DEFAULT_THEME');
+            if(C('TMPL_DETECT_THEME')) {// 自动侦测模板主题
+                $t = C('VAR_TEMPLATE');
+                if (isset($_GET[$t])){
+                    $theme = $_GET[$t];
+                }elseif(cookie('think_template')){
+                    $theme = cookie('think_template');
+                }
+                if(!in_array($theme,explode(',',C('THEME_LIST')))){
+                    $theme =  C('DEFAULT_THEME');
+                }
+                cookie('think_template',$theme,864000);
+            }
+        }
+        define('THEME_NAME',   $theme);                  // 当前模板主题名称
+        return $theme?$theme . '/':'';
+    }
+
 }

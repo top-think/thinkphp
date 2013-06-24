@@ -285,7 +285,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
 /**
  * 渲染输出Widget
  * @param string $name Widget名称
- * @param array $data 传人的参数
+ * @param array $data 传入的参数
  * @param boolean $return 是否返回内容 
  * @param string $path Widget所在路径
  * @return void
@@ -368,7 +368,7 @@ function redirect($url, $time=0, $msg='') {
  */
 function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($options)){
+    if(is_array($options) && empty($cache)){
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
         $cache      =   Cache::getInstance($type,$options);
@@ -544,8 +544,6 @@ function session($name,$value='') {
         ini_set('session.auto_start', 0);
         if(isset($name['name']))            session_name($name['name']);
         if(isset($name['path']))            session_save_path($name['path']);
-        if(isset($name['save_handler']))    ini_set('session.save_handler', $name['save_handler']);
-        if(isset($name['save_path']))       ini_set('session.save_path', $name['save_path']);
         if(isset($name['domain']))          ini_set('session.cookie_domain', $name['domain']);
         if(isset($name['expire']))          ini_set('session.gc_maxlifetime', $name['expire']);
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
@@ -581,10 +579,11 @@ function session($name,$value='') {
             }
         }elseif(0===strpos($name,'?')){ // 检查session
             $name   =  substr($name,1);
-            if($prefix) {
-                return isset($_SESSION[$prefix][$name]);
+            if(strpos($name,'.')){ // 支持数组
+                list($name1,$name2) =   explode('.',$name);
+                return $prefix?isset($_SESSION[$prefix][$name1][$name2]):isset($_SESSION[$name1][$name2]);
             }else{
-                return isset($_SESSION[$name]);
+                return $prefix?isset($_SESSION[$prefix][$name]):isset($_SESSION[$name]);
             }
         }elseif(is_null($name)){ // 清空session
             if($prefix) {
@@ -593,9 +592,19 @@ function session($name,$value='') {
                 $_SESSION = array();
             }
         }elseif($prefix){ // 获取session
-            return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                return isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;  
+            }else{
+                return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;                
+            }            
         }else{
-            return isset($_SESSION[$name])?$_SESSION[$name]:null;
+            if(strpos($name,'.')){
+                list($name1,$name2) =   explode('.',$name);
+                return isset($_SESSION[$name1][$name2])?$_SESSION[$name1][$name2]:null;  
+            }else{
+                return isset($_SESSION[$name])?$_SESSION[$name]:null;
+            }            
         }
     }elseif(is_null($value)){ // 删除session
         if($prefix){
@@ -741,18 +750,53 @@ function get_client_ip($type = 0) {
  */
 function send_http_status($code) {
     static $_status = array(
+        // Informational 1xx
+        100 => 'Continue',
+        101 => 'Switching Protocols',
         // Success 2xx
         200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
         // Redirection 3xx
+        300 => 'Multiple Choices',
         301 => 'Moved Permanently',
-        302 => 'Moved Temporarily ',  // 1.1
+        302 => 'Moved Temporarily ', // 1.1
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        // 306 is deprecated but reserved
+        307 => 'Temporary Redirect',
         // Client Error 4xx
         400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
         403 => 'Forbidden',
         404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
         // Server Error 5xx
         500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
         503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        509 => 'Bandwidth Limit Exceeded'
     );
     if(isset($_status[$code])) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);

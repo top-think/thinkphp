@@ -95,7 +95,7 @@ class ReadHtmlCacheBehavior extends Behavior {
      * @access public
      * @param string $cacheFile  静态文件名
      * @param integer $cacheTime  缓存有效期
-     * @return boolen
+     * @return boolean
      */
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
         if(!is_file($cacheFile)){
