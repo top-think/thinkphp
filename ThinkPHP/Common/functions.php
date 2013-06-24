@@ -188,6 +188,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             $path       =   explode($depr,$url);
             $var        =   array();
             $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
+            if(C('URL_CASE_INSENSITIVE')) {
+                $var[C('VAR_ACTION')]   =   strtolower($var[C('VAR_ACTION')]);
+            }            
             $var[C('VAR_CONTROLLER')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
             if($maps = C('URL_ACTION_MAP')) {
                 if(isset($maps[strtolower($var[C('VAR_CONTROLLER')])])) {
