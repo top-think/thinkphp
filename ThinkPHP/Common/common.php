@@ -397,6 +397,7 @@ function D($name='',$layer='') {
     if(class_exists($class)) {
         $model      =   new $class(basename($name));
     }else {
+        Log::record('D方法实例化没找到模型类'.$class,Log::NOTICE);
         $model      =   new Model(basename($name));
     }
     $_model[$name.$layer]  =  $model;
