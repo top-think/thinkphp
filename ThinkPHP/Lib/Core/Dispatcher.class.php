@@ -172,7 +172,9 @@ class Dispatcher {
             // 加载分组函数文件
             if(is_file($common_path.'function.php'))
                 include $common_path.'function.php';
-        }        
+        }else{
+            C('CACHE_PATH',CACHE_PATH);
+        }       
         define('MODULE_NAME',self::getModule(C('VAR_MODULE')));
         define('ACTION_NAME',self::getAction(C('VAR_ACTION')));
         
