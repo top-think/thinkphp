@@ -154,7 +154,11 @@ class View {
             list($module,$template)  =   explode('@',$template);
         }
         // 获取当前主题的模版路径
-        define('THEME_PATH',   MODULES_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
+        if(C('VIEW_PATH')){ // 视图目录
+            define('THEME_PATH',   C('VIEW_PATH').$module.'/'.$theme);
+        }else{ // 模块视图
+            define('THEME_PATH',   MODULES_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
+        }
 
         // 分析模板文件规则
         if('' == $template) {
