@@ -409,9 +409,6 @@ class Model {
         $data       =   $this->_facade($data);
         // 分析表达式
         $options    =   $this->_parseOptions($options);
-        if(false === $this->_before_update($data,$options)) {
-            return false;
-        }
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
             if(isset($data[$this->getPk()])) {
@@ -426,6 +423,9 @@ class Model {
                 return false;
             }
         }
+        if(false === $this->_before_update($data,$options)) {
+            return false;
+        }        
         $result     =   $this->db->update($data,$options);
         if(false !== $result) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
