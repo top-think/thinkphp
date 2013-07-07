@@ -443,21 +443,23 @@ class Model {
             else
                 return false;
         }
+        $pk   =  $this->getPk();
         if(is_numeric($options)  || is_string($options)) {
             // 根据主键删除记录
-            $pk   =  $this->getPk();
             if(strpos($options,',')) {
                 $where[$pk]     =  array('IN', $options);
             }else{
                 $where[$pk]     =  $options;
             }
-            $pkValue            =  $where[$pk];
             $options            =  array();
             $options['where']   =  $where;
         }
         // 分析表达式
         $options =  $this->_parseOptions($options);
-        $result=    $this->db->delete($options);
+        if(is_array($options['where']) && isset($options['where'][$pk])){
+            $pkValue    =   $options['where'][$pk];
+        }
+        $result  =    $this->db->delete($options);
         if(false !== $result) {
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
