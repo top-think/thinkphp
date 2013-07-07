@@ -468,7 +468,10 @@ class Model {
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue            =  $options['where'][$pk];
         }
-        $result=    $this->db->delete($options);
+        if(false === $this->_before_delete($options)) {
+            return false;
+        }        
+        $result  =    $this->db->delete($options);
         if(false !== $result) {
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
@@ -477,6 +480,8 @@ class Model {
         // 返回删除记录个数
         return $result;
     }
+    // 删除数据前的回调方法
+    protected function _before_delete($options) {}    
     // 删除成功后的回调方法
     protected function _after_delete($data,$options) {}
 
