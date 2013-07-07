@@ -945,7 +945,7 @@ class Model {
                             $data[$auto[0]] = $data[$auto[1]];
                             break;
                         case 'ignore': // 为空忽略
-                            if(''===$data[$auto[0]])
+                            if($auto[1]===$data[$auto[0]])
                                 unset($data[$auto[0]]);
                             break;
                         case 'string':
