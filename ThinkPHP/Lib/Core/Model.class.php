@@ -403,7 +403,7 @@ class Model {
         $pk         =   $this->getPk();
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
-            if(isset($data[$this->getPk()])) {
+            if(isset($data[$pk])) {
                 $where[$pk]         =   $data[$pk];
                 $options['where']   =   $where;
                 unset($data[$pk]);
