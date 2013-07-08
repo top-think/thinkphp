@@ -409,13 +409,12 @@ class Model {
         $data       =   $this->_facade($data);
         // 分析表达式
         $options    =   $this->_parseOptions($options);
+        $pk         =   $this->getPk();
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
-            if(isset($data[$this->getPk()])) {
-                $pk                 =   $this->getPk();
+            if(isset($data[$pk])) {
                 $where[$pk]         =   $data[$pk];
                 $options['where']   =   $where;
-                $pkValue            =   $data[$pk];
                 unset($data[$pk]);
             }else{
                 // 如果没有任何更新条件则不执行
@@ -423,6 +422,9 @@ class Model {
                 return false;
             }
         }
+        if(is_array($options['where']) && isset($options['where'][$pk])){
+            $pkValue    =   $options['where'][$pk];
+        }        
         if(false === $this->_before_update($data,$options)) {
             return false;
         }        
