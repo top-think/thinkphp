@@ -534,6 +534,7 @@ class Model {
             $options =  array_merge($this->options,$options);
         // 查询过后清空sql表达式组装 避免影响下次查询
         $this->options  =   array();
+        $this->options['table'] = $options['table'];
         if(!isset($options['table'])){
             // 自动获取表名
             $options['table']   =   $this->getTableName();
