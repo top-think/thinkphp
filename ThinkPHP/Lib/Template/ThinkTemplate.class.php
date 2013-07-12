@@ -145,6 +145,8 @@ class  ThinkTemplate {
         }
         // 优化生成的php代码
         $tmplContent = str_replace('?><?php','',$tmplContent);
+        // 模版编译过滤标签
+        tag('template_filter',$tmplContent);
         return strip_whitespace($tmplContent);
     }
 
