@@ -52,7 +52,13 @@ function T($template='',$layer=''){
     }else{ // 分组模式
         $baseUrl    =   MODULES_PATH.$module.$layer.'/';
     }
-
+    // 获取主题
+    $array  =   explode('/',$file);
+    if(count($array)>2){
+        $theme  =   array_shift($array);
+    }else{
+        $theme  =   C('DEFAULT_THEME');
+    }
     // 分析模板文件规则
     if('' == $file) {
         // 如果模板文件名为空 按照默认规则定位
@@ -60,7 +66,7 @@ function T($template='',$layer=''){
     }elseif(false === strpos($file, '/')){
         $file = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . $file;
     }
-    return $baseUrl.$file.C('TMPL_TEMPLATE_SUFFIX');
+    return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
 
 /**
