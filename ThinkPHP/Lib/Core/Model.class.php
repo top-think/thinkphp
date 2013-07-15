@@ -264,15 +264,7 @@ class Model {
      * @return boolean
      */
      protected function _facade($data) {
-        // 检查字段映射
-        if(!empty($this->_map)) {
-            foreach ($this->_map as $key=>$val){
-                if(isset($data[$key])) {
-                    $data[$val] =   $data[$key];
-                    unset($data[$key]);
-                }
-            }
-        }
+
         // 检查非数据字段
         if(!empty($this->fields)) {
             foreach ($data as $key=>$val){
@@ -616,7 +608,7 @@ class Model {
      */
     protected function _read_data($data) {
         // 检查字段映射
-        if(!empty($this->_map)) {
+        if(!empty($this->_map) && C('READ_DATA_MAP')) {
             foreach ($this->_map as $key=>$val){
                 if(isset($data[$val])) {
                     $data[$key] =   $data[$val];
@@ -815,6 +807,16 @@ class Model {
 
         // 状态
         $type = $type?$type:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
+
+        // 检查字段映射
+        if(!empty($this->_map)) {
+            foreach ($this->_map as $key=>$val){
+                if(isset($data[$key])) {
+                    $data[$val] =   $data[$key];
+                    unset($data[$key]);
+                }
+            }
+        }
 
         // 检测提交字段的合法性
         if(isset($this->options['field'])) { // $this->field('field1,field2...')->create()
