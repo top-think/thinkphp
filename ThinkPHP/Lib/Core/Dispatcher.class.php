@@ -253,8 +253,12 @@ class Dispatcher {
                     return   '';
                 }
             }
-        }        
-        return strip_tags(C('URL_CASE_INSENSITIVE')?strtolower($action):$action);
+        }
+        if(C('URL_CASE_INSENSITIVE')) {
+            // URL地址不区分大小写
+            $action = ucfirst(parse_name($action,1));
+        }
+        return strip_tags($action);
     }
 
     /**
@@ -265,7 +269,11 @@ class Dispatcher {
     static private function getGroup($var) {
         $group   = (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_GROUP'));
         unset($_GET[$var]);
-        return strip_tags(C('URL_CASE_INSENSITIVE') ?ucfirst(strtolower($group)):$group);
+        if(C('URL_CASE_INSENSITIVE')) {
+            // URL地址不区分大小写
+            $group = ucfirst(parse_name($group,1));
+        }
+        return strip_tags($group);
     }
 
 }
