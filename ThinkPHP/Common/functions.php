@@ -17,43 +17,6 @@
  */
 
 /**
- * 错误输出
- * @param mixed $error 错误
- * @return void
- */
-function halt($error) {
-    $e = array();
-    if (APP_DEBUG) {
-        //调试模式下输出错误信息
-        if (!is_array($error)) {
-            $trace          = debug_backtrace();
-            $e['message']   = $error;
-            $e['file']      = $trace[0]['file'];
-            $e['line']      = $trace[0]['line'];
-            ob_start();
-            debug_print_backtrace();
-            $e['trace']     = ob_get_clean();
-        } else {
-            $e              = $error;
-        }
-    } else {
-        //否则定向到错误页面
-        $error_page         = C('ERROR_PAGE');
-        if (!empty($error_page)) {
-            redirect($error_page);
-        } else {
-            if (C('SHOW_ERROR_MSG'))
-                $e['message'] = is_array($error) ? $error['message'] : $error;
-            else
-                $e['message'] = C('ERROR_MESSAGE');
-        }
-    }
-    // 包含异常页面模板
-    include C('TMPL_EXCEPTION_FILE');
-    exit;
-}
-
-/**
  * 自定义异常处理
  * @param string $msg 异常消息
  * @param string $type 异常类型 默认为ThinkException
@@ -64,7 +27,7 @@ function throw_exception($msg, $type='ThinkException', $code=0) {
     if (class_exists($type, false))
         throw new $type($msg, $code);
     else
-        halt($msg);        // 异常类型不存在则输出错误信息字串
+        Think::halt($msg);        // 异常类型不存在则输出错误信息字串
 }
 
 /**

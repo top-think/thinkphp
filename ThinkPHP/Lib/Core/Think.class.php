@@ -212,7 +212,7 @@ class Think {
                     self::$_instance[$identify] = $o;
             }
             else
-                halt(L('_CLASS_NOT_EXIST_').':'.$class);
+                self::halt(L('_CLASS_NOT_EXIST_').':'.$class);
         }
         return self::$_instance[$identify];
     }
@@ -238,7 +238,7 @@ class Think {
         // 发送404信息
         header('HTTP/1.1 404 Not Found');
         header('Status:404 Not Found');
-        halt($error);
+        self::halt($error);
     }
 
     /**
@@ -265,7 +265,7 @@ class Think {
             }
             $errorStr = "$errstr ".$errfile." 第 $errline 行.";
             if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
-            function_exists('halt')?halt($errorStr):exit('ERROR:'.$errorStr);
+            self::halt($errorStr);
             break;
           case E_STRICT:
           case E_USER_WARNING:
@@ -289,10 +289,49 @@ class Think {
               case E_COMPILE_ERROR:
               case E_USER_ERROR:  
                 ob_end_clean();
-                function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
+                self::halt($e);
                 break;
             }
         }
     }
 
+    /**
+     * 错误输出
+     * @param mixed $error 错误
+     * @return void
+     */
+    static public function halt($error) {
+        $e = array();
+        if (APP_DEBUG || IS_CLI) {
+            //调试模式下输出错误信息
+            if (!is_array($error)) {
+                $trace          = debug_backtrace();
+                $e['message']   = $error;
+                $e['file']      = $trace[0]['file'];
+                $e['line']      = $trace[0]['line'];
+                ob_start();
+                debug_print_backtrace();
+                $e['trace']     = ob_get_clean();
+            } else {
+                $e              = $error;
+            }
+            if(IS_CLI){
+                exit($e['message'].PHP_EOL.'FILE: '.$e['file'].'('.$e['line'].')'.PHP_EOL.$e['trace']);
+            }
+        } else {
+            //否则定向到错误页面
+            $error_page         = C('ERROR_PAGE');
+            if (!empty($error_page)) {
+                redirect($error_page);
+            } else {
+                if (C('SHOW_ERROR_MSG'))
+                    $e['message'] = is_array($error) ? $error['message'] : $error;
+                else
+                    $e['message'] = C('ERROR_MESSAGE');
+            }
+        }
+        // 包含异常页面模板
+        include C('TMPL_EXCEPTION_FILE');
+        exit;
+    }
 }
