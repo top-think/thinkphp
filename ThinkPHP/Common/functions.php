@@ -24,6 +24,7 @@
  * @return void
  */
 function throw_exception($msg, $type='ThinkException', $code=0) {
+    Log::record('建议使用E方法替代throw_exception',Log::NOTICE);
     if (class_exists($type, false))
         throw new $type($msg, $code);
     else

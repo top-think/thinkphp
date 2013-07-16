@@ -48,15 +48,7 @@ class App {
 
         // URL调度结束标签
         tag('url_dispatch');         
-        // 系统变量安全过滤
-        if(C('VAR_FILTERS')) {
-            $filters    =   explode(',',C('VAR_FILTERS'));
-            foreach($filters as $filter){
-                // 全局参数过滤
-                array_walk_recursive($_POST,$filter);
-                array_walk_recursive($_GET,$filter);
-            }
-        }
+
         // 日志目录转换为绝对路径
         C('LOG_PATH',realpath(LOG_PATH).'/');
         // TMPL_EXCEPTION_FILE 改为绝对地址
