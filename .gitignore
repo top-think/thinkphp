@@ -1,3 +1,10 @@
+Common/
+Conf/
+Lang/
+Lib/
+Runtime/
+Tpl/
+index.php
 .settings/
 .buildpath
 .project
