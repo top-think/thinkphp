@@ -100,9 +100,9 @@ class Dispatcher {
         }
 		
         // URL常量
-        define('__SELF__',strip_tags($_SERVER['REQUEST_URI']));
+        define('__SELF__',htmlspecialchars($_SERVER['REQUEST_URI']));
         // 当前项目地址
-        define('__APP__',strip_tags(PHP_FILE));
+        define('__APP__',htmlspecialchars(PHP_FILE));
         
         // 获取分组 模块和操作名称
         if (C('APP_GROUP_LIST')) {
