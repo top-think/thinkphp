@@ -55,12 +55,6 @@ if(!IS_CLI) {
         }
         define('__ROOT__',   (($_root=='/' || $_root=='\\')?'':$_root));
     }
-
-    //支持的URL模式
-    define('URL_COMMON',      0);   //普通模式
-    define('URL_PATHINFO',    1);   //PATHINFO模式
-    define('URL_REWRITE',     2);   //REWRITE模式
-    define('URL_COMPAT',      3);   // 兼容模式
 }
 
 // 路径设置 可在入口文件中重新定义 所有路径常量都必须以/ 结尾
