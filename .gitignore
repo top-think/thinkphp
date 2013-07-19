@@ -4,6 +4,7 @@ Lang/
 Lib/
 Runtime/
 Tpl/
+Public/
 index.php
 .settings/
 .buildpath
