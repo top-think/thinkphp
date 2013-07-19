@@ -1,0 +1,10 @@
+Runtime/
+Common/
+Conf/
+Lang/
+Lib/
+Tpl/
+.settings/
+.buildpath
+.project
+*.log
