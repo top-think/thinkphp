@@ -26,8 +26,8 @@ class App {
      */
     static public function init() {
         // 页面压缩输出支持
-		ob_end_clean();
         if(C('OUTPUT_ENCODE')){
+        	ob_end_clean();
             $zlib = ini_get('zlib.output_compression');
             if(empty($zlib)) ob_start('ob_gzhandler');
         }
