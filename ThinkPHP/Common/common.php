@@ -756,25 +756,10 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
     }
 }
 
-function tstripslashes($string){
-	if(empty($string)) return $string;
-	if(is_array($string)) {
-		foreach($string as $key => $val) {
-			$string[$key] = tstripslashes($val);
-		}
-	} else {
-		$string = stripslashes($string);
-	}
-	return $string;
+function tstripslashes(&$string){
+	$string = stripslashes($string);
 }
 
 function thtmlspecialchars(&$string){
-	if(empty($string)) return;
-	if(is_array($string)) {
-		foreach($string as $key => $val) {
-			$string[$key] = thtmlspecialchars($val);
-		}
-	} else {
-		$string = htmlspecialchars($string);
-	}
+	$string = htmlspecialchars($string);
 }
