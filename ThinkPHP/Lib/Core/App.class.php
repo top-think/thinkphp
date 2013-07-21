@@ -36,10 +36,10 @@ class App {
         // 加载动态项目公共文件和配置
         load_ext_file();
 		if(MAGIC_QUOTES_GPC){
-        	$_GET = tstripslashes($_GET);
-        	$_POST = tstripslashes($_POST);
-        	$_COOKIE = tstripslashes($_COOKIE);
-        }
+			array_walk_recursive($_GET,'tstripslashes');
+			array_walk_recursive($_POST,'tstripslashes');
+			array_walk_recursive($_COOKIE,'tstripslashes');
+		}
         // URL调度
         Dispatcher::dispatch();
 
