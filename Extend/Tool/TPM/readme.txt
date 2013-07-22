@@ -15,7 +15,7 @@ return array(
 将TemplateMobile.class.php 文件复制到 ThinkPHP/Extend/Driver/Template 下。 
 
 
-支持手机客户端调整，需要修改核心文件 ThinkPHP/Common/functions.php 中得redirect函数，
+支持手机客户端跳转，需要修改核心文件 ThinkPHP/Common/functions.php 中得redirect函数，
 修改如下：
 
 
