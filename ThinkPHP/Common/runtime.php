@@ -59,7 +59,7 @@ if(!IS_CLI) {
 
 // 路径设置 可在入口文件中重新定义 所有路径常量都必须以/ 结尾
 defined('CORE_PATH')    or define('CORE_PATH',      THINK_PATH.'Lib/'); // 系统核心类库目录
-defined('EXTEND_PATH')  or define('EXTEND_PATH',    THINK_PATH.'Extend/'); // 系统扩展目录
+defined('EXTEND_PATH')  or define('EXTEND_PATH',    THINK_PATH.'extend/Extend/'); // 系统扩展目录
 defined('MODE_PATH')    or define('MODE_PATH',      EXTEND_PATH.'Mode/'); // 模式扩展目录
 defined('ENGINE_PATH')  or define('ENGINE_PATH',    EXTEND_PATH.'Engine/'); // 引擎扩展目录
 defined('VENDOR_PATH')  or define('VENDOR_PATH',    EXTEND_PATH.'Vendor/'); // 第三方类库目录
