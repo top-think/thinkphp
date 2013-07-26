@@ -287,7 +287,7 @@ class DbPdo extends Db{
     public function getTables($dbName='') {
         if(C('DB_FETCH_TABLES_SQL')) {
             // 定义特殊的表查询SQL
-            $sql   = str_replace('%db%',$dnName,C('DB_FETCH_TABLES_SQL'));
+            $sql   = str_replace('%db%',$dbName,C('DB_FETCH_TABLES_SQL'));
         }else{
             switch($this->dbType) {
             case 'ORACLE':
