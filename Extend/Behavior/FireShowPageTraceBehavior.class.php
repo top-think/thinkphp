@@ -6,7 +6,7 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: luofei614 <www.3g4k.com>
+// | Author: luofei614 <weibo.com/luofei614>
 // +----------------------------------------------------------------------
 // $Id$
 
@@ -18,7 +18,7 @@
  * 定义项目的tags.php文件， 
  * <code>
  * <?php return array(
- *   'view_end'=>array(
+ *   'app_end'=>array(
  *       'FireShowPageTrace'
  *   )
  * );
