@@ -27,6 +27,7 @@ class App {
     static public function init() {
         // 页面压缩输出支持
         if(C('OUTPUT_ENCODE')){
+        	ob_end_clean();
             $zlib = ini_get('zlib.output_compression');
             if(empty($zlib)) ob_start('ob_gzhandler');
         }
@@ -34,6 +35,11 @@ class App {
         date_default_timezone_set(C('DEFAULT_TIMEZONE'));
         // 加载动态项目公共文件和配置
         load_ext_file();
+		if(MAGIC_QUOTES_GPC){
+			array_walk_recursive($_GET,'tstripslashes');
+			array_walk_recursive($_POST,'tstripslashes');
+			array_walk_recursive($_COOKIE,'tstripslashes');
+		}
         // URL调度
         Dispatcher::dispatch();
 
@@ -47,16 +53,7 @@ class App {
         define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         // URL调度结束标签
-        tag('url_dispatch');         
-        // 系统变量安全过滤
-        if(C('VAR_FILTERS')) {
-            $filters    =   explode(',',C('VAR_FILTERS'));
-            foreach($filters as $filter){
-                // 全局参数过滤
-                array_walk_recursive($_POST,$filter);
-                array_walk_recursive($_GET,$filter);
-            }
-        }
+        tag('url_dispatch');
 
         C('LOG_PATH',realpath(LOG_PATH).'/');
         //动态配置 TMPL_EXCEPTION_FILE,改为绝对地址

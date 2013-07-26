@@ -755,3 +755,11 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
         }
     }
 }
+
+function tstripslashes(&$string){
+	$string = stripslashes($string);
+}
+
+function thtmlspecialchars(&$string){
+	$string = htmlspecialchars($string);
+}

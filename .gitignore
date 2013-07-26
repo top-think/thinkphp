@@ -1,0 +1,13 @@
+Common/
+Conf/
+Lang/
+Lib/
+Runtime/
+Tpl/
+Public/
+ThinkPHP/extend
+index.php
+.settings/
+.buildpath
+.project
+*.log
