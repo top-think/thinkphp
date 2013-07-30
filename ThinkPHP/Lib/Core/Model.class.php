@@ -1189,9 +1189,10 @@ class Model {
         // 分析表达式
         if(true === $parse) {
             $options =  $this->_parseOptions();
-            $sql  =   $this->db->parseSql($sql,$options);
+            $sql    =   $this->db->parseSql($sql,$options);
         }elseif(is_array($parse)){ // SQL预处理
-            $sql  = vsprintf($sql,$parse);
+            $parse  =   array_map(array($this->db,'escapeString'),$parse);
+            $sql    =   vsprintf($sql,$parse);
         }else{
             $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>C('DB_PREFIX')));
         }
