@@ -142,16 +142,17 @@ class View {
      * @return string
      */
     public function parseTemplate($template='') {
+        $app_name=APP_NAME==basename(dirname($_SERVER['SCRIPT_FILENAME'])) && ''==__APP__?'':APP_NAME.'/';
         if(is_file($template)) {
             $group  =   defined('GROUP_NAME')?GROUP_NAME.'/':'';
             $theme  =   C('DEFAULT_THEME');
             // 获取当前主题的模版路径
             if(1==C('APP_GROUP_MODE')){ // 独立分组模式
                 define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
-                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
             }else{ 
                 define('THEME_PATH',   TMPL_PATH.$group.$theme);
-                define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.basename(TMPL_PATH).'/'.$group.$theme);
             }
             return $template;
         }
@@ -168,10 +169,10 @@ class View {
         // 获取当前主题的模版路径
         if(1==C('APP_GROUP_MODE')){ // 独立分组模式
             define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
         }else{ 
             define('THEME_PATH',   TMPL_PATH.$group.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.basename(TMPL_PATH).'/'.$group.$theme);
         }
 
         // 分析模板文件规则

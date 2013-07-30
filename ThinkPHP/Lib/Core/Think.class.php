@@ -307,7 +307,7 @@ class Think {
               case E_COMPILE_ERROR:
               case E_USER_ERROR:  
                 ob_end_clean();
-                function_exists('halt')?halt($e):exit('ERROR:'.$e['message']);
+                function_exists('halt')?halt($e):exit('ERROR:'.$e['message']. ' in <b>'.$e['file'].'</b> on line <b>'.$e['line'].'</b>');
                 break;
             }
         }
