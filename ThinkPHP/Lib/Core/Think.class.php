@@ -180,6 +180,7 @@ class Think {
         foreach(explode(',',C('APP_AUTOLOAD_DRIVER')) as $driver){
             if(substr($class, 0, strlen($driver))==$driver){
                 if(require_array(array(
+                    APP_PATH.'Extend/Driver/'.$driver.'/'.$file,
                     EXTEND_PATH.'Driver/'.$driver.'/'.$file,
                     CORE_PATH.'Driver/'.$driver.'/'.$file),true)){
                     return ;

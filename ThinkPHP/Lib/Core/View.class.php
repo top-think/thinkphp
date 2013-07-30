@@ -144,7 +144,8 @@ class View {
         if(is_file($template)) {
             return $template;
         }
-        $template = str_replace(':', '/', $template);
+        $depr   =   C('TMPL_FILE_DEPR');
+        $template = str_replace(':', $depr, $template);
         // 获取当前主题名称
         $theme = $this->getTemplateTheme();
 
@@ -163,9 +164,9 @@ class View {
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
-        }elseif(false === strpos($template, '/')){
-            $template = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . $template;
+            $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+        }elseif(false === strpos($template, $depr)){
+            $template = CONTROLLER_NAME . $depr . $template;
         }
         return THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
     }
