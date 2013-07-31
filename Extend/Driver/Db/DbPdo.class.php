@@ -272,7 +272,7 @@ class DbPdo extends Db{
                     'type'    => $val['type'],
                     'notnull' => (bool)(((isset($val['null'])) && ($val['null'] === '')) || ((isset($val['notnull'])) && ($val['notnull'] === ''))), // not null is empty, null is yes
                     'default' => isset($val['default'])? $val['default'] :(isset($val['dflt_value'])?$val['dflt_value']:""),
-                    'primary' => isset($val['key'])?strtolower($val['key']) == 'pri':(isset($val['pk'])?$val['pk']:false),
+                    'primary' => isset($val['key'])?strtolower($val['key']) == 'pri':(isset($val['pk'])? $val['pk']:false),
                     'autoinc' => isset($val['extra'])?strtolower($val['extra']) == 'auto_increment':(isset($val['key'])?$val['key']:false),
                 );
             }
