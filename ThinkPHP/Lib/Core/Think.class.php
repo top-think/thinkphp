@@ -59,8 +59,8 @@ class Think {
         }
 
         // 加载项目配置文件
-        if(is_file(CONF_PATH.'config.php'))
-            C(include CONF_PATH.'config.php');
+        if(is_file(COMMON_PATH.'Conf/config.php'))
+            C(include COMMON_PATH.'Conf/config.php');
 
         // 加载框架底层语言包
         L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
@@ -77,9 +77,9 @@ class Think {
         // 加载应用行为定义
         if(isset($mode['tags'])) {
             C('tags', is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
-        }elseif(is_file(CONF_PATH.'tags.php')){
+        }elseif(is_file(COMMON_PATH.'Conf/tags.php')){
             // 默认加载项目配置目录的tags文件定义
-            C('tags', include CONF_PATH.'tags.php');
+            C('tags', include COMMON_PATH.'Conf/tags.php');
         }
 
         $compile   = '';
@@ -96,23 +96,6 @@ class Think {
                 CORE_PATH.'Core/View.class.php',  // 视图类
             );
         }
-        // 项目追加核心编译列表文件
-        if(is_file(CONF_PATH.'core.php')) {
-            $list  =  array_merge($list,include CONF_PATH.'core.php');
-        }
-        foreach ($list as $file){
-            if(is_file($file))  {
-                require_cache($file);
-                if(!APP_DEBUG)   $compile .= compile($file);
-            }
-        }
-
-        // 加载项目公共文件
-        if(is_file(COMMON_PATH.'common.php')) {
-            include COMMON_PATH.'common.php';
-            // 编译文件
-            if(!APP_DEBUG)  $compile   .= compile(COMMON_PATH.'common.php');
-        }
 
         // 加载模式别名定义
         if(isset($mode['alias'])) {
@@ -121,22 +104,9 @@ class Think {
             if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';               
         }
      
-        // 加载项目别名定义
-        if(is_file(CONF_PATH.'alias.php')){ 
-            $alias = include CONF_PATH.'alias.php';
-            alias_import($alias);
-            if(!APP_DEBUG) $compile .= 'alias_import('.var_export($alias,true).');';
-        }
-
         if(APP_DEBUG) {
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
-            // 读取调试模式的应用状态
-            $status  =  C('APP_STATUS');
-            // 加载对应的项目配置文件
-            if(is_file(CONF_PATH.$status.'.php'))
-                // 允许项目增加开发模式配置定义
-                C(include CONF_PATH.$status.'.php');
         }else{
             // 部署模式下面生成编译文件
             build_runtime_cache($compile);
@@ -160,7 +130,7 @@ class Think {
             if(require_array(array(
                 CORE_PATH.'Behavior/'.$file,
                 EXTEND_PATH.'Behavior/'.$file,
-                LIB_PATH.'Behavior/'.$file),true)
+                COMMON_PATH.'Behavior/'.$file),true)
                 || (defined('MODE_NAME') && require_cache(MODE_PATH.ucwords(MODE_NAME).'/Behavior/'.$file))) {
                 return ;
             }
@@ -170,7 +140,7 @@ class Think {
             if(substr($class,-strlen($layer))==$layer){
                 if(require_array(array(
                     MODULE_PATH.$layer.'/'.$file, // 当前模块目录
-                    LIB_PATH.$layer.'/'.$file, // 公共类库目录
+                    COMMON_PATH.$layer.'/'.$file, // 公共类库目录
                     ),true)) {
                     return ;
                 }

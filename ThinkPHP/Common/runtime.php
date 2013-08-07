@@ -63,11 +63,8 @@ defined('ENGINE_PATH')  or define('ENGINE_PATH',    EXTEND_PATH.'Engine/'); // �
 defined('VENDOR_PATH')  or define('VENDOR_PATH',    EXTEND_PATH.'Vendor/'); // 第三方类库目录
 defined('LIBRARY_PATH') or define('LIBRARY_PATH',   EXTEND_PATH.'Library/'); // 扩展类库目录
 defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
-defined('MODULES_PATH') or define('MODULES_PATH',   APP_PATH.'Module/'); // 项目模块目录
-defined('CONF_PATH')    or define('CONF_PATH',      APP_PATH.'Conf/'); // 项目配置目录
-defined('LANG_PATH')    or define('LANG_PATH',      APP_PATH.'Lang/'); // 项目语言包目录
+defined('LANG_PATH')    or define('LANG_PATH',      COMMON_PATH.'Lang/'); // 项目语言目录
 defined('HTML_PATH')    or define('HTML_PATH',      APP_PATH.'Html/'); // 项目静态目录
-defined('LIB_PATH')     or define('LIB_PATH',       APP_PATH.'Lib/'); // 项目公共类库目录
 defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 项目日志目录
 defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 项目缓存目录
 defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 项目数据目录
@@ -96,7 +93,7 @@ function load_runtime_file() {
     alias_import(include THINK_PATH.'Conf/alias.php');
 
     // 检查项目目录结构 如果不存在则自动创建
-    if(!is_dir(MODULES_PATH)) {
+    if(!is_dir(COMMON_PATH)) {
         // 创建项目目录结构
         build_app_dir();
     }elseif(!is_dir(CACHE_PATH)){
@@ -173,16 +170,16 @@ function build_app_dir() {
     if(!is_dir(APP_PATH)) mkdir(APP_PATH,0755,true);
     if(is_writeable(APP_PATH)) {
         $dirs  = array(
-            MODULES_PATH,
-            MODULES_PATH.C('DEFAULT_MODULE').'/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Controller/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Model/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/Conf/',
-            MODULES_PATH.C('DEFAULT_MODULE').'/View/',
-            RUNTIME_PATH,
-            CONF_PATH,
             COMMON_PATH,
-            LANG_PATH,
+            COMMON_PATH.'Common/',
+            COMMON_PATH.'Conf/',
+            COMMON_PATH.'Lang/',
+            APP_PATH.C('DEFAULT_MODULE').'/',
+            APP_PATH.C('DEFAULT_MODULE').'/Controller/',
+            APP_PATH.C('DEFAULT_MODULE').'/Model/',
+            APP_PATH.C('DEFAULT_MODULE').'/Conf/',
+            APP_PATH.C('DEFAULT_MODULE').'/View/',
+            RUNTIME_PATH,
             CACHE_PATH,
             LOG_PATH,
             TEMP_PATH,
@@ -194,11 +191,10 @@ function build_app_dir() {
         // 写入目录安全文件
         build_dir_secure($dirs);
         // 写入初始配置文件
-        if(!is_file(CONF_PATH.'config.php'))
-            file_put_contents(CONF_PATH.'config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
+        if(!is_file(COMMON_PATH.'Conf/config.php'))
+            file_put_contents(COMMON_PATH.'Conf/config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
         // 写入测试Action
-        if(!is_file(MODULES_PATH.C('DEFAULT_MODULE').'/Controller/IndexController.class.php'))
-            build_first_action();
+        build_first_action();
     }else{
         header('Content-Type:text/html; charset=utf-8');
         exit('项目目录不可写，目录无法自动生成！<BR>请使用项目生成器或者手动生成项目目录~');
@@ -207,8 +203,11 @@ function build_app_dir() {
 
 // 创建测试Action
 function build_first_action() {
-    $content = file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
-    file_put_contents(MODULES_PATH.C('DEFAULT_MODULE').'/Controller/IndexController.class.php',$content);
+    $file   =   APP_PATH.C('DEFAULT_MODULE').'/Controller/IndexController.class.php';
+    if(!is_file($file)){
+        $content = file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
+        file_put_contents($file,$content);
+    }
 }
 
 // 生成目录安全文件

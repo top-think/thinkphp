@@ -32,6 +32,28 @@ class App {
         }
         // 设置系统时区
         date_default_timezone_set(C('DEFAULT_TIMEZONE'));
+        // 加载公共模块
+
+        // 加载公共配置文件
+        if(is_file(COMMON_PATH.'Conf/config.php'))
+            C(include COMMON_PATH.'Conf/config.php');
+        // 加载公共别名定义
+        if(is_file(COMMON_PATH.'Conf/alias.php'))
+            alias_import(include COMMON_PATH.'Conf/alias.php');
+        // 加载公共tags文件定义
+        if(is_file(COMMON_PATH.'Conf/tags.php'))
+            C('tags', include COMMON_PATH.'Conf/tags.php');
+        // 加载公共函数文件
+        if(is_file(COMMON_PATH.'Common/function.php'))
+            include COMMON_PATH.'Common/function.php';        
+        if(APP_DEBUG) {
+            // 读取调试模式的应用状态
+            $status  =  C('APP_STATUS');
+            // 加载对应的项目配置文件
+            if(is_file(COMMON_PATH.'Conf/'.$status.'.php'))
+                // 允许项目增加开发模式配置定义
+                C(include COMMON_PATH.'Conf/'.$status.'.php');
+        }        
         // 加载动态项目公共文件和配置
         load_ext_file();
         // URL调度

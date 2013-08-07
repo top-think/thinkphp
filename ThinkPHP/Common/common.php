@@ -50,7 +50,7 @@ function T($template='',$layer=''){
     if(($list = C('EXTEND_MODULE')) && isset($list[$extend])){ // 扩展资源
         $baseUrl    =   $list[$extend].$module.$layer.'/';
     }else{ // 分组模式
-        $baseUrl    =   MODULES_PATH.$module.$layer.'/';
+        $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
     // 获取主题
     $array  =   explode('/',$file);
@@ -313,7 +313,7 @@ function import($class, $baseUrl = '', $ext='.class.php') {
             $baseUrl = LIBRARY_PATH;
         }else { // 加载其他模块的类库
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-            $baseUrl = MODULES_PATH . $class_strut[0] . '/';
+            $baseUrl = APP_PATH . $class_strut[0] . '/';
         }
     }
     if (substr($baseUrl, -1) != '/')
@@ -338,7 +338,7 @@ function load($name, $baseUrl='', $ext='.php') {
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
             //加载当前项目函数库
-            $baseUrl    = COMMON_PATH;
+            $baseUrl    = COMMON_PATH.'Common/';
             $name       = substr($name, 2);
         } else {
             //加载ThinkPHP 系统函数库
@@ -458,7 +458,7 @@ function parse_res_name($name,$layer){
     }
     if(!$result){
         // 类库不存在 加载公共模块下面的类库
-        import(ltrim(strstr($name,'/'),'/').$layer,LIB_PATH);
+        import(ltrim(strstr($name,'/'),'/').$layer,COMMON_PATH);
     }
     return $extend.'_'.$name.$layer;
 }
