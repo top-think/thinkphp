@@ -175,6 +175,7 @@ function build_app_dir() {
             COMMON_PATH.'Conf/',
             COMMON_PATH.'Lang/',
             APP_PATH.C('DEFAULT_MODULE').'/',
+            APP_PATH.C('DEFAULT_MODULE').'/Common/',
             APP_PATH.C('DEFAULT_MODULE').'/Controller/',
             APP_PATH.C('DEFAULT_MODULE').'/Model/',
             APP_PATH.C('DEFAULT_MODULE').'/Conf/',
