@@ -97,6 +97,13 @@ class Think {
             );
         }
 
+        foreach ($list as $file){
+            if(is_file($file))  {
+                require_cache($file);
+                if(!APP_DEBUG)   $compile .= compile($file);
+            }
+        }
+        
         // 加载模式别名定义
         if(isset($mode['alias'])) {
             $alias = is_array($mode['alias'])?$mode['alias']:include $mode['alias'];
