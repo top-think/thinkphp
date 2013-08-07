@@ -33,6 +33,7 @@ return  array(
     'APP_SUB_DOMAIN_DENY'   => array(), //  子域名禁用列表
     'ACTION_SUFFIX'         =>  '', // 操作方法后缀
     'MULTI_MODULE'          =>  true, // 是否允许多模块 如果为false 则必须设置 DEFAULT_MODULE
+    'MODULE_DENY_LIST'      =>  array('Common','Runtime'),
 
     /* Cookie设置 */
     'COOKIE_EXPIRE'         => 0,    // Coodie有效期

@@ -125,10 +125,6 @@ class Dispatcher {
                 $var  =  array();
                 if (C('MULTI_MODULE') && !isset($_GET[$varModule])){ // 获取模块
                     $var[$varModule] = array_shift($paths);
-                    if(C('APP_MODULE_DENY') && in_array(strtolower($var[$varModule]),explode(',',strtolower(C('APP_MODULE_DENY'))))) {
-                        // 禁止直接访问模块
-                        exit;
-                    }
                 }
                 if(!isset($_GET[$varController])) {// 获取控制器
                     $var[$varController]  =   array_shift($paths);
@@ -152,7 +148,7 @@ class Dispatcher {
         // 获取模块名称
         define('MODULE_NAME', self::getModule($varModule));
         // 检测模块是否存在 并且公共模块不能访问
-        if( 'Common' != MODULE_NAME && is_dir(APP_PATH.MODULE_NAME)){
+        if( !in_array(MODULE_NAME,C('MODULE_DENY_LIST'))  && is_dir(APP_PATH.MODULE_NAME)){
             // 模块URL地址
             define('__MODULE__',(!empty($domainModule) || !C('MULTI_MODULE'))?__APP__ : __APP__.'/'.(C('URL_CASE_INSENSITIVE') ? strtolower(MODULE_NAME) : MODULE_NAME));
             
