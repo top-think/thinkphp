@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
 // | Copyright (c) 2011 http://topthink.com All rights reserved.
 // +----------------------------------------------------------------------
@@ -9,5 +9,5 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-define('APP_PATH','../application/');
-require '../ThinkPHP/ThinkPHP.php';
+define('APP_PATH','./Application/');
+require './ThinkPHP/ThinkPHP.php';
