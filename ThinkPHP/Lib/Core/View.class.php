@@ -179,7 +179,7 @@ class View {
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
             $template = MODULE_NAME . $depr . ACTION_NAME;
-        }elseif(false === strpos($template, '/')){
+        }elseif(false === strpos($template, $depr)){
             $template = MODULE_NAME . $depr . $template;
         }
         return THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
