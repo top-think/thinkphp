@@ -835,7 +835,7 @@ class Model {
      }
 
     // 自动表单令牌验证
-    // TODO  ajax无刷新多次提交暂不能满足
+    // 如果是 ajax 提交时携带页面meta 中的token
     public function autoCheckToken($data) {
         // 支持使用token(false) 关闭令牌验证
         if(isset($this->options['token']) && !$this->options['token']) return true;
