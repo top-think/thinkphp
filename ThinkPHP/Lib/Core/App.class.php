@@ -121,7 +121,7 @@ class App {
             }
             //执行当前操作
             $method =   new ReflectionMethod($module, $action);
-            if($method->isPublic()) {
+            if($method->isPublic() && !$method->isStatic()) {
                 $class  =   new ReflectionClass($module);
                 // 前置操作
                 if($class->hasMethod('_before_'.$action)) {
