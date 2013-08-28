@@ -66,18 +66,30 @@ class ReadHtmlCacheBehavior extends Behavior {
                 // 解读静态规则
                 $rule   = $html[0];
                 // 以$_开头的系统变量
-                $rule   = preg_replace('/{\$(_\w+)\.(\w+)\|(\w+)}/e',"\\3(\$\\1['\\2'])",$rule);
-                $rule   = preg_replace('/{\$(_\w+)\.(\w+)}/e',"\$\\1['\\2']",$rule);
+                $callback = create_function('$match', 
+                                'switch($match[1]){
+                                    case "_GET": $var = $_GET[$match[2]]; break;
+                                    case "_POST": $var = $_POST[$match[2]]; break;
+                                    case "_REQUEST": $var = $_REQUEST[$match[2]]; break;
+                                    case "_SERVER": $var = $_SERVER[$match[2]]; break;
+                                    case "_SESSION": $var = $_SESSION[$match[2]]; break;
+                                    case "_COOKIE": $var = $_COOKIE[$match[2]]; break;
+                                }
+                                return (count($match) == 4) ? $match[3]($var) : $var;'
+                            );
+                $rule     = preg_replace_callback('/{\$(_\w+)\.(\w+)(?:\|(\w+))?}/', $callback, $rule);
                 // {ID|FUN} GET变量的简写
-                $rule   = preg_replace('/{(\w+)\|(\w+)}/e',"\\2(\$_GET['\\1'])",$rule);
-                $rule   = preg_replace('/{(\w+)}/e',"\$_GET['\\1']",$rule);
+                $callback = create_function('$match', 'return $match[2]($_GET[$match[1]]);');
+                $rule     = preg_replace_callback('/{(\w+)\|(\w+)}/', $callback, $rule);
+                $callback = create_function('$match', 'return $_GET[$match[1]];');
+                $rule     = preg_replace_callback('/{(\w+)}/', $callback, $rule);
                 // 特殊系统变量
                 $rule   = str_ireplace(
                     array('{:app}','{:controller}','{:action}','{:module}'),
                     array(APP_NAME,CONTROLLER_NAME,ACTION_NAME,MODULE_NAME),
                     $rule);
                 // {|FUN} 单独使用函数
-                $rule  = preg_replace('/{|(\w+)}/e',"\\1()",$rule);
+                $rule  = preg_replace_callback('/{|(\w+)}/', create_function('$match', 'return $match[1]();'),$rule);
                 if(!empty($html[2])) $rule    =   $html[2]($rule); // 应用附加函数
                 $cacheTime = isset($html[1])?$html[1]:C('HTML_CACHE_TIME'); // 缓存有效期
                 // 当前缓存文件
