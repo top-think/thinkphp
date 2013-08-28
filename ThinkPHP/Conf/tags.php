@@ -19,7 +19,9 @@ return array(
     'route_check'   =>  array(
         'CheckRoute', // 路由检测
     ), 
-    'app_end'       =>  array(),
+    'app_end'       =>  array(
+        'ShowPageTrace', // 页面Trace显示
+    ),
     'path_info'     =>  array(),
     'action_begin'  =>  array(),
     'action_end'    =>  array(),
@@ -33,7 +35,5 @@ return array(
         'WriteHtmlCache', // 写入静态缓存
        // 'ShowRuntime', // 运行时间显示
     ),
-    'view_end'      =>  array(
-        'ShowPageTrace', // 页面Trace显示
-    ),
+    'view_end'      =>  array(),
 );
