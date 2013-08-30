@@ -132,7 +132,11 @@ class Dispatcher {
                 // 获取操作
                 $var[$varAction]  =   array_shift($paths);
                 // 解析剩余的URL参数
-                preg_replace('@(\w+)\/([^\/]+)@e', '$var[\'\\1\']=strip_tags(\'\\2\');', implode('/',$paths));
+                for ($i=0, $count = count($paths); $i < $count; $i += 2) { 
+                    if(preg_match('/^\w+$/', $paths[$i]) && isset($paths[$i + 1])){
+                        $var[strtolower($paths[$i])] = strip_tags($paths[$i + 1]);
+                    }
+                }
                 $_GET   =  array_merge($var,$_GET);
             }
             define('__INFO__',$_SERVER['PATH_INFO']);

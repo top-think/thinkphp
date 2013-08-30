@@ -125,7 +125,7 @@ class TagLib {
                 $condition  =   preg_replace('/\$(\w+)\.(\w+)\s/is','(is_array($\\1)?$\\1["\\2"]:$\\1->\\2) ',$condition);
         }
         if(false !== strpos($condition, '$Think'))
-            $condition      =   preg_replace('/(\$Think.*?)\s/ies',"\$this->parseThinkVar('\\1');" , $condition);        
+            $condition      =   preg_replace_callback('/(\$Think.*?)\s/is', array($this, 'parseThinkVar'), $condition);        
         return $condition;
     }
 
@@ -178,6 +178,9 @@ class TagLib {
      * @return string
      */
     public function parseThinkVar($varStr){
+        if(is_array($varStr)){//用于正则替换回调函数
+            $varStr = $varStr[1]; 
+        }
         $vars       = explode('.',$varStr);
         $vars[1]    = strtoupper(trim($vars[1]));
         $parseStr   = '';

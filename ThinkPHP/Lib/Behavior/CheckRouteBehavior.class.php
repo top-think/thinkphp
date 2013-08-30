@@ -170,7 +170,7 @@ class CheckRouteBehavior extends Behavior {
             // 解析剩余的URL参数
             if(!empty($paths)) {
                 for ($i=0, $count = count($paths); $i < $count; $i += 2) { 
-                    if(preg_match(/^\w+$/, $paths[$i]) && isset($paths[$i + 1])){
+                    if(preg_match('/^\w+$/', $paths[$i]) && isset($paths[$i + 1])){
                         $var[strtolower($paths[$i])] = strip_tags($paths[$i + 1]);
                     }
                 }
@@ -218,7 +218,7 @@ class CheckRouteBehavior extends Behavior {
             if($regx) {
                 $regx = explode('/', $regx);
                 for ($i=0, $count = count($regx); $i < $count; $i += 2) { 
-                    if(preg_match(/^\w+$/, $regx[$i]) && isset($regx[$i + 1])){
+                    if(preg_match('/^\w+$/', $regx[$i]) && isset($regx[$i + 1])){
                         $var[strtolower($regx[$i])] = strip_tags($regx[$i + 1]);
                     }
                 }
