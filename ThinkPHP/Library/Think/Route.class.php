@@ -20,11 +20,6 @@ class Route {
     
     // 路由检测
     public static function check(){
-        // 优先检测是否存在PATH_INFO
-        $regx = trim($_SERVER['PATH_INFO'],'/');
-        if(empty($regx)) return true;
-        // 是否开启路由使用
-        if(!C('URL_ROUTER_ON')) return false;
         // 路由定义文件优先于config中的配置定义
         $routes = C('URL_ROUTE_RULES');
         // 路由处理
@@ -32,6 +27,11 @@ class Route {
             $depr = C('URL_PATHINFO_DEPR');
             // 分隔符替换 确保路由定义使用统一的分隔符
             $regx = str_replace($depr,'/',$regx);
+            if(isset($routes[$regx])) { // URL映射
+                $var    =   self::parseUrl($routes[$regx]);
+                $_GET   =   array_merge($var, $_GET);
+                return true;                
+            }            
             foreach ($routes as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx.(defined('__EXT__')?'.'.__EXT__:''),$matches)) { // 正则路由
                     if($route instanceof \Closure) {
@@ -80,7 +80,7 @@ class Route {
                         return false;
                     }
                     $name = substr($val, 1, -2);
-                }elseif($pos = strpos($val, '^')){
+                }elseif(strpos($val,'^')){
                     $array   =  explode('|',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
