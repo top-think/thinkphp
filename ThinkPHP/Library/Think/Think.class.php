@@ -68,7 +68,7 @@ class Think {
 
       // 加载框架底层语言包
       L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
-      
+
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));
 
@@ -149,7 +149,7 @@ class Think {
             if(class_exists($class)){
                 $o = new $class();
                 if(!empty($method) && method_exists($o,$method))
-                    self::$_instance[$identify] = call_user_func_array(array(&$o, $method));
+                    self::$_instance[$identify] = call_user_func(array(&$o, $method));
                 else
                     self::$_instance[$identify] = $o;
             }
@@ -200,11 +200,6 @@ class Think {
           case E_COMPILE_ERROR:
           case E_USER_ERROR:
             ob_end_clean();
-            // 页面压缩输出支持
-            if(C('OUTPUT_ENCODE')){
-                $zlib = ini_get('zlib.output_compression');
-                if(empty($zlib)) ob_start('ob_gzhandler');
-            }
             $errorStr = "$errstr ".$errfile." 第 $errline 行.";
             if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
             self::halt($errorStr);
