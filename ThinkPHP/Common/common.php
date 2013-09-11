@@ -23,7 +23,7 @@
  * @return void
  */
 function E($msg, $code=0) {
-    throw new ThinkException($msg, $code);
+    throw new Think\Exception($msg, $code);
 }
 
 /**
@@ -39,7 +39,7 @@ function T($template='',$layer=''){
     // 解析模版资源地址
     if(false === strpos($template,'://')){
         $template   =   'http://'.str_replace(':', '/',$template);
-    }        
+    }
     $info   =   parse_url($template);
     $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
     $module =   isset($info['user'])?$info['user'].'/':MODULE_NAME.'/';
@@ -47,8 +47,9 @@ function T($template='',$layer=''){
     $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
 
     // 获取当前主题的模版路径
-    if(($list = C('EXTEND_MODULE')) && isset($list[$extend])){ // 扩展资源
-        $baseUrl    =   $list[$extend].$module.$layer.'/';
+    $auto   =   C('AUTOLOAD_NAMESPACE');
+    if($auto && isset($auto[$extend])){ // 扩展资源
+        $baseUrl    =   $auto[$extend].$module.$layer.'/';
     }else{ // 分组模式
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
@@ -76,7 +77,7 @@ function T($template='',$layer=''){
  * I('id',0); 获取id参数 自动判断get或者post
  * I('post.name','','htmlspecialchars'); 获取$_POST['name']
  * I('get.'); 获取$_GET
- * </code> 
+ * </code>
  * @param string $name 变量的名称 支持指定类型
  * @param mixed $default 不存在的时候默认值
  * @param mixed $filter 参数过滤方法
@@ -92,7 +93,7 @@ function I($name,$default='',$filter=null) {
         case 'get'     :   $input =& $_GET;break;
         case 'post'    :   $input =& $_POST;break;
         case 'put'     :   parse_str(file_get_contents('php://input'), $input);break;
-        case 'param'   :  
+        case 'param'   :
             switch($_SERVER['REQUEST_METHOD']) {
                 case 'POST':
                     $input  =  $_POST;
@@ -125,16 +126,16 @@ function I($name,$default='',$filter=null) {
         }
     }
     if(empty($name)) { // 获取全部变量
-        $data       =   $input; 
+        $data       =   $input;
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
                 $data   =   array_map($filter,$data); // 参数过滤
             }
-        }        
+        }
     }elseif(isset($input[$name])) { // 取值操作
-        $data       =	$input[$name];
+        $data       =   $input[$name];
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -144,13 +145,13 @@ function I($name,$default='',$filter=null) {
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
-                        return	 isset($default)?$default:NULL;
+                        return   isset($default)?$default:NULL;
                     }
                 }
             }
         }
     }else{ // 变量默认值
-        $data       =	 isset($default)?$default:NULL;
+        $data       =    isset($default)?$default:NULL;
     }
     return $data;
 }
@@ -169,7 +170,7 @@ function I($name,$default='',$filter=null) {
  * </code>
  * @param string $start 开始标签
  * @param string $end 结束标签
- * @param integer|string $dec 小数位或者m 
+ * @param integer|string $dec 小数位或者m
  * @return mixed
  */
 function G($start,$end='',$dec=4) {
@@ -181,11 +182,11 @@ function G($start,$end='',$dec=4) {
         if(!isset($_info[$end])) $_info[$end]       =  microtime(TRUE);
         if(MEMORY_LIMIT_ON && $dec=='m'){
             if(!isset($_mem[$end])) $_mem[$end]     =  memory_get_usage();
-            return number_format(($_mem[$end]-$_mem[$start])/1024);          
+            return number_format(($_mem[$end]-$_mem[$start])/1024);
         }else{
             return number_format(($_info[$end]-$_info[$start]),$dec);
-        }       
-            
+        }
+
     }else{ // 记录时间和内存使用
         $_info[$start]  =  microtime(TRUE);
         if(MEMORY_LIMIT_ON) $_mem[$start]           =  memory_get_usage();
@@ -200,7 +201,7 @@ function G($start,$end='',$dec=4) {
  * N('read',1); // 记录读取次数
  * echo N('db'); // 获取当前页面数据库的所有操作次数
  * echo N('read'); // 获取当前页面读取次数
- * </code> 
+ * </code>
  * @param string $key 标识位置
  * @param integer $step 步进值
  * @return mixed
@@ -228,7 +229,7 @@ function N($key, $step=0,$save=false) {
  */
 function parse_name($name, $type=0) {
     if ($type) {
-        return ucfirst(preg_replace("/_([a-zA-Z])/e", "strtoupper('\\1')", $name));
+        return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){return strtoupper($match[1]);}, $name));
     } else {
         return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
     }
@@ -250,19 +251,6 @@ function require_cache($filename) {
         }
     }
     return $_importFiles[$filename];
-}
-
-/**
- * 批量导入文件 成功则返回
- * @param array $array 文件数组
- * @param boolean $return 加载成功后是否返回
- * @return boolean
- */
-function require_array($array,$return=false){
-    foreach ($array as $file){
-        if (require_cache($file) && $return) return true;
-    }
-    if($return) return false;
 }
 
 /**
@@ -288,13 +276,9 @@ function file_exists_case($filename) {
  * @param string $ext 导入的文件扩展名
  * @return boolean
  */
-function import($class, $baseUrl = '', $ext='.class.php') {
+function import($class, $baseUrl = '', $ext=EXT) {
     static $_file = array();
     $class = str_replace(array('.', '#'), array('/', '.'), $class);
-    if ('' === $baseUrl && false === strpos($class, '/')) {
-        // 检查别名导入
-        return alias_import($class);
-    }
     if (isset($_file[$class . $baseUrl]))
         return true;
     else
@@ -305,15 +289,11 @@ function import($class, $baseUrl = '', $ext='.class.php') {
             //加载当前模块的类库
             $baseUrl = MODULE_PATH;
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-        }elseif ('think' == strtolower($class_strut[0])){ // think 官方基类库
-            $baseUrl = CORE_PATH;
-            $class   = substr($class,6);
-        }elseif (in_array(strtolower($class_strut[0]), array('org', 'com'))) {
+        }if (in_array(strtolower($class_strut[0]), array('think','org', 'com'))) {
             // org 第三方公共类库 com 企业公共类库
-            $baseUrl = LIBRARY_PATH;
+            $baseUrl = LIB_PATH;
         }else { // 加载其他模块的类库
-            $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-            $baseUrl = APP_PATH . $class_strut[0] . '/';
+            $baseUrl = APP_PATH;
         }
     }
     if (substr($baseUrl, -1) != '/')
@@ -354,7 +334,7 @@ function load($name, $baseUrl='', $ext='.php') {
  * 快速导入第三方框架类库 所有第三方框架的类库文件统一放到 系统的Vendor目录下面
  * @param string $class 类库
  * @param string $baseUrl 基础目录
- * @param string $ext 类库后缀 
+ * @param string $ext 类库后缀
  * @return boolean
  */
 function vendor($class, $baseUrl = '', $ext='.php') {
@@ -364,47 +344,23 @@ function vendor($class, $baseUrl = '', $ext='.php') {
 }
 
 /**
- * 快速定义和导入别名 支持批量定义
- * @param string|array $alias 类库别名
- * @param string $classfile 对应类库
- * @return boolean
- */
-function alias_import($alias, $classfile='') {
-    static $_alias = array();
-    if (is_string($alias)) {
-        if(isset($_alias[$alias])) {
-            return require_cache($_alias[$alias]);
-        }elseif ('' !== $classfile) {
-            // 定义别名导入
-            $_alias[$alias] = $classfile;
-            return;
-        }
-    }elseif (is_array($alias)) {
-        $_alias   =  array_merge($_alias,$alias);
-        return;
-    }
-    return false;
-}
-
-/**
  * D函数用于实例化Model 格式 目录://模块/模型
  * @param string $name Model资源地址
  * @param string $layer 业务层名称
  * @return Model
  */
 function D($name='',$layer='') {
-    if(empty($name)) return new Model;
+    if(empty($name)) return new Think\Model;
     static $_model  =   array();
-    $layer          =   $layer?$layer:C('DEFAULT_M_LAYER');
-    if(isset($_model[$name.$layer]))   return $_model[$name.$layer];
-    $result   =   parse_res_name($name,$layer);
-
-    $class          =   basename($result);
+    $layer          =   $layer? $layer : C('DEFAULT_M_LAYER');
+    if(isset($_model[$name.$layer]))
+        return $_model[$name.$layer];
+    $class          =   parse_res_name($name,$layer);
     if(class_exists($class)) {
         $model      =   new $class(basename($name));
     }else {
-        Log::record('D方法实例化没找到模型类'.$class,Log::NOTICE);
-        $model      =   new Model(basename($name));
+        Think\Log::record('D方法实例化没找到模型类'.$class,Think\Log::NOTICE);
+        $model      =   new Think\Model(basename($name));
     }
     $_model[$name.$layer]  =  $model;
     return $model;
@@ -422,7 +378,7 @@ function M($name='', $tablePrefix='',$connection='') {
     if(strpos($name,':')) {
         list($class,$name)    =  explode(':',$name);
     }else{
-        $class      =   'Model';
+        $class      =   'Think\\Model';
     }
     $guid           =   $tablePrefix . $name . '_' . $class;
     if (!isset($_model[$guid]))
@@ -431,52 +387,50 @@ function M($name='', $tablePrefix='',$connection='') {
 }
 
 /**
- * 解析资源地址并导入类库文件 
+ * 解析资源地址并导入类库文件
  * 例如 module/controller addon://module/behavior
  * @param string $name 资源地址 格式：[扩展://][模块/]资源名
  * @param string $layer 分层名称
  * @return string
  */
-function parse_res_name($name,$layer){
+function parse_res_name($name,$layer,$level=1){
     if(strpos($name,'://')) {// 指定扩展资源
         list($extend,$name)  =   explode('://',$name);
     }else{
         $extend  =   '';
     }
-    if(strpos($name,'/')){ // 指定模块
-        $path   =   explode('/',$name);
-        $name   =   $path[0].'/'.$layer.'/'.$path[1];
+    if(strpos($name,'/') && substr_count($name, '/')>=$level){ // 指定模块
+        list($module,$name) =  explode('/',$name,2);
     }else{
-        $name   =   '@/'.$layer.'/'.$name;
+        $module =   MODULE_NAME;
+    }
+    $array  =   explode('/',$name);
+    $class  =   $module.'\\'.$layer;
+    foreach($array as $name){
+        $class  .=   '\\'.parse_name($name, 1);
     }
     // 导入资源类库
-    if($extend && ($list = C('EXTEND_MODULE')) && isset($list[$extend])){ // 扩展资源
-        $baseUrl    =   $list[$extend];
-        $result     =   import($name.$layer,$baseUrl);
-    }else{
-        $result     =   import($name.$layer);
+    if($extend){ // 扩展资源
+        $class      =   $extend.'\\'.$class;
     }
-    if(!$result){
-        // 类库不存在 加载公共模块下面的类库
-        import(ltrim(strstr($name,'/'),'/').$layer,COMMON_PATH);
-    }
-    return $extend.'_'.$name.$layer;
+    return $class.$layer;
 }
 
 /**
  * A函数用于实例化Action 格式：[资源://][模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
- * @param boolean $common 是否公共目录
+ * @param integer $level 控制器层次
  * @return Action|false
  */
-function A($name,$layer='') {
+function A($name,$layer='',$level='') {
     static $_action = array();
-    $layer  =   $layer?$layer:C('DEFAULT_C_LAYER');
-    if(isset($_action[$name.$layer]))  return $_action[$name.$layer];
-    $result   =   parse_res_name($name,$layer);
-    $class    =   basename($result);
-    if(class_exists($class,false)) {
+    $layer  =   $layer? $layer : C('DEFAULT_C_LAYER');
+    $level  =   $level? $level : C('CONTROLLER_LEVEL');
+    if(isset($_action[$name.$layer]))
+        return $_action[$name.$layer];
+    $class  =   parse_res_name($name,$layer,$level);
+    if(class_exists($class)) {
         $action             =   new $class();
         $_action[$name.$layer]     =   $action;
         return $action;
@@ -488,7 +442,7 @@ function A($name,$layer='') {
 /**
  * 远程调用模块的操作方法 URL 参数格式 [项目://][分组/]模块/操作
  * @param string $url 调用地址
- * @param string|array $vars 调用参数 支持字符串和数组 
+ * @param string|array $vars 调用参数 支持字符串和数组
  * @param string $layer 要调用的控制层名称
  * @return mixed
  */
@@ -602,10 +556,7 @@ function tag($tag, &$params=NULL) {
             trace('[ '.$tag.' ] --START--','','INFO');
         }
         // 执行扩展
-        foreach ($tags as $key=>$name) {
-            if(!is_int($key)) { // 指定行为类的完整路径 用于模式扩展
-                $name   = $key;
-            }
+        foreach ($tags as $name) {
             B($name, $params);
         }
         if(APP_DEBUG) { // 记录行为的执行日志
@@ -620,7 +571,7 @@ function tag($tag, &$params=NULL) {
  * 动态添加行为扩展到某个标签
  * @param string $tag 标签名称
  * @param string $behavior 行为名称
- * @param string $path 行为路径 
+ * @param string $path 行为路径
  * @return void
  */
 function add_tag_behavior($tag,$behavior,$path='') {
@@ -711,43 +662,11 @@ function strip_whitespace($content) {
     return $stripStr;
 }
 
-//[RUNTIME]
-// 编译文件
-function compile($filename) {
-    $content        = file_get_contents($filename);
-    // 替换预编译指令
-    $content        = preg_replace('/\/\/\[RUNTIME\](.*?)\/\/\[\/RUNTIME\]/s', '', $content);
-    $content        = substr(trim($content), 5);
-    if ('?>' == substr($content, -2))
-        $content    = substr($content, 0, -2);
-    return $content;
-}
-
-// 根据数组生成常量定义
-function array_define($array,$check=true) {
-    $content = "\n";
-    foreach ($array as $key => $val) {
-        $key = strtoupper($key);
-        if($check)   $content .= 'defined(\'' . $key . '\') or ';
-        if (is_int($val) || is_float($val)) {
-            $content .= "define('" . $key . "'," . $val . ');';
-        } elseif (is_bool($val)) {
-            $val = ($val) ? 'true' : 'false';
-            $content .= "define('" . $key . "'," . $val . ');';
-        } elseif (is_string($val)) {
-            $content .= "define('" . $key . "','" . addslashes($val) . "');";
-        }
-        $content    .= "\n";
-    }
-    return $content;
-}
-//[/RUNTIME]
-
 /**
  * 添加和获取页面Trace记录
  * @param string $value 变量
  * @param string $label 标签
- * @param string $level 日志级别 
+ * @param string $level 日志级别
  * @param boolean $record 是否记录日志
  * @return void
  */
@@ -766,7 +685,7 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
             }
         $_trace[$level][]   = $info;
         if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
-            Log::record($info,$level,$record);
+            Think\Log::record($info,$level,$record);
         }
     }
 }

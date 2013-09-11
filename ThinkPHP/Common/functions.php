@@ -19,16 +19,16 @@
 /**
  * 自定义异常处理
  * @param string $msg 异常消息
- * @param string $type 异常类型 默认为ThinkException
+ * @param string $type 异常类型 默认为Think\Exception
  * @param integer $code 异常代码 默认为0
  * @return void
  */
-function throw_exception($msg, $type='ThinkException', $code=0) {
-    Log::record('建议使用E方法替代throw_exception',Log::NOTICE);
+function throw_exception($msg, $type='Think\\Exception', $code=0) {
+    Think\Log::record('建议使用E方法替代throw_exception',Think\Log::NOTICE);
     if (class_exists($type, false))
         throw new $type($msg, $code);
     else
-        Think::halt($msg);        // 异常类型不存在则输出错误信息字串
+        Think\Think::halt($msg);        // 异常类型不存在则输出错误信息字串
 }
 
 /**
@@ -168,37 +168,46 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 if($controller = array_search(strtolower($var[C('VAR_CONTROLLER')]),$maps)){
                     $var[C('VAR_CONTROLLER')] = $controller;
                 }
-            }            
+            }
             if(C('URL_CASE_INSENSITIVE')) {
                 $var[C('VAR_CONTROLLER')]   =   parse_name($var[C('VAR_CONTROLLER')]);
             }
-            if(!C('APP_SUB_DOMAIN_DEPLOY')) {
+            $module =   '';
+            if(!defined('BIND_MODULE')) {
                 if(!empty($path)) {
-                    $module                  =   array_pop($path);
-                    $var[C('VAR_MODULE')]    =   $module;
+                    $var[C('VAR_MODULE')]    =   array_pop($path);
                 }else{
                     if(C('MULTI_MODULE')) {
                         $var[C('VAR_MODULE')]=   MODULE_NAME;
                     }
                 }
+                if($maps = C('URL_MODULE_MAP')) {
+                    if($_module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
+                        $var[C('VAR_MODULE')] = $_module;
+                    }
+                }
                 if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_MODULE')])) {
                     $var[C('VAR_MODULE')]    =  strtolower($var[C('VAR_MODULE')]);
+                }
+                if(isset($var[C('VAR_MODULE')])){
+                    $module =   $var[C('VAR_MODULE')];
+                    unset($var[C('VAR_MODULE')]);
                 }
             }
         }
     }
 
     if(C('URL_MODEL') == 0) { // 普通模式URL转换
-        $url        =   __APP__.'?'.http_build_query(array_reverse($var));
+        $url        =   __APP__.'/'.$module.'?'.http_build_query(array_reverse($var));
         if(!empty($vars)) {
             $vars   =   urldecode(http_build_query($vars));
             $url   .=   '&'.$vars;
         }
     }else{ // PATHINFO模式或者兼容URL模式
         if(isset($route)) {
-            $url    =   __APP__.'/'.rtrim($url,$depr);
+            $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').rtrim($url,$depr);
         }else{
-            $url    =   __APP__.'/'.implode($depr,array_reverse($var));
+            $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
         }
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
@@ -235,19 +244,6 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  */
 function W($name, $data=array()) {
     return R($name,$data,'Widget');
-}
-
-/**
- * 过滤器方法 引用传值
- * @param string $name 过滤器名称
- * @param string $content 要过滤的内容
- * @return void
- */
-function filter($name, &$content) {
-    $class      =   $name . 'Filter';
-    require_cache(MODULE_PATH . 'Filter/' . $class . '.class.php');
-    $filter     =   new $class();
-    $content    =   $filter->run($content);
 }
 
 /**
@@ -304,13 +300,13 @@ function S($name,$value='',$options=null) {
     if(is_array($options) && empty($cache)){
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
-        $cache      =   Cache::getInstance($type,$options);
+        $cache      =   Think\Cache::getInstance($type,$options);
     }elseif(is_array($name)) { // 缓存初始化
         $type       =   isset($name['type'])?$name['type']:'';
-        $cache      =   Cache::getInstance($type,$name);
+        $cache      =   Think\Cache::getInstance($type,$name);
         return $cache;
     }elseif(empty($cache)) { // 自动初始化
-        $cache      =   Cache::getInstance();
+        $cache      =   Think\Cache::getInstance();
     }
     if(''=== $value){ // 获取缓存
         return $cache->get($name);
@@ -334,61 +330,33 @@ function S($name,$value='',$options=null) {
  * @return mixed
  */
 function F($name, $value='', $path=DATA_PATH) {
-    static $_cache  = array();
-    $filename       = $path . $name . '.php';
+    static $_cache  =   array();
+    $filename       =   $path . $name . '.php';
     if ('' !== $value) {
         if (is_null($value)) {
             // 删除缓存
-            return false !== strpos($name,'*')?array_map("unlink", glob($filename)):unlink($filename);
+            if(false !== strpos($name,'*')){
+                return false; // TODO 
+            }else{
+                return Think\Storage::unlink($filename);
+            }
         } else {
+            Think\Storage::put($filename,serialize($value));
             // 缓存数据
-            $dir            =   dirname($filename);
-            // 目录不存在则创建
-            if (!is_dir($dir))
-                mkdir($dir,0755,true);
             $_cache[$name]  =   $value;
-            return file_put_contents($filename, strip_whitespace("<?php\treturn " . var_export($value, true) . ";?>"));
+            return ;
         }
     }
+    // 获取缓存数据
     if (isset($_cache[$name]))
         return $_cache[$name];
-    // 获取缓存数据
-    if (is_file($filename)) {
-        $value          =   include $filename;
+    if (Think\Storage::has($filename)){
+        $value      =   unserialize(Think\Storage::read($filename));
         $_cache[$name]  =   $value;
     } else {
         $value          =   false;
     }
     return $value;
-}
-
-/**
- * 取得对象实例 支持调用类的静态方法
- * @param string $name 类名
- * @param string $method 方法名，如果为空则返回实例化对象
- * @param array $args 调用参数
- * @return object
- */
-function get_instance_of($name, $method='', $args=array()) {
-    static $_instance = array();
-    $identify = empty($args) ? $name . $method : $name . $method . to_guid_string($args);
-    if (!isset($_instance[$identify])) {
-        if (class_exists($name)) {
-            $o = new $name();
-            if (method_exists($o, $method)) {
-                if (!empty($args)) {
-                    $_instance[$identify] = call_user_func_array(array(&$o, $method), $args);
-                } else {
-                    $_instance[$identify] = $o->$method();
-                }
-            }
-            else
-                $_instance[$identify] = $o;
-        }
-        else
-            E(L('_CLASS_NOT_EXIST_') . ':' . $name);
-    }
-    return $_instance[$identify];
 }
 
 /**
@@ -481,15 +449,9 @@ function session($name,$value='') {
         if(isset($name['cache_expire']))    session_cache_expire($name['cache_expire']);
         if(isset($name['type']))            C('SESSION_TYPE',$name['type']);
         if(C('SESSION_TYPE')) { // 读取session驱动
-            $class      = 'Session'. ucwords(strtolower(C('SESSION_TYPE')));
-            // 检查驱动类
-            if(require_cache(EXTEND_PATH.'Driver/Session/'.$class.'.class.php')) {
-                $hander = new $class();
-                $hander->execute();
-            }else {
-                // 类没有定义
-                E(L('_CLASS_NOT_EXIST_').': ' . $class);
-            }
+            $class  =   'Think\\Session\\Driver\\'. ucwords(strtolower(C('SESSION_TYPE')));
+            $hander =   new $class();
+            $hander->execute();
         }
         // 启动session
         if(C('SESSION_AUTO_START'))  session_start();
@@ -653,7 +615,7 @@ function load_ext_file() {
  * @return mixed
  */
 function get_client_ip($type = 0) {
-	$type       =  $type ? 1 : 0;
+    $type       =  $type ? 1 : 0;
     static $ip  =   NULL;
     if ($ip !== NULL) return $ip[$type];
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
