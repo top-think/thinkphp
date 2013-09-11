@@ -68,6 +68,9 @@ class Think {
 
       // 加载框架底层语言包
       L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
+      
+      // 设置系统时区
+      date_default_timezone_set(C('DEFAULT_TIMEZONE'));
 
   	  // 初始化文件存储方式
   	  Storage::connect();
@@ -100,7 +103,7 @@ class Think {
         if(is_array($class)){
             self::$_map = array_merge(self::$_map, $class);
         }else{
-            self::$_map[$class] = $_map;
+            self::$_map[$class] = $map;
         }        
     }
 

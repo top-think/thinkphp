@@ -365,7 +365,7 @@ function F($name, $value='', $path=DATA_PATH) {
  * @return string
  */
 function to_guid_string($mix) {
-    if (is_object($mix) && function_exists('spl_object_hash')) {
+    if (is_object($mix)) {
         return spl_object_hash($mix);
     } elseif (is_resource($mix)) {
         $mix = get_resource_type($mix) . strval($mix);

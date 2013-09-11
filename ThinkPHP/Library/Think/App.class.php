@@ -30,8 +30,6 @@ class App {
             $zlib = ini_get('zlib.output_compression');
             if(empty($zlib)) ob_start('ob_gzhandler');
         }
-        // 设置系统时区
-        date_default_timezone_set(C('DEFAULT_TIMEZONE'));
 
         // 加载动态项目公共文件和配置
         load_ext_file();

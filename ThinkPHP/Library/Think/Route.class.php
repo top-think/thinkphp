@@ -80,7 +80,7 @@ class Route {
                         return false;
                     }
                     $name = substr($val, 1, -2);
-                }elseif(strpos($val,'^')){
+                }elseif($pos = strpos($val, '^')){
                     $array   =  explode('|',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
