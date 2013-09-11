@@ -426,7 +426,7 @@ function parse_res_name($name,$layer,$level=1){
 function A($name,$layer='',$level='') {
     static $_action = array();
     $layer  =   $layer? $layer : C('DEFAULT_C_LAYER');
-    $level  =   $level? $level : C('CONTROLLER_LEVEL');
+    $level  =   $level? $level : ($layer == C('DEFAULT_C_LAYER')?C('CONTROLLER_LEVEL'):1);
     if(isset($_action[$name.$layer]))
         return $_action[$name.$layer];
     $class  =   parse_res_name($name,$layer,$level);
