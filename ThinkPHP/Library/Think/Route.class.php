@@ -21,7 +21,6 @@ class Route {
     // 路由检测
     public static function check(){
         $regx   =   $_SERVER['PATH_INFO'];
-        if(empty($regx)) $regx = '/' ;
         $routes =   C('URL_ROUTE_RULES');
         // 路由处理
         if(!empty($routes)) {
@@ -34,7 +33,7 @@ class Route {
                 $var    =   self::parseUrl($routes[$regx]);
                 $_GET   =   array_merge($var, $_GET);
                 return true;                
-            }            
+            }
             foreach ($routes as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx.(defined('__EXT__')?'.'.__EXT__:''),$matches)) { // 正则路由
                     if($route instanceof \Closure) {
