@@ -154,7 +154,7 @@ class Dispatcher {
             define('__MODULE__',(!empty($domainModule) || !C('MULTI_MODULE'))?__APP__ : __APP__.'/'.(C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName));            
         }
 
-        if('' != $_SERVER['PATH_INFO'] && (!C('URL_ROUTER_ON') ||  !Route::check()) ){   // 检测路由规则 如果没有则按默认规则调度URL
+        if(!C('URL_ROUTER_ON') ||  !Route::check() ){   // 检测路由规则 如果没有则按默认规则调度URL
             tag('path_info');
             // 检查禁止访问的URL后缀
             if(C('URL_DENY_SUFFIX') && preg_match('/\.('.trim(C('URL_DENY_SUFFIX'),'.').')$/i', $_SERVER['PATH_INFO'])){
