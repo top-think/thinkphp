@@ -58,7 +58,7 @@ class ParseTemplateBehavior extends Behavior {
                 // 分解变量并载入模板缓存
                 extract($_data['var'], EXTR_OVERWRITE);
                 //载入模版缓存文件
-                Storage::load(C('CACHE_PATH').$_data['prefix'].md5($_content).C('TMPL_CACHFILE_SUFFIX'));
+                Storage::load(C('CACHE_PATH').$_data['prefix'].md5($_content).C('TMPL_CACHFILE_SUFFIX'),'tpl');
             }else{
                 $tpl = Think::instance('Think\\Template');
                 // 编译并加载模板文件
@@ -87,19 +87,19 @@ class ParseTemplateBehavior extends Behavior {
         if (!C('TMPL_CACHE_ON')) // 优先对配置设定检测
             return false;
         $tmplCacheFile = C('CACHE_PATH').$prefix.md5($tmplTemplateFile).C('TMPL_CACHFILE_SUFFIX');
-        if(!Storage::has($tmplCacheFile)){
+        if(!Storage::has($tmplCacheFile,'tpl')){
             return false;
-        }elseif (filemtime($tmplTemplateFile) > Storage::get($tmplCacheFile,'mtime')) {
+        }elseif (filemtime($tmplTemplateFile) > Storage::get($tmplCacheFile,'mtime','tpl')) {
             // 模板文件如果有更新则缓存需要更新
             return false;
-        }elseif (C('TMPL_CACHE_TIME') != 0 && time() > Storage::get($tmplCacheFile,'mtime')+C('TMPL_CACHE_TIME')) {
+        }elseif (C('TMPL_CACHE_TIME') != 0 && time() > Storage::get($tmplCacheFile,'mtime','tpl')+C('TMPL_CACHE_TIME')) {
             // 缓存是否在有效期
             return false;
         }
         // 开启布局模板
         if(C('LAYOUT_ON')) {
             $layoutFile  =  THEME_PATH.C('LAYOUT_NAME').C('TMPL_TEMPLATE_SUFFIX');
-            if(filemtime($layoutFile) > Storage::get($tmplCacheFile,'mtime')) {
+            if(filemtime($layoutFile) > Storage::get($tmplCacheFile,'mtime','tpl')) {
                 return false;
             }
         }
@@ -115,7 +115,7 @@ class ParseTemplateBehavior extends Behavior {
      * @return boolean
      */
     protected function checkContentCache($tmplContent,$prefix='') {
-        if(Storage::has(C('CACHE_PATH').$prefix.md5($tmplContent).C('TMPL_CACHFILE_SUFFIX'))){
+        if(Storage::has(C('CACHE_PATH').$prefix.md5($tmplContent).C('TMPL_CACHFILE_SUFFIX'),'tpl')){
             return true;
         }else{
             return false;

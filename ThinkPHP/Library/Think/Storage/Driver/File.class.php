@@ -26,8 +26,8 @@ class File extends Storage{
      * @param string $filename  文件名
      * @return string     
      */
-    public function read($filename){
-        return $this->get($filename,'content');
+    public function read($filename,$type=''){
+        return $this->get($filename,'content',$type);
     }
 
     /**
@@ -37,7 +37,7 @@ class File extends Storage{
      * @param string $content  文件内容
      * @return boolean         
      */
-    public function put($filename,$content){
+    public function put($filename,$content,$type=''){
         $dir         =  dirname($filename);
         if(!is_dir($dir))
             mkdir($dir,0755,true);
@@ -55,11 +55,11 @@ class File extends Storage{
      * @param string $content  追加的文件内容
      * @return boolean        
      */
-    public function append($filename,$content){
+    public function append($filename,$content,$type=''){
         if(is_file($filename)){
-            $content =  $this->read($filename).$content;
+            $content =  $this->read($filename,$type).$content;
         }
-        return $this->put($filename,$content);
+        return $this->put($filename,$content,$type);
     }
 
     /**
@@ -81,7 +81,7 @@ class File extends Storage{
      * @param string $filename  文件名
      * @return boolean     
      */
-    public function has($filename){
+    public function has($filename,$type=''){
         return file_exists($filename);
     }
 
@@ -91,7 +91,7 @@ class File extends Storage{
      * @param string $filename  文件名
      * @return boolean     
      */
-    public function unlink($filename){
+    public function unlink($filename,$type=''){
         return unlink($filename);
     }
 
@@ -102,7 +102,7 @@ class File extends Storage{
      * @param string $name  信息名 mtime或者content
      * @return boolean     
      */
-    public function get($filename,$name){
+    public function get($filename,$name,$type=''){
         if(!is_file($filename)) return false;
         $content=   file_get_contents($filename);
         $info   =   array(

@@ -78,7 +78,7 @@ class  Template {
     public function fetch($templateFile,$templateVar,$prefix='') {
         $this->tVar         =   $templateVar;
         $templateCacheFile  =   $this->loadTemplate($templateFile,$prefix);
-        Storage::load($templateCacheFile,$this->tVar);
+        Storage::load($templateCacheFile,$this->tVar,'tpl');
     }
 
     /**
@@ -111,7 +111,7 @@ class  Template {
         }
         // 编译模板内容
         $tmplContent =  $this->compiler($tmplContent);
-        Storage::put($tmplCacheFile,trim($tmplContent));
+        Storage::put($tmplCacheFile,trim($tmplContent),'tpl');
         return $tmplCacheFile;
     }
 

@@ -25,7 +25,7 @@ class WriteHtmlCacheBehavior extends Behavior {
     public function run(&$content){
         if(C('HTML_CACHE_ON') && defined('HTML_FILE_NAME'))  {
             //静态文件写入
-            Storage::put(HTML_FILE_NAME , $content);
+            Storage::put(HTML_FILE_NAME , $content,'html');
         }
     }
 }
