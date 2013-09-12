@@ -85,8 +85,8 @@ class ReadHtmlCacheBehavior extends Behavior {
                 $rule     = preg_replace_callback('/{(\w+)}/', function($match){return $_GET[$match[1]];}, $rule);
                 // 特殊系统变量
                 $rule   = str_ireplace(
-                    array('{:app}','{:controller}','{:action}','{:module}'),
-                    array(APP_NAME,CONTROLLER_NAME,ACTION_NAME,MODULE_NAME),
+                    array('{:controller}','{:action}','{:module}'),
+                    array(CONTROLLER_NAME,ACTION_NAME,MODULE_NAME),
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace_callback('/{|(\w+)}/', function($match){return $match[1]();},$rule);

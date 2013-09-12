@@ -100,11 +100,12 @@ class Dispatcher {
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
 
         if (__INFO__ && C('MULTI_MODULE') && !isset($_GET[$varModule])){ // 获取模块
-            $paths = explode($depr,__INFO__,2);
+            $paths      =   explode($depr,__INFO__,2);
             $allowList  =   C('MODULE_ALLOW_LIST');
-            if( empty($allowList) || (is_array($allowList) && in_array($paths[0], $allowList))){
-                $_GET[$varModule]       =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
-                $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';                
+            $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
+            if( empty($allowList) || (is_array($allowList) && in_array($module, $allowList))){
+                $_GET[$varModule]       =   $module;
+                $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';     
             };
         }
 

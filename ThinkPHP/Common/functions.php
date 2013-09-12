@@ -338,10 +338,10 @@ function F($name, $value='', $path=DATA_PATH) {
             if(false !== strpos($name,'*')){
                 return false; // TODO 
             }else{
-                return Think\Storage::unlink($filename);
+                return Think\Storage::unlink($filename,'F');
             }
         } else {
-            Think\Storage::put($filename,serialize($value));
+            Think\Storage::put($filename,serialize($value),'F');
             // 缓存数据
             $_cache[$name]  =   $value;
             return ;
@@ -351,7 +351,7 @@ function F($name, $value='', $path=DATA_PATH) {
     if (isset($_cache[$name]))
         return $_cache[$name];
     if (Think\Storage::has($filename)){
-        $value      =   unserialize(Think\Storage::read($filename));
+        $value      =   unserialize(Think\Storage::read($filename,'F'));
         $_cache[$name]  =   $value;
     } else {
         $value          =   false;

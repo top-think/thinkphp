@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace Think\Db\Driver;
 use Think\Db;
-use PDO;
 defined('THINK_PATH') or exit();
 /**
  * PDO数据库驱动 
@@ -30,9 +29,6 @@ class Pdo extends Db{
      * @param array $config 数据库配置数组
      */
     public function __construct($config=''){
-        if ( !class_exists('PDO') ) {
-            throw_exception(L('_NOT_SUPPERT_').':PDO');
-        }
         if(!empty($config)) {
             $this->config   =   $config;
             if(empty($this->config['params'])) {
@@ -50,11 +46,11 @@ class Pdo extends Db{
         if ( !isset($this->linkID[$linkNum]) ) {
             if(empty($config))  $config =   $this->config;
             if($this->pconnect) {
-                $config['params'][PDO::ATTR_PERSISTENT] = true;
+                $config['params'][\PDO::ATTR_PERSISTENT] = true;
             }
             //$config['params'][PDO::ATTR_CASE] = C("DB_CASE_LOWER")?PDO::CASE_LOWER:PDO::CASE_UPPER;
             try{
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
+                $this->linkID[$linkNum] = new \PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
                 throw_exception($e->getMessage());
             }
@@ -140,11 +136,11 @@ class Pdo extends Db{
         N('db_write',1);
         // 记录开始执行时间
         G('queryStartTime');
-        $this->PDOStatement	=	$this->_linkID->prepare($str);
+        $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
             throw_exception($this->error());
         }
-        $result	=	$this->PDOStatement->execute($bind);
+        $result = $this->PDOStatement->execute($bind);
         $this->debug();
         if ( false === $result) {
             $this->error();
@@ -215,7 +211,7 @@ class Pdo extends Db{
      */
     private function getAll() {
         //返回数据集
-        $result =   $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+        $result =   $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
         $this->numRows = count( $result );
         return $result;
     }
@@ -298,7 +294,7 @@ class Pdo extends Db{
                 break;
             case 'MSSQL':
             case 'SQLSRV':
-                $sql   = "SELECT TABLE_NAME	FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+                $sql   = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
                 break;
             case 'PGSQL':
                 $sql   = "select tablename as Tables_in_test from pg_tables where  schemaname ='public'";
