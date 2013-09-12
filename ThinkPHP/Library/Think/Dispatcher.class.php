@@ -100,8 +100,11 @@ class Dispatcher {
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
         $paths = explode($depr,trim($_SERVER['PATH_INFO'],'/'),2);
         if (C('MULTI_MODULE') && !isset($_GET[$varModule])){ // 获取模块
-            $_GET[$varModule]       =   preg_replace('/\.' . __EXT__ . '$/i', '',array_shift($paths));
-            $_SERVER['PATH_INFO']   =   implode($depr, $paths);
+            $allowList  =   C('MODULE_ALLOW_LIST');
+            if( empty($allowList) || (is_array($allowList) && in_array($paths[0], $allowList))){
+                $_GET[$varModule]       =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
+                $_SERVER['PATH_INFO']   =   $paths[1];                
+            };
         }
 
         // URL常量
