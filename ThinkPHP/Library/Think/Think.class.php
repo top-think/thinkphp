@@ -53,7 +53,7 @@ class Think {
 
       // 加载别名定义
       foreach($mode['alias'] as $alias){
-          self::addMap(is_array($alias)?$alias:include $alias);
+          self::addMap(is_array($alias)?$alias:(file_exists($alias)?include $alias:array()));
       }
             
       // 加载模式系统行为定义
