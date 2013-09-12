@@ -29,9 +29,6 @@ class Pdo extends Db{
      * @param array $config 数据库配置数组
      */
     public function __construct($config=''){
-        if ( !class_exists('PDO') ) {
-            throw_exception(L('_NOT_SUPPERT_').':PDO');
-        }
         if(!empty($config)) {
             $this->config   =   $config;
             if(empty($this->config['params'])) {
@@ -214,7 +211,7 @@ class Pdo extends Db{
      */
     private function getAll() {
         //返回数据集
-        $result =   $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+        $result =   $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
         $this->numRows = count( $result );
         return $result;
     }
