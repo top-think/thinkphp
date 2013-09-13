@@ -84,6 +84,15 @@ class Think {
               $content  .=  "\nnamespace { Think\Think::addMap(".var_export(self::$_map,true).");";
               $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');}';
               Storage::put($runtimefile,strip_whitespace('<?php '.$content));
+          }else{
+            // 调试模式加载系统默认的配置文件
+            C(include THINK_PATH.'Conf/debug.php');
+            // 读取调试模式的应用状态
+            $status  =  C('APP_STATUS');
+            // 加载对应的项目配置文件
+            if(is_file(COMMON_PATH.'Conf/'.$status.'.php'))
+                // 允许项目增加开发模式配置定义
+                C(include COMMON_PATH.'Conf/'.$status.'.php');          
           }
       }
 
@@ -94,17 +103,6 @@ class Think {
       if(!is_dir(RUNTIME_PATH)) {
           // 创建项目目录结构
           require THINK_PATH.'Common/build.php';
-      }
-
-      if(APP_DEBUG){
-          // 调试模式加载系统默认的配置文件
-          C(include THINK_PATH.'Conf/debug.php');
-          // 读取调试模式的应用状态
-          $status  =  C('APP_STATUS');
-          // 加载对应的项目配置文件
-          if(is_file(COMMON_PATH.'Conf/'.$status.'.php'))
-              // 允许项目增加开发模式配置定义
-              C(include COMMON_PATH.'Conf/'.$status.'.php');          
       }
 
       // 记录加载文件时间
