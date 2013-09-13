@@ -47,7 +47,7 @@ class Think {
       }else{
           $content =  '';
           // 读取应用模式
-          $mode   =   include THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
+          $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
           
           // 加载配置文件
           foreach ($mode['config'] as $key=>$file){
@@ -133,13 +133,15 @@ class Think {
             include self::$_map[$class];
         }else{
           $name     = strstr($class, '\\', true);
-          $namespace =    C('AUTOLOAD_NAMESPACE');
-          if(isset($namespace[$name])){ // 注册的命名空间
-              $path   =   dirname($namespace[$name]) . '/';
-          }elseif(is_dir(LIB_PATH.$name)){ // Library目录下面的命名空间自动定位
+          if(is_dir(LIB_PATH.$name)){ // Library目录下面的命名空间自动定位
               $path   =   LIB_PATH;
-          }else{ // 模块的命名空间
-              $path   =   APP_PATH;
+          }else{ 
+              $namespace =    C('AUTOLOAD_NAMESPACE');
+              if(isset($namespace[$name])){ // 注册的命名空间
+                  $path   =   dirname($namespace[$name]) . '/';
+              }else{// 模块的命名空间
+                $path   =   APP_PATH;
+              }              
           }
           $filename = $path . str_replace('\\', '/', $class) . EXT;
           if(is_file($filename)) {
@@ -231,9 +233,8 @@ class Think {
     
     // 致命错误捕获
     static public function fatalError() {
-        // 保存日志记录
-        if(C('LOG_RECORD')) Log::save();
         if ($e = error_get_last()) {
+            Log::save();
             switch($e['type']){
               case E_ERROR:
               case E_PARSE:

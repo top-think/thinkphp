@@ -26,8 +26,7 @@ class Storage {
      * @param array $options  配置数组
      * @return void
      */
-    static public function connect($type='',$options=array()) {
-        $type   =   $type? $type : C('STORAGE_TYPE');
+    static public function connect($type,$options=array()) {
         $class  =   'Think\\Storage\\Driver\\'.ucwords($type);
         self::$handler = new $class($options);
     }
