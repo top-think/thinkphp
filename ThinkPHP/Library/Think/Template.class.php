@@ -560,7 +560,7 @@ class  Template {
             $fun = strtolower(trim($args[0]));
             switch($fun) {
             case 'default':  // 特殊模板函数
-                $name   = 'isset('.$name.')?('.$name.'):'.$args[1];
+                $name = '(isset('.$name.') && ('.$name.' !== ""))?('.$name.'):'.$args[1];
                 break;
             default:  // 通用模板函数
                 if(!in_array($fun,$template_deny_funs)){
