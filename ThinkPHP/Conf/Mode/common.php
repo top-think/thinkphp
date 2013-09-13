@@ -43,6 +43,9 @@ return array(
 		THINK_PATH.'Common/functions.php',
 		COMMON_PATH.'Common/function.php',
 		CORE_PATH . 'App'.EXT,
+		CORE_PATH . 'Dispatcher'.EXT,
+		CORE_PATH . 'Log'.EXT,
+		CORE_PATH . 'Route'.EXT,
 		CORE_PATH . 'Action'.EXT,
 		CORE_PATH . 'View'.EXT
 	),

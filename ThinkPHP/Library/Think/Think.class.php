@@ -38,42 +38,57 @@ class Think {
       // 注册AUTOLOAD方法
       spl_autoload_register(array('Think\Think', 'autoload'));
 
-      // 读取应用模式
-      $mode   =   include THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
-      
-      // 加载配置文件
-      foreach ($mode['config'] as $key=>$file){
-          is_numeric($key)?C(include $file):C($key,include $file);
-      }
+      // 初始化文件存储方式
+      Storage::connect(APP_MODE=='common'?'File':APP_MODE);
 
-      // 加载核心文件
-      foreach ($mode['core'] as $file){
-          if(is_file($file)) include $file;
-      }
+      $runtimefile  = RUNTIME_PATH.APP_MODE.'~runtime.php';
+      if(!APP_DEBUG && Storage::has($runtimefile)){
+          Storage::load($runtimefile);
+      }else{
+          $content =  '';
+          // 读取应用模式
+          $mode   =   include THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
+          
+          // 加载配置文件
+          foreach ($mode['config'] as $key=>$file){
+              is_numeric($key)?C(include $file):C($key,include $file);
+          }
 
-      // 加载别名定义
-      foreach($mode['alias'] as $alias){
-          self::addMap(is_array($alias)?$alias:(file_exists($alias)?include $alias:array()));
-      }
-            
-      // 加载模式系统行为定义
-      if(isset($mode['extends'])) {
-          C('extends',is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
-      }
+          // 加载核心文件
+          foreach ($mode['core'] as $file){
+              if(is_file($file)) {
+                include $file;
+                if(!APP_DEBUG) $content   .= compile($file);
+              }
+          }
 
-      // 加载应用行为定义
-      if(isset($mode['tags'])) {
-          C('tags', is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
-      }
+          // 加载别名定义
+          foreach($mode['alias'] as $alias){
+              self::addMap(is_array($alias)?$alias:(file_exists($alias)?include $alias:array()));
+          }
+                
+          // 加载模式系统行为定义
+          if(isset($mode['extends'])) {
+              C('extends',is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
+          }
 
-      // 加载框架底层语言包
-      L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
+          // 加载应用行为定义
+          if(isset($mode['tags'])) {
+              C('tags', is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
+          }
+
+          // 加载框架底层语言包
+          L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
+
+          if(!APP_DEBUG){
+              $content  .=  "\nnamespace { Think\Think::addMap(".var_export(self::$_map,true).");";
+              $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');}';
+              Storage::put($runtimefile,strip_whitespace('<?php '.$content));
+          }
+      }
 
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));
-
-  	  // 初始化文件存储方式
-  	  Storage::connect();
 
       // 检查项目目录结构 如果不存在则自动创建
       if(!is_dir(RUNTIME_PATH)) {

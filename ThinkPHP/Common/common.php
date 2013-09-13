@@ -689,3 +689,18 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
         }
     }
 }
+
+function compile($filename) {
+    $content    =   php_strip_whitespace($filename);
+    $content    =   trim(substr($content, 5));
+    // 替换预编译指令
+    $content    =   preg_replace('/\/\/\[RUNTIME\](.*?)\/\/\[\/RUNTIME\]/s', '', $content);
+    if(0===strpos($content,'namespace')){
+        $content    =   preg_replace('/namespace\s(.*?);/','namespace \\1{',$content);
+    }else{
+        $content    =   'namespace {'.$content;
+    }
+    if ('?>' == substr($content, -2))
+        $content    = substr($content, 0, -2);
+    return $content.'}';
+}
