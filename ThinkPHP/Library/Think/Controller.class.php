@@ -16,7 +16,7 @@ namespace Think;
  * @subpackage  Core
  * @author   liu21st <liu21st@gmail.com>
  */
-abstract class Action {
+abstract class Controller {
 
     /**
      * 视图实例对象
@@ -24,13 +24,6 @@ abstract class Action {
      * @access protected
      */    
     protected $view     =  null;
-
-    /**
-     * 当前控制器名称
-     * @var name
-     * @access protected
-     */      
-    private   $name     =  '';
 
     /**
      * 控制器参数
@@ -313,3 +306,4 @@ abstract class Action {
         tag('action_end');
     }
 }
+class_alias('Think\Controller','Think\Action');
