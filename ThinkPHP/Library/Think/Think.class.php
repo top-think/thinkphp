@@ -48,11 +48,6 @@ class Think {
           $content =  '';
           // 读取应用模式
           $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
-          
-          // 加载配置文件
-          foreach ($mode['config'] as $key=>$file){
-              is_numeric($key)?C(include $file):C($key,include $file);
-          }
 
           // 加载核心文件
           foreach ($mode['core'] as $file){
@@ -60,6 +55,11 @@ class Think {
                 include $file;
                 if(!APP_DEBUG) $content   .= compile($file);
               }
+          }
+          
+          // 加载配置文件
+          foreach ($mode['config'] as $key=>$file){
+              is_numeric($key)?C(include $file):C($key,include $file);
           }
 
           // 加载别名定义
