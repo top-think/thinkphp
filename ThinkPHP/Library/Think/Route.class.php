@@ -229,7 +229,6 @@ class Route {
         $args    = array();
         array_shift($var);
         foreach ($params as $param){
-            $name = $param->getName();
             if(!empty($var)) {
                 $args[] = array_shift($var);
             }elseif($param->isDefaultValueAvailable()){
