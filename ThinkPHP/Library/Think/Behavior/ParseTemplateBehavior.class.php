@@ -55,10 +55,8 @@ class ParseTemplateBehavior extends Behavior {
         if('think'==$engine){ // 采用Think模板引擎
             if((!empty($_data['content']) && $this->checkContentCache($_data['content'],$_data['prefix'])) 
                 ||  $this->checkCache($_data['file'],$_data['prefix'])) { // 缓存有效
-                // 分解变量并载入模板缓存
-                extract($_data['var'], EXTR_OVERWRITE);
                 //载入模版缓存文件
-                Storage::load(C('CACHE_PATH').$_data['prefix'].md5($_content).C('TMPL_CACHFILE_SUFFIX'),null,'tpl');
+                Storage::load(C('CACHE_PATH').$_data['prefix'].md5($_content).C('TMPL_CACHFILE_SUFFIX'),$_data['var'],'tpl');
             }else{
                 $tpl = Think::instance('Think\\Template');
                 // 编译并加载模板文件

@@ -107,6 +107,8 @@ class Dispatcher {
                 $_GET[$varModule]       =   $module;
                 $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';     
             };
+        }else{
+            $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'],'/');
         }
 
         // URL常量
