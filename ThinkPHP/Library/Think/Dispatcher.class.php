@@ -171,7 +171,7 @@ class Dispatcher {
             if(C('URL_HTML_SUFFIX')) {
                 $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim(C('URL_HTML_SUFFIX'),'.').')$/i', '', $_SERVER['PATH_INFO']);
             }else{
-                $_SERVER['PATH_INFO'] = preg_replace('/.'.__EXT__.'$/i','',$_SERVER['PATH_INFO']);
+                $_SERVER['PATH_INFO'] = preg_replace('/\.'.__EXT__.'$/i','',$_SERVER['PATH_INFO']);
             }
 
             $depr = C('URL_PATHINFO_DEPR');
