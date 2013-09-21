@@ -40,7 +40,7 @@ class App {
         define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         // URL调度结束标签
-        tag('url_dispatch');         
+        Hook::listen('url_dispatch');         
 
         // 日志目录转换为绝对路径
         C('LOG_PATH',realpath(LOG_PATH).'/');
@@ -154,10 +154,10 @@ class App {
      */
     static public function run() {
         // 项目初始化标签
-        tag('app_init');
+        Hook::listen('app_init');
         App::init();
         // 项目开始标签
-        tag('app_begin');
+        Hook::listen('app_begin');
         // Session初始化
         if(!IS_CLI){
             session(C('SESSION_OPTIONS'));
@@ -166,7 +166,7 @@ class App {
         G('initTime');
         App::exec();
         // 项目结束标签
-        tag('app_end');
+        Hook::listen('app_end');
         return ;
     }
 

@@ -37,7 +37,7 @@ abstract class Controller {
      * @access public
      */
     public function __construct() {
-        tag('action_begin',$this->config);
+        Hook::listen('action_begin',$this->config);
         //实例化视图类
         $this->view     = Think::instance('Think\View');           
         //控制器初始化
@@ -232,7 +232,7 @@ abstract class Controller {
                 exit($data);            
             default     :
                 // 用于扩展其他返回格式数据
-                tag('ajax_return',$data);
+                Hook::listen('ajax_return',$data);
         }
     }
 
@@ -303,7 +303,7 @@ abstract class Controller {
      */
     public function __destruct() {
         // 执行后续操作
-        tag('action_end');
+        Hook::listen('action_end');
     }
 }
 class_alias('Think\Controller','Think\Action');

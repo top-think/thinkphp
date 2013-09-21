@@ -69,12 +69,12 @@ class Think {
                 
           // 加载模式系统行为定义
           if(isset($mode['extends'])) {
-              C('extends',is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
+              Hook::import(is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
           }
 
           // 加载应用行为定义
           if(isset($mode['tags'])) {
-              C('tags', is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
+              Hook::import(is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
           }
 
           // 加载框架底层语言包
@@ -82,7 +82,7 @@ class Think {
 
           if(!APP_DEBUG){
               $content  .=  "\nnamespace { Think\Think::addMap(".var_export(self::$_map,true).");";
-              $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');}';
+              $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');Think\Hook::import('.var_export(Hook::get(),true).');}';
               Storage::put($runtimefile,strip_whitespace('<?php '.$content));
           }else{
             // 调试模式加载系统默认的配置文件

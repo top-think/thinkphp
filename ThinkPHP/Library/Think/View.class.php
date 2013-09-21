@@ -71,13 +71,13 @@ class View {
     public function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
         G('viewStartTime');
         // 视图开始标签
-        tag('view_begin',$templateFile);
+        Hook::listen('view_begin',$templateFile);
         // 解析并获取模板内容
         $content = $this->fetch($templateFile,$content,$prefix);
         // 输出模板内容
         $this->render($content,$charset,$contentType);
         // 视图结束标签
-        tag('view_end');
+        Hook::listen('view_end');
     }
 
     /**
@@ -124,12 +124,12 @@ class View {
         }else{
             // 视图解析标签
             $params = array('var'=>$this->tVar,'file'=>$templateFile,'content'=>$content,'prefix'=>$prefix);
-            tag('view_parse',$params);
+            Hook::listen('view_parse',$params);
         }
         // 获取并清空缓存
         $content = ob_get_clean();
         // 内容过滤标签
-        tag('view_filter',$content);
+        Hook::listen('view_filter',$content);
         // 输出模板文件
         return $content;
     }
