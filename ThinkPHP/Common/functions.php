@@ -98,23 +98,7 @@ function L($name=null, $value=null) {
  * @return void
  */
 function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
-    static $_trace =  array();
-    if('[think]' === $value){ // 获取trace信息
-        return $_trace;
-    }else{
-        $info   =   ($label?$label.':':'').print_r($value,true);
-        if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
-            E($info);
-        }
-        $level  =   strtoupper($level);
-        if(!isset($_trace[$level])) {
-                $_trace[$level] =   array();
-            }
-        $_trace[$level][]   = $info;
-        if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
-            Think\Log::record($info,$level,$record);
-        }
-    }
+    return Think\Think::trace($value,$label,$level,$record);
 }
 
 function compile($filename) {
@@ -288,8 +272,6 @@ function N($key, $step=0,$save=false) {
         S('N_'.$key,$_num[$key],$save);
     }
 }
-
-
 
 /**
  * 字符串命名风格转换

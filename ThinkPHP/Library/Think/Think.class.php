@@ -49,17 +49,17 @@ class Think {
           // 读取应用模式
           $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
 
-          // 加载核心文件
-          foreach ($mode['core'] as $file){
-              if(is_file($file)) {
-                include $file;
-                if(!APP_DEBUG) $content   .= compile($file);
-              }
-          }
-          
           // 加载配置文件
           foreach ($mode['config'] as $key=>$file){
               is_numeric($key)?C(include $file):C($key,include $file);
+          }
+
+          // 加载核心文件
+          foreach ($mode['core'] as $file){
+              if(is_file($file)) {echo $file;
+                include $file;
+                if(!APP_DEBUG) $content   .= compile($file);
+              }
           }
 
           // 加载别名定义
@@ -224,15 +224,16 @@ class Think {
           case E_USER_NOTICE:
           default:
             $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
-            trace($errorStr,'','NOTIC');
+            self::trace($errorStr,'','NOTIC');
             break;
       }
     }
     
     // 致命错误捕获
     static public function fatalError() {
+        Log::save();
         if ($e = error_get_last()) {
-            Log::save();
+            
             switch($e['type']){
               case E_ERROR:
               case E_PARSE:
@@ -275,7 +276,7 @@ class Think {
             if (!empty($error_page)) {
                 redirect($error_page);
             } else {
-                if (C('SHOW_ERROR_MSG'))
+                if (!C('SHOW_ERROR_MSG'))
                     $e['message'] = is_array($error) ? $error['message'] : $error;
                 else
                     $e['message'] = C('ERROR_MESSAGE');
@@ -284,5 +285,33 @@ class Think {
         // 包含异常页面模板
         include C('TMPL_EXCEPTION_FILE');
         exit;
+    }
+
+    /**
+     * 添加和获取页面Trace记录
+     * @param string $value 变量
+     * @param string $label 标签
+     * @param string $level 日志级别
+     * @param boolean $record 是否记录日志
+     * @return void
+     */
+    static public function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
+        static $_trace =  array();
+        if('[think]' === $value){ // 获取trace信息
+            return $_trace;
+        }else{
+            $info   =   ($label?$label.':':'').print_r($value,true);
+            if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
+                E($info);
+            }
+            $level  =   strtoupper($level);
+            if(!isset($_trace[$level])) {
+                    $_trace[$level] =   array();
+                }
+            $_trace[$level][]   = $info;
+            if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
+                Log::record($info,$level,$record);
+            }
+        }
     }
 }
