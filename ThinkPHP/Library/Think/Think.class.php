@@ -32,11 +32,11 @@ class Think {
      */
     static public function start() {
       // 设定错误和异常处理
-      register_shutdown_function(array('Think\Think','fatalError'));
-      set_error_handler(array('Think\Think','appError'));
-      set_exception_handler(array('Think\Think','appException'));
+      register_shutdown_function('self::fatalError');
+      set_error_handler('self::appError');
+      set_exception_handler('self::appException');
       // 注册AUTOLOAD方法
-      spl_autoload_register(array('Think\Think', 'autoload'));
+      spl_autoload_register('self::autoload');
 
       // 初始化文件存储方式
       Storage::connect(APP_MODE=='common'?'File':APP_MODE);
