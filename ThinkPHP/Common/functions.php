@@ -206,17 +206,9 @@ function I($name,$default='',$filter=null) {
         default:
             return NULL;
     }
-    // 全局过滤
-    // array_walk_recursive($input,'filter_exp');
-    if(C('VAR_FILTERS')) {
-        $_filters    =   explode(',',C('VAR_FILTERS'));
-        foreach($_filters as $_filter){
-            // 全局参数过滤
-            array_walk_recursive($input,$_filter);
-        }
-    }
     if(empty($name)) { // 获取全部变量
         $data       =   $input;
+        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -226,6 +218,7 @@ function I($name,$default='',$filter=null) {
         }
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
+        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);

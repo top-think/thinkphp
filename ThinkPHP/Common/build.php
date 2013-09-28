@@ -21,7 +21,7 @@ defined('THINK_PATH') or exit();
 if(!is_dir(COMMON_PATH)) {
     // 创建项目目录结构
     build_app_dir();
-}elseif(!is_dir(CACHE_PATH)){
+}elseif(!is_dir(LOG_PATH)){
     // 检查缓存目录
     check_runtime();
 }
