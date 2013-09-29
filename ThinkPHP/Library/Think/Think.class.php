@@ -51,7 +51,7 @@ class Think {
 
           // 加载核心文件
           foreach ($mode['core'] as $file){
-              if(is_file($file)) {echo $file;
+              if(is_file($file)) {
                 include $file;
                 if(!APP_DEBUG) $content   .= compile($file);
               }
