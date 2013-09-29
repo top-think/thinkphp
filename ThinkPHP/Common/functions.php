@@ -98,23 +98,7 @@ function L($name=null, $value=null) {
  * @return void
  */
 function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
-    static $_trace =  array();
-    if('[think]' === $value){ // 获取trace信息
-        return $_trace;
-    }else{
-        $info   =   ($label?$label.':':'').print_r($value,true);
-        if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
-            E($info);
-        }
-        $level  =   strtoupper($level);
-        if(!isset($_trace[$level])) {
-                $_trace[$level] =   array();
-            }
-        $_trace[$level][]   = $info;
-        if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
-            Think\Log::record($info,$level,$record);
-        }
-    }
+    return Think\Think::trace($value,$label,$level,$record);
 }
 
 function compile($filename) {
@@ -222,17 +206,9 @@ function I($name,$default='',$filter=null) {
         default:
             return NULL;
     }
-    // 全局过滤
-    // array_walk_recursive($input,'filter_exp');
-    if(C('VAR_FILTERS')) {
-        $_filters    =   explode(',',C('VAR_FILTERS'));
-        foreach($_filters as $_filter){
-            // 全局参数过滤
-            array_walk_recursive($input,$_filter);
-        }
-    }
     if(empty($name)) { // 获取全部变量
         $data       =   $input;
+        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -242,6 +218,7 @@ function I($name,$default='',$filter=null) {
         }
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
+        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -288,8 +265,6 @@ function N($key, $step=0,$save=false) {
         S('N_'.$key,$_num[$key],$save);
     }
 }
-
-
 
 /**
  * 字符串命名风格转换
@@ -539,54 +514,7 @@ function R($url,$vars=array(),$layer='') {
  * @return mixed
  */
 function tag($tag, &$params=NULL) {
-    // 系统标签扩展
-    $extends    = C('extends.' . $tag);
-    // 应用标签扩展
-    $tags       = C('tags.' . $tag);
-    if (!empty($tags)) {
-        if(empty($tags['_overlay']) && !empty($extends)) { // 合并扩展
-            $tags = array_unique(array_merge($extends,$tags));
-        }elseif(isset($tags['_overlay'])){ // 通过设置 '_overlay'=>1 覆盖系统标签
-            unset($tags['_overlay']);
-        }
-    }elseif(!empty($extends)) {
-        $tags = $extends;
-    }
-    if($tags) {
-        if(APP_DEBUG) {
-            G($tag.'Start');
-            trace('[ '.$tag.' ] --START--','','INFO');
-        }
-        // 执行扩展
-        foreach ($tags as $name) {
-            B($name, $params);
-        }
-        if(APP_DEBUG) { // 记录行为的执行日志
-            trace('[ '.$tag.' ] --END-- [ RunTime:'.G($tag.'Start',$tag.'End',6).'s ]','','INFO');
-        }
-    }else{ // 未执行任何行为 返回false
-        return false;
-    }
-}
-
-/**
- * 动态添加行为扩展到某个标签
- * @param string $tag 标签名称
- * @param string $behavior 行为名称
- * @param string $path 行为路径
- * @return void
- */
-function add_tag_behavior($tag,$behavior,$path='') {
-    $array      =  C('tags.'.$tag);
-    if(!$array) {
-        $array  =  array();
-    }
-    if($path) {
-        $array[$behavior] = $path;
-    }else{
-        $array[] =  $behavior;
-    }
-    C('tags.'.$tag,$array);
+    return \Think\Hook::listen($tag,$params);
 }
 
 /**
@@ -597,21 +525,11 @@ function add_tag_behavior($tag,$behavior,$path='') {
  */
 function B($name, &$params=NULL) {
     if(strpos($name,'/')){
-        list($name,$method) = explode('/',$name);
+        list($name,$tag) = explode('/',$name);
     }else{
-        $method     =   'run';
+        $tag     =   'run';
     }
-    $class      = $name.'Behavior';
-    if(APP_DEBUG) {
-        G('behaviorStart');
-    }
-
-    $behavior   = new $class();
-    $behavior->$method($params);
-    if(APP_DEBUG) { // 记录行为的执行日志
-        G('behaviorEnd');
-        trace($name.' Behavior ::'.$method.' [ RunTime:'.G('behaviorStart','behaviorEnd',6).'s ]','','INFO');
-    }
+    return \Think\Hook::exec($name,$tag,$params);
 }
 
 /**
@@ -821,37 +739,38 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 $var[C('VAR_CONTROLLER')]   =   parse_name($var[C('VAR_CONTROLLER')]);
             }
             $module =   '';
-            if(!defined('BIND_MODULE')) {
-                if(!empty($path)) {
-                    $var[C('VAR_MODULE')]    =   array_pop($path);
-                }else{
-                    if(C('MULTI_MODULE')) {
-                        $var[C('VAR_MODULE')]=   MODULE_NAME;
-                    }
-                }
-                if($maps = C('URL_MODULE_MAP')) {
-                    if($_module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
-                        $var[C('VAR_MODULE')] = $_module;
-                    }
-                }
-                if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_MODULE')])) {
-                    $var[C('VAR_MODULE')]    =  strtolower($var[C('VAR_MODULE')]);
-                }
-                if(isset($var[C('VAR_MODULE')])){
-                    $module =   $var[C('VAR_MODULE')];
-                    unset($var[C('VAR_MODULE')]);
+            
+            if(!empty($path)) {
+                $var[C('VAR_MODULE')]    =   array_pop($path);
+            }else{
+                if(C('MULTI_MODULE')) {
+                    $var[C('VAR_MODULE')]=   MODULE_NAME;
                 }
             }
+            if($maps = C('URL_MODULE_MAP')) {
+                if($_module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
+                    $var[C('VAR_MODULE')] = $_module;
+                }
+            }
+            if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_MODULE')])) {
+                $var[C('VAR_MODULE')]    =  strtolower($var[C('VAR_MODULE')]);
+            }
+            if(isset($var[C('VAR_MODULE')])){
+                $module =   $var[C('VAR_MODULE')];
+                unset($var[C('VAR_MODULE')]);
+            }
+            
         }
     }
 
     if(C('URL_MODEL') == 0) { // 普通模式URL转换
-        $url        =   __APP__.'/'.$module.'?'.http_build_query(array_reverse($var));
+        $url        =   __APP__.'?'.C('VAR_MODULE')."={$module}&".http_build_query(array_reverse($var));
         if(!empty($vars)) {
             $vars   =   urldecode(http_build_query($vars));
             $url   .=   '&'.$vars;
         }
     }else{ // PATHINFO模式或者兼容URL模式
+        $module = defined('BIND_MODULE') ? '' : $module;
         if(isset($route)) {
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').rtrim($url,$depr);
         }else{
