@@ -132,7 +132,7 @@ class Dispatcher {
                 Think::addMap(include MODULE_PATH.'Conf/alias.php');
             // 加载模块tags文件定义
             if(is_file(MODULE_PATH.'Conf/tags.php'))
-                C('tags', include MODULE_PATH.'Conf/tags.php');
+                Hook::import(include MODULE_PATH.'Conf/tags.php');
             // 加载模块函数文件
             if(is_file(MODULE_PATH.'Common/function.php'))
                 include MODULE_PATH.'Common/function.php';
