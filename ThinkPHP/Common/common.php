@@ -544,8 +544,8 @@ function C($name=null, $value=null) {
             return;
         }
         // 二维数组设置和获取支持
+		$name = strtolower($name);
         $name = explode('.', $name);
-        $name[0]   =  strtolower($name[0]);
         if (is_null($value))
             return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : null;
         $_config[$name[0]][$name[1]] = $value;
