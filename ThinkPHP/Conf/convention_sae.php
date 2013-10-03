@@ -6,7 +6,7 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: luofei614 <weibo.com/luofei614>
 // +----------------------------------------------------------------------
 
 /**
@@ -35,5 +35,6 @@ return array(
 	'TMPL_PARSE_STRING'=>array(
 	  // __PUBLIC__/upload  -->  /Public/upload -->http://appname-public.stor.sinaapp.com/upload
 	'/Public/upload'=>$st->getUrl('public','upload')
-	)
+	),
+    'LOG_TYPE'=>'Sae'
 );

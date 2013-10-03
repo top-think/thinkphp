@@ -31,7 +31,6 @@ return  array(
     'MULTI_MODULE'          =>  true, // 是否允许多模块 如果为false 则必须设置 DEFAULT_MODULE
     'MODULE_DENY_LIST'      =>  array('Common','Runtime'),
     'CONTROLLER_LEVEL'      =>  1,
-    'STORAGE_TYPE'          =>  'File',
 
     /* Cookie设置 */
     'COOKIE_EXPIRE'         =>  0,    // Coodie有效期

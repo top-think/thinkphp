@@ -6,7 +6,7 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: luofei614 <weibo.com/luofei614>
 // +----------------------------------------------------------------------
 namespace Think\Storage\Driver;
 use Think\Storage;
@@ -62,6 +62,13 @@ class Sae extends Storage{
     }
 
 
+    /**
+     * 读取F缓存 
+     * 
+     * @param mixed $filename 
+     * @access public
+     * @return void
+     */
     public function readF($filename){
         $kv=$this->getKv();
         if(!isset($this->kvs[$filename])){
@@ -86,6 +93,14 @@ class Sae extends Storage{
         }
     }
 
+    /**
+     * 写入html静态缓存 
+     * 
+     * @param mixed $filename 
+     * @param mixed $content 
+     * @access public
+     * @return void
+     */
     public function putHtml($filename,$content){
         $kv=$this->getKv(); 
         $content=time().$content;
@@ -93,6 +108,14 @@ class Sae extends Storage{
         return $kv->set($filename,$content);
     }
 
+    /**
+     * F函数写入缓存 
+     * 
+     * @param mixed $filename 
+     * @param mixed $content 
+     * @access public
+     * @return void
+     */
     public function putF($filename,$content){
         $kv=$this->getKv(); 
         $this->kvs[$filename]=$content;
@@ -140,6 +163,13 @@ class Sae extends Storage{
         }
     }
 
+    /**
+     * F函数，判断是否存在key 
+     * 
+     * @param mixed $filename 
+     * @access public
+     * @return void
+     */
     public function hasF($filename){
         if(false!==$this->readF($filename)){
             return true; 
@@ -182,6 +212,15 @@ class Sae extends Storage{
         return $info[$name];
     }
 
+    
+    /**
+     * 读取html静态缓存 
+     * 
+     * @param string $filename 
+     * @param string $name 
+     * @access public
+     * @return void
+     */
     public function getHtml($filename,$name){
         if(!isset($this->htmls[$filename])){
             $kv=$this->getKv();
