@@ -20,6 +20,7 @@ class Sae extends Storage{
     private $mc;
     private $kvs=array(); 
     private $htmls=array();
+    private $contents=array();
     public function __construct() {
         if(!function_exists('memcache_init')){
               header('Content-Type:text/html;charset=utf-8');
@@ -89,6 +90,7 @@ class Sae extends Storage{
         if(!$this->mc->set($filename,time().$content,MEMCACHE_COMPRESSED,0)){
             E(L('_STORAGE_WRITE_ERROR_').':'.$filename);
         }else{
+            $this->contents[$filename]=$content;
             return true;
         }
     }
@@ -184,7 +186,8 @@ class Sae extends Storage{
      * @return boolean     
      */
     public function unlink($filename,$type=''){
-        $this->mc->delete($filename);
+        unset($this->contents[$filename]);
+        return $this->mc->delete($filename);
     }
 
     public function unlinkF($filename){
@@ -201,7 +204,10 @@ class Sae extends Storage{
      * @return boolean     
      */
     public function get($filename,$name,$type=''){
-        $content=$this->mc->get($filename);
+        if(!isset($this->contents[$filename])){
+            $this->contents[$filename]=$this->mc->get($filename);
+        }
+        $content=$this->contents[$filename];
         if(false===$content){
             return false;
         }

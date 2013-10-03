@@ -140,4 +140,6 @@ return  array(
     'OUTPUT_ENCODE'         =>  false, // 页面压缩输出
     'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
 
+    'CHECK_APP_DIR'         =>  true, //是否检查项目目录是否创建
+
 );

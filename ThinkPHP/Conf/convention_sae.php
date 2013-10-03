@@ -36,5 +36,6 @@ return array(
 	  // __PUBLIC__/upload  -->  /Public/upload -->http://appname-public.stor.sinaapp.com/upload
 	'/Public/upload'=>$st->getUrl('public','upload')
 	),
-    'LOG_TYPE'=>'Sae'
+    'LOG_TYPE'=>'Sae',
+    'CHECK_APP_DIR'=>false
 );
