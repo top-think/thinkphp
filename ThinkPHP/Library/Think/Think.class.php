@@ -48,7 +48,6 @@ class Think {
           $content =  '';
           // 读取应用模式
           $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
-
           // 加载核心文件
           foreach ($mode['core'] as $file){
               if(is_file($file)) {
@@ -283,7 +282,12 @@ class Think {
             }
         }
         // 包含异常页面模板
-        include C('TMPL_EXCEPTION_FILE');
+        $TMPL_EXCEPTION_FILE=C('TMPL_EXCEPTION_FILE');
+        if(!$TMPL_EXCEPTION_FILE){
+            //显示在加载配置文件之前的程序错误
+            exit('<b>Error:</b>'.$e['message'].' in <b> '.$e['file'].' </b> on line <b>'.$e['line'].'</b>'); 
+        }
+        include $TMPL_EXCEPTION_FILE;
         exit;
     }
 
