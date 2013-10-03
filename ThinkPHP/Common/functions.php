@@ -917,7 +917,7 @@ function F($name, $value='', $path=DATA_PATH) {
     // 获取缓存数据
     if (isset($_cache[$name]))
         return $_cache[$name];
-    if (Think\Storage::has($filename)){
+    if (Think\Storage::has($filename,'F')){
         $value      =   unserialize(Think\Storage::read($filename,'F'));
         $_cache[$name]  =   $value;
     } else {

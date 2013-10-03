@@ -42,11 +42,11 @@ class Think {
       Storage::connect(APP_MODE=='common'?'File':APP_MODE);
 
       $runtimefile  = RUNTIME_PATH.APP_MODE.'~runtime.php';
-      if(!APP_DEBUG && Storage::has($runtimefile)){
-          Storage::load($runtimefile);
+      if(!APP_DEBUG && Storage::has($runtimefile,'runtime')){
+          Storage::load($runtimefile,null,'runtime');
       }else{
-          if(Storage::has($runtimefile))
-              Storage::unlink($runtimefile);
+          if(Storage::has($runtimefile,'runtime'))
+              Storage::unlink($runtimefile,'runtime');
           $content =  '';
           // 读取应用模式
           $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
@@ -84,7 +84,7 @@ class Think {
           if(!APP_DEBUG){
               $content  .=  "\nnamespace { Think\Think::addMap(".var_export(self::$_map,true).");";
               $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');Think\Hook::import('.var_export(Hook::get(),true).');}';
-              Storage::put($runtimefile,strip_whitespace('<?php '.$content));
+              Storage::put($runtimefile,strip_whitespace('<?php '.$content),'runtime');
           }else{
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
