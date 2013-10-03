@@ -17,14 +17,34 @@ class Sae extends Storage{
      * 架构函数
      * @access public
      */
-    public $mc;
+    private $mc;
+    private $kvs=array(); 
+    private $htmls=array();
     public function __construct() {
+        if(!function_exists('memcache_init')){
+              header('Content-Type:text/html;charset=utf-8');
+              exit('请在SAE平台上运行代码。');
+        }
         $this->mc=@memcache_init();
         if(!$this->mc){
               header('Content-Type:text/html;charset=utf-8');
-              E('您未开通Memcache服务，请在SAE管理平台初始化Memcache服务');
+              exit('您未开通Memcache服务，请在SAE管理平台初始化Memcache服务');
         }
     }
+
+    /**
+     * 获得SaeKv对象
+     */
+
+    public function getKv(){
+        static $kv;
+        if(!$kv){
+           $kv=new \SaeKV();
+           if(!$kv->init()) 
+               E('您没有初始化KVDB，请在SAE管理平台初始化KVDB服务');
+        } 
+        return $kv;
+    } 
 
 
     /**
@@ -36,6 +56,20 @@ class Sae extends Storage{
     public function read($filename,$type=''){
         return $this->get($filename,'content',$type);
     }
+
+    public function readHtml($filename,$type=''){
+        return $this->getHtml($filename,'content');
+    }
+
+
+    public function readF($filename){
+        $kv=$this->getKv();
+        if(!isset($this->kvs[$filename])){
+            $this->kvs[$filename]=$kv->get($filename);
+        }
+        return $this->kvs[$filename];
+    }
+
 
     /**
      * 文件写入
@@ -50,6 +84,19 @@ class Sae extends Storage{
         }else{
             return true;
         }
+    }
+
+    public function putHtml($filename,$content){
+        $kv=$this->getKv(); 
+        $content=time().$content;
+        $this->htmls[$filename]=$content;
+        return $kv->set($filename,$content);
+    }
+
+    public function putF($filename,$content){
+        $kv=$this->getKv(); 
+        $this->kvs[$filename]=$content;
+        return $kv->set($filename,$content);
     }
 
     /**
@@ -86,11 +133,18 @@ class Sae extends Storage{
      * @return boolean     
      */
     public function has($filename,$type=''){
-        if($this->read($filename)){
+        if($this->read($filename,$type)){
             return true; 
         }else{
             return false;
         }
+    }
+
+    public function hasF($filename){
+        if(false!==$this->readF($filename)){
+            return true; 
+        }
+        return false;
     }
 
     /**
@@ -100,8 +154,13 @@ class Sae extends Storage{
      * @return boolean     
      */
     public function unlink($filename,$type=''){
-        //TODO type
         $this->mc->delete($filename);
+    }
+
+    public function unlinkF($filename){
+        $kv=$this->getKv();  
+        unset($this->kvs[$filename]);
+        return $kv->delete($filename);
     }
 
     /**
@@ -112,7 +171,6 @@ class Sae extends Storage{
      * @return boolean     
      */
     public function get($filename,$name,$type=''){
-        //TODO type
         $content=$this->mc->get($filename);
         if(false===$content){
             return false;
@@ -123,4 +181,21 @@ class Sae extends Storage{
         );
         return $info[$name];
     }
+
+    public function getHtml($filename,$name){
+        if(!isset($this->htmls[$filename])){
+            $kv=$this->getKv();
+            $this->htmls[$filename]=$kv->get($filename);
+        }
+        $content=$this->htmls[$filename];
+        if(false===$content){
+            return false;
+        }
+        $info   =   array(
+            'mtime'     =>  substr($content,0,10),
+            'content'   =>  substr($content,10)
+        );
+        return $info[$name];
+    }
+
 }

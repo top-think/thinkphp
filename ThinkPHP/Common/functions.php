@@ -905,6 +905,7 @@ function F($name, $value='', $path=DATA_PATH) {
             if(false !== strpos($name,'*')){
                 return false; // TODO 
             }else{
+                unset($_cache[$name]);
                 return Think\Storage::unlink($filename,'F');
             }
         } else {
