@@ -219,7 +219,7 @@ function build_first_action() {
 }
 
 // 生成目录安全文件
-function build_dir_secure($dirs='') {
+function build_dir_secure($dirs=array()) {
     // 目录安全写入
     if(defined('BUILD_DIR_SECURE') && BUILD_DIR_SECURE) {
         defined('DIR_SECURE_FILENAME')  or define('DIR_SECURE_FILENAME',    'index.html');
