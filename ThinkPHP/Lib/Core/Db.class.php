@@ -516,8 +516,7 @@ class Db {
                     if('exp'==strtolower($val[$i][0])) {
                         $whereStr .= '('.$key.' '.$data.') '.$rule.' ';
                     }else{
-                        $op = is_array($val[$i])?$this->comparison[strtolower($val[$i][0])]:'=';
-                        $whereStr .= '('.$key.' '.$op.' '.$this->parseValue($data).') '.$rule.' ';
+                        $whereStr .= '('.$this->parseWhereItem($key,$val[$i]).') '.$rule.' ';
                     }
                 }
                 $whereStr = substr($whereStr,0,-4);

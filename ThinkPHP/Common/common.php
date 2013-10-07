@@ -44,13 +44,13 @@ function T($template='',$layer=''){
         }else{ 
             $baseUrl    =   TMPL_PATH.$group;
         }
-
+        $depr   =   C('TMPL_FILE_DEPR');
         // 分析模板文件规则
         if('' == $file) {
             // 如果模板文件名为空 按照默认规则定位
-            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
-        }elseif(false === strpos($file, '/')){
-            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . $file;
+            $file = MODULE_NAME . $depr . ACTION_NAME;
+        }elseif(false === strpos($file, $depr)){
+            $file = MODULE_NAME . $depr . $file;
         }
         return $baseUrl.$file.C('TMPL_TEMPLATE_SUFFIX');
 }
