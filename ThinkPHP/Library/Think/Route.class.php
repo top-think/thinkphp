@@ -35,13 +35,13 @@ class Route {
                 return true;                
             }
             foreach ($routes as $rule=>$route){
-                if(0===strpos($rule,'/') && preg_match($rule,$regx.(defined('__EXT__')?'.'.__EXT__:''),$matches)) { // 正则路由
+                if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
                         self::invokeRegx($route, $matches);
                         exit;
                     }
-                    return $return = self::parseRegex($matches,$route,$regx);
+                    return self::parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
                     $len2   =   substr_count($rule,'/');
@@ -60,7 +60,7 @@ class Route {
                                 self::invokeRule($route, $match);
                                 exit;
                             }
-                            return $return = self::parseRule($rule,$route,$regx);
+                            return self::parseRule($rule,$route,$regx);
                         }
                     }
                 }
