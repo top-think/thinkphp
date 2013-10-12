@@ -80,7 +80,5 @@ return array(
 	    ),
 	    'view_end'      =>  array(),
 	),
-	'tags'	=>	array(
-		COMMON_PATH.'Conf/tags.php',
-	),
+	'tags'	=>	COMMON_PATH.'Conf/tags.php',
 );

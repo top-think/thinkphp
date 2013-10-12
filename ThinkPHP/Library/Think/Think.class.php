@@ -75,7 +75,12 @@ class Think {
 
           // 加载应用行为定义
           if(isset($mode['tags'])) {
-              Hook::import(is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
+              if(is_array($mode['tags'])){
+                $tags=$mode['tags'];
+              }else{
+                $tags=file_exists($mode['tags'])?include $mode['tags']:array();
+              }
+              Hook::import($tags);
           }
 
           // 加载框架底层语言包
