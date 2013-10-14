@@ -31,7 +31,6 @@ return  array(
     'MULTI_MODULE'          =>  true, // 是否允许多模块 如果为false 则必须设置 DEFAULT_MODULE
     'MODULE_DENY_LIST'      =>  array('Common','Runtime'),
     'CONTROLLER_LEVEL'      =>  1,
-    'STORAGE_TYPE'          =>  'File',
 
     /* Cookie设置 */
     'COOKIE_EXPIRE'         =>  0,    // Coodie有效期
@@ -140,5 +139,7 @@ return  array(
 
     'OUTPUT_ENCODE'         =>  false, // 页面压缩输出
     'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
+
+    'CHECK_APP_DIR'         =>  true, //是否检查项目目录是否创建
 
 );

@@ -905,6 +905,7 @@ function F($name, $value='', $path=DATA_PATH) {
             if(false !== strpos($name,'*')){
                 return false; // TODO 
             }else{
+                unset($_cache[$name]);
                 return Think\Storage::unlink($filename,'F');
             }
         } else {
@@ -917,7 +918,7 @@ function F($name, $value='', $path=DATA_PATH) {
     // 获取缓存数据
     if (isset($_cache[$name]))
         return $_cache[$name];
-    if (Think\Storage::has($filename)){
+    if (Think\Storage::has($filename,'F')){
         $value      =   unserialize(Think\Storage::read($filename,'F'));
         $_cache[$name]  =   $value;
     } else {

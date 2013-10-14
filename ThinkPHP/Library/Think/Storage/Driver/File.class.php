@@ -13,6 +13,8 @@ use Think\Storage;
 // 本地文件写入存储类
 class File extends Storage{
 
+    private $contents=array();
+
     /**
      * 架构函数
      * @access public
@@ -44,6 +46,7 @@ class File extends Storage{
         if(false === file_put_contents($filename,$content)){
             E(L('_STORAGE_WRITE_ERROR_').':'.$filename);
         }else{
+            $this->contents[$filename]=$content;
             return true;
         }
     }
@@ -92,6 +95,7 @@ class File extends Storage{
      * @return boolean     
      */
     public function unlink($filename,$type=''){
+        unset($this->contents[$filename]);
         return unlink($filename);
     }
 
@@ -103,8 +107,11 @@ class File extends Storage{
      * @return boolean     
      */
     public function get($filename,$name,$type=''){
-        if(!is_file($filename)) return false;
-        $content=   file_get_contents($filename);
+        if(!isset($this->contents[$filename])){
+            if(!is_file($filename)) return false;
+           $this->contents[$filename]=file_get_contents($filename);
+        }
+        $content=$this->contents[$filename];
         $info   =   array(
             'mtime'     =>  filemtime($filename),
             'content'   =>  $content
