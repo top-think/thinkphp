@@ -105,17 +105,16 @@ class ChromeShowPageTraceBehavior extends Behavior {
                     }
             }
         }
-
-      ChromePhp::group('TRACE信息:'.__SELF__);
+      chrome_debug('TRACE信息:'.__SELF__,'group');
         //输出日志
         foreach($trace as $title=>$log){
-            '错误'==$title?ChromePhp::group($title):ChromePhp::groupCollapsed($title);
+            '错误'==$title?chrome_debug($title,'group'):chrome_debug($title,'groupCollapsed');
             foreach($log as $i=>$logstr){
-                ChromePhp::log($i.'.'.$logstr);
+                chrome_debug($i.'.'.$logstr,'log');
             }
-            ChromePhp::groupEnd();
+            chrome_debug('','groupEnd');
         }
-       ChromePhp::groupEnd();
+       chrome_debug('','groupEnd');
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志
             if(is_array($save)) {// 选择选项卡保存
                 $tabs   =   C('TRACE_PAGE_TABS');
@@ -154,7 +153,42 @@ class ChromeShowPageTraceBehavior extends Behavior {
         return G('beginTime','viewEndTime').'s ( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
     }
 }
+if(!function_exists('chrome_debug')){
+//ChromePhp 输出trace的函数
+function chrome_debug($msg,$type='trace',$trace_level=1){
+    if('trace'==$type){
+        ChromePhp::groupCollapsed($msg);
+        $traces=debug_backtrace(false);
+        $traces=array_reverse($traces);
+        $max=count($traces)-$trace_level;
+        for($i=0;$i<$max;$i++){
+            $trace=$traces[$i];
+            $fun=isset($trace['class'])?$trace['class'].'::'.$trace['function']:$trace['function'];
+            $file=isset($trace['file'])?$trace['file']:'unknown file';
+            $line=isset($trace['line'])?$trace['line']:'unknown line';
+            $trace_msg='#'.$i.'  '.$fun.' called at ['.$file.':'.$line.']';
+            if(!empty($trace['args'])){
+                ChromePhp::groupCollapsed($trace_msg);
+                ChromePhp::log($trace['args']);
+                ChromePhp::groupEnd();
+            }else{
+                ChromePhp::log($trace_msg);
+            }
+        }
+        ChromePhp::groupEnd();
+    }else{
+        if(method_exists('ChromePhp',$type)){
+            //支持type trace，warn,log,error,group, groupCollapsed, groupEnd等
+            call_user_func(array('ChromePhp',$type),$msg);
+        }else{
+            //如果type不为trace,warn,log等，则为log的标签
+            call_user_func_array(array('ChromePhp','log'),func_get_args());
+        }
+    }
+}
 
+
+ 
 /**
  * Server Side Chrome PHP debugger class
  *
@@ -584,5 +618,4 @@ class ChromePhp
         return $this->_settings[$key];
     }
 }
-
-
+}
