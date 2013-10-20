@@ -168,6 +168,7 @@ class Dispatcher {
                 send_http_status(404);
                 exit;
             }
+
             if(C('URL_HTML_SUFFIX')) {
                 $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim(C('URL_HTML_SUFFIX'),'.').')$/i', '', $_SERVER['PATH_INFO']);
             }else{
@@ -189,7 +190,12 @@ class Dispatcher {
             $_GET[$varAction]  =   array_shift($paths);
             // 解析剩余的URL参数
             $var  =  array();
-            preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){$var[$match[1]]=strip_tags($match[2]);}, implode('/',$paths));
+            if(C('URL_PARAMS_BIND') && 1 == C('URL_PARAMS_BIND_TYPE')){
+                // URL参数按顺序绑定变量
+                $var    =   $paths;
+            }else{
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){$var[$match[1]]=strip_tags($match[2]);}, implode('/',$paths));                
+            }
             $_GET   =  array_merge($var,$_GET);
         }
         define('CONTROLLER_NAME',   self::getController($varController));

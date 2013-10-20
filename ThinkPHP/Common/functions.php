@@ -194,9 +194,6 @@ function I($name,$default='',$filter=null) {
                 default:
                     $input  =  $_GET;
             }
-            if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
-                $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
-            }
             break;
         case 'request' :   $input =& $_REQUEST;   break;
         case 'session' :   $input =& $_SESSION;   break;

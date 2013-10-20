@@ -47,7 +47,6 @@ class Page{
         $this->parameter  = empty($parameter) ? $_GET : $parameter;
         $this->nowPage    = empty($_GET[$this->p]) ? 1 : intval($_GET[$this->p]);
         $this->firstRow   = $this->listRows * ($this->nowPage - 1);
-        unset($this->parameter[C('VAR_URL_PARAMS')]);
     }
 
     /**

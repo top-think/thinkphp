@@ -122,6 +122,7 @@ return  array(
     'URL_HTML_SUFFIX'       =>  'html',  // URL伪静态后缀设置
     'URL_DENY_SUFFIX'       =>  'ico|png|gif|jpg', // URL禁止访问的后缀设置
     'URL_PARAMS_BIND'       =>  true, // URL变量绑定到Action方法参数
+    'URL_PARAMS_BIND_TYPE'  =>  0, // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
     'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
 	'URL_ROUTER_ON'         =>	false,   // 是否开启URL路由
 	'URL_ROUTE_RULES'       =>	array(), // 默认路由规则 针对模块
@@ -133,7 +134,6 @@ return  array(
     'VAR_AJAX_SUBMIT'       =>  'ajax',  // 默认的AJAX提交变量
 	'VAR_JSONP_HANDLER'     =>  'callback',
     'VAR_PATHINFO'          =>  's',	// PATHINFO 兼容模式获取变量例如 ?s=/module/action/id/1 后面的参数取决于URL_PATHINFO_DEPR
-    'VAR_URL_PARAMS'        =>  '_URL_', // PATHINFO URL参数变量
     'VAR_TEMPLATE'          =>  't',		// 默认模板切换变量
     'VAR_FILTERS'           =>  'filter_exp',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
