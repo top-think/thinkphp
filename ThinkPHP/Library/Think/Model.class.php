@@ -30,8 +30,10 @@ class Model {
     protected $db               =   null;
     // 主键名称
     protected $pk               =   'id';
+    // 主键是否自动增长
+    protected $autoinc          =   false;    
     // 数据表前缀
-    protected $tablePrefix      =   '';
+    protected $tablePrefix      =   null;
     // 模型名称
     protected $name             =   '';
     // 数据库名称
@@ -87,8 +89,8 @@ class Model {
             $this->tablePrefix = '';
         }elseif('' != $tablePrefix) {
             $this->tablePrefix = $tablePrefix;
-        }else{
-            $this->tablePrefix = $this->tablePrefix?$this->tablePrefix:C('DB_PREFIX');
+        }elseif(!isset($this->tablePrefix)){
+            $this->tablePrefix = C('DB_PREFIX');
         }
 
         // 数据库初始化操作
@@ -136,13 +138,12 @@ class Model {
             return false;
         }
         $this->fields   =   array_keys($fields);
-        $this->fields['_autoinc'] = false;
         foreach ($fields as $key=>$val){
             // 记录字段类型
-            $type[$key]    =   $val['type'];
+            $type[$key]     =   $val['type'];
             if($val['primary']) {
-                $this->fields['_pk'] = $key;
-                if($val['autoinc']) $this->fields['_autoinc']   =   true;
+                $this->pk   =   $key;
+                if($val['autoinc']) $this->autoinc   =   true;
             }
         }
         // 记录字段类型信息
@@ -1331,7 +1332,7 @@ class Model {
      * @return string
      */
     public function getPk() {
-        return isset($this->fields['_pk'])?$this->fields['_pk']:$this->pk;
+        return $this->pk;
     }
 
     /**
@@ -1346,7 +1347,7 @@ class Model {
         }
         if($this->fields) {
             $fields     =  $this->fields;
-            unset($fields['_autoinc'],$fields['_pk'],$fields['_type'],$fields['_version']);
+            unset($fields['_type'],$fields['_version']);
             return $fields;
         }
         return false;
