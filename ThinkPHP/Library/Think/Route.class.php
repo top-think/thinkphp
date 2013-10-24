@@ -21,19 +21,21 @@ class Route {
     // 路由检测
     public static function check(){
         $regx   =   $_SERVER['PATH_INFO'];
+        $depr   =   C('URL_PATHINFO_DEPR');
+        // 分隔符替换 确保路由定义使用统一的分隔符
+        if('/' != $depr){
+            $regx = str_replace($depr,'/',$regx);
+        }
+        // URL映射定义（静态路由）
+        $maps   =   C('URL_MAP_RULES');
+        if(isset($maps[$regx])) {
+            $var    =   self::parseUrl($maps[$regx]);
+            $_GET   =   array_merge($var, $_GET);
+            return true;                
+        }        
+        // 动态路由处理
         $routes =   C('URL_ROUTE_RULES');
-        // 路由处理
         if(!empty($routes)) {
-            $depr = C('URL_PATHINFO_DEPR');
-            // 分隔符替换 确保路由定义使用统一的分隔符
-            if('/' != $depr){
-                $regx = str_replace($depr,'/',$regx);
-            }            
-            if(isset($routes[$regx])) { // URL映射
-                $var    =   self::parseUrl($routes[$regx]);
-                $_GET   =   array_merge($var, $_GET);
-                return true;                
-            }
             foreach ($routes as $rule=>$route){
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
@@ -101,14 +103,14 @@ class Route {
     }
 
     // 解析规范的路由地址
-    // 地址格式 [分组/模块/操作?]参数1=值1&参数2=值2...
+    // 地址格式 [控制器/操作?]参数1=值1&参数2=值2...
     private static function parseUrl($url) {
         $var  =  array();
-        if(false !== strpos($url,'?')) { // [分组/模块/操作?]参数1=值1&参数2=值2...
+        if(false !== strpos($url,'?')) { // [控制器/操作?]参数1=值1&参数2=值2...
             $info   =  parse_url($url);
             $path   = explode('/',$info['path']);
             parse_str($info['query'],$var);
-        }elseif(strpos($url,'/')){ // [分组/模块/操作]
+        }elseif(strpos($url,'/')){ // [控制器/操作]
             $path = explode('/',$url);
         }else{ // 参数1=值1&参数2=值2...
             parse_str($url,$var);
@@ -126,8 +128,8 @@ class Route {
     }
 
     // 解析规则路由
-    // '路由规则'=>'[分组/模块/操作]?额外参数1=值1&额外参数2=值2...'
-    // '路由规则'=>array('[分组/模块/操作]','额外参数1=值1&额外参数2=值2...')
+    // '路由规则'=>'[控制器/操作]?额外参数1=值1&额外参数2=值2...'
+    // '路由规则'=>array('[控制器/操作]','额外参数1=值1&额外参数2=值2...')
     // '路由规则'=>'外部地址'
     // '路由规则'=>array('外部地址','重定向代码')
     // 路由规则中 :开头 表示动态变量
@@ -190,8 +192,8 @@ class Route {
     }
 
     // 解析正则路由
-    // '路由正则'=>'[分组/模块/操作]?参数1=值1&参数2=值2...'
-    // '路由正则'=>array('[分组/模块/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...')
+    // '路由正则'=>'[控制器/操作]?参数1=值1&参数2=值2...'
+    // '路由正则'=>array('[控制器/操作]?参数1=值1&参数2=值2...','额外参数1=值1&额外参数2=值2...')
     // '路由正则'=>'外部地址'
     // '路由正则'=>array('外部地址','重定向代码')
     // 参数值和外部地址中可以用动态变量 采用 :1 :2 的方式
