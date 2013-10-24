@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -113,11 +113,8 @@ class Model {
                 $db   =  $this->dbName?$this->dbName:C('DB_NAME');
                 $fields = F('_fields/'.strtolower($db.'.'.$this->name));
                 if($fields) {
-                    $version    =   C('DB_FIELD_VERSION');
-                    if(empty($version) || $fields['_version']== $version) {
-                        $this->fields   =   $fields;
-                        return ;
-                    }
+                    $this->fields   =   $fields;
+                    return ;
                 }
             }
             // 每次都会读取数据表信息
@@ -148,7 +145,6 @@ class Model {
         }
         // 记录字段类型信息
         $this->fields['_type'] =  $type;
-        if(C('DB_FIELD_VERSION')) $this->fields['_version'] =   C('DB_FIELD_VERSION');
 
         // 2008-3-7 增加缓存开关控制
         if(C('DB_FIELDS_CACHE')){
@@ -244,17 +240,27 @@ class Model {
      */
      protected function _facade($data) {
 
-        // 检查非数据字段
+        // 检查数据字段合法性
         if(!empty($this->fields)) {
+            if(!empty($this->options['field'])) {
+                $fields =   $this->options['field'];
+                unset($this->options['field']);
+                if(is_string($fields)) {
+                    $fields =   explode(',',$fields);
+                }    
+            }else{
+                $fields =   $this->fields;
+            }        
             foreach ($data as $key=>$val){
-                if(!in_array($key,$this->fields,true)){
+                if(!in_array($key,$fields,true)){
                     unset($data[$key]);
                 }elseif(is_scalar($val)) {
-                    // 字段类型检查
+                    // 字段类型检查 和 强制转换
                     $this->_parseType($data,$key);
                 }
             }
         }
+       
         // 安全过滤
         if(!empty($this->options['filter'])) {
             $data = array_map($this->options['filter'],$data);
@@ -1347,7 +1353,7 @@ class Model {
         }
         if($this->fields) {
             $fields     =  $this->fields;
-            unset($fields['_type'],$fields['_version']);
+            unset($fields['_type']);
             return $fields;
         }
         return false;

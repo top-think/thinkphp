@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -257,7 +257,14 @@ class Dispatcher {
                     // 记录当前别名
                     define('ACTION_ALIAS',strtolower($action));
                     // 获取实际的操作名
-                    return   $maps[ACTION_ALIAS];
+                    if(is_array($maps[ACTION_ALIAS])){
+                        parse_str($maps[ACTION_ALIAS][1],$vars);
+                        $_GET   =   array_merge($_GET,$vars);
+                        return $maps[ACTION_ALIAS][0];
+                    }else{
+                        return $maps[ACTION_ALIAS];
+                    }
+                    
                 }elseif(array_search(strtolower($action),$maps)){
                     // 禁止访问原始操作
                     return   '';
