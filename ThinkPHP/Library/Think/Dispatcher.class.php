@@ -64,20 +64,26 @@ class Dispatcher {
             }
 
             if(!empty($rule)) {
-                // 子域名部署规则 '子域名'=>array('模块名/[控制器名]','var1=a&var2=b');
-                $array      =   explode('/',$rule[0]);
-                $controller =   array_pop($array);
-                if(!empty($controller)) {
-                    $_GET[$varController]  =   $controller;
-                    $domainController           =   true;
+                // 子域名部署规则 '子域名'=>array('模块名[/控制器名]','var1=a&var2=b');
+                if(is_array($rule)){
+                    list($rule,$vars) = $rule;
                 }
+                $array      =   explode('/',$rule);
+                // 模块绑定
+                $_GET[$varModule]     =   array_shift($array);
+                define('BIND_MODULE',$_GET[$varModule]);
+                $domainModule         =   true;       
+                // 控制器绑定         
                 if(!empty($array)) {
-                    $_GET[$varModule]   =   array_pop($array);
-                    define('BIND_MODULE',$_GET[$varModule]);
-                    $domainModule            =   true;
+                    $controller  =   array_shift($array);
+                    if($controller){
+                        $_GET[$varController]   =   $controller;
+                        $domainController       =   true;
+                    }
+                    
                 }
-                if(isset($rule[1])) { // 传入参数
-                    parse_str($rule[1],$parms);
+                if(isset($vars)) { // 传入参数
+                    parse_str($vars,$parms);
                     if(isset($panDomain)){
                         $pos = array_search('*', $parms);
                         if(false !== $pos) {
