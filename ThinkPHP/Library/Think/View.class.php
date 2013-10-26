@@ -151,17 +151,17 @@ class View {
 
         // 获取当前模块
         $module   =  MODULE_NAME;
-        if(strpos($template,'@')){ // 跨分组调用模版文件
+        if(strpos($template,'@')){ // 跨模块调用模版文件
             list($module,$template)  =   explode('@',$template);
         }
         // 获取当前主题的模版路径
-		if(!defined('THEME_PATH')){
-			if(C('VIEW_PATH')){ // 视图目录
-				define('THEME_PATH',   C('VIEW_PATH').$module.'/'.$theme);
-			}else{ // 模块视图
-				define('THEME_PATH',   APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
-			}
-		}
+        if(!defined('THEME_PATH')){
+            if(C('VIEW_PATH')){ // 视图目录
+                define('THEME_PATH',   C('VIEW_PATH').$module.'/'.$theme);
+            }else{ // 模块视图
+                define('THEME_PATH',   APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
+            }
+        }
 
         // 分析模板文件规则
         if('' == $template) {

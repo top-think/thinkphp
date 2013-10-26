@@ -128,8 +128,8 @@ return  array(
 	'URL_ROUTE_RULES'       =>	array(), // 默认路由规则 针对模块
 
     /* 系统变量名称设置 */
-    'VAR_MODULE'            =>  'm',     // 默认分组获取变量
-    'VAR_CONTROLLER'        =>  'c',		// 默认模块获取变量
+    'VAR_MODULE'            =>  'm',     // 默认模块获取变量
+    'VAR_CONTROLLER'        =>  'c',		// 默认控制器获取变量
     'VAR_ACTION'            =>  'a',		// 默认操作获取变量
     'VAR_AJAX_SUBMIT'       =>  'ajax',  // 默认的AJAX提交变量
 	'VAR_JSONP_HANDLER'     =>  'callback',
