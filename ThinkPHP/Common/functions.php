@@ -1152,12 +1152,12 @@ function cookie($name, $value='', $option=null) {
  * 加载动态扩展文件
  * @return void
  */
-function load_ext_file() {
+function load_ext_file($path) {
     // 加载自定义外部文件
     if(C('LOAD_EXT_FILE')) {
         $files      =  explode(',',C('LOAD_EXT_FILE'));
         foreach ($files as $file){
-            $file   = COMMON_PATH.'Common/'.$file.'.php';
+            $file   = $path.'Common/'.$file.'.php';
             if(is_file($file)) include $file;
         }
     }
@@ -1166,7 +1166,7 @@ function load_ext_file() {
         $configs    =  C('LOAD_EXT_CONFIG');
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
-            $file   = COMMON_PATH.'Conf/'.$config.'.php';
+            $file   = $path.'Conf/'.$config.'.php';
             if(is_file($file)) {
                 is_numeric($key)?C(include $file):C($key,include $file);
             }
