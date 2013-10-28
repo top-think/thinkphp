@@ -415,13 +415,13 @@ class  Template {
 
                 if (!$closeTag){
                     $patterns       = '/'.$begin.$parseTag.$n1.'\/(\s*?)'.$end.'/is';
-                    $content        = preg_replace_callback($patterns, function($matches) use($tagLib,$tag,$that){
+                    $content        = preg_replace_callback($patterns, function($matches) use($tLib,$tag,$that){
                         return $that->parseXmlTag($tLib,$tag,$matches[1],$matches[2]);
                     },$content);
                 }else{
                     $patterns       = '/'.$begin.$parseTag.$n1.$end.'(.*?)'.$begin.'\/'.$parseTag.'(\s*?)'.$end.'/is';
                     for($i=0;$i<$level;$i++) {
-                        $content=preg_replace_callback($patterns,function($matches) use($tagLib,$tag,$that){
+                        $content=preg_replace_callback($patterns,function($matches) use($tLib,$tag,$that){
                             return $that->parseXmlTag($tLib,$tag,$matches[1],$matches[2]);
                         },$content);
                     }
