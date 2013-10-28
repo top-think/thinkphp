@@ -101,6 +101,11 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
     return Think\Think::trace($value,$label,$level,$record);
 }
 
+/**
+ * 编译文件
+ * @param string $filename 文件名
+ * @return string
+ */
 function compile($filename) {
     $content    =   php_strip_whitespace($filename);
     $content    =   trim(substr($content, 5));
@@ -140,7 +145,7 @@ function T($template='',$layer=''){
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
-    }else{ // 分组模式
+    }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
     // 获取主题
@@ -387,9 +392,9 @@ function vendor($class, $baseUrl = '', $ext='.php') {
 }
 
 /**
- * D函数用于实例化Model 格式 目录://模块/模型
- * @param string $name Model资源地址
- * @param string $layer 业务层名称
+ * D函数用于实例化模型类 格式 [资源://][模块/]模型
+ * @param string $name 资源地址
+ * @param string $layer 模型层名称
  * @return Model
  */
 function D($name='',$layer='') {
@@ -460,11 +465,11 @@ function parse_res_name($name,$layer,$level=1){
 }
 
 /**
- * A函数用于实例化Action 格式：[资源://][模块/]控制器
+ * A函数用于实例化控制器 格式：[资源://][模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
  * @param integer $level 控制器层次
- * @return Action|false
+ * @return Controller|false
  */
 function A($name,$layer='',$level='') {
     static $_action = array();
@@ -483,7 +488,7 @@ function A($name,$layer='',$level='') {
 }
 
 /**
- * 远程调用模块的操作方法 URL 参数格式 [项目://][分组/]模块/操作
+ * 远程调用控制器的操作方法 URL 参数格式 [项目://][模块/]控制器/操作
  * @param string $url 调用地址
  * @param string|array $vars 调用参数 支持字符串和数组
  * @param string $layer 要调用的控制层名称
@@ -675,11 +680,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         $domain = $_SERVER['HTTP_HOST'];
         if(C('APP_SUB_DOMAIN_DEPLOY') ) { // 开启子域名部署
             $domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
-            // '子域名'=>array('项目[/分组]');
+            // '子域名'=>array('模块[/控制器]');
             foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
-                if(false === strpos($key,'*') && 0=== strpos($url,$rule[0])) {
+                $rule   =   is_array($rule)?$rule[0]:$rule;
+                if(false === strpos($key,'*') && 0=== strpos($url,$rule)) {
                     $domain = $key.strstr($domain,'.'); // 生成对应子域名
-                    $url    =  substr_replace($url,'',0,strlen($rule[0]));
+                    $url    =  substr_replace($url,'',0,strlen($rule));
                     break;
                 }
             }
@@ -710,7 +716,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             if('/' != $depr) { // 安全替换
                 $url    =   str_replace('/',$depr,$url);
             }
-            // 解析分组、模块和操作
+            // 解析模块、控制器和操作
             $url        =   trim($url,$depr);
             $path       =   explode($depr,$url);
             $var        =   array();
@@ -1152,12 +1158,12 @@ function cookie($name, $value='', $option=null) {
  * 加载动态扩展文件
  * @return void
  */
-function load_ext_file() {
+function load_ext_file($path) {
     // 加载自定义外部文件
     if(C('LOAD_EXT_FILE')) {
         $files      =  explode(',',C('LOAD_EXT_FILE'));
         foreach ($files as $file){
-            $file   = COMMON_PATH.'Common/'.$file.'.php';
+            $file   = $path.'Common/'.$file.'.php';
             if(is_file($file)) include $file;
         }
     }
@@ -1166,7 +1172,7 @@ function load_ext_file() {
         $configs    =  C('LOAD_EXT_CONFIG');
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
-            $file   = COMMON_PATH.'Conf/'.$config.'.php';
+            $file   = $path.'Conf/'.$config.'.php';
             if(is_file($file)) {
                 is_numeric($key)?C(include $file):C($key,include $file);
             }

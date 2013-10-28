@@ -26,7 +26,7 @@ class App {
      */
     static public function init() {
         // 加载动态项目公共文件和配置
-        load_ext_file();
+        load_ext_file(COMMON_PATH);
         // URL调度
         Dispatcher::dispatch();
 

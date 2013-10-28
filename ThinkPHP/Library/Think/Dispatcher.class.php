@@ -139,7 +139,7 @@ class Dispatcher {
         // 获取模块名称
         define('MODULE_NAME', self::getModule($varModule));
         // 检测模块是否存在
-        if( MODULE_NAME && !in_array(MODULE_NAME,C('MODULE_DENY_LIST'))  && is_dir(APP_PATH.MODULE_NAME)){
+        if( MODULE_NAME && (!in_array(MODULE_NAME,C('MODULE_DENY_LIST')) || $domainModule ) && is_dir(APP_PATH.MODULE_NAME)){
             
             // 定义当前模块路径
             define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
@@ -158,6 +158,8 @@ class Dispatcher {
             // 加载模块函数文件
             if(is_file(MODULE_PATH.'Common/function.php'))
                 include MODULE_PATH.'Common/function.php';
+            // 加载模块的扩展配置文件
+            load_ext_file(MODULE_PATH);
         }else{
             E(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
         }

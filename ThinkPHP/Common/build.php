@@ -50,7 +50,6 @@ function build_app_dir() {
             COMMON_PATH,
             COMMON_PATH.'Common/',
             COMMON_PATH.'Conf/',
-            COMMON_PATH.'Lang/',
             APP_PATH.C('DEFAULT_MODULE').'/',
             APP_PATH.C('DEFAULT_MODULE').'/Common/',
             APP_PATH.C('DEFAULT_MODULE').'/Controller/',
@@ -90,8 +89,9 @@ function build_first_action() {
 
 // 生成目录安全文件
 function build_dir_secure($dirs=array()) {
-    // 目录安全写入
-    if(defined('BUILD_DIR_SECURE') && BUILD_DIR_SECURE) {
+    // 目录安全写入（默认开启）
+    defined('BUILD_DIR_SECURE')  or define('BUILD_DIR_SECURE',    true);
+    if(BUILD_DIR_SECURE) {
         defined('DIR_SECURE_FILENAME')  or define('DIR_SECURE_FILENAME',    'index.html');
         defined('DIR_SECURE_CONTENT')   or define('DIR_SECURE_CONTENT',     ' ');
         // 自动写入目录安全文件
