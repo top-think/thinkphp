@@ -14,10 +14,6 @@ use Think\Storage;
 defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：静态缓存写入
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class WriteHtmlCacheBehavior extends Behavior {
 

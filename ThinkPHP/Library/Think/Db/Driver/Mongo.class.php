@@ -13,10 +13,6 @@ use Think\Db;
 defined('THINK_PATH') or exit();
 /**
  * Mongo数据库驱动 必须配合MongoModel使用
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Mongo extends Db{
 

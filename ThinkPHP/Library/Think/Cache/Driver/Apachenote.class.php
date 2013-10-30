@@ -13,10 +13,6 @@ use Think\Cache;
 defined('THINK_PATH') or exit();
 /**
  * Apachenote缓存驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver
- * @author    liu21st <liu21st@gmail.com>
  */
 class Apachenote extends Cache {
 

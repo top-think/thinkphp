@@ -12,10 +12,6 @@ namespace Think\Template\Driver;
 defined('THINK_PATH') or exit();
 /**
  * TemplateLite模板引擎驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Template
- * @author    liu21st <liu21st@gmail.com>
  */
 class Lite {
     /**

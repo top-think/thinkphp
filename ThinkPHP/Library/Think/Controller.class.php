@@ -10,11 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think;
 /**
- * ThinkPHP Action控制器基类 抽象类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author   liu21st <liu21st@gmail.com>
+ * ThinkPHP 控制器基类 抽象类
  */
 abstract class Controller {
 
@@ -170,9 +166,6 @@ abstract class Controller {
             }elseif(file_exists_case($this->view->parseTemplate())){
                 // 检查是否存在默认模版 如果有直接输出模版
                 $this->display();
-            }elseif(function_exists('__hack_action')) {
-                // hack 方式定义扩展操作
-                __hack_action();
             }else{
                 E(L('_ERROR_ACTION_').':'.ACTION_NAME);
             }
@@ -306,4 +299,5 @@ abstract class Controller {
         Hook::listen('action_end');
     }
 }
+// 设置控制器别名 便于升级
 class_alias('Think\Controller','Think\Action');

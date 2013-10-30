@@ -13,10 +13,6 @@ use Think\Db;
 defined('THINK_PATH') or exit();
 /**
  * Pgsql数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Pgsql extends Db{
 

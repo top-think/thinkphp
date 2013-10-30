@@ -10,11 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think;
 /**
- * ThinkPHP内置路由解析类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
+ * ThinkPHP路由解析类
  */
 class Route {
     

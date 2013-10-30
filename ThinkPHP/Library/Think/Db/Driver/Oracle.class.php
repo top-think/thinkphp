@@ -13,10 +13,6 @@ use Think\Db;
 defined('THINK_PATH') or exit();
 /**
  * Oracle数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    ZhangXuehun <zhangxuehun@sohu.com>
  */
 class Oracle extends Db{
 

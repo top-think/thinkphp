@@ -12,10 +12,6 @@ namespace Think\Template\Driver;
 defined('THINK_PATH') or exit();
 /**
  * MobileTemplate模板引擎驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Template
- * @author    luofei614 <weibo.com/luofei614>
  */
 class Mobile {
     /**

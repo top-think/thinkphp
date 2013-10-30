@@ -20,10 +20,6 @@ defined('THINK_PATH') or exit();
  *      datacrc int(32),
  *      UNIQUE KEY `cachekey` (`cachekey`)
  *    );
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Cache
- * @author    liu21st <liu21st@gmail.com>
  */
 class Db extends Cache {
 

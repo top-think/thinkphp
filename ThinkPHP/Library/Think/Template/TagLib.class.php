@@ -11,10 +11,6 @@
 namespace Think\Template;
 /**
  * ThinkPHP标签库TagLib解析基类
- * @category   Think
- * @package  Think
- * @subpackage  Template
- * @author    liu21st <liu21st@gmail.com>
  */
 class TagLib {
 

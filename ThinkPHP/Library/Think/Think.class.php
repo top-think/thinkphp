@@ -11,11 +11,7 @@
 
 namespace Think;
 /**
- * ThinkPHP Portal类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
+ * ThinkPHP 引导类
  */
 class Think {
 

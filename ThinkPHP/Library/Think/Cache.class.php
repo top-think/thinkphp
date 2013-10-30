@@ -11,10 +11,6 @@
 namespace Think;
 /**
  * 缓存管理类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Cache {
 

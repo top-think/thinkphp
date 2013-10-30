@@ -13,10 +13,6 @@ use Think\Behavior;
 defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：运行时间信息显示
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class ShowRuntimeBehavior extends Behavior {
     // 行为参数定义

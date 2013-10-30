@@ -13,10 +13,6 @@ namespace Think;
  * ThinkPHP内置模板引擎类
  * 支持XML标签和普通标签的模板解析
  * 编译型模板引擎 支持动态缓存
- * @category   Think
- * @package  Think
- * @subpackage  Template
- * @author liu21st <liu21st@gmail.com>
  */
 class  Template {
 

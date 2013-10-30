@@ -9,8 +9,6 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-// ThinkPHP 入口文件
-if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 // 记录开始运行时间
 $GLOBALS['_beginTime'] = microtime(TRUE);
 // 记录内存初始使用

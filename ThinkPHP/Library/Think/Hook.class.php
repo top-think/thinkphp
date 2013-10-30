@@ -9,7 +9,9 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think;
-
+/**
+ * ThinkPHP系统钩子实现
+ */
 class Hook {
 
     static private  $tags       =   array();
@@ -88,6 +90,7 @@ class Hook {
     /**
      * 执行某个插件
      * @param string $name 插件名称
+     * @param string $tag 方法名（标签名）     
      * @param Mixed $params 传入的参数
      * @return void
      */
@@ -102,6 +105,5 @@ class Hook {
         }
         $addon   = new $class();
         return $addon->$tag($params);
-        return ;
     }
 }

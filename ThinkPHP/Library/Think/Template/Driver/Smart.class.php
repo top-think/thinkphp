@@ -12,10 +12,6 @@ namespace Think\Template\Driver;
 defined('THINK_PATH') or exit();
 /**
  * Smart模板引擎驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Template
- * @author    liu21st <liu21st@gmail.com>
  */
 class Smart {
     /**
@@ -28,7 +24,7 @@ class Smart {
     public function fetch($templateFile,$var) {
         $templateFile   =   substr($templateFile,strlen(THEME_PATH));
         vendor('SmartTemplate.class#smarttemplate');
-        $tpl            =   new SmartTemplate($templateFile);
+        $tpl            =   new \SmartTemplate($templateFile);
         $tpl->caching       = C('TMPL_CACHE_ON');
         $tpl->template_dir  = THEME_PATH;
         $tpl->compile_dir   = CACHE_PATH ;

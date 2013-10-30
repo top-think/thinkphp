@@ -17,10 +17,6 @@ namespace Think\Session\Driver;
  *      session_data blob,
  *      UNIQUE KEY `session_id` (`session_id`)
  *    );
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Session
- * @author    liu21st <liu21st@gmail.com>
  */
 class Db {
 

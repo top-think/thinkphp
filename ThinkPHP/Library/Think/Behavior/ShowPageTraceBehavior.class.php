@@ -14,10 +14,6 @@ use Think\Log;
 defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：页面Trace显示输出
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class ShowPageTraceBehavior extends Behavior {
     // 行为参数定义

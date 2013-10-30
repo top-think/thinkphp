@@ -11,10 +11,6 @@
 namespace Think;
 /**
  * ThinkPHP 视图类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author liu21st <liu21st@gmail.com>
  */
 class View {
     /**

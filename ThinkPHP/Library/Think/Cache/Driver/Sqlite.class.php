@@ -13,10 +13,6 @@ use Think\Cache;
 defined('THINK_PATH') or exit();
 /**
  * Sqlite缓存驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Cache
- * @author    liu21st <liu21st@gmail.com>
  */
 class Sqlite extends Cache {
 

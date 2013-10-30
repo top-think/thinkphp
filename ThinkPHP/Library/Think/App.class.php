@@ -11,11 +11,6 @@
 namespace Think;
 /**
  * ThinkPHP 应用程序类 执行应用过程管理
- * 可以在模式扩展中重新定义 但是必须具有Run方法接口
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class App {
 
@@ -67,19 +62,11 @@ class App {
                 header("Content-type:image/png");
                 exit(base64_decode(App::logo()));
             }
-            if(function_exists('__hack_module')) {
-                // hack 方式定义扩展模块 返回Action对象
-                $module = __hack_module();
-                if(!is_object($module)) {
-                    // 不再继续执行 直接返回
-                    return ;
-                }
-            }else{
-                // 是否定义Empty模块
-                $module = A('Empty');
-                if(!$module){
-                    E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
-                }
+
+            // 是否定义Empty模块
+            $module = A('Empty');
+            if(!$module){
+                E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
             }
         }
         // 获取当前操作名 支持动态路由

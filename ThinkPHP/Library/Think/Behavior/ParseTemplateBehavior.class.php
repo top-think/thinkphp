@@ -15,10 +15,6 @@ use Think\Think;
 defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：模板解析
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
 class ParseTemplateBehavior extends Behavior {
     // 行为参数定义（默认值） 可在项目配置中覆盖

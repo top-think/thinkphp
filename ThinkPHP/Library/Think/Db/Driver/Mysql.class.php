@@ -14,10 +14,6 @@ defined('THINK_PATH') or exit();
 
 /**
  * Mysql数据库驱动类
- * @category   Think
- * @package  Think
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Mysql extends Db{
 

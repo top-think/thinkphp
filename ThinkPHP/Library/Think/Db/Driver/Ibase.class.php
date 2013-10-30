@@ -13,10 +13,6 @@ use Think\Db;
 defined('THINK_PATH') or exit();
 /**
  * Firebird数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    剑雷
  */
 class Ibase extends Db{
 
@@ -41,7 +37,7 @@ class Ibase extends Db{
     /**
      * 连接数据库方法
      * @access public
-     * @throws ThinkExecption
+     * @throws Think\Execption
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {

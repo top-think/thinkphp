@@ -13,10 +13,6 @@ use Think\Template\TagLib;
 defined('THINK_PATH') or exit();
 /**
  * Html标签库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Taglib
- * @author    liu21st <liu21st@gmail.com>
  */
 class Html extends TagLib{
     // 标签定义
