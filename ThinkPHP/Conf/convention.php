@@ -14,10 +14,6 @@
  * 该文件请不要修改，如果要覆盖惯例配置的值，可在项目配置文件中设定和惯例不符的配置项
  * 配置名称大小写任意，系统会统一转换成小写
  * 所有配置参数都可以在生效前动态改变
- * @category Think
- * @package  Common
- * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: convention.php 3088 2012-07-29 09:12:19Z luofei614@gmail.com $
  */
 defined('THINK_PATH') or exit();
 return  array(

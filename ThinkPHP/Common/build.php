@@ -11,9 +11,6 @@
 
 /**
  * ThinkPHP 目录创建和初始化
- * @category   Think
- * @package  Common
- * @author   liu21st <liu21st@gmail.com>
  */
 defined('THINK_PATH') or exit();
 
@@ -90,7 +87,7 @@ function build_first_action() {
 // 生成目录安全文件
 function build_dir_secure($dirs=array()) {
     // 目录安全写入（默认开启）
-    defined('BUILD_DIR_SECURE')  or define('BUILD_DIR_SECURE',    true);
+    defined('BUILD_DIR_SECURE')  or define('BUILD_DIR_SECURE',    false);
     if(BUILD_DIR_SECURE) {
         defined('DIR_SECURE_FILENAME')  or define('DIR_SECURE_FILENAME',    'index.html');
         defined('DIR_SECURE_CONTENT')   or define('DIR_SECURE_CONTENT',     ' ');

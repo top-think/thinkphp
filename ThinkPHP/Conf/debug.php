@@ -11,11 +11,6 @@
 
 /**
  * ThinkPHP 默认的调试模式配置文件
- *  如果项目有定义自己的调试模式配置文件，本文件无效
- * @category   Think
- * @package  Common
- * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: debug.php 3071 2012-07-15 07:59:23Z liu21st@gmail.com $
  */
 defined('THINK_PATH') or exit();
 // 调试模式下面默认设置 可以在项目配置目录下重新定义 debug.php 覆盖

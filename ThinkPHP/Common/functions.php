@@ -10,10 +10,7 @@
 // +----------------------------------------------------------------------
 
 /**
- * Think 基础函数库
- * @category   Think
- * @package  Common
- * @author   liu21st <liu21st@gmail.com>
+ * Think 函数库
  */
 
 /**
