@@ -31,6 +31,7 @@ const EXT               =   '.class.php';
 defined('THINK_PATH') 	or define('THINK_PATH',     __DIR__.'/');
 defined('APP_PATH') 	or define('APP_PATH',       dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('APP_DEBUG') 	or define('APP_DEBUG',      false); // 是否调试模式
+defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File
 defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',   APP_PATH.'Runtime/');
 defined('LIB_PATH')     or define('LIB_PATH',       THINK_PATH.'Library/'); // 系统核心类库目录

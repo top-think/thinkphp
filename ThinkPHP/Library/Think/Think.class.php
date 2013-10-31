@@ -35,7 +35,7 @@ class Think {
       spl_autoload_register('Think\Think::autoload');
 
       // 初始化文件存储方式
-      Storage::connect(APP_MODE=='common'?'File':APP_MODE);
+      Storage::connect(STORAGE_TYPE);
 
       $runtimefile  = RUNTIME_PATH.APP_MODE.'~runtime.php';
       if(!APP_DEBUG && Storage::has($runtimefile,'runtime')){
