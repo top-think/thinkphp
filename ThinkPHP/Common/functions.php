@@ -147,9 +147,7 @@ function T($template='',$layer=''){
     }
     // 获取主题
     $array  =   explode('/',$file);
-    if(count($array)>2){
-        $theme  =   array_shift($array);
-    }else{
+    if(count($array)<3){
         $theme  =   C('DEFAULT_THEME');
     }
     // 分析模板文件规则
