@@ -146,12 +146,8 @@ function T($template='',$layer=''){
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
     // 获取主题
-    $array  =   explode('/',$file);
-    if(count($array)>2){
-        $theme  =   array_shift($array);
-    }else{
-        $theme  =   C('DEFAULT_THEME');
-    }
+    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
+
     // 分析模板文件规则
     if('' == $file) {
         // 如果模板文件名为空 按照默认规则定位
