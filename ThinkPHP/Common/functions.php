@@ -208,7 +208,7 @@ function I($name,$default='',$filter=null) {
         if($filters) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
-                $data   =   array_map($filter,$data); // 参数过滤
+                $data   =   array_map_recursive($filter,$data); // 参数过滤
             }
         }
     }elseif(isset($input[$name])) { // 取值操作
@@ -219,7 +219,7 @@ function I($name,$default='',$filter=null) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
                 if(function_exists($filter)) {
-                    $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                    $data   =   is_array($data)?array_map_recursive($filter,$data):$filter($data); // 参数过滤
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
@@ -233,6 +233,16 @@ function I($name,$default='',$filter=null) {
     }
     return $data;
 }
+
+function array_map_recursive($filter, $data) {
+     $result = array();
+     foreach ($data as $key => $val) {
+         $result[$key] = is_array($val)
+             ? array_map_recursive($filter, $val)
+             : call_user_func($filter, $val);
+     }
+     return $result;
+ }
 
 /**
  * 设置和获取统计数据
