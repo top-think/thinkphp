@@ -471,7 +471,7 @@ class  Template {
             return  '<?php echo '.$name.';?>';
         }elseif('~' == $flag){ // 执行某个函数
             return  '<?php '.$name.';?>';
-        }elseif(substr($tagStr,0,2)=='//' || (substr($tagStr,0,2)=='/*' && substr($tagStr,-2)=='*/')){
+        }elseif(substr($tagStr,0,2)=='//' || (substr($tagStr,0,2)=='/*' && substr(rtrim($tagStr),-2)=='*/')){
             //注释标签
             return '';
         }
