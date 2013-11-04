@@ -149,11 +149,18 @@ function T($template='',$layer=''){
     $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
 
     // 分析模板文件规则
+    $depr   =   C('TMPL_FILE_DEPR');
     if('' == $file) {
         // 如果模板文件名为空 按照默认规则定位
-        $file = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
+        $file = CONTROLLER_NAME . $depr . ACTION_NAME;
     }elseif(false === strpos($file, '/')){
-        $file = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . $file;
+        $file = CONTROLLER_NAME . $depr . $file;
+    }elseif('/' != $depr){
+        if(substr_count($file,'/')>1){
+            $file   =   substr_replace($file,$depr,strrpos($file,'/'),1);
+        }else{
+            $file   =   str_replace('/', $depr, $file);
+        }
     }
     return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
