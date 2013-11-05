@@ -39,7 +39,7 @@ class Hook {
      * @return void
      */
     static public function import($tag) {
-        self::$tags =   array_merge(self::$tags,$tag);
+        self::$tags =   array_merge_recursive(self::$tags,$tag);
     }
 
     /**
