@@ -40,9 +40,22 @@ class Hook {
      * @return void
      */
     static public function import($data,$recursive=true) {
-        self::$tags =   $recursive?
-            array_merge_recursive(self::$tags,$data):
-            array_merge(self::$tags,$data);
+        if(!$recursive){ // 覆盖导入
+            self::$tags   =   array_merge(self::$tags,$data);
+        }else{ // 合并导入
+            foreach ($data as $tag=>$val){
+                if(!isset(self::$tags[$tag]))
+                    self::$tags[$tag]   =   array();            
+                if($val['_overlay']){
+                    // 可以针对某个标签指定覆盖模式
+                    unset($val['_overlay']);
+                    self::$tags[$tag]   =   $val;
+                }else{
+                    // 合并模式
+                    self::$tags[$tag]   =   array_merge(self::$tags[$tag],$val);
+                }
+            }            
+        }
     }
 
     /**
