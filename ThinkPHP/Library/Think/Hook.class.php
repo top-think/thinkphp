@@ -35,11 +35,14 @@ class Hook {
 
     /**
      * 批量导入插件
-     * @param array $tags 插件信息
+     * @param array $data 插件信息
+     * @param boolean $recursive 是否递归合并
      * @return void
      */
-    static public function import($tag) {
-        self::$tags =   array_merge_recursive(self::$tags,$tag);
+    static public function import($data,$recursive=true) {
+        self::$tags =   $recursive?
+            array_merge_recursive(self::$tags,$data):
+            array_merge(self::$tags,$data);
     }
 
     /**
