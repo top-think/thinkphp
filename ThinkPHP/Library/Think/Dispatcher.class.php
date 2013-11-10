@@ -134,7 +134,7 @@ class Dispatcher {
         }
 
         // URL常量
-        define('__SELF__',strip_tags($_SERVER['REQUEST_URI']));
+        define('__SELF__',strip_tags($_SERVER[C('URL_REQUEST_URI')]));
 
         // 获取模块名称
         define('MODULE_NAME', self::getModule($varModule));
