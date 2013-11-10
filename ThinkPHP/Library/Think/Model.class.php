@@ -918,8 +918,9 @@ class Model {
             foreach ($_auto as $auto){
                 // 填充因子定义格式
                 // array('field','填充内容','填充条件','附加规则',[额外参数])
-                if(empty($auto[2])) $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充
+                if(empty($auto[2])) $auto[2] =  self::MODEL_INSERT; // 默认为新增的时候自动填充
                 if( $type == $auto[2] || $auto[2] == self::MODEL_BOTH) {
+                    if(empty($auto[3])) $auto[3] =  'string';
                     switch(trim($auto[3])) {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
                         case 'callback': // 使用回调方法
