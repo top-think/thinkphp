@@ -46,7 +46,7 @@ class Hook {
             foreach ($data as $tag=>$val){
                 if(!isset(self::$tags[$tag]))
                     self::$tags[$tag]   =   array();            
-                if($val['_overlay']){
+                if(!empty($val['_overlay'])){
                     // 可以针对某个标签指定覆盖模式
                     unset($val['_overlay']);
                     self::$tags[$tag]   =   $val;
