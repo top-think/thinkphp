@@ -143,7 +143,11 @@ function T($template='',$layer=''){
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
     }else{
-        $baseUrl    =   APP_PATH.$module.$layer.'/';
+        if(C('VIEW_PATH')){
+            $baseUrl    =   C('VIEW_PATH').$module;
+        }else{
+            $baseUrl    =   APP_PATH.$module.$layer.'/';
+        }
     }
     // 获取主题
     $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
