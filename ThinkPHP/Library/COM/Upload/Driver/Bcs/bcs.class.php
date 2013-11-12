@@ -1,5 +1,5 @@
 <?php
-namespace COM\ThinkUpload\Driver\Bcs;
+namespace COM\Upload\Driver\Bcs;
 use COM\ThinkUpload\Driver\Bcs\BCS_MimeTypes;
 use COM\ThinkUpload\Driver\Bcs\BCS_RequestCore;
 use COM\ThinkUpload\Driver\Bcs\BCS_ResponseCore;

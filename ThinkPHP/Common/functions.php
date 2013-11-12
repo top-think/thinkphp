@@ -145,7 +145,11 @@ function T($template='',$layer=''){
     }elseif(C('VIEW_PATH')){ // 指定视图目录
         $baseUrl    =   C('VIEW_PATH').$module.'/';
     }else{
-        $baseUrl    =   APP_PATH.$module.$layer.'/';
+        if(C('VIEW_PATH')){
+            $baseUrl    =   C('VIEW_PATH').$module;
+        }else{
+            $baseUrl    =   APP_PATH.$module.$layer.'/';
+        }
     }
 
     // 获取主题
