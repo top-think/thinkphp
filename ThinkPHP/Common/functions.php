@@ -142,9 +142,12 @@ function T($template='',$layer=''){
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
+    }elseif(C('VIEW_PATH')){ // 指定视图目录
+        $baseUrl    =   C('VIEW_PATH').$module.'/';
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
+
     // 获取主题
     $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
 
@@ -438,7 +441,7 @@ function M($name='', $tablePrefix='',$connection='') {
     }else{
         $class      =   'Think\\Model';
     }
-    $guid           =   $tablePrefix . $name . '_' . $class;
+    $guid           =   (is_array($connection)?implode('',$connection):$connection).$tablePrefix . $name . '_' . $class;
     if (!isset($_model[$guid]))
         $_model[$guid] = new $class($name,$tablePrefix,$connection);
     return $_model[$guid];

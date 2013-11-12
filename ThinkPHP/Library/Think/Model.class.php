@@ -92,7 +92,7 @@ class Model {
         // 数据库初始化操作
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
-        $this->db(0,empty($this->connection)?$connection:$this->connection);
+        $this->db(0,empty($this->connection)?$connection:$this->connection,true);
     }
 
     /**
@@ -1187,16 +1187,16 @@ class Model {
      * @access public
      * @param integer $linkNum  连接序号
      * @param mixed $config  数据库连接信息
-     * @param array $params  模型参数
+     * @param boolean $force 强制重新连接
      * @return Model
      */
-    public function db($linkNum='',$config='',$params=array()){
-        if(''===$linkNum && $this->db) {
+    public function db($linkNum='',$config='',$force=false) {
+        if('' === $linkNum && $this->db) {
             return $this->db;
         }
-        static $_linkNum    =   array();
+
         static $_db = array();
-        if(!isset($_db[$linkNum]) || (isset($_db[$linkNum]) && $config && $_linkNum[$linkNum]!=$config) ) {
+        if(!isset($_db[$linkNum]) || $force ) {
             // 创建一个新的实例
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  C($config);
@@ -1207,14 +1207,7 @@ class Model {
             unset($_db[$linkNum]);
             return ;
         }
-        if(!empty($params)) {
-            if(is_string($params))    parse_str($params,$params);
-            foreach ($params as $name=>$value){
-                $this->setProperty($name,$value);
-            }
-        }
-        // 记录连接信息
-        $_linkNum[$linkNum] =   $config;
+
         // 切换数据库连接
         $this->db   =    $_db[$linkNum];
         $this->_after_db();
