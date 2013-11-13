@@ -110,6 +110,7 @@ class Model {
                 $fields = F('_fields/'.strtolower($db.'.'.$this->name));
                 if($fields) {
                     $this->fields   =   $fields;
+                    $this->pk       =   $fields['_pk'];
                     return ;
                 }
             }
@@ -136,6 +137,7 @@ class Model {
             $type[$key]     =   $val['type'];
             if($val['primary']) {
                 $this->pk   =   $key;
+                $this->fields['_pk']   =   $key;
                 if($val['autoinc']) $this->autoinc   =   true;
             }
         }
@@ -1343,7 +1345,7 @@ class Model {
         }
         if($this->fields) {
             $fields     =  $this->fields;
-            unset($fields['_type']);
+            unset($fields['_type'],$fields['_pk']);
             return $fields;
         }
         return false;
