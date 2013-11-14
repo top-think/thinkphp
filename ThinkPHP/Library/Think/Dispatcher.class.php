@@ -200,7 +200,7 @@ class Dispatcher {
             }
 
             $depr = C('URL_PATHINFO_DEPR');
-            $paths = explode($depr,$_SERVER['PATH_INFO']);
+            $paths = explode($depr,trim($_SERVER['PATH_INFO'],$depr));
 
             if(!isset($_GET[$varController])) {// 获取控制器
                 if(C('CONTROLLER_LEVEL')>1){// 控制器层次
