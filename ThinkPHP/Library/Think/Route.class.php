@@ -16,8 +16,8 @@ class Route {
     
     // 路由检测
     public static function check(){
-        $regx   =   $_SERVER['PATH_INFO'];
         $depr   =   C('URL_PATHINFO_DEPR');
+        $regx   =   trim($_SERVER['PATH_INFO'],$depr);
         // 分隔符替换 确保路由定义使用统一的分隔符
         if('/' != $depr){
             $regx = str_replace($depr,'/',$regx);
