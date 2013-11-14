@@ -757,7 +757,9 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 $var[C('VAR_MODULE')]    =   array_pop($path);
             }else{
                 if(C('MULTI_MODULE')) {
-                    $var[C('VAR_MODULE')]=   MODULE_NAME;
+                    if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
+                        $var[C('VAR_MODULE')]=   MODULE_NAME;
+                    }
                 }
             }
             if($maps = C('URL_MODULE_MAP')) {
