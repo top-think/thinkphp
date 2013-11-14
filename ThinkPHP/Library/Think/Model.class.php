@@ -1376,13 +1376,14 @@ class Model {
      * 查询SQL组装 join
      * @access public
      * @param mixed $join
+     * @param string $type JOIN类型
      * @return Model
      */
-    public function join($join) {
+    public function join($join,$type='INNER') {
         if(is_array($join)) {
             $this->options['join']      =   $join;
         }elseif(!empty($join)) {
-            $this->options['join'][]    =   $join;
+            $this->options['join'][]    =   false !== stripos($join,'JOIN')? $join : $type.' JOIN '.$join;
         }
         return $this;
     }
