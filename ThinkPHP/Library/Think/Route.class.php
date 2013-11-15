@@ -16,8 +16,8 @@ class Route {
     
     // 路由检测
     public static function check(){
-        $regx   =   $_SERVER['PATH_INFO'];
         $depr   =   C('URL_PATHINFO_DEPR');
+        $regx   =   trim($_SERVER['PATH_INFO'],$depr);
         // 分隔符替换 确保路由定义使用统一的分隔符
         if('/' != $depr){
             $regx = str_replace($depr,'/',$regx);
@@ -208,7 +208,7 @@ class Route {
             // 解析剩余的URL参数
             $regx =  substr_replace($regx,'',0,strlen($matches[0]));
             if($regx) {
-                preg_replace_callback('/(\w+)\/([^\/]+)/', function($matach) use(&$var){$var[strtolower($match[1])]=strip_tags($match[2]);}, $regx);
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){$var[strtolower($match[1])]=strip_tags($match[2]);}, $regx);
             }
             // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {

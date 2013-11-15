@@ -37,7 +37,8 @@ class Dispatcher {
         if(C('APP_SUB_DOMAIN_DEPLOY')) {
             $rules      = C('APP_SUB_DOMAIN_RULES');
             if(isset($rules[$_SERVER['HTTP_HOST']])) { // 完整域名或者IP配置
-                $rule = $rules[$_SERVER['HTTP_HOST']];
+                define('APP_DOMAIN',$_SERVER['HTTP_HOST']); // 当前完整域名
+                $rule = $rules[APP_DOMAIN];
             }else{
                 if(strpos(C('APP_DOMAIN_SUFFIX'),'.')){ // com.cn net.cn 
                     $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -3);
@@ -200,7 +201,7 @@ class Dispatcher {
             }
 
             $depr = C('URL_PATHINFO_DEPR');
-            $paths = explode($depr,$_SERVER['PATH_INFO']);
+            $paths = explode($depr,trim($_SERVER['PATH_INFO'],$depr));
 
             if(!isset($_GET[$varController])) {// 获取控制器
                 if(C('CONTROLLER_LEVEL')>1){// 控制器层次
