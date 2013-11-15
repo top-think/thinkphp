@@ -350,8 +350,8 @@ function import($class, $baseUrl = '', $ext=EXT) {
             //加载当前模块的类库
             $baseUrl = MODULE_PATH;
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-        }if (in_array(strtolower($class_strut[0]), array('think','org', 'com'))) {
-            // org 第三方公共类库 com 企业公共类库
+        }elseif (is_dir(LIB_PATH.$class_strut[0])) {
+            // 系统类库包和第三方类库包
             $baseUrl = LIB_PATH;
         }else { // 加载其他模块的类库
             $baseUrl = APP_PATH;
