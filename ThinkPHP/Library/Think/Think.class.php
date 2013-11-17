@@ -60,8 +60,8 @@ class Think {
           }
 
           // 加载模式别名定义
-          foreach($mode['alias'] as $alias){
-              self::addMap(is_array($alias)?$alias:(file_exists($alias)?include $alias:array()));
+          if(isset($mode['alias'])){
+              self::addMap(is_array($mode['alias'])?$mode['alias']:include $mode['alias']);
           }
 
           // 加载应用别名定义文件
