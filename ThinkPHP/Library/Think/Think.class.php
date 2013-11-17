@@ -89,13 +89,10 @@ class Think {
           }else{
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
-            // 读取调试模式的应用状态
-            $status  =  C('APP_STATUS');
-            // 加载对应的项目配置文件
-            if(is_file(COMMON_PATH.'Conf/'.$status.'.php'))
-                // 允许项目增加开发模式配置定义
-                C(include COMMON_PATH.'Conf/'.$status.'.php');          
           }
+          // 读取当前应用状态对应的配置文件
+          if(APP_STATUS && is_file(COMMON_PATH.'Conf/'.APP_STATUS.'.php'))
+              C(include COMMON_PATH.'Conf/'.APP_STATUS.'.php');            
       }
 
       // 设置系统时区
