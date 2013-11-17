@@ -22,18 +22,15 @@ return array(
 
 	// 别名定义
 	'alias'		=>	array(
-		array(
-		    'Think\Log'               => CORE_PATH . 'Log'.EXT,
-		    'Think\Log\Driver\File'   => CORE_PATH . 'Log/Driver/File'.EXT,
-		    'Think\Exception'         => CORE_PATH . 'Exception'.EXT,
-		    'Think\Model'             => CORE_PATH . 'Model'.EXT,
-		    'Think\Db'                => CORE_PATH . 'Db'.EXT,
-		    'Think\Template'          => CORE_PATH . 'Template'.EXT,
-		    'Think\Cache'             => CORE_PATH . 'Cache'.EXT,
-		    'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File'.EXT,
-		    'Think\Storage'           => CORE_PATH . 'Storage'.EXT,
-	    ),
-	    COMMON_PATH.'Conf/alias.php',
+	    'Think\Log'               => CORE_PATH . 'Log'.EXT,
+	    'Think\Log\Driver\File'   => CORE_PATH . 'Log/Driver/File'.EXT,
+	    'Think\Exception'         => CORE_PATH . 'Exception'.EXT,
+	    'Think\Model'             => CORE_PATH . 'Model'.EXT,
+	    'Think\Db'                => CORE_PATH . 'Db'.EXT,
+	    'Think\Template'          => CORE_PATH . 'Template'.EXT,
+	    'Think\Cache'             => CORE_PATH . 'Cache'.EXT,
+	    'Think\Cache\Driver\File' => CORE_PATH . 'Cache/Driver/File'.EXT,
+	    'Think\Storage'           => CORE_PATH . 'Storage'.EXT,
 	),
 
 	// 函数和类文件
@@ -56,7 +53,7 @@ return array(
 		CORE_PATH . 'Behavior/WriteHtmlCacheBehavior'.EXT,
 	),
 	// 行为扩展定义
-	'extends'	=>	array(
+	'tags'	=>	array(
 	    'app_init'      =>  array(
 	    ),
 	    'app_begin'     =>  array(
@@ -81,5 +78,4 @@ return array(
 	    ),
 	    'view_end'      =>  array(),
 	),
-	'tags'	=>	COMMON_PATH.'Conf/tags.php',
 );

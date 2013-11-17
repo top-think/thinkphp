@@ -54,30 +54,29 @@ class Think {
               }
           }
 
-          // 加载配置文件
+          // 加载应用模式配置文件
           foreach ($mode['config'] as $key=>$file){
               is_numeric($key)?C(include $file):C($key,include $file);
           }
 
-          // 加载别名定义
+          // 加载模式别名定义
           foreach($mode['alias'] as $alias){
               self::addMap(is_array($alias)?$alias:(file_exists($alias)?include $alias:array()));
           }
-                
-          // 加载模式系统行为定义
-          if(isset($mode['extends'])) {
-              Hook::import(is_array($mode['extends'])?$mode['extends']:include $mode['extends']);
+
+          // 加载应用别名定义文件
+          if(is_file(COMMON_PATH.'Conf/alias.php'))
+              self::addMap(include COMMON_PATH.'Conf/alias.php');
+
+          // 加载模式行为定义
+          if(isset($mode['tags'])) {
+              Hook::import(is_array($mode['tags'])?$mode['tags']:include $mode['tags']);
           }
 
           // 加载应用行为定义
-          if(isset($mode['tags'])) {
-              if(is_array($mode['tags'])){
-                $tags   =   $mode['tags'];
-              }else{
-                $tags   =   file_exists($mode['tags'])?include $mode['tags']:array();
-              }
-              Hook::import($tags);
-          }
+          if(is_file(COMMON_PATH.'Conf/tags.php'))
+              // 允许项目增加开发模式配置定义
+              Hook::import(include COMMON_PATH.'Conf/tags.php');   
 
           // 加载框架底层语言包
           L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
