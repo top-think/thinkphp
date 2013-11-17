@@ -72,9 +72,9 @@ class Think {
           // 加载应用行为定义
           if(isset($mode['tags'])) {
               if(is_array($mode['tags'])){
-                $tags=$mode['tags'];
+                $tags   =   $mode['tags'];
               }else{
-                $tags=file_exists($mode['tags'])?include $mode['tags']:array();
+                $tags   =   file_exists($mode['tags'])?include $mode['tags']:array();
               }
               Hook::import($tags);
           }
@@ -89,11 +89,15 @@ class Think {
           }else{
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
+            // 读取应用调试配置文件
+            if(is_file(COMMON_PATH.'Conf/debug.php'))
+                C(include COMMON_PATH.'Conf/debug.php');           
           }
-          // 读取当前应用状态对应的配置文件
-          if(APP_STATUS && is_file(COMMON_PATH.'Conf/'.APP_STATUS.'.php'))
-              C(include COMMON_PATH.'Conf/'.APP_STATUS.'.php');            
       }
+
+      // 读取当前应用状态对应的配置文件
+      if(APP_STATUS && is_file(COMMON_PATH.'Conf/'.APP_STATUS.'.php'))
+          C(include COMMON_PATH.'Conf/'.APP_STATUS.'.php');   
 
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));
