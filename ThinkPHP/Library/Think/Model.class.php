@@ -947,7 +947,7 @@ class Model {
                         default: // 默认作为字符串填充
                             $data[$auto[0]] = $auto[1];
                     }
-                    if(false === $data[$auto[0]] )   unset($data[$auto[0]]);
+                    if(isset($data[$auto[0]]) && false === $data[$auto[0]] )   unset($data[$auto[0]]);
                 }
             }
         }
