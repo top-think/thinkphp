@@ -78,6 +78,10 @@ class Route {
             }
                 
             if(':' == substr($val,0,1)) {// 动态变量
+                if($pos = strpos($val,'|')){
+                    // 使用函数过滤
+                    $val   =   substr($val,1,$pos-1);
+                }
                 if(strpos($val,'\\')) {
                     $type = substr($val,-1);
                     if('d'==$type) {
@@ -146,10 +150,16 @@ class Route {
         $matches  =  array();
         $rule =  explode('/',$rule);
         foreach ($rule as $item){
+            $fun    =   '';
             if(0 === strpos($item,'[:')){
                 $item   =   substr($item,1,-1);
             }
             if(0===strpos($item,':')) { // 动态变量获取
+                if($pos = strpos($item,'|')){ 
+                    // 支持函数过滤
+                    $fun  =  substr($item,$pos+1);
+                    $item =  substr($item,0,$pos);                    
+                }
                 if($pos = strpos($item,'^') ) {
                     $var  =  substr($item,1,$pos-1);
                 }elseif(strpos($item,'\\')){
@@ -157,7 +167,7 @@ class Route {
                 }else{
                     $var  =  substr($item,1);
                 }
-                $matches[$var] = array_shift($paths);
+                $matches[$var] = !empty($fun)? $fun(array_shift($paths)) : array_shift($paths);
             }else{ // 过滤URL中的静态变量
                 array_shift($paths);
             }
