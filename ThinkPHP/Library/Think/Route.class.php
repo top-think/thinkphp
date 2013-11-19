@@ -75,14 +75,14 @@ class Route {
         foreach ($m2 as $key=>$val){
             if(0 === strpos($val,'[:')){
                 $val    =   substr($val,1,-1);
-                if(!isset($m1[$key])) $m1[$key] =   '';
             }
                 
             if(':' == substr($val,0,1)) {// 动态变量
                 if(strpos($val,'\\')) {
                     $type = substr($val,-1);
-                    if('d'==$type && !is_numeric($m1[$key])) {
-                        return false;
+                    if('d'==$type) {
+                        if(isset($m1[$key]) && !is_numeric($m1[$key]))
+                            return false;
                     }
                     $name = substr($val, 1, -2);
                 }elseif($pos = strpos($val,'^')){
@@ -94,7 +94,7 @@ class Route {
                 }else{
                     $name = substr($val, 1);
                 }
-                $var[$name] = $m1[$key];
+                $var[$name] = isset($m1[$key])?$m1[$key]:'';
             }elseif(0 !== strcasecmp($val,$m1[$key])){
                 return false;
             }
