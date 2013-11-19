@@ -43,7 +43,7 @@ class Route {
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
                     $len2   =   substr_count($rule,'/');
-                    if($len1>=$len2) {
+                    if($len1>=$len2 || strpos($rule,'[')) {
                         if('$' == substr($rule,-1,1)) {// 完整匹配
                             if($len1 != $len2) {
                                 continue;
@@ -73,6 +73,11 @@ class Route {
         $m2 = explode('/',$rule);
         $var = array();         
         foreach ($m2 as $key=>$val){
+            if(0 === strpos($val,'[:')){
+                $val    =   substr($val,1,-1);
+                if(!isset($m1[$key])) $m1[$key] =   '';
+            }
+                
             if(':' == substr($val,0,1)) {// 动态变量
                 if(strpos($val,'\\')) {
                     $type = substr($val,-1);
@@ -141,6 +146,9 @@ class Route {
         $matches  =  array();
         $rule =  explode('/',$rule);
         foreach ($rule as $item){
+            if(0 === strpos($item,'[:')){
+                $item   =   substr($item,1,-1);
+            }
             if(0===strpos($item,':')) { // 动态变量获取
                 if($pos = strpos($item,'^') ) {
                     $var  =  substr($item,1,$pos-1);
