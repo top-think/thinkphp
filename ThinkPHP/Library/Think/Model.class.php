@@ -57,7 +57,7 @@ class Model {
     // 是否批处理验证
     protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result','bind','token');
+    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result','token');
 
     /**
      * 架构函数
@@ -1555,6 +1555,29 @@ class Model {
      */
     public function comment($comment){
         $this->options['comment'] =   $comment;
+        return $this;
+    }
+
+    /**
+     * 参数绑定
+     * @access public
+     * @param string $key  参数名
+     * @param mixed $value  绑定的变量及绑定参数
+     * @return Model
+     */
+    public function bind($key,$value=false) {
+        if(is_array($key)){
+            $this->options['bind'] =    $key;
+        }else{
+            $num =  func_num_args();
+            if($num>2){
+                $params =   func_get_args();
+                array_shift($params);
+                $this->options['bind'][$key] =  $params;
+            }else{
+                $this->options['bind'][$key] =  $value;
+            }        
+        }
         return $this;
     }
 
