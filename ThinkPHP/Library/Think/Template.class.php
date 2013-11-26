@@ -439,10 +439,11 @@ class  Template {
      */
     public function parseXmlTag($tagLib,$tag,$attr,$content) {
         if(ini_get('magic_quotes_sybase'))
-            $attr   =  str_replace('\"','\'',$attr);
-        $parse      = '_'.$tag;
-        $content    = trim($content);
-        return $tagLib->$parse($attr,$content);
+            $attr   =	str_replace('\"','\'',$attr);
+        $parse      =	'_'.$tag;
+        $content    =	trim($content);
+		$tags		=   $tagLib->parseXmlAttr($attr,$tag);
+        return $tagLib->$parse($tags,$content);
     }
 
     /**
