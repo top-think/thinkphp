@@ -377,13 +377,13 @@ function import($class, $baseUrl = '', $ext=EXT) {
 function load($name, $baseUrl='', $ext='.php') {
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
-        if (0 === strpos($name, '@/')) {
-            //加载当前项目函数库
-            $baseUrl    = COMMON_PATH.'Common/';
-            $name       = substr($name, 2);
-        } else {
-            //加载ThinkPHP 系统函数库
-            $baseUrl    = EXTEND_PATH . 'Function/';
+        if (0 === strpos($name, '@/')) {//加载当前模块函数库
+            $baseUrl    =   MODULE_PATH.'Common/';
+            $name       =   substr($name, 2);
+        } else { //加载其他模块函数库
+            $array      =   explode('/', $name);
+            $baseUrl    =   APP_PATH . array_shift($array).'/Common/';
+            $name       =   implode('/',$array);
         }
     }
     if (substr($baseUrl, -1) != '/')
@@ -667,11 +667,10 @@ function layout($layout) {
  * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
- * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
  * @param boolean $domain 是否显示域名
  * @return string
  */
-function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
+function U($url='',$vars='',$suffix=true,$domain=false) {
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
@@ -816,10 +815,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     if($domain) {
         $url   =  (is_ssl()?'https://':'http://').$domain.$url;
     }
-    if($redirect) // 直接跳转URL
-        redirect($url);
-    else
-        return $url;
+    return $url;
 }
 
 /**
