@@ -94,7 +94,7 @@ class TagLib {
                     }
                 }
             }else{
-                $item  =   $this->tags[$tag]);
+                $item  =   $this->tags[$tag];
             }            
             $attrs  = explode(',',$item['attr']);
             if(isset($item['must'])){
