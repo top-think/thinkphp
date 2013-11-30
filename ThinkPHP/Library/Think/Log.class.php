@@ -60,10 +60,9 @@ class Log {
      * @access public
      * @param integer $type 日志记录方式
      * @param string $destination  写入目标
-     * @param string $extra 额外参数
      * @return void
      */
-    static function save($type='',$destination='',$extra='') {
+    static function save($type='',$destination='') {
         if(empty(self::$log)) return ;
 
         if(empty($destination))
