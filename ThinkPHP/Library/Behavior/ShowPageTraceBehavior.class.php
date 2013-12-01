@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace Think\Behavior;
+namespace Behavior;
 use Think\Behavior;
 use Think\Log;
 defined('THINK_PATH') or exit();

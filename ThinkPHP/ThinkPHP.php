@@ -36,9 +36,9 @@ defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默
 defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',   APP_PATH.'Runtime/');
 defined('LIB_PATH')     or define('LIB_PATH',       THINK_PATH.'Library/'); // 系统核心类库目录
-defined('CORE_PATH')    or define('CORE_PATH',      LIB_PATH.'Think/'); // 第三方类库目录
+defined('CORE_PATH')    or define('CORE_PATH',      LIB_PATH.'Think/'); // Think类库目录
+defined('BEHAVIOR_PATH')or define('BEHAVIOR_PATH',  LIB_PATH.'Behavior/'); // 行为类库目录
 defined('EXTEND_PATH')  or define('EXTEND_PATH',    THINK_PATH.'Extend/'); // 系统扩展目录
-defined('MODE_PATH')    or define('MODE_PATH',      EXTEND_PATH.'Mode/'); // 模式扩展目录
 defined('VENDOR_PATH')  or define('VENDOR_PATH',    LIB_PATH.'Vendor/'); // 第三方类库目录
 defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 项目公共目录
 defined('LANG_PATH')    or define('LANG_PATH',      COMMON_PATH.'Lang/'); // 项目语言目录

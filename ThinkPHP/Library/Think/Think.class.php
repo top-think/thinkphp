@@ -132,18 +132,16 @@ class Think {
         if(isset(self::$_map[$class])) {
             include self::$_map[$class];
         }else{
-          $name     = strstr($class, '\\', true);
-          if(is_dir(LIB_PATH.$name)){ // Library目录下面的命名空间自动定位
-              $path   =   LIB_PATH;
-          }else{ 
-              $namespace =    C('AUTOLOAD_NAMESPACE');
-              if(isset($namespace[$name])){ // 注册的命名空间
-                  $path   =   dirname($namespace[$name]) . '/';
-              }else{// 模块的命名空间
-                $path   =   APP_PATH;
-              }              
+          $name           =   strstr($class, '\\', true);
+          if(in_array($name,array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PATH.$name)){ 
+              // Library目录下面的命名空间自动定位
+              $path       =   LIB_PATH;
+          }else{
+              // 检测自定义命名空间 否则就以模块为命名空间
+              $namespace  =   C('AUTOLOAD_NAMESPACE');
+              $path       =   isset($namespace[$name])? dirname($namespace[$name]).'/' : APP_PATH;
           }
-          $filename = $path . str_replace('\\', '/', $class) . EXT;
+          $filename       =   $path . str_replace('\\', '/', $class) . EXT;
           if(is_file($filename)) {
               // Win环境下面严格区分大小写
               if (IS_WIN && false === strpos(str_replace('/', '\\', realpath($filename)), $class . EXT)){

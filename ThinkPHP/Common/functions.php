@@ -350,7 +350,7 @@ function import($class, $baseUrl = '', $ext=EXT) {
             //加载当前模块的类库
             $baseUrl = MODULE_PATH;
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-        }elseif (is_dir(LIB_PATH.$class_strut[0])) {
+        }elseif (in_array($class_strut[0],array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PATH.$class_strut[0])) {
             // 系统类库包和第三方类库包
             $baseUrl = LIB_PATH;
         }else { // 加载其他模块的类库

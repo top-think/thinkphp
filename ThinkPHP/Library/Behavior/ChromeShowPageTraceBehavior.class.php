@@ -26,7 +26,7 @@
  * headers输出，你可以在入口文件第一行加入代码 ob_start(); 或者配置output_buffering
  *
  */
-namespace Think\Behavior;
+namespace Behavior;
 use Think\Behavior;
 use Think\Log;
 
