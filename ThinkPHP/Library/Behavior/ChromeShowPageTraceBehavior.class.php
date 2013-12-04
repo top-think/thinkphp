@@ -17,7 +17,7 @@
  * <code>
  * <?php return array(
  *   'app_end'=>array(
- *       'Think\Behavior\ChromeShowPageTrace'
+ *       'Behavior\ChromeShowPageTrace'
  *   )
  * );
  * </code>
@@ -173,12 +173,12 @@ function chrome_debug($msg,$type='trace',$trace_level=1){
         }
         ChromePhp::groupEnd();
     }else{
-        if(method_exists('ChromePhp',$type)){
+        if(method_exists('Behavior\ChromePhp',$type)){
             //支持type trace，warn,log,error,group, groupCollapsed, groupEnd等
-            call_user_func(array('ChromePhp',$type),$msg);
+            call_user_func(array('Behavior\ChromePhp',$type),$msg);
         }else{
             //如果type不为trace,warn,log等，则为log的标签
-            call_user_func_array(array('ChromePhp','log'),func_get_args());
+            call_user_func_array(array('Behavior\ChromePhp','log'),func_get_args());
         }
     }
 }
@@ -191,8 +191,7 @@ function chrome_debug($msg,$type='trace',$trace_level=1){
  * @package ChromePhp
  * @author Craig Campbell <iamcraigcampbell@gmail.com>
  */
-class ChromePhp
-{
+class ChromePhp{
     /**
      * @var string
      */
