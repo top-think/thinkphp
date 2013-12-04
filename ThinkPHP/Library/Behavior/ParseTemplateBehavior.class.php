@@ -60,7 +60,11 @@ class ParseTemplateBehavior extends Behavior {
             }
         }else{
             // 调用第三方模板引擎解析和输出
-            $class   = 'Think\\Template\\Driver\\'.ucwords($engine);
+            if(strpos($engine,'\\')){
+                $class  =   $engine;
+            }else{
+                $class   =  'Think\\Template\\Driver\\'.ucwords($engine);                
+            }            
             if(class_exists($class)) {
                 $tpl   =  new $class;
                 $tpl->fetch($_content,$_data['var']);

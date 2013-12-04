@@ -79,8 +79,12 @@ class Db {
         if(empty($db_config['dbms']))
             E(L('_NO_DB_CONFIG_'));
         // 数据库类型
-        $dbType = ucwords(strtolower($db_config['dbms']));
-        $class  = 'Think\\Db\\Driver\\'. $dbType;
+        if(strpos($db_config['dbms'],'\\')){
+            $class  =   $db_config['dbms'];
+        }else{
+            $dbType =   ucwords(strtolower($db_config['dbms']));
+            $class  =   'Think\\Db\\Driver\\'. $dbType;            
+        }
         // 检查驱动类
         if(class_exists($class)) {
             $db = new $class($db_config);

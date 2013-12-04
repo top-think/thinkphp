@@ -37,8 +37,11 @@ class Cache {
      */
     public function connect($type='',$options=array()) {
         if(empty($type))  $type = C('DATA_CACHE_TYPE');
-        $type  = strtolower(trim($type));
-        $class = 'Think\\Cache\\Driver\\'.ucwords($type);
+        if(strpos($type,'\\')){ // 驱动类支持使用独立的命名空间
+            $class  =   $type;
+        }else{
+            $class  =   'Think\\Cache\\Driver\\'.ucwords(strtolower($type));            
+        }
         if(class_exists($class))
             $cache = new $class($options);
         else
