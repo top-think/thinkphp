@@ -125,9 +125,7 @@ function compile($filename) {
  * @return string
  */
 function T($template='',$layer=''){
-    if(is_file($template)) {
-        return $template;
-    }
+
     // 解析模版资源地址
     if(false === strpos($template,'://')){
         $template   =   'http://'.str_replace(':', '/',$template);
