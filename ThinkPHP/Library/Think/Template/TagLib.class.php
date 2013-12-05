@@ -82,7 +82,7 @@ class TagLib {
             E(L('_XML_TAG_ERROR_').' : '.$attr);
         }
         $xml    =   (array)($xml->tag->attributes());
-        if(isset($xml[''@attributes''])){
+        if(isset($xml['@attributes'])){
             $array  =   array_change_key_case($xml['@attributes']);
             if($array) {
                 $tag    =   strtolower($tag);
