@@ -17,7 +17,7 @@ class Route {
     // 路由检测
     public static function check(){
         $depr   =   C('URL_PATHINFO_DEPR');
-        $regx   =   trim($_SERVER['PATH_INFO'],$depr);
+        $regx   =   preg_replace('/.'.__EXT__.'$/i','',trim($_SERVER['PATH_INFO'],$depr));
         // 分隔符替换 确保路由定义使用统一的分隔符
         if('/' != $depr){
             $regx = str_replace($depr,'/',$regx);
@@ -33,6 +33,24 @@ class Route {
         $routes =   C('URL_ROUTE_RULES');
         if(!empty($routes)) {
             foreach ($routes as $rule=>$route){
+                if(is_array($route) && isset($route[2])){
+                    // 路由参数
+                    $options    =   $route[2];
+                    if(isset($options['ext']) && __EXT__ != $options['ext']){
+                        // URL后缀检测
+                        continue;
+                    }
+                    if(isset($options['method']) && REQUEST_METHOD != $options['method']){
+                        // 请求类型检测
+                        continue;
+                    }
+                    // 自定义检测
+                    if(!empty($options['callback']) && is_callable($options['callback'])) {
+                        if(false === call_user_func($options['callback'])) {
+                            continue;
+                        }
+                    }                    
+                }
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
