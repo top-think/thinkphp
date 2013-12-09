@@ -33,6 +33,10 @@ class Route {
         $routes =   C('URL_ROUTE_RULES');
         if(!empty($routes)) {
             foreach ($routes as $rule=>$route){
+                if(is_numeric($rule)){
+                    // 支持 array('rule','adddress',...) 定义路由
+                    $rule   =   array_shift($route);
+                }
                 if(is_array($route) && isset($route[2])){
                     // 路由参数
                     $options    =   $route[2];
