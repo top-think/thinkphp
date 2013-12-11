@@ -118,7 +118,7 @@ class Dispatcher {
         }
         $depr = C('URL_PATHINFO_DEPR');
         define('MODULE_PATHINFO_DEPR',  $depr);
-        define('__INFO__',              trim($_SERVER['PATH_INFO'],'/'));
+        define('__INFO__',              trim($_SERVER['PATH_INFO'],$depr));
         // URL后缀
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
 
@@ -129,9 +129,11 @@ class Dispatcher {
             if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
                 $_GET[$varModule]       =   $module;
                 $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';     
-            };
+            }else{
+                $_SERVER['PATH_INFO'] = __INFO__;
+            }
         }else{
-            $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'],'/');
+            $_SERVER['PATH_INFO'] = __INFO__;
         }
 
         // URL常量
