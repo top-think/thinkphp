@@ -11,7 +11,7 @@
 
 namespace Think\Log\Driver;
 
-class File {
+class Sae {
 
     protected $config  =   array(
         'log_time_format'   =>  ' c ',
