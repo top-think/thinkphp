@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,10 +11,6 @@
 namespace Think\Template;
 /**
  * ThinkPHP标签库TagLib解析基类
- * @category   Think
- * @package  Think
- * @subpackage  Template
- * @author    liu21st <liu21st@gmail.com>
  */
 class TagLib {
 
@@ -86,22 +82,38 @@ class TagLib {
             E(L('_XML_TAG_ERROR_').' : '.$attr);
         }
         $xml    =   (array)($xml->tag->attributes());
-        $array  =   array_change_key_case($xml['@attributes']);
-        if($array) {
-            $attrs  = explode(',',$this->tags[strtolower($tag)]['attr']);
-            if(isset($this->tags[strtolower($tag)]['must'])){
-                $must   =   explode(',',$this->tags[strtolower($tag)]['must']);
-            }else{
-                $must   =   array();
-            }
-            foreach($attrs as $name) {
-                if( isset($array[$name])) {
-                    $array[$name] = str_replace('___','&',$array[$name]);
-                }elseif(false !== array_search($name,$must)){
-                    E(L('_PARAM_ERROR_').':'.$name);
+        if(isset($xml['@attributes'])){
+            $array  =   array_change_key_case($xml['@attributes']);
+            if($array) {
+                $tag    =   strtolower($tag);
+                if(!isset($this->tags[$tag])){
+                    // 检测是否存在别名定义
+                    foreach($this->tags as $key=>$val){
+                        if(isset($val['alias']) && in_array($tag,explode(',',$val['alias']))){
+                            $item  =   $val;
+                            break;
+                        }
+                    }
+                }else{
+                    $item  =   $this->tags[$tag];
+                }            
+                $attrs  = explode(',',$item['attr']);
+                if(isset($item['must'])){
+                    $must   =   explode(',',$item['must']);
+                }else{
+                    $must   =   array();
                 }
+                foreach($attrs as $name) {
+                    if( isset($array[$name])) {
+                        $array[$name] = str_replace('___','&',$array[$name]);
+                    }elseif(false !== array_search($name,$must)){
+                        E(L('_PARAM_ERROR_').':'.$name);
+                    }
+                }
+                return $array;
             }
-            return $array;
+        }else{
+            return array();
         }
     }
 

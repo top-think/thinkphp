@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -17,10 +17,6 @@ namespace Think\Session\Driver;
  *      session_data blob,
  *      UNIQUE KEY `session_id` (`session_id`)
  *    );
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Session
- * @author    liu21st <liu21st@gmail.com>
  */
 class Db {
 

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -14,10 +14,6 @@ defined('THINK_PATH') or exit();
 
 /**
  * Mysql数据库驱动类
- * @category   Think
- * @package  Think
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Mysql extends Db{
 

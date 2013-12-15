@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,11 +11,6 @@
 namespace Think;
 /**
  * ThinkPHP 应用程序类 执行应用过程管理
- * 可以在模式扩展中重新定义 但是必须具有Run方法接口
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class App {
 
@@ -26,7 +21,7 @@ class App {
      */
     static public function init() {
         // 加载动态项目公共文件和配置
-        load_ext_file();
+        load_ext_file(COMMON_PATH);
         // URL调度
         Dispatcher::dispatch();
 
@@ -67,19 +62,11 @@ class App {
                 header("Content-type:image/png");
                 exit(base64_decode(App::logo()));
             }
-            if(function_exists('__hack_module')) {
-                // hack 方式定义扩展模块 返回Action对象
-                $module = __hack_module();
-                if(!is_object($module)) {
-                    // 不再继续执行 直接返回
-                    return ;
-                }
-            }else{
-                // 是否定义Empty模块
-                $module = A('Empty');
-                if(!$module){
-                    E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
-                }
+
+            // 是否定义Empty模块
+            $module = A('Empty');
+            if(!$module){
+                E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
             }
         }
         // 获取当前操作名 支持动态路由
@@ -114,15 +101,18 @@ class App {
                             $vars  =  $_GET;
                     }
                     $params =  $method->getParameters();
+                    $paramsBindType     =   C('URL_PARAMS_BIND_TYPE');
                     foreach ($params as $param){
                         $name = $param->getName();
-                        if(isset($vars[$name])) {
-                            $args[] =  $vars[$name];
+                        if( 1 == $paramsBindType && !empty($vars) ){
+                            $args[] =   array_shift($vars);
+                        }elseif( 0 == $paramsBindType && isset($vars[$name])){
+                            $args[] =   $vars[$name];
                         }elseif($param->isDefaultValueAvailable()){
-                            $args[] = $param->getDefaultValue();
+                            $args[] =   $param->getDefaultValue();
                         }else{
                             E(L('_PARAM_ERROR_').':'.$name);
-                        }
+                        }   
                     }
                     $method->invokeArgs($module,$args);
                 }else{

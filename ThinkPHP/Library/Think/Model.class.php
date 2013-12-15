@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,26 +12,24 @@ namespace Think;
 /**
  * ThinkPHP Model模型类
  * 实现了ORM和ActiveRecords模式
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Model {
     // 操作状态
     const MODEL_INSERT          =   1;      //  插入模型数据
     const MODEL_UPDATE          =   2;      //  更新模型数据
     const MODEL_BOTH            =   3;      //  包含上面两种方式
-    const MUST_VALIDATE         =   1;// 必须验证
-    const EXISTS_VALIDATE       =   0;// 表单存在字段则验证
-    const VALUE_VALIDATE        =   2;// 表单值不为空则验证
+    const MUST_VALIDATE         =   1;      // 必须验证
+    const EXISTS_VALIDATE       =   0;      // 表单存在字段则验证
+    const VALUE_VALIDATE        =   2;      // 表单值不为空则验证
 
     // 当前数据库操作对象
     protected $db               =   null;
     // 主键名称
     protected $pk               =   'id';
+    // 主键是否自动增长
+    protected $autoinc          =   false;    
     // 数据表前缀
-    protected $tablePrefix      =   '';
+    protected $tablePrefix      =   null;
     // 模型名称
     protected $name             =   '';
     // 数据库名称
@@ -59,7 +57,7 @@ class Model {
     // 是否批处理验证
     protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result','bind','token');
+    protected $methods          =   array('table','order','alias','having','group','lock','distinct','auto','filter','validate','result','token');
 
     /**
      * 架构函数
@@ -87,14 +85,14 @@ class Model {
             $this->tablePrefix = '';
         }elseif('' != $tablePrefix) {
             $this->tablePrefix = $tablePrefix;
-        }else{
-            $this->tablePrefix = $this->tablePrefix?$this->tablePrefix:C('DB_PREFIX');
+        }elseif(!isset($this->tablePrefix)){
+            $this->tablePrefix = C('DB_PREFIX');
         }
 
         // 数据库初始化操作
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
-        $this->db(0,empty($this->connection)?$connection:$this->connection);
+        $this->db(0,empty($this->connection)?$connection:$this->connection,true);
     }
 
     /**
@@ -111,11 +109,9 @@ class Model {
                 $db   =  $this->dbName?$this->dbName:C('DB_NAME');
                 $fields = F('_fields/'.strtolower($db.'.'.$this->name));
                 if($fields) {
-                    $version    =   C('DB_FIELD_VERSION');
-                    if(empty($version) || $fields['_version']== $version) {
-                        $this->fields   =   $fields;
-                        return ;
-                    }
+                    $this->fields   =   $fields;
+                    $this->pk       =   $fields['_pk'];
+                    return ;
                 }
             }
             // 每次都会读取数据表信息
@@ -136,18 +132,17 @@ class Model {
             return false;
         }
         $this->fields   =   array_keys($fields);
-        $this->fields['_autoinc'] = false;
         foreach ($fields as $key=>$val){
             // 记录字段类型
-            $type[$key]    =   $val['type'];
+            $type[$key]     =   $val['type'];
             if($val['primary']) {
-                $this->fields['_pk'] = $key;
-                if($val['autoinc']) $this->fields['_autoinc']   =   true;
+                $this->pk   =   $key;
+                $this->fields['_pk']   =   $key;
+                if($val['autoinc']) $this->autoinc   =   true;
             }
         }
         // 记录字段类型信息
         $this->fields['_type'] =  $type;
-        if(C('DB_FIELD_VERSION')) $this->fields['_version'] =   C('DB_FIELD_VERSION');
 
         // 2008-3-7 增加缓存开关控制
         if(C('DB_FIELDS_CACHE')){
@@ -243,17 +238,27 @@ class Model {
      */
      protected function _facade($data) {
 
-        // 检查非数据字段
+        // 检查数据字段合法性
         if(!empty($this->fields)) {
+            if(!empty($this->options['field'])) {
+                $fields =   $this->options['field'];
+                unset($this->options['field']);
+                if(is_string($fields)) {
+                    $fields =   explode(',',$fields);
+                }    
+            }else{
+                $fields =   $this->fields;
+            }        
             foreach ($data as $key=>$val){
-                if(!in_array($key,$this->fields,true)){
+                if(!in_array($key,$fields,true)){
                     unset($data[$key]);
                 }elseif(is_scalar($val)) {
-                    // 字段类型检查
+                    // 字段类型检查 和 强制转换
                     $this->_parseType($data,$key);
                 }
             }
         }
+       
         // 安全过滤
         if(!empty($this->options['filter'])) {
             $data = array_map($this->options['filter'],$data);
@@ -564,7 +569,7 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        if(empty($this->options['bind'][':'.$key])){
+        if(empty($this->options['bind'][':'.$key]) && isset($this->fields['_type'][$key])){
             $fieldType = strtolower($this->fields['_type'][$key]);
             if(false !== strpos($fieldType,'enum')){
                 // 支持ENUM类型优先检测
@@ -915,8 +920,9 @@ class Model {
             foreach ($_auto as $auto){
                 // 填充因子定义格式
                 // array('field','填充内容','填充条件','附加规则',[额外参数])
-                if(empty($auto[2])) $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充
+                if(empty($auto[2])) $auto[2] =  self::MODEL_INSERT; // 默认为新增的时候自动填充
                 if( $type == $auto[2] || $auto[2] == self::MODEL_BOTH) {
+                    if(empty($auto[3])) $auto[3] =  'string';
                     switch(trim($auto[3])) {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
                         case 'callback': // 使用回调方法
@@ -941,7 +947,7 @@ class Model {
                         default: // 默认作为字符串填充
                             $data[$auto[0]] = $auto[1];
                     }
-                    if(false === $data[$auto[0]] )   unset($data[$auto[0]]);
+                    if(isset($data[$auto[0]]) && false === $data[$auto[0]] )   unset($data[$auto[0]]);
                 }
             }
         }
@@ -1183,16 +1189,16 @@ class Model {
      * @access public
      * @param integer $linkNum  连接序号
      * @param mixed $config  数据库连接信息
-     * @param array $params  模型参数
+     * @param boolean $force 强制重新连接
      * @return Model
      */
-    public function db($linkNum='',$config='',$params=array()){
-        if(''===$linkNum && $this->db) {
+    public function db($linkNum='',$config='',$force=false) {
+        if('' === $linkNum && $this->db) {
             return $this->db;
         }
-        static $_linkNum    =   array();
+
         static $_db = array();
-        if(!isset($_db[$linkNum]) || (isset($_db[$linkNum]) && $config && $_linkNum[$linkNum]!=$config) ) {
+        if(!isset($_db[$linkNum]) || $force ) {
             // 创建一个新的实例
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  C($config);
@@ -1203,14 +1209,7 @@ class Model {
             unset($_db[$linkNum]);
             return ;
         }
-        if(!empty($params)) {
-            if(is_string($params))    parse_str($params,$params);
-            foreach ($params as $name=>$value){
-                $this->setProperty($name,$value);
-            }
-        }
-        // 记录连接信息
-        $_linkNum[$linkNum] =   $config;
+
         // 切换数据库连接
         $this->db   =    $_db[$linkNum];
         $this->_after_db();
@@ -1331,7 +1330,7 @@ class Model {
      * @return string
      */
     public function getPk() {
-        return isset($this->fields['_pk'])?$this->fields['_pk']:$this->pk;
+        return $this->pk;
     }
 
     /**
@@ -1346,7 +1345,7 @@ class Model {
         }
         if($this->fields) {
             $fields     =  $this->fields;
-            unset($fields['_autoinc'],$fields['_pk'],$fields['_type'],$fields['_version']);
+            unset($fields['_type'],$fields['_pk']);
             return $fields;
         }
         return false;
@@ -1377,13 +1376,14 @@ class Model {
      * 查询SQL组装 join
      * @access public
      * @param mixed $join
+     * @param string $type JOIN类型
      * @return Model
      */
-    public function join($join) {
+    public function join($join,$type='INNER') {
         if(is_array($join)) {
             $this->options['join']      =   $join;
         }elseif(!empty($join)) {
-            $this->options['join'][]    =   $join;
+            $this->options['join'][]    =   false !== stripos($join,'JOIN')? $join : $type.' JOIN '.$join;
         }
         return $this;
     }
@@ -1555,6 +1555,29 @@ class Model {
      */
     public function comment($comment){
         $this->options['comment'] =   $comment;
+        return $this;
+    }
+
+    /**
+     * 参数绑定
+     * @access public
+     * @param string $key  参数名
+     * @param mixed $value  绑定的变量及绑定参数
+     * @return Model
+     */
+    public function bind($key,$value=false) {
+        if(is_array($key)){
+            $this->options['bind'] =    $key;
+        }else{
+            $num =  func_num_args();
+            if($num>2){
+                $params =   func_get_args();
+                array_shift($params);
+                $this->options['bind'][$key] =  $params;
+            }else{
+                $this->options['bind'][$key] =  $value;
+            }        
+        }
         return $this;
     }
 

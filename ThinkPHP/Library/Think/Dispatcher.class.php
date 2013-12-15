@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,10 +12,6 @@ namespace Think;
 /**
  * ThinkPHP内置的Dispatcher类
  * 完成URL解析、路由和调度
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Dispatcher {
 
@@ -41,34 +37,61 @@ class Dispatcher {
         if(C('APP_SUB_DOMAIN_DEPLOY')) {
             $rules      = C('APP_SUB_DOMAIN_RULES');
             if(isset($rules[$_SERVER['HTTP_HOST']])) { // 完整域名或者IP配置
-                $rule = $rules[$_SERVER['HTTP_HOST']];
+                define('APP_DOMAIN',$_SERVER['HTTP_HOST']); // 当前完整域名
+                $rule = $rules[APP_DOMAIN];
             }else{
-                $subDomain  = strtolower(substr($_SERVER['HTTP_HOST'],0,strpos($_SERVER['HTTP_HOST'],'.')));
-                define('SUB_DOMAIN',$subDomain); // 二级域名定义
-                if($subDomain && isset($rules[$subDomain])) {
-                    $rule =  $rules[$subDomain];
-                }elseif(isset($rules['*'])){ // 泛域名支持
-                    if('www' != $subDomain && !in_array($subDomain,C('APP_SUB_DOMAIN_DENY'))) {
-                        $rule =  $rules['*'];
+                if(strpos(C('APP_DOMAIN_SUFFIX'),'.')){ // com.cn net.cn 
+                    $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -3);
+                }else{
+                    $domain = array_slice(explode('.', $_SERVER['HTTP_HOST']), 0, -2);                    
+                }
+                if(!empty($domain)) {
+                    $subDomain = implode('.', $domain);
+                    define('SUB_DOMAIN',$subDomain); // 当前完整子域名
+                    $domain2   = array_pop($domain); // 二级域名
+                    if($domain) { // 存在三级域名
+                        $domain3 = array_pop($domain);
+                    }
+                    if(isset($rules[$subDomain])) { // 子域名
+                        $rule = $rules[$subDomain];
+                    }elseif(isset($rules['*.' . $domain2]) && !empty($domain3)){ // 泛三级域名
+                        $rule = $rules['*.' . $domain2];
+                        $panDomain = $domain3;
+                    }elseif(isset($rules['*']) && !empty($domain2) && 'www' != $domain2 ){ // 泛二级域名
+                        $rule      = $rules['*'];
+                        $panDomain = $domain2;
                     }
                 }                
             }
 
             if(!empty($rule)) {
-                // 子域名部署规则 '子域名'=>array('模块名/[控制器名]','var1=a&var2=b');
-                $array      =   explode('/',$rule[0]);
-                $controller =   array_pop($array);
-                if(!empty($controller)) {
-                    $_GET[$varController]  =   $controller;
-                    $domainController           =   true;
+                // 子域名部署规则 '子域名'=>array('模块名[/控制器名]','var1=a&var2=b');
+                if(is_array($rule)){
+                    list($rule,$vars) = $rule;
                 }
+                $array      =   explode('/',$rule);
+                // 模块绑定
+                $_GET[$varModule]     =   array_shift($array);
+                define('BIND_MODULE',$_GET[$varModule]);
+                $domainModule         =   true;       
+                // 控制器绑定         
                 if(!empty($array)) {
-                    $_GET[$varModule]   =   array_pop($array);
-                    define('BIND_MODULE',$_GET[$varModule]);
-                    $domainModule            =   true;
+                    $controller  =   array_shift($array);
+                    if($controller){
+                        $_GET[$varController]   =   $controller;
+                        $domainController       =   true;
+                    }
+                    
                 }
-                if(isset($rule[1])) { // 传入参数
-                    parse_str($rule[1],$parms);
+                if(isset($vars)) { // 传入参数
+                    parse_str($vars,$parms);
+                    if(isset($panDomain)){
+                        $pos = array_search('*', $parms);
+                        if(false !== $pos) {
+                            // 泛域名作为参数
+                            $parms[$pos] = $panDomain;
+                        }                         
+                    }                   
                     $_GET   =  array_merge($_GET,$parms);
                 }
             }
@@ -95,7 +118,7 @@ class Dispatcher {
         }
         $depr = C('URL_PATHINFO_DEPR');
         define('MODULE_PATHINFO_DEPR',  $depr);
-        define('__INFO__',              trim($_SERVER['PATH_INFO'],'/'));
+        define('__INFO__',              trim($_SERVER['PATH_INFO'],$depr));
         // URL后缀
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
 
@@ -103,21 +126,23 @@ class Dispatcher {
             $paths      =   explode($depr,__INFO__,2);
             $allowList  =   C('MODULE_ALLOW_LIST');
             $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
-            if( empty($allowList) || (is_array($allowList) && in_array($module, $allowList))){
+            if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
                 $_GET[$varModule]       =   $module;
                 $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';     
-            };
+            }else{
+                $_SERVER['PATH_INFO'] = __INFO__;
+            }
         }else{
-            $_SERVER['PATH_INFO'] = trim($_SERVER['PATH_INFO'],'/');
+            $_SERVER['PATH_INFO'] = __INFO__;
         }
 
         // URL常量
-        define('__SELF__',strip_tags($_SERVER['REQUEST_URI']));
+        define('__SELF__',strip_tags($_SERVER[C('URL_REQUEST_URI')]));
 
         // 获取模块名称
         define('MODULE_NAME', self::getModule($varModule));
         // 检测模块是否存在
-        if( MODULE_NAME && !in_array(MODULE_NAME,C('MODULE_DENY_LIST'))  && is_dir(APP_PATH.MODULE_NAME)){
+        if( MODULE_NAME && (!in_array_case(MODULE_NAME,C('MODULE_DENY_LIST')) || $domainModule ) && is_dir(APP_PATH.MODULE_NAME)){
             
             // 定义当前模块路径
             define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
@@ -136,6 +161,8 @@ class Dispatcher {
             // 加载模块函数文件
             if(is_file(MODULE_PATH.'Common/function.php'))
                 include MODULE_PATH.'Common/function.php';
+            // 加载模块的扩展配置文件
+            load_ext_file(MODULE_PATH);
         }else{
             E(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
         }
@@ -168,6 +195,7 @@ class Dispatcher {
                 send_http_status(404);
                 exit;
             }
+
             if(C('URL_HTML_SUFFIX')) {
                 $_SERVER['PATH_INFO'] = preg_replace('/\.('.trim(C('URL_HTML_SUFFIX'),'.').')$/i', '', $_SERVER['PATH_INFO']);
             }else{
@@ -175,7 +203,7 @@ class Dispatcher {
             }
 
             $depr = C('URL_PATHINFO_DEPR');
-            $paths = explode($depr,$_SERVER['PATH_INFO']);
+            $paths = explode($depr,trim($_SERVER['PATH_INFO'],$depr));
 
             if(!isset($_GET[$varController])) {// 获取控制器
                 if(C('CONTROLLER_LEVEL')>1){// 控制器层次
@@ -189,7 +217,12 @@ class Dispatcher {
             $_GET[$varAction]  =   array_shift($paths);
             // 解析剩余的URL参数
             $var  =  array();
-            preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){$var[$match[1]]=strip_tags($match[2]);}, implode('/',$paths));
+            if(C('URL_PARAMS_BIND') && 1 == C('URL_PARAMS_BIND_TYPE')){
+                // URL参数按顺序绑定变量
+                $var    =   $paths;
+            }else{
+                preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){$var[$match[1]]=strip_tags($match[2]);}, implode('/',$paths));                
+            }
             $_GET   =  array_merge($var,$_GET);
         }
         define('CONTROLLER_NAME',   self::getController($varController));
@@ -251,7 +284,14 @@ class Dispatcher {
                     // 记录当前别名
                     define('ACTION_ALIAS',strtolower($action));
                     // 获取实际的操作名
-                    return   $maps[ACTION_ALIAS];
+                    if(is_array($maps[ACTION_ALIAS])){
+                        parse_str($maps[ACTION_ALIAS][1],$vars);
+                        $_GET   =   array_merge($_GET,$vars);
+                        return $maps[ACTION_ALIAS][0];
+                    }else{
+                        return $maps[ACTION_ALIAS];
+                    }
+                    
                 }elseif(array_search(strtolower($action),$maps)){
                     // 禁止访问原始操作
                     return   '';

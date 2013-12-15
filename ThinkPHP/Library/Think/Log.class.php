@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,10 +11,6 @@
 namespace Think;
 /**
  * 日志处理类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Log {
 
@@ -38,7 +34,11 @@ class Log {
     // 日志初始化
     static public function init($config=array()){
         $type   =   isset($config['type'])?$config['type']:'File';
-        $class  =   'Think\\Log\\Driver\\'. ucwords($type);
+        if(strpos($type,'\\')){
+            $class  =   $type;
+        }else{
+            $class  =   'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
+        }        
         unset($config['type']);
         self::$storage = new $class($config);
     }
@@ -64,10 +64,9 @@ class Log {
      * @access public
      * @param integer $type 日志记录方式
      * @param string $destination  写入目标
-     * @param string $extra 额外参数
      * @return void
      */
-    static function save($type='',$destination='',$extra='') {
+    static function save($type='',$destination='') {
         if(empty(self::$log)) return ;
 
         if(empty($destination))

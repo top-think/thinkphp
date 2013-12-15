@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,10 +13,6 @@ use Think\Cache;
 defined('THINK_PATH') or exit();
 /**
  * Eaccelerator缓存驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Cache
- * @author    liu21st <liu21st@gmail.com>
  */
 class Eaccelerator extends Cache {
 

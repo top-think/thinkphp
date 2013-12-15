@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,10 +13,6 @@ use Think\Template\TagLib;
 defined('THINK_PATH') or exit();
 /**
  * Html标签库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Taglib
- * @author    liu21st <liu21st@gmail.com>
  */
 class Html extends TagLib{
     // 标签定义
@@ -35,11 +31,10 @@ class Html extends TagLib{
      * editor标签解析 插入可视化编辑器
      * 格式： <html:editor id="editor" name="remark" type="FCKeditor" style="" >{$vo.remark}</html:editor>
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _editor($attr,$content) {
-        $tag        =	$this->parseXmlAttr($attr,'editor');
+    public function _editor($tag,$content) {
         $id			=	!empty($tag['id'])?$tag['id']: '_editor';
         $name   	=	$tag['name'];
         $style   	    =	!empty($tag['style'])?$tag['style']:'';
@@ -77,11 +72,10 @@ class Html extends TagLib{
      * imageBtn标签解析
      * 格式： <html:imageBtn type="" value="" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _imageBtn($attr) {
-        $tag        = $this->parseXmlAttr($attr,'imageBtn');
+    public function _imageBtn($tag) {
         $name       = $tag['name'];                //名称
         $value      = $tag['value'];                //文字
         $id         = isset($tag['id'])?$tag['id']:'';                //ID
@@ -102,11 +96,10 @@ class Html extends TagLib{
      * imageLink标签解析
      * 格式： <html:imageLink type="" value="" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _imgLink($attr) {
-        $tag        = $this->parseXmlAttr($attr,'imgLink');
+    public function _imgLink($tag) {
         $name       = $tag['name'];                //名称
         $alt        = $tag['alt'];                //文字
         $id         = $tag['id'];                //ID
@@ -125,11 +118,10 @@ class Html extends TagLib{
      * select标签解析
      * 格式： <html:select options="name" selected="value" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _select($attr) {
-        $tag        = $this->parseXmlAttr($attr,'select');
+    public function _select($tag) {
         $name       = $tag['name'];
         $options    = $tag['options'];
         $values     = $tag['values'];
@@ -182,11 +174,10 @@ class Html extends TagLib{
      * checkbox标签解析
      * 格式： <html:checkbox checkboxes="" checked="" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _checkbox($attr) {
-        $tag        = $this->parseXmlAttr($attr,'checkbox');
+    public function _checkbox($tag) {
         $name       = $tag['name'];
         $checkboxes = $tag['checkboxes'];
         $checked    = $tag['checked'];
@@ -208,11 +199,10 @@ class Html extends TagLib{
      * radio标签解析
      * 格式： <html:radio radios="name" checked="value" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string|void
      */
-    public function _radio($attr) {
-        $tag        = $this->parseXmlAttr($attr,'radio');
+    public function _radio($tag) {
         $name       = $tag['name'];
         $radios     = $tag['radios'];
         $checked    = $tag['checked'];
@@ -235,11 +225,10 @@ class Html extends TagLib{
      * list标签解析
      * 格式： <html:grid datasource="" show="vo" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string
      */
-    public function _grid($attr) {
-        $tag        = $this->parseXmlAttr($attr,'grid');
+    public function _grid($tag) {
         $id         = $tag['id'];                       //表格ID
         $datasource = $tag['datasource'];               //列表显示的数据源VoList名称
         $pk         = empty($tag['pk'])?'id':$tag['pk'];//主键名，默认为id
@@ -375,11 +364,10 @@ class Html extends TagLib{
      * list标签解析
      * 格式： <html:list datasource="" show="" />
      * @access public
-     * @param string $attr 标签属性
+     * @param array $tag 标签属性
      * @return string
      */
-    public function _list($attr) {
-        $tag        = $this->parseXmlAttr($attr,'list');
+    public function _list($tag) {
         $id         = $tag['id'];                       //表格ID
         $datasource = $tag['datasource'];               //列表显示的数据源VoList名称
         $pk         = empty($tag['pk'])?'id':$tag['pk'];//主键名，默认为id

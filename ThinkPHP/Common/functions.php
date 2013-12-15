@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,10 +10,7 @@
 // +----------------------------------------------------------------------
 
 /**
- * Think 基础函数库
- * @category   Think
- * @package  Common
- * @author   liu21st <liu21st@gmail.com>
+ * Think 函数库
  */
 
 /**
@@ -101,6 +98,11 @@ function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
     return Think\Think::trace($value,$label,$level,$record);
 }
 
+/**
+ * 编译文件
+ * @param string $filename 文件名
+ * @return string
+ */
 function compile($filename) {
     $content    =   php_strip_whitespace($filename);
     $content    =   trim(substr($content, 5));
@@ -123,9 +125,7 @@ function compile($filename) {
  * @return string
  */
 function T($template='',$layer=''){
-    if(is_file($template)) {
-        return $template;
-    }
+
     // 解析模版资源地址
     if(false === strpos($template,'://')){
         $template   =   'http://'.str_replace(':', '/',$template);
@@ -140,22 +140,28 @@ function T($template='',$layer=''){
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
-    }else{ // 分组模式
+    }elseif(C('VIEW_PATH')){ // 指定视图目录
+        $baseUrl    =   C('VIEW_PATH').$module.'/';
+    }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
+
     // 获取主题
-    $array  =   explode('/',$file);
-    if(count($array)>2){
-        $theme  =   array_shift($array);
-    }else{
-        $theme  =   C('DEFAULT_THEME');
-    }
+    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
+
     // 分析模板文件规则
+    $depr   =   C('TMPL_FILE_DEPR');
     if('' == $file) {
         // 如果模板文件名为空 按照默认规则定位
-        $file = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
+        $file = CONTROLLER_NAME . $depr . ACTION_NAME;
     }elseif(false === strpos($file, '/')){
-        $file = CONTROLLER_NAME . C('TMPL_FILE_DEPR') . $file;
+        $file = CONTROLLER_NAME . $depr . $file;
+    }elseif('/' != $depr){
+        if(substr_count($file,'/')>1){
+            $file   =   substr_replace($file,$depr,strrpos($file,'/'),1);
+        }else{
+            $file   =   str_replace('/', $depr, $file);
+        }
     }
     return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
@@ -194,9 +200,6 @@ function I($name,$default='',$filter=null) {
                 default:
                     $input  =  $_GET;
             }
-            if(C('VAR_URL_PARAMS') && isset($_GET[C('VAR_URL_PARAMS')])){
-                $input  =   array_merge($input,$_GET[C('VAR_URL_PARAMS')]);
-            }
             break;
         case 'request' :   $input =& $_REQUEST;   break;
         case 'session' :   $input =& $_SESSION;   break;
@@ -213,18 +216,18 @@ function I($name,$default='',$filter=null) {
         if($filters) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
-                $data   =   array_map($filter,$data); // 参数过滤
+                $data   =   array_map_recursive($filter,$data); // 参数过滤
             }
         }
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
-        array_walk_recursive($data,'filter_exp');
+        is_array($data) && array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
                 if(function_exists($filter)) {
-                    $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                    $data   =   is_array($data)?array_map_recursive($filter,$data):$filter($data); // 参数过滤
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
@@ -238,6 +241,16 @@ function I($name,$default='',$filter=null) {
     }
     return $data;
 }
+
+function array_map_recursive($filter, $data) {
+     $result = array();
+     foreach ($data as $key => $val) {
+         $result[$key] = is_array($val)
+             ? array_map_recursive($filter, $val)
+             : call_user_func($filter, $val);
+     }
+     return $result;
+ }
 
 /**
  * 设置和获取统计数据
@@ -335,8 +348,8 @@ function import($class, $baseUrl = '', $ext=EXT) {
             //加载当前模块的类库
             $baseUrl = MODULE_PATH;
             $class   = substr_replace($class, '', 0, strlen($class_strut[0]) + 1);
-        }if (in_array(strtolower($class_strut[0]), array('think','org', 'com'))) {
-            // org 第三方公共类库 com 企业公共类库
+        }elseif (in_array($class_strut[0],array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PATH.$class_strut[0])) {
+            // 系统类库包和第三方类库包
             $baseUrl = LIB_PATH;
         }else { // 加载其他模块的类库
             $baseUrl = APP_PATH;
@@ -362,13 +375,13 @@ function import($class, $baseUrl = '', $ext=EXT) {
 function load($name, $baseUrl='', $ext='.php') {
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
-        if (0 === strpos($name, '@/')) {
-            //加载当前项目函数库
-            $baseUrl    = COMMON_PATH.'Common/';
-            $name       = substr($name, 2);
-        } else {
-            //加载ThinkPHP 系统函数库
-            $baseUrl    = EXTEND_PATH . 'Function/';
+        if (0 === strpos($name, '@/')) {//加载当前模块函数库
+            $baseUrl    =   MODULE_PATH.'Common/';
+            $name       =   substr($name, 2);
+        } else { //加载其他模块函数库
+            $array      =   explode('/', $name);
+            $baseUrl    =   APP_PATH . array_shift($array).'/Common/';
+            $name       =   implode('/',$array);
         }
     }
     if (substr($baseUrl, -1) != '/')
@@ -390,9 +403,9 @@ function vendor($class, $baseUrl = '', $ext='.php') {
 }
 
 /**
- * D函数用于实例化Model 格式 目录://模块/模型
- * @param string $name Model资源地址
- * @param string $layer 业务层名称
+ * D函数用于实例化模型类 格式 [资源://][模块/]模型
+ * @param string $name 资源地址
+ * @param string $layer 模型层名称
  * @return Model
  */
 function D($name='',$layer='') {
@@ -404,6 +417,10 @@ function D($name='',$layer='') {
     $class          =   parse_res_name($name,$layer);
     if(class_exists($class)) {
         $model      =   new $class(basename($name));
+    }elseif(false === strpos($name,'/')){
+        // 自动加载公共模块下面的模型
+        $class      =   '\\Common\\'.$layer.'\\'.$name.$layer;
+        $model      =   class_exists($class)? new $class($name) : new Think\Model($name);
     }else {
         Think\Log::record('D方法实例化没找到模型类'.$class,Think\Log::NOTICE);
         $model      =   new Think\Model(basename($name));
@@ -426,7 +443,7 @@ function M($name='', $tablePrefix='',$connection='') {
     }else{
         $class      =   'Think\\Model';
     }
-    $guid           =   $tablePrefix . $name . '_' . $class;
+    $guid           =   (is_array($connection)?implode('',$connection):$connection).$tablePrefix . $name . '_' . $class;
     if (!isset($_model[$guid]))
         $_model[$guid] = new $class($name,$tablePrefix,$connection);
     return $_model[$guid];
@@ -463,11 +480,11 @@ function parse_res_name($name,$layer,$level=1){
 }
 
 /**
- * A函数用于实例化Action 格式：[资源://][模块/]控制器
+ * A函数用于实例化控制器 格式：[资源://][模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
  * @param integer $level 控制器层次
- * @return Action|false
+ * @return Controller|false
  */
 function A($name,$layer='',$level='') {
     static $_action = array();
@@ -486,7 +503,7 @@ function A($name,$layer='',$level='') {
 }
 
 /**
- * 远程调用模块的操作方法 URL 参数格式 [项目://][分组/]模块/操作
+ * 远程调用控制器的操作方法 URL 参数格式 [项目://][模块/]控制器/操作
  * @param string $url 调用地址
  * @param string|array $vars 调用参数 支持字符串和数组
  * @param string $layer 要调用的控制层名称
@@ -652,11 +669,10 @@ function layout($layout) {
  * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
- * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
  * @param boolean $domain 是否显示域名
  * @return string
  */
-function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
+function U($url='',$vars='',$suffix=true,$domain=false) {
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
@@ -678,11 +694,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         $domain = $_SERVER['HTTP_HOST'];
         if(C('APP_SUB_DOMAIN_DEPLOY') ) { // 开启子域名部署
             $domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
-            // '子域名'=>array('项目[/分组]');
+            // '子域名'=>array('模块[/控制器]');
             foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
-                if(false === strpos($key,'*') && 0=== strpos($url,$rule[0])) {
+                $rule   =   is_array($rule)?$rule[0]:$rule;
+                if(false === strpos($key,'*') && 0=== strpos($url,$rule)) {
                     $domain = $key.strstr($domain,'.'); // 生成对应子域名
-                    $url    =  substr_replace($url,'',0,strlen($rule[0]));
+                    $url    =  substr_replace($url,'',0,strlen($rule));
                     break;
                 }
             }
@@ -713,15 +730,12 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
             if('/' != $depr) { // 安全替换
                 $url    =   str_replace('/',$depr,$url);
             }
-            // 解析分组、模块和操作
+            // 解析模块、控制器和操作
             $url        =   trim($url,$depr);
             $path       =   explode($depr,$url);
             $var        =   array();
             $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
-            if(C('URL_CASE_INSENSITIVE')) {
-                $var[C('VAR_ACTION')]   =   strtolower($var[C('VAR_ACTION')]);
-            }            
-            $var[C('VAR_CONTROLLER')]       =   !empty($path)?array_pop($path):CONTROLLER_NAME;
+            $var[C('VAR_CONTROLLER')]   =   !empty($path)?array_pop($path):CONTROLLER_NAME;
             if($maps = C('URL_ACTION_MAP')) {
                 if(isset($maps[strtolower($var[C('VAR_CONTROLLER')])])) {
                     $maps    =   $maps[strtolower($var[C('VAR_CONTROLLER')])];
@@ -744,16 +758,15 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 $var[C('VAR_MODULE')]    =   array_pop($path);
             }else{
                 if(C('MULTI_MODULE')) {
-                    $var[C('VAR_MODULE')]=   MODULE_NAME;
+                    if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
+                        $var[C('VAR_MODULE')]=   MODULE_NAME;
+                    }
                 }
             }
             if($maps = C('URL_MODULE_MAP')) {
                 if($_module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
                     $var[C('VAR_MODULE')] = $_module;
                 }
-            }
-            if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_MODULE')])) {
-                $var[C('VAR_MODULE')]    =  strtolower($var[C('VAR_MODULE')]);
             }
             if(isset($var[C('VAR_MODULE')])){
                 $module =   $var[C('VAR_MODULE')];
@@ -765,16 +778,22 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
 
     if(C('URL_MODEL') == 0) { // 普通模式URL转换
         $url        =   __APP__.'?'.C('VAR_MODULE')."={$module}&".http_build_query(array_reverse($var));
+        if(C('URL_CASE_INSENSITIVE')){
+            $url    =   strtolower($url);
+        }        
         if(!empty($vars)) {
-            $vars   =   urldecode(http_build_query($vars));
+            $vars   =   http_build_query($vars);
             $url   .=   '&'.$vars;
         }
     }else{ // PATHINFO模式或者兼容URL模式
-        $module = defined('BIND_MODULE') ? '' : $module;
+        $module =   defined('BIND_MODULE') ? '' : $module;
         if(isset($route)) {
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').rtrim($url,$depr);
         }else{
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
+        }
+        if(C('URL_CASE_INSENSITIVE')){
+            $url    =   strtolower($url);
         }
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
@@ -797,10 +816,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
     if($domain) {
         $url   =  (is_ssl()?'https://':'http://').$domain.$url;
     }
-    if($redirect) // 直接跳转URL
-        redirect($url);
-    else
-        return $url;
+    return $url;
 }
 
 /**
@@ -1155,12 +1171,12 @@ function cookie($name, $value='', $option=null) {
  * 加载动态扩展文件
  * @return void
  */
-function load_ext_file() {
+function load_ext_file($path) {
     // 加载自定义外部文件
     if(C('LOAD_EXT_FILE')) {
         $files      =  explode(',',C('LOAD_EXT_FILE'));
         foreach ($files as $file){
-            $file   = COMMON_PATH.'Common/'.$file.'.php';
+            $file   = $path.'Common/'.$file.'.php';
             if(is_file($file)) include $file;
         }
     }
@@ -1169,7 +1185,7 @@ function load_ext_file() {
         $configs    =  C('LOAD_EXT_CONFIG');
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
-            $file   = COMMON_PATH.'Conf/'.$config.'.php';
+            $file   = $path.'Conf/'.$config.'.php';
             if(is_file($file)) {
                 is_numeric($key)?C(include $file):C($key,include $file);
             }
@@ -1234,4 +1250,9 @@ function filter_exp(&$value){
     if (in_array(strtolower($value),array('exp','or'))){
         $value .= ' ';
     }
+}
+
+// 不区分大小写的in_array实现
+function in_array_case($value,$array){
+    return in_array(strtolower($value),array_map('strtolower',$array));
 }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,10 +11,6 @@
 namespace Think;
 /**
  * 缓存管理类
- * @category   Think
- * @package  Think
- * @subpackage  Core
- * @author    liu21st <liu21st@gmail.com>
  */
 class Cache {
 
@@ -41,8 +37,11 @@ class Cache {
      */
     public function connect($type='',$options=array()) {
         if(empty($type))  $type = C('DATA_CACHE_TYPE');
-        $type  = strtolower(trim($type));
-        $class = 'Think\\Cache\\Driver\\'.ucwords($type);
+        if(strpos($type,'\\')){ // 驱动类支持使用独立的命名空间
+            $class  =   $type;
+        }else{
+            $class  =   'Think\\Cache\\Driver\\'.ucwords(strtolower($type));            
+        }
         if(class_exists($class))
             $cache = new $class($options);
         else

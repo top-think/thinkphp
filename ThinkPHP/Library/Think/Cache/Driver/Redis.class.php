@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -15,10 +15,6 @@ defined('THINK_PATH') or exit();
 /**
  * Redis缓存驱动 
  * 要求安装phpredis扩展：https://github.com/nicolasff/phpredis
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Cache
- * @author    尘缘 <130775@qq.com>
  */
 class Redis extends Cache {
 	 /**

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,10 +13,6 @@ use Think\Db;
 defined('THINK_PATH') or exit();
 /**
  * PDO数据库驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    liu21st <liu21st@gmail.com>
  */
 class Pdo extends Db{
 
@@ -99,7 +95,9 @@ class Pdo extends Db{
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
             throw_exception($this->error());
-        $result =   $this->PDOStatement->execute($bind);
+        // 参数绑定
+        $this->bindParam($bind);
+        $result =   $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result ) {
             $this->error();
@@ -124,13 +122,12 @@ class Pdo extends Db{
             $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
         }        
         $flag = false;
-        if($this->dbType == 'OCI')
-        {
+        if($this->dbType == 'OCI') {
             if(preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $this->queryStr, $match)) {
                 $this->table = C("DB_SEQUENCE_PREFIX").str_ireplace(C("DB_PREFIX"), "", $match[2]);
                 $flag = (boolean)$this->query("SELECT * FROM user_sequences WHERE sequence_name='" . strtoupper($this->table) . "'");
             }
-        }//modify by wyfeng at 2009.08.28
+        }
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         N('db_write',1);
@@ -140,7 +137,9 @@ class Pdo extends Db{
         if(false === $this->PDOStatement) {
             throw_exception($this->error());
         }
-        $result = $this->PDOStatement->execute($bind);
+        // 参数绑定
+        $this->bindParam($bind);        
+        $result = $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result) {
             $this->error();
@@ -152,6 +151,23 @@ class Pdo extends Db{
             }
             return $this->numRows;
         }
+    }
+
+    /**
+     * 参数绑定
+     * @access protected
+     * @return void
+     */
+    protected function bindParam($bind){
+        // 参数绑定
+        foreach($bind as $key=>$val){
+            if(is_array($val)){
+              array_unshift($val,$key);
+            }else{
+              $val  = array($key,$val);
+            }
+            call_user_func_array(array($this->PDOStatement,'bindParam'),$val);
+        }      
     }
 
     /**

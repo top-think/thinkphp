@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,10 +13,6 @@ namespace Think;
  * ThinkPHP内置模板引擎类
  * 支持XML标签和普通标签的模板解析
  * 编译型模板引擎 支持动态缓存
- * @category   Think
- * @package  Think
- * @subpackage  Template
- * @author liu21st <liu21st@gmail.com>
  */
 class  Template {
 
@@ -369,10 +365,10 @@ class  Template {
         $find = preg_match('/'.$this->config['taglib_begin'].'taglib\s(.+?)(\s*?)\/'.$this->config['taglib_end'].'\W/is',$content,$matches);
         if($find) {
             //替换TagLib标签
-            $content        = str_replace($matches[0],'',$content);
+            $content        =   str_replace($matches[0],'',$content);
             //解析TagLib标签
             $array          =   $this->parseXmlAttrs($matches[1]);
-            $this->tagLib   = explode(',',$array['name']);
+            $this->tagLib   =   explode(',',$array['name']);
         }
         return;
     }
@@ -388,7 +384,13 @@ class  Template {
     public function parseTagLib($tagLib,&$content,$hide=false) {
         $begin      =   $this->config['taglib_begin'];
         $end        =   $this->config['taglib_end'];
-        $className  =   'Think\\Template\TagLib\\'.ucwords($tagLib);
+        if(strpos($tagLib,'\\')){
+            // 支持指定标签库的命名空间
+            $className  =   $tagLib;
+            $tagLib     =   substr($tagLib,strrpos($tagLib,'\\')+1);
+        }else{
+            $className  =   'Think\\Template\TagLib\\'.ucwords($tagLib);            
+        }
         $tLib       =   \Think\Think::instance($className);
         $that       =   $this;
         foreach ($tLib->getTags() as $name=>$val){
@@ -410,14 +412,14 @@ class  Template {
 
                 if (!$closeTag){
                     $patterns       = '/'.$begin.$parseTag.$n1.'\/(\s*?)'.$end.'/is';
-                    $content        = preg_replace_callback($patterns, function($matches) use($tagLib,$tag,$that){
-                        return $that->parseXmlTag($tagLib,$tag,$matches[1],$matches[2]);
+                    $content        = preg_replace_callback($patterns, function($matches) use($tLib,$tag,$that){
+                        return $that->parseXmlTag($tLib,$tag,$matches[1],$matches[2]);
                     },$content);
                 }else{
                     $patterns       = '/'.$begin.$parseTag.$n1.$end.'(.*?)'.$begin.'\/'.$parseTag.'(\s*?)'.$end.'/is';
                     for($i=0;$i<$level;$i++) {
-                        $content=preg_replace_callback($patterns,function($matches) use($tagLib,$tag,$that){
-                            return $that->parseXmlTag($tagLib,$tag,$matches[1],$matches[2]);
+                        $content=preg_replace_callback($patterns,function($matches) use($tLib,$tag,$that){
+                            return $that->parseXmlTag($tLib,$tag,$matches[1],$matches[2]);
                         },$content);
                     }
                 }
@@ -429,7 +431,7 @@ class  Template {
      * 解析标签库的标签
      * 需要调用对应的标签库文件解析类
      * @access public
-     * @param string $tagLib  标签库名称
+     * @param object $tagLib  标签库对象实例
      * @param string $tag  标签名
      * @param string $attr  标签属性
      * @param string $content  标签内容
@@ -437,11 +439,11 @@ class  Template {
      */
     public function parseXmlTag($tagLib,$tag,$attr,$content) {
         if(ini_get('magic_quotes_sybase'))
-            $attr   =  str_replace('\"','\'',$attr);
-        $tLib       =  Think::instance('Think\\Template\TagLib\\'.ucwords(strtolower($tagLib)));
-        $parse      = '_'.$tag;
-        $content    = trim($content);
-        return $tLib->$parse($attr,$content);
+            $attr   =	str_replace('\"','\'',$attr);
+        $parse      =	'_'.$tag;
+        $content    =	trim($content);
+		$tags		=   $tagLib->parseXmlAttr($attr,$tag);
+        return $tagLib->$parse($tags,$content);
     }
 
     /**
@@ -471,7 +473,7 @@ class  Template {
             return  '<?php echo '.$name.';?>';
         }elseif('~' == $flag){ // 执行某个函数
             return  '<?php '.$name.';?>';
-        }elseif(substr($tagStr,0,2)=='//' || (substr($tagStr,0,2)=='/*' && substr($tagStr,-2)=='*/')){
+        }elseif(substr($tagStr,0,2)=='//' || (substr($tagStr,0,2)=='/*' && substr(rtrim($tagStr),-2)=='*/')){
             //注释标签
             return '';
         }
@@ -687,7 +689,7 @@ class  Template {
         foreach ($array as $templateName){
             if(empty($templateName)) continue;
             if(false === strpos($templateName,$this->config['template_suffix'])) {
-                // 解析规则为 分组@模板主题:模块:操作
+                // 解析规则为 模块@主题/控制器/操作
                 $templateName   =   T($templateName);
             }
             // 获取模板文件内容

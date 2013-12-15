@@ -96,7 +96,7 @@ class File extends Storage{
      */
     public function unlink($filename,$type=''){
         unset($this->contents[$filename]);
-        return unlink($filename);
+        return file_exists($filename) ? unlink($filename) : false; 
     }
 
     /**
