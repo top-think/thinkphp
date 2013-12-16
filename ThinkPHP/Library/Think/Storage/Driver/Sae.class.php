@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think\Storage\Driver;
 use Think\Storage;
-// 本地文件写入存储类
+// SAE环境文件写入存储类
 class Sae extends Storage{
 
     /**
@@ -18,15 +18,15 @@ class Sae extends Storage{
      * @access public
      */
     private $mc;
-    private $kvs=array();
-    private $htmls=array();
-    private $contents=array();
+    private $kvs        =   array();
+    private $htmls      =   array();
+    private $contents   =   array();
     public function __construct() {
         if(!function_exists('memcache_init')){
               header('Content-Type:text/html;charset=utf-8');
               exit('请在SAE平台上运行代码。');
         }
-        $this->mc=@memcache_init();
+        $this->mc       =   @memcache_init();
         if(!$this->mc){
               header('Content-Type:text/html;charset=utf-8');
               exit('您未开通Memcache服务，请在SAE管理平台初始化Memcache服务');
@@ -40,7 +40,7 @@ class Sae extends Storage{
     public function getKv(){
         static $kv;
         if(!$kv){
-           $kv=new \SaeKV();
+           $kv  =   new \SaeKV();
            if(!$kv->init())
                E('您没有初始化KVDB，请在SAE管理平台初始化KVDB服务');
         }
@@ -61,7 +61,6 @@ class Sae extends Storage{
     public function readHtml($filename,$type=''){
         return $this->getHtml($filename,'content');
     }
-
 
     /**
      * 读取F缓存
@@ -87,10 +86,11 @@ class Sae extends Storage{
      * @return boolean
      */
     public function put($filename,$content,$type=''){
-        if(!$this->mc->set($filename,time().$content,MEMCACHE_COMPRESSED,0)){
+        $content    =   time().$content;
+        if(!$this->mc->set($filename,$content,MEMCACHE_COMPRESSED,0)){
             E(L('_STORAGE_WRITE_ERROR_').':'.$filename);
         }else{
-            $this->contents[$filename]=time().$content;
+            $this->contents[$filename] = $content;
             return true;
         }
     }
@@ -104,9 +104,9 @@ class Sae extends Storage{
      * @return void
      */
     public function putHtml($filename,$content){
-        $kv=$this->getKv();
-        $content=time().$content;
-        $this->htmls[$filename]=$content;
+        $kv         =   $this->getKv();
+        $content    =   time().$content;
+        $this->htmls[$filename] =   $content;
         return $kv->set($filename,$content);
     }
 
@@ -119,8 +119,8 @@ class Sae extends Storage{
      * @return void
      */
     public function putF($filename,$content){
-        $kv=$this->getKv();
-        $this->kvs[$filename]=$content;
+        $kv     =   $this->getKv();
+        $this->kvs[$filename] = $content;
         return $kv->set($filename,$content);
     }
 
@@ -132,7 +132,7 @@ class Sae extends Storage{
      * @return boolean
      */
     public function append($filename,$content,$type=''){
-        if($old_content=$this->read($filename,$type)){
+        if($old_content = $this->read($filename,$type)){
             $content =  $old_content.$content;
         }
         return $this->put($filename,$content,$type);
@@ -205,9 +205,9 @@ class Sae extends Storage{
      */
     public function get($filename,$name,$type=''){
         if(!isset($this->contents[$filename])){
-            $this->contents[$filename]=$this->mc->get($filename);
+            $this->contents[$filename] = $this->mc->get($filename);
         }
-        $content=$this->contents[$filename];
+        $content =  $this->contents[$filename];
         if(false===$content){
             return false;
         }
@@ -229,10 +229,10 @@ class Sae extends Storage{
      */
     public function getHtml($filename,$name){
         if(!isset($this->htmls[$filename])){
-            $kv=$this->getKv();
-            $this->htmls[$filename]=$kv->get($filename);
+            $kv = $this->getKv();
+            $this->htmls[$filename] = $kv->get($filename);
         }
-        $content=$this->htmls[$filename];
+        $content = $this->htmls[$filename];
         if(false===$content){
             return false;
         }
