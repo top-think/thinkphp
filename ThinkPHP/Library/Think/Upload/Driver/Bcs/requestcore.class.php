@@ -648,7 +648,7 @@ class BCS_RequestCore {
 			$this->response_headers ['_info'] = $this->response_info;
 			$this->response_headers ['_info'] ['method'] = $this->method;
 			if ($curl_handle && $response) {
-				$class='\Com\ThinkUpload\Driver\Bcs\\'. $this->response_class;
+				$class='\Think\Upload\Driver\Bcs\\'. $this->response_class;
 				return new  $class ( $this->response_headers, $this->response_body, $this->response_code, $this->curl_handle );
 			}
 		}
