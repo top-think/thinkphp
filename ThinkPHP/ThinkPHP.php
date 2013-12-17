@@ -32,8 +32,15 @@ defined('THINK_PATH') 	or define('THINK_PATH',     __DIR__.'/');
 defined('APP_PATH') 	or define('APP_PATH',       dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('APP_STATUS')   or define('APP_STATUS',     ''); // 应用状态 加载对应的配置文件
 defined('APP_DEBUG') 	or define('APP_DEBUG',      false); // 是否调试模式
-defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File
-defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式
+
+if(function_exists('saeAutoLoader')){// 自动识别SAE环境
+    defined('APP_MODE')     or define('APP_MODE',      'sae');
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
+}else{
+    defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
+    defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
+}
+
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',   APP_PATH.'Runtime/');
 defined('LIB_PATH')     or define('LIB_PATH',       THINK_PATH.'Library/'); // 系统核心类库目录
 defined('CORE_PATH')    or define('CORE_PATH',      LIB_PATH.'Think/'); // Think类库目录
