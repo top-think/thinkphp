@@ -84,6 +84,7 @@ return  array(
     'ERROR_PAGE'            =>  '',	// 错误定向页面
     'SHOW_ERROR_MSG'        =>  false,    // 显示错误信息
     'TRACE_EXCEPTION'       =>  false,   // TRACE错误信息是否抛异常 针对trace方法 
+    'TRACE_MAX_RECORD'      =>  100,    // 每个级别的错误信息 最大记录数
 
     /* 日志设置 */
     'LOG_RECORD'            =>  false,   // 默认不记录日志

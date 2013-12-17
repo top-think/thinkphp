@@ -310,7 +310,7 @@ class Think {
                 E($info);
             }
             $level  =   strtoupper($level);
-            if(!isset($_trace[$level]) || count($_trace[$level])>100) {
+            if(!isset($_trace[$level]) || count($_trace[$level])>C('TRACE_MAX_RECORD')) {
                 $_trace[$level] =   array();
             }
             $_trace[$level][]   =   $info;
