@@ -310,10 +310,10 @@ class Think {
                 E($info);
             }
             $level  =   strtoupper($level);
-            if(!isset($_trace[$level])) {
-                    $_trace[$level] =   array();
-                }
-            $_trace[$level][]   = $info;
+            if(!isset($_trace[$level]) || count($_trace[$level])>100) {
+                $_trace[$level] =   array();
+            }
+            $_trace[$level][]   =   $info;
             if((defined('IS_AJAX') && IS_AJAX) || !C('SHOW_PAGE_TRACE')  || $record) {
                 Log::record($info,$level,$record);
             }
