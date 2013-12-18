@@ -233,7 +233,6 @@ class Think {
     static public function fatalError() {
         Log::save();
         if ($e = error_get_last()) {
-            
             switch($e['type']){
               case E_ERROR:
               case E_PARSE:
