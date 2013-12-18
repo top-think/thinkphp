@@ -66,7 +66,7 @@ class CheckLangBehavior extends Behavior {
         define('LANG_SET',strtolower($langSet));
 
         // 读取框架语言包
-        $file   =   THINK_PATH.'Lang/'.LANG_SET.'.php');
+        $file   =   THINK_PATH.'Lang/'.LANG_SET.'.php';
         if(LANG_SET != C('DEFAULT_LANG') && is_file($file))
             L(include $file);
 
