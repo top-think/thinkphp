@@ -169,6 +169,7 @@ class Mysqli extends Db{
     public function rollback() {
         if ($this->transTimes > 0) {
             $result = $this->_linkID->rollback();
+            $this->_linkID->autocommit( true);
             $this->transTimes = 0;
             if(!$result){
                 $this->error();
