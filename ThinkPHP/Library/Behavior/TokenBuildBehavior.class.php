@@ -25,20 +25,24 @@ class TokenBuildBehavior extends Behavior {
 
     public function run(&$content){
         if(C('TOKEN_ON')) {
+            list($tokenName,$tokenKey,$tokenValue)=$this->getToken();
+            $input_token = '<input type="hidden" name="'.$tokenName.'" value="'.$tokenKey.'_'.$tokenValue.'" />';
+            $meta_token = '<meta name="'.$tokenName.'" content="'.$tokenKey.'_'.$tokenValue.'" />';
             if(strpos($content,'{__TOKEN__}')) {
                 // 指定表单令牌隐藏域位置
-                $content = str_replace('{__TOKEN__}',$this->buildToken(),$content);
+                $content = str_replace('{__TOKEN__}',$input_token,$content);
             }elseif(preg_match('/<\/form(\s*)>/is',$content,$match)) {
                 // 智能生成表单令牌隐藏域
-                $content = str_replace($match[0],$this->buildToken().$match[0],$content);
+                $content = str_replace($match[0],$input_token.$match[0],$content);
             }
+            $content = str_ireplace('</head>',$meta_token.'</head>',$content);
         }else{
             $content = str_replace('{__TOKEN__}','',$content);
         }
     }
 
-    // 创建表单令牌
-    private function buildToken() {
+    //获得token
+    private function getToken(){
         $tokenName  = C('TOKEN_NAME');
         $tokenType  = C('TOKEN_TYPE');
         if(!isset($_SESSION[$tokenName])) {
@@ -51,8 +55,9 @@ class TokenBuildBehavior extends Behavior {
         }else{
             $tokenValue = $tokenType(microtime(TRUE));
             $_SESSION[$tokenName][$tokenKey]   =  $tokenValue;
+            if(IS_AJAX && C('TOKEN_RESET'))
+                header($tokenName.': '.$tokenKey.'_'.$tokenValue); //ajax需要获得这个header并替换页面中meta中的token值
         }
-        $token      =  '<input type="hidden" name="'.$tokenName.'" value="'.$tokenKey.'_'.$tokenValue.'" />';
-        return $token;
+        return array($tokenName,$tokenKey,$tokenValue); 
     }
 }
