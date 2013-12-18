@@ -15,7 +15,7 @@
  * 将Trace信息输出到火狐的firebug，从而不影响ajax效果和页面的布局。
  +------------------------------------------------------------------------------
  * 使用前，你需要先在火狐浏览器上安装firebug和firePHP两个插件。
- * 定义项目的tags.php文件， 
+ * 定义应用的tags.php文件， 
  * <code>
  * <?php return array(
  *   'app_end'=>array(
@@ -23,7 +23,7 @@
  *   )
  * );
  * </code>
- * 再将此文件放到项目的Behavior文件夹中即可
+ * 再将此文件放到应用的Behavior文件夹中即可
  * 如果trace信息没有正常输出，请查看您的日志。
  * firePHP，是通过http headers和firebug通讯的，所以要保证在输出trace信息之前不能有
  * headers输出，你可以在入口文件第一行加入代码 ob_start(); 或者配置output_buffering
@@ -74,7 +74,7 @@ class FireShowPageTraceBehavior extends Behavior {
             '配置加载'=> count(c()),
             '会话信息'=> 'SESSION_ID='.session_id(),
             );
-        // 读取项目定义的Trace文件
+        // 读取应用定义的Trace文件
         $traceFile  =   CONF_PATH.'trace.php';
         if(is_file($traceFile)) {
             $base    =   array_merge($base,include $traceFile);

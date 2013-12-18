@@ -20,7 +20,7 @@ class App {
      * @return void
      */
     static public function init() {
-        // 加载动态项目公共文件和配置
+        // 加载动态应用公共文件和配置
         load_ext_file(COMMON_PATH);
         // URL调度
         Dispatcher::dispatch();
@@ -143,10 +143,10 @@ class App {
      * @return void
      */
     static public function run() {
-        // 项目初始化标签
+        // 应用初始化标签
         Hook::listen('app_init');
         App::init();
-        // 项目开始标签
+        // 应用开始标签
         Hook::listen('app_begin');
         // Session初始化
         if(!IS_CLI){
@@ -155,7 +155,7 @@ class App {
         // 记录应用初始化时间
         G('initTime');
         App::exec();
-        // 项目结束标签
+        // 应用结束标签
         Hook::listen('app_end');
         return ;
     }

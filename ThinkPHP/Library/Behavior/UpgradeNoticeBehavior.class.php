@@ -21,7 +21,7 @@ defined('THINK_PATH') or exit();
  * );
  * </code>
  *
- * 2，将此文件放在项目的Lib/Behavior文件夹下。
+ * 2，将此文件放在应用的Lib/Behavior文件夹下。
  *注：在SAE上面使用时，以上两步可以省略 
  * 3，在config.php中配置：
  *  'UPGRADE_NOTICE_ON'=>true,//开启短信升级提醒功能 
@@ -35,7 +35,7 @@ defined('THINK_PATH') or exit();
  */
 
 class UpgradeNoticeBehavior extends Behavior {
-    // 行为参数定义（默认值） 可在项目配置中覆盖
+    // 行为参数定义（默认值） 可在应用配置中覆盖
     protected $options = array(
         'UPGRADE_NOTICE_ON' => false, // 是否开启升级提醒
         'UPGRADE_NOTICE_DEBUG'=>false,

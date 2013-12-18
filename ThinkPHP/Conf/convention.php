@@ -11,7 +11,7 @@
 
 /**
  * ThinkPHP惯例配置文件
- * 该文件请不要修改，如果要覆盖惯例配置的值，可在项目配置文件中设定和惯例不符的配置项
+ * 该文件请不要修改，如果要覆盖惯例配置的值，可在应用配置文件中设定和惯例不符的配置项
  * 配置名称大小写任意，系统会统一转换成小写
  * 所有配置参数都可以在生效前动态改变
  */
@@ -135,8 +135,8 @@ return  array(
     'VAR_TEMPLATE'          =>  't',    // 默认模板切换变量
     'VAR_FILTERS'           =>  'filter_exp',     // 全局系统变量的默认过滤方法 多个用逗号分割
 
-    'HTTP_CACHE_CONTROL'    =>  'private', // 网页缓存控制
-    'CHECK_APP_DIR'         =>  true, //是否检查项目目录是否创建
+    'HTTP_CACHE_CONTROL'    =>  'private',  // 网页缓存控制
+    'CHECK_APP_DIR'         =>  true,       // 是否检查应用目录是否创建
     'FILE_UPLOAD_TYPE'      =>  'Local',    // 文件上传方式
     'DATA_CRYPT_TYPE'       =>  'Think',    // 数据加密方式
 );

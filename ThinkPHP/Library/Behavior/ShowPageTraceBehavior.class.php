@@ -53,7 +53,7 @@ class ShowPageTraceBehavior extends Behavior {
             '配置加载'  =>  count(c()),
             '会话信息'  =>  'SESSION_ID='.session_id(),
             );
-        // 读取项目定义的Trace文件
+        // 读取应用定义的Trace文件
         $traceFile  =   COMMON_PATH.'Conf/trace.php';
         if(is_file($traceFile)) {
             $base   =   array_merge($base,include $traceFile);

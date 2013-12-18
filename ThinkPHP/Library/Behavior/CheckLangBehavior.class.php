@@ -19,7 +19,7 @@ defined('THINK_PATH') or exit();
  * @author   liu21st <liu21st@gmail.com>
  */
 class CheckLangBehavior extends Behavior {
-    // 行为参数定义（默认值） 可在项目配置中覆盖
+    // 行为参数定义（默认值） 可在应用配置中覆盖
     protected $options   =  array(
             'LANG_SWITCH_ON'        => false,   // 默认关闭语言包功能
             'LANG_AUTO_DETECT'      => true,   // 自动侦测语言 开启多语言功能后有效

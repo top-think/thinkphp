@@ -13,7 +13,7 @@
 /**
  * 将Trace信息输出到chrome浏览器的控制器，从而不影响ajax效果和页面的布局。
  * 使用前，你需要先安装 chrome log 这个插件： http://craig.is/writing/chrome-logger。
- * 定义项目的tags.php文件 Application/Common/Conf/tags.php， 
+ * 定义应用的tags.php文件 Application/Common/Conf/tags.php， 
  * <code>
  * <?php return array(
  *   'app_end'=>array(
@@ -71,7 +71,7 @@ class ChromeShowPageTraceBehavior extends Behavior {
             '配置加载'  =>  count(c()),
             '会话信息'  =>  'SESSION_ID='.session_id(),
             );
-        // 读取项目定义的Trace文件
+        // 读取应用定义的Trace文件
         $traceFile  =   COMMON_PATH.'Conf/trace.php';
         if(is_file($traceFile)) {
             $base   =   array_merge($base,include $traceFile);

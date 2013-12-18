@@ -503,7 +503,7 @@ function A($name,$layer='',$level='') {
 }
 
 /**
- * 远程调用控制器的操作方法 URL 参数格式 [项目://][模块/]控制器/操作
+ * 远程调用控制器的操作方法 URL 参数格式 [资源://][模块/]控制器/操作
  * @param string $url 调用地址
  * @param string|array $vars 调用参数 支持字符串和数组
  * @param string $layer 要调用的控制层名称

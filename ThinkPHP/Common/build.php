@@ -14,9 +14,9 @@
  */
 defined('THINK_PATH') or exit();
 
-// 检查项目目录结构 如果不存在则自动创建
+// 检查应用目录结构 如果不存在则自动创建
 if(!is_dir(COMMON_PATH)) {
-    // 创建项目目录结构
+    // 创建目录结构
     build_app_dir();
 }elseif(!is_dir(LOG_PATH)){
     // 检查缓存目录
@@ -38,9 +38,9 @@ function check_runtime() {
     return true;
 }
 
-// 创建项目目录结构
+// 创建应用目录结构
 function build_app_dir() {
-    // 没有创建项目目录的话自动创建
+    // 没有创建的话自动创建
     if(!is_dir(APP_PATH)) mkdir(APP_PATH,0755,true);
     if(is_writeable(APP_PATH)) {
         $dirs  = array(
@@ -71,7 +71,7 @@ function build_app_dir() {
         build_first_action();
     }else{
         header('Content-Type:text/html; charset=utf-8');
-        exit('项目目录不可写，目录无法自动生成！<BR>请使用项目生成器或者手动生成项目目录~');
+        exit('应用目录['.APP_PATH.']不可写，目录无法自动生成！<BR>请手动生成项目目录~');
     }
 }
 

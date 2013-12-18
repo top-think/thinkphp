@@ -17,7 +17,7 @@ defined('THINK_PATH') or exit();
  * 系统行为扩展：模板解析
  */
 class ParseTemplateBehavior extends Behavior {
-    // 行为参数定义（默认值） 可在项目配置中覆盖
+    // 行为参数定义（默认值） 可在应用配置中覆盖
     protected $options   =  array(
         // 布局设置
         'TMPL_ENGINE_TYPE'		=>  'Think',     // 默认模板引擎 以下设置仅对使用Think模板引擎有效

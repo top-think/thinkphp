@@ -75,7 +75,7 @@ class Think {
 
           // 加载应用行为定义
           if(is_file(COMMON_PATH.'Conf/tags.php'))
-              // 允许项目增加开发模式配置定义
+              // 允许应用增加开发模式配置定义
               Hook::import(include COMMON_PATH.'Conf/tags.php');   
 
           // 加载框架底层语言包
@@ -101,9 +101,9 @@ class Think {
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));
 
-      // 检查项目目录结构 如果不存在则自动创建
+      // 检查应用目录结构 如果不存在则自动创建
       if(C('CHECK_APP_DIR') && !is_dir(LOG_PATH)) {
-          // 创建项目目录结构
+          // 创建应用目录结构
           require THINK_PATH.'Common/build.php';
       }
 
