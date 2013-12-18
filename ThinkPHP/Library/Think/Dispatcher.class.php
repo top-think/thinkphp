@@ -118,7 +118,7 @@ class Dispatcher {
         }
         $depr = C('URL_PATHINFO_DEPR');
         define('MODULE_PATHINFO_DEPR',  $depr);
-        define('__INFO__',              trim($_SERVER['PATH_INFO'],$depr));
+        define('__INFO__',              trim($_SERVER['PATH_INFO'],'/'));
         // URL后缀
         define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
 
