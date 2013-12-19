@@ -96,7 +96,7 @@ class Pdo extends Db{
         if(false === $this->PDOStatement)
             throw_exception($this->error());
         // 参数绑定
-        $this->bindParam($bind);
+        $this->bindPdoParam($bind);
         $result =   $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result ) {
@@ -138,7 +138,7 @@ class Pdo extends Db{
             throw_exception($this->error());
         }
         // 参数绑定
-        $this->bindParam($bind);        
+        $this->bindPdoParam($bind);        
         $result = $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result) {
@@ -158,7 +158,7 @@ class Pdo extends Db{
      * @access protected
      * @return void
      */
-    protected function bindParam($bind){
+    protected function bindPdoParam($bind){
         // 参数绑定
         foreach($bind as $key=>$val){
             if(is_array($val)){
