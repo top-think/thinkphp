@@ -28,7 +28,7 @@ return  array(
     'CONTROLLER_LEVEL'      =>  1,
 
     /* Cookie设置 */
-    'COOKIE_EXPIRE'         =>  0,    // Coodie有效期
+    'COOKIE_EXPIRE'         =>  0,    // Cookie有效期
     'COOKIE_DOMAIN'         =>  '',      // Cookie有效域名
     'COOKIE_PATH'           =>  '/',     // Cookie路径
     'COOKIE_PREFIX'         =>  '',      // Cookie前缀 避免冲突
