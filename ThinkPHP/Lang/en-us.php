@@ -18,14 +18,14 @@
   */
 return array(
 	/* core language pachage */ 
-    '_MODULE_NOT_EXIST_'     => "Module can't been loaded",
-	'_CONTROLLER_NOT_EXIST_' =>	"Controler can't been loaded",
+    '_MODULE_NOT_EXIST_'     => "Module can't be loaded",
+	'_CONTROLLER_NOT_EXIST_' =>	"Controler can't be loaded",
     '_ERROR_ACTION_'         => 'Illegal Action',
     '_LANGUAGE_NOT_LOAD_'    => "Can't load language package",
     '_TEMPLATE_NOT_EXIST_'   => "Template does't exist",
     '_MODULE_'               => 'Module',
     '_ACTION_'               => 'Action',
-    '_MODEL_NOT_EXIST_'      => "Model can't been loaded",
+    '_MODEL_NOT_EXIST_'      => "Model can't be loaded",
     '_VALID_ACCESS_'         => 'No access',
     '_XML_TAG_ERROR_'        => 'XML tag syntax errors',
     '_DATA_TYPE_INVALID_'    => 'Illegal data objects!',
