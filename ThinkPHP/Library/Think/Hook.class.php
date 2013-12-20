@@ -111,7 +111,7 @@ class Hook {
      * @return void
      */
     static public function exec($name, $tag,&$params=NULL) {
-        if(false !== strpos($name,'Addon')) {
+        if(false !== strpos($name,'Addons\\')) {
             // 插件（多个入口）
             $class   =  "Addons\\{$name}\\{$name}Addon";
         }else{
