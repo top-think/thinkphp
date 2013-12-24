@@ -36,7 +36,7 @@ return array(
     '_NOT_SUPPERT_'          => '系统不支持',
     '_CACHE_TYPE_INVALID_'   => '无法加载缓存类型',
     '_FILE_NOT_WRITEABLE_'   => '目录（文件）不可写',
-	'_METHOD_NOT_EXIST_'     => '您所请求的方法不存在！',
+	'_METHOD_NOT_EXIST_'     => '方法不存在！',
     '_CLASS_NOT_EXIST_'      => '实例化一个不存在的类！',
     '_CLASS_CONFLICT_'       => '类名冲突',
     '_TEMPLATE_ERROR_'       => '模板引擎错误',

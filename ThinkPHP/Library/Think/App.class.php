@@ -63,15 +63,15 @@ class App {
                 exit(base64_decode(App::logo()));
             }
 
-            // 是否定义Empty模块
+            // 是否定义Empty控制器
             $module = A('Empty');
             if(!$module){
                 E(L('_CONTROLLER_NOT_EXIST_').':'.CONTROLLER_NAME);
             }
         }
         // 获取当前操作名 支持动态路由
-        $action = C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
-        $action .=  C('ACTION_SUFFIX');
+        $action     =   C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
+        $action    .=   C('ACTION_SUFFIX');
         try{
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){
                 // 非法操作

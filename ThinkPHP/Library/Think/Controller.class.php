@@ -169,6 +169,9 @@ abstract class Controller {
             }else{
                 E(L('_ERROR_ACTION_').':'.ACTION_NAME);
             }
+        }else{
+            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            return;
         }
     }
 
