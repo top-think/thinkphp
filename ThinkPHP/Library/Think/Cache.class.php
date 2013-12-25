@@ -97,12 +97,12 @@ class Cache {
             'xcache'=>  array('xcache_get','xcache_set'),
             'apc'   =>  array('apc_fetch','apc_store'),
         );
-        $queue  =  isset($this->options['queue'])?$this->options['queue']:'file';
-        $fun    =  isset($_handler[$queue])?$_handler[$queue]:$_handler['file'];
-        $queue_name=isset($this->options['queue_name'])?$this->options['queue_name']:'think_queue';
-        $value  =  $fun[0]($queue_name);
+        $queue      =   isset($this->options['queue'])?$this->options['queue']:'file';
+        $fun        =   isset($_handler[$queue])?$_handler[$queue]:$_handler['file'];
+        $queue_name =   isset($this->options['queue_name'])?$this->options['queue_name']:'think_queue';
+        $value      =   $fun[0]($queue_name);
         if(!$value) {
-            $value   =  array();
+            $value  =   array();
         }
         // 进列
         if(false===array_search($key, $value))  array_push($value,$key);
