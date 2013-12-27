@@ -45,7 +45,7 @@ class Think {
               Storage::unlink($runtimefile,'runtime');
           $content =  '';
           // 读取应用模式
-          $mode   =   include is_file(COMMON_PATH.'Conf/core.php')?COMMON_PATH.'Conf/core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
+          $mode   =   include is_file(CONF_PATH.'core.php')?CONF_PATH.'core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
           // 加载核心文件
           foreach ($mode['core'] as $file){
               if(is_file($file)) {
@@ -59,14 +59,18 @@ class Think {
               is_numeric($key)?C(include $file):C($key,include $file);
           }
 
+          // 读取当前应用模式对应的配置文件
+          if('common' != APP_MODE && is_file(CONF_PATH.'config_'.APP_MODE.'.php'))
+              C(include CONF_PATH.'config_'.APP_MODE.'.php');  
+
           // 加载模式别名定义
           if(isset($mode['alias'])){
               self::addMap(is_array($mode['alias'])?$mode['alias']:include $mode['alias']);
           }
 
           // 加载应用别名定义文件
-          if(is_file(COMMON_PATH.'Conf/alias.php'))
-              self::addMap(include COMMON_PATH.'Conf/alias.php');
+          if(is_file(CONF_PATH.'alias.php'))
+              self::addMap(include CONF_PATH.'alias.php');
 
           // 加载模式行为定义
           if(isset($mode['tags'])) {
@@ -74,9 +78,9 @@ class Think {
           }
 
           // 加载应用行为定义
-          if(is_file(COMMON_PATH.'Conf/tags.php'))
+          if(is_file(CONF_PATH.'tags.php'))
               // 允许应用增加开发模式配置定义
-              Hook::import(include COMMON_PATH.'Conf/tags.php');   
+              Hook::import(include CONF_PATH.'tags.php');   
 
           // 加载框架底层语言包
           L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
@@ -89,14 +93,14 @@ class Think {
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
             // 读取应用调试配置文件
-            if(is_file(COMMON_PATH.'Conf/debug.php'))
-                C(include COMMON_PATH.'Conf/debug.php');           
+            if(is_file(CONF_PATH.'debug.php'))
+                C(include CONF_PATH.'debug.php');           
           }
       }
 
       // 读取当前应用状态对应的配置文件
-      if(APP_STATUS && is_file(COMMON_PATH.'Conf/'.APP_STATUS.'.php'))
-          C(include COMMON_PATH.'Conf/'.APP_STATUS.'.php');   
+      if(APP_STATUS && is_file(CONF_PATH.APP_STATUS.'.php'))
+          C(include CONF_PATH.APP_STATUS.'.php');   
 
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));

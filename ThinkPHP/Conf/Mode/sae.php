@@ -16,9 +16,8 @@ return array(
     // 配置文件
     'config'    =>  array(
         THINK_PATH.'Conf/convention.php',   // 系统惯例配置
-        COMMON_PATH.'Conf/config.php',      // 应用公共配置
+        CONF_PATH.'config.php',      // 应用公共配置
         THINK_PATH.'Conf/convention_sae.php',//[sae] sae的惯例配置
-        COMMON_PATH.'Conf/config_sae.php',  // sae应用公共配置
     ),
 
     // 别名定义
