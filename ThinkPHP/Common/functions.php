@@ -209,6 +209,12 @@ function I($name,$default='',$filter=null) {
         default:
             return NULL;
     }
+    foreach($input as $k => &$v){
+        if (is_array($v)) {
+            $v = implode(',', $v);
+        }
+    }
+    unset($v);
     if(empty($name)) { // 获取全部变量
         $data       =   $input;
         array_walk_recursive($data,'filter_exp');
