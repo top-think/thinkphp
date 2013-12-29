@@ -32,7 +32,7 @@ class HproseController extends Controller {
         if($this->allowMethodList){
             $methods    =   $this->allowMethodList;
         }else{
-            $methods    =   get_class_methods(__CLASS__);
+            $methods    =   get_class_methods($this);
         }
         $server->addMethods($methods,$this);
         if(APP_DEBUG) {
