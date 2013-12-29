@@ -24,7 +24,7 @@ class Ibase extends Db{
      */
     public function __construct($config='') {
         if ( !extension_loaded('interbase') ) {
-            throw_exception(L('_NOT_SUPPERT_').':Interbase or Firebird');
+            E(L('_NOT_SUPPERT_').':Interbase or Firebird');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -48,7 +48,7 @@ class Ibase extends Db{
             $host = $config['hostname'].($config['hostport']?"/{$config['hostport']}":'');
             $this->linkID[$linkNum] = $conn($host.':'.$config['database'], $config['username'], $config['password'],C('DB_CHARSET'),0,3);
             if ( !$this->linkID[$linkNum]) {
-                throw_exception(ibase_errmsg());
+                E(ibase_errmsg());
             }
             // 标记连接成功
             $this->connected    =   true;

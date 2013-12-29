@@ -23,7 +23,7 @@ class Sqlsrv extends Db{
      */
     public function __construct($config='') {
         if ( !function_exists('sqlsrv_connect') ) {
-            throw_exception(L('_NOT_SUPPERT_').':sqlsrv');
+            E(L('_NOT_SUPPERT_').':sqlsrv');
         }
         if(!empty($config)) {
             $this->config	=	$config;
@@ -343,7 +343,7 @@ class Sqlsrv extends Db{
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        $result? trace($this->error,'','ERR'):throw_exception($this->error);
+        $result? trace($this->error,'','ERR'):E($this->error);
         return $this->error;
     }
 }

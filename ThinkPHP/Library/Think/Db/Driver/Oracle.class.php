@@ -28,7 +28,7 @@ class Oracle extends Db{
     public function __construct($config=''){
         putenv("NLS_LANG=AMERICAN_AMERICA.UTF8");
         if ( !extension_loaded('oci8') ) {
-            throw_exception(L('_NOT_SUPPERT_').'oracle');
+            E(L('_NOT_SUPPERT_').'oracle');
         }
         if(!empty($config)) {
             $this->config        =        $config;
@@ -267,7 +267,7 @@ class Oracle extends Db{
         if('' != $this->queryStr){
             $error['message'] .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        $result? trace($error['message'],'','ERR'):throw_exception($error['message'],'',$error['code']);
+        $result? trace($error['message'],'','ERR'):E($error['message'],'',$error['code']);
         $this->error    =   $error['message'];
         return $this->error;
     }

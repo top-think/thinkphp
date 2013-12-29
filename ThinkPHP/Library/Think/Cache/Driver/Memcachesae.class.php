@@ -27,10 +27,6 @@ class Memcachesae extends Cache {
      * @access public
      */
     function __construct($options=array()) {
-        //[sae] 下不用判断memcache是否存在
-        // if ( !extension_loaded('memcache') ) {
-        //     throw_exception(L('_NOT_SUPPERT_').':memcache');
-        // }
         if(empty($options)) {
             $options = array (
                 'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',

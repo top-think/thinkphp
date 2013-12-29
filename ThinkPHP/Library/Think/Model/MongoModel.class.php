@@ -56,7 +56,7 @@ class MongoModel extends Model{
             $where[$name] =$args[0];
             return $this->where($where)->getField($args[1]);
         }else{
-            throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -93,7 +93,7 @@ class MongoModel extends Model{
         $pk   =  $this->getPk();
         // 根据主键类型处理主键数据
         if(isset($data[$pk]) && $this->_idType == self::TYPE_OBJECT) {
-            $data[$pk] =  new MongoId($data[$pk]);
+            $data[$pk] =  new \MongoId($data[$pk]);
         }    
     }
 
@@ -158,7 +158,7 @@ class MongoModel extends Model{
     protected function _options_filter(&$options) {
         $id = $this->getPk();
         if(isset($options['where'][$id]) && is_scalar($options['where'][$id]) && $this->_idType== self::TYPE_OBJECT) {
-            $options['where'][$id] = new MongoId($options['where'][$id]);
+            $options['where'][$id] = new \MongoId($options['where'][$id]);
         }
     }
 

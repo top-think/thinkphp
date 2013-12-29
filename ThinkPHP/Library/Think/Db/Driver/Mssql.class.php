@@ -23,7 +23,7 @@ class Mssql extends Db{
      */
     public function __construct($config=''){
         if ( !function_exists('mssql_connect') ) {
-            throw_exception(L('_NOT_SUPPERT_').':mssql');
+            E(L('_NOT_SUPPERT_').':mssql');
         }
         if(!empty($config)) {
             $this->config	=	$config;
@@ -46,9 +46,9 @@ class Mssql extends Db{
             $sepr = IS_WIN ? ',' : ':';
             $host = $config['hostname'].($config['hostport']?$sepr."{$config['hostport']}":'');
             $this->linkID[$linkNum] = $conn( $host, $config['username'], $config['password']);
-            if ( !$this->linkID[$linkNum] )  throw_exception("Couldn't connect to SQL Server on $host");
+            if ( !$this->linkID[$linkNum] )  E("Couldn't connect to SQL Server on $host");
             if ( !empty($config['database'])  && !mssql_select_db($config['database'], $this->linkID[$linkNum]) ) {
-                throw_exception("Couldn't open database '".$config['database']);
+                E("Couldn't open database '".$config['database']);
             }
             // 标记连接成功
             $this->connected =  true;

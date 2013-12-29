@@ -23,7 +23,7 @@ class Shmop extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('shmop') ) {
-            throw_exception(L('_NOT_SUPPERT_').':shmop');
+            E(L('_NOT_SUPPERT_').':shmop');
         }
         if(!empty($options)){
             $options = array(

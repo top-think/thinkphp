@@ -262,7 +262,7 @@ class AdvModel extends Model {
                 if(class_exists($type))
                     return new $type($data);
                 else
-                    throw_exception(L('_CLASS_NOT_EXIST_').':'.$type);
+                    E(L('_CLASS_NOT_EXIST_').':'.$type);
         }
     }
 

@@ -23,7 +23,7 @@ class Sqlite extends Db {
      */
     public function __construct($config='') {
         if ( !extension_loaded('sqlite') ) {
-            throw_exception(L('_NOT_SUPPERT_').':sqlite');
+            E(L('_NOT_SUPPERT_').':sqlite');
         }
         if(!empty($config)) {
             if(!isset($config['mode'])) {
@@ -47,7 +47,7 @@ class Sqlite extends Db {
             $conn = $pconnect ? 'sqlite_popen':'sqlite_open';
             $this->linkID[$linkNum] = $conn($config['database'],$config['mode']);
             if ( !$this->linkID[$linkNum]) {
-                throw_exception(sqlite_error_string());
+                E(sqlite_error_string());
             }
             // 标记连接成功
             $this->connected	=	true;

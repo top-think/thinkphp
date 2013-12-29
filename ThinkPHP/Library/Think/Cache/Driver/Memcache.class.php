@@ -23,7 +23,7 @@ class Memcache extends Cache {
      */
     function __construct($options=array()) {
         if ( !extension_loaded('memcache') ) {
-            throw_exception(L('_NOT_SUPPERT_').':memcache');
+            E(L('_NOT_SUPPERT_').':memcache');
         }
 
         $options = array_merge(array (

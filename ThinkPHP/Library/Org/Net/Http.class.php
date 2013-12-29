@@ -151,14 +151,14 @@ class Http {
         }elseif($content != '') {
             $length = strlen($content);
         }else {
-            throw_exception($filename.L('下载文件不存在！'));
+            E($filename.L('下载文件不存在！'));
         }
         if(empty($showname)) {
             $showname = $filename;
         }
         $showname = basename($showname);
 		if(!empty($filename)) {
-			$finfo 	= 	new finfo(FILEINFO_MIME);
+			$finfo 	= 	new \finfo(FILEINFO_MIME);
 			$type 	= 	$finfo->file($filename);			
 		}else{
 			$type	=	"application/octet-stream";
