@@ -11,7 +11,7 @@
 namespace Think\Controller;
 use Think\Controller;
 /**
- * ThinkPHP RPC控制器类
+ * ThinkPHP Hprose控制器类
  */
 class HproseController extends Controller {
 
