@@ -13,10 +13,6 @@ use Think\Model;
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
- * @category   Extend
- * @package  Extend
- * @subpackage  Model
- * @author    liu21st <liu21st@gmail.com>
  */
 class MongoModel extends Model{
     // 主键类型
