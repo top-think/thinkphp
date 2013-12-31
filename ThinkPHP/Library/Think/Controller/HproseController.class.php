@@ -41,4 +41,5 @@ class HproseController extends Controller {
         $server->start();
     }
 
+    public function _empty(){}
 }
