@@ -45,12 +45,12 @@ class ReadHtmlCacheBehavior extends Behavior {
             // 静态规则文件定义格式 actionName=>array('静态规则','缓存时间','附加规则')
             // 'read'=>array('{id},{name}',60,'md5') 必须保证静态规则的唯一性 和 可判断性
             // 检测静态规则
-            $moduleName = strtolower(CONTROLLER_NAME);
-            $actionName = strtolower(ACTION_NAME);
-            if(isset($htmls[$moduleName.':'.$actionName])) {
-                $html   =   $htmls[$moduleName.':'.$actionName];   // 某个模块的操作的静态规则
-            }elseif(isset($htmls[$moduleName.':'])){// 某个模块的静态规则
-                $html   =   $htmls[$moduleName.':'];
+            $controllerName = strtolower(CONTROLLER_NAME);
+            $actionName     = strtolower(ACTION_NAME);
+            if(isset($htmls[$controllerName.':'.$actionName])) {
+                $html   =   $htmls[$controllerName.':'.$actionName];   // 某个控制器的操作的静态规则
+            }elseif(isset($htmls[$controllerName.':'])){// 某个控制器的静态规则
+                $html   =   $htmls[$controllerName.':'];
             }elseif(isset($htmls[$actionName])){
                 $html   =   $htmls[$actionName]; // 所有操作的静态规则
             }elseif(isset($htmls['*'])){
@@ -58,18 +58,18 @@ class ReadHtmlCacheBehavior extends Behavior {
             }
             if(!empty($html)) {
                 // 解读静态规则
-                $rule   = $html[0];
+                $rule   = is_array($html)?$html[0]:$html;
                 // 以$_开头的系统变量
                 $callback = function($match){ 
-                                switch($match[1]){
-                                    case "_GET": $var = $_GET[$match[2]]; break;
-                                    case "_POST": $var = $_POST[$match[2]]; break;
-                                    case "_REQUEST": $var = $_REQUEST[$match[2]]; break;
-                                    case "_SERVER": $var = $_SERVER[$match[2]]; break;
-                                    case "_SESSION": $var = $_SESSION[$match[2]]; break;
-                                    case "_COOKIE": $var = $_COOKIE[$match[2]]; break;
-                                }
-                                return (count($match) == 4) ? $match[3]($var) : $var;
+                    switch($match[1]){
+                        case '_GET':        $var = $_GET[$match[2]]; break;
+                        case '_POST':       $var = $_POST[$match[2]]; break;
+                        case '_REQUEST':    $var = $_REQUEST[$match[2]]; break;
+                        case '_SERVER':     $var = $_SERVER[$match[2]]; break;
+                        case '_SESSION':    $var = $_SESSION[$match[2]]; break;
+                        case '_COOKIE':     $var = $_COOKIE[$match[2]]; break;
+                    }
+                    return (count($match) == 4) ? $match[3]($var) : $var;
                 };
                 $rule     = preg_replace_callback('/{\$(_\w+)\.(\w+)(?:\|(\w+))?}/', $callback, $rule);
                 // {ID|FUN} GET变量的简写
@@ -82,8 +82,13 @@ class ReadHtmlCacheBehavior extends Behavior {
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace_callback('/{|(\w+)}/', function($match){return $match[1]();},$rule);
-                if(!empty($html[2])) $rule    =   $html[2]($rule); // 应用附加函数
-                $cacheTime = isset($html[1])?$html[1]:C('HTML_CACHE_TIME'); // 缓存有效期
+                if(is_array($html)){
+                    if(!empty($html[2])) $rule    =   $html[2]($rule); // 应用附加函数
+                    $cacheTime  =   isset($html[1])?$html[1]:C('HTML_CACHE_TIME'); // 缓存有效期
+                }else{
+                    $cacheTime  =   C('HTML_CACHE_TIME');
+                }
+                
                 // 当前缓存文件
                 define('HTML_FILE_NAME',HTML_PATH . $rule.C('HTML_FILE_SUFFIX'));
                 return $cacheTime;
@@ -104,7 +109,7 @@ class ReadHtmlCacheBehavior extends Behavior {
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
         if(!is_file($cacheFile)){
             return false;
-        }elseif (filemtime(C('TEMPLATE_NAME')) > Storage::get($cacheFile,'mtime','html')) {
+        }elseif (filemtime(\Think\Think::instance('Think\View')->parseTemplate()) > Storage::get($cacheFile,'mtime','html')) {
             // 模板文件如果更新静态文件需要更新
             return false;
         }elseif(!is_numeric($cacheTime) && function_exists($cacheTime)){
