@@ -26,7 +26,7 @@ class ReadHtmlCacheBehavior extends Behavior {
     // 行为扩展的执行入口必须是run
     public function run(&$params){
         // 开启静态缓存
-        if(C('HTML_CACHE_ON'))  {
+        if(IS_GET && C('HTML_CACHE_ON'))  {
             $cacheTime = $this->requireHtmlCache();
             if( false !== $cacheTime && $this->checkHTMLCache(HTML_FILE_NAME,$cacheTime)) { //静态页面有效
                 // 读取静态页面输出
