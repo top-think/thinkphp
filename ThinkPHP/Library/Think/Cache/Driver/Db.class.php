@@ -77,7 +77,7 @@ class Db extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value,$expire=null) {
         $data   =  serialize($value);
@@ -119,7 +119,7 @@ class Db extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         $name  =  $this->options['prefix'].addslashes($name);
@@ -129,7 +129,7 @@ class Db extends Cache {
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         return $this->handler->execute('TRUNCATE TABLE `'.$this->options['table'].'`');

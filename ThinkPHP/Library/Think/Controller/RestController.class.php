@@ -185,7 +185,7 @@ class RestController extends Controller {
      * @access protected
      * @param mixed $data 要返回的数据
      * @param String $type 返回类型 JSON XML
-     * @return void
+     * @return string
      */
     protected function encodeData($data,$type='') {
         if(empty($data))  return '';

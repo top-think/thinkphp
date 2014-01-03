@@ -51,7 +51,7 @@ class Memcachesae extends Cache {
     /**
      * 是否连接
      * @access private
-     * @return boolen
+     * @return boolean
      */
     private function isConnected() {
         return $this->connected;
@@ -74,7 +74,7 @@ class Memcachesae extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value, $expire = null) {
         N('cache_write',1);
@@ -96,7 +96,7 @@ class Memcachesae extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name, $ttl = false) {
         $name   =   $_SERVER['HTTP_APPVERSION'].'/'.$this->options['prefix'].$name;
@@ -108,7 +108,7 @@ class Memcachesae extends Cache {
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         return $this->handler->flush();

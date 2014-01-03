@@ -73,7 +73,7 @@ class Xcache extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         return xcache_unset($this->options['prefix'].$name);

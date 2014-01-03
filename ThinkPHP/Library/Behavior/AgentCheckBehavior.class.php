@@ -30,4 +30,3 @@ class AgentCheckBehavior extends Behavior {
         }
     }
 }
-?>

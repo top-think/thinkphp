@@ -64,7 +64,7 @@ class Apachenote extends Cache {
      * @access public
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value) {
         N('cache_write',1);
@@ -90,7 +90,7 @@ class Apachenote extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
      public function rm($name) {
         $this->open();
