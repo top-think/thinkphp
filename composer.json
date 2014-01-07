@@ -1,21 +1,14 @@
 {
     "name": "wujingke/thinkphp",
     "description": "The ThinkPHP Framework.",
-    "keywords": ["framework", "thinkphp"],
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Wu JingKe",
-            "email": "hi.laow@gmail.com",
-            "homepage": "http://www.thinkphp.cn/"
+            "email": "hi.laow@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-    },
-    "autoload": {
-        "psr-0": {
-            "thinkphp": "ThinkPHP/"
-        }
+
     }
 }
