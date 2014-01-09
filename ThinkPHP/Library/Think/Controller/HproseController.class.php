@@ -19,6 +19,7 @@ class HproseController extends Controller {
     protected $crossDomain      =   false;
     protected $P3P              =   false;
     protected $get              =   true;
+    protected $debug            =   false;
 
    /**
      * 架构函数
