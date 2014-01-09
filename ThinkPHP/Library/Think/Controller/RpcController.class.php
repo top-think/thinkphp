@@ -33,6 +33,7 @@ class RpcController {
             $methods    =   $this->allowMethodList;
         }else{
             $methods    =   get_class_methods($this);
+            $methods    =   array_diff($methods,array('__construct','__call','_initialize'));   
         }
         $server->add($methods,$this);
 
