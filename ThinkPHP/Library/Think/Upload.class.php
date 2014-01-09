@@ -105,7 +105,7 @@ class Upload{
      * 上传文件
      * @param 文件信息数组 $files ，通常是 $_FILES数组
      */
-    public function upload($files) {
+    public function upload($files=$_FILES) {
         if(empty($files)){
             $this->error = '没有上传的文件！';
             return false;
@@ -125,14 +125,13 @@ class Upload{
 
         /* 逐个检测并上传文件 */
         $info = array();
+        $finfo          =   finfo_open ( FILEINFO_MIME_TYPE );
         foreach ($files as $key => $file) {
             /* 通过扩展获取文件类型，可解决FLASH上传$FILES数组返回文件类型错误的问题 */
-            if(function_exists('mime_content_type')){
-                $file['type'] = mime_content_type($file['tmp_name']);
-            }
+            $file['type']   =   finfo_file ( $finfo ,  $file['tmp_name'] );
 
             /* 获取上传文件后缀，允许上传无后缀文件 */
-            $file['ext'] = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $file['ext']    =   pathinfo($file['name'], PATHINFO_EXTENSION);
 
             /* 文件上传检测 */
             if (!$this->check($file)){

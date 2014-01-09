@@ -9,11 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Controller;
-use Think\Controller;
 /**
  * ThinkPHP Hprose控制器类
  */
-class HproseController extends Controller {
+class HproseController {
 
     protected $allowMethodList  =   '';
     protected $crossDomain      =   false;
@@ -50,5 +49,4 @@ class HproseController extends Controller {
         $server->start();
     }
 
-    public function _empty(){}
 }
