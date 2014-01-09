@@ -9,11 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Controller;
-use Think\Controller;
 /**
  * ThinkPHP RPC控制器类
  */
-class RpcController extends Controller {
+class RpcController {
 
     protected $allowMethodList  =   '';
 
