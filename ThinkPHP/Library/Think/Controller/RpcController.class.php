@@ -15,6 +15,7 @@ namespace Think\Controller;
 class RpcController {
 
     protected $allowMethodList  =   '';
+    protected $debug            =   false;
 
    /**
      * 架构函数
@@ -35,7 +36,7 @@ class RpcController {
         }
         $server->add($methods,$this);
 
-        if(APP_DEBUG) {
+        if(APP_DEBUG || $this->debug ) {
             $server->setDebugMode(true);
         }
         $server->setEnableGZIP(true);
