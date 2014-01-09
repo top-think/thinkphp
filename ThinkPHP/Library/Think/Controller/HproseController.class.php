@@ -16,6 +16,9 @@ use Think\Controller;
 class HproseController extends Controller {
 
     protected $allowMethodList  =   '';
+    protected $crossDomain      =   false;
+    protected $P3P              =   false;
+    protected $get              =   true;
 
    /**
      * 架构函数
@@ -35,9 +38,14 @@ class HproseController extends Controller {
             $methods    =   get_class_methods($this);
         }
         $server->addMethods($methods,$this);
-        if(APP_DEBUG) {
+        if(APP_DEBUG || $this->debug ) {
             $server->setDebugEnabled(true);
         }
+        // Hprose设置
+        $server->setCrossDomainEnabled($this->crossDomain);
+        $server->setP3PEnabled($this->P3P);
+        $server->setGetEnabled($this->get);
+        // 启动server
         $server->start();
     }
 
