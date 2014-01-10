@@ -169,16 +169,4 @@ class Db {
        return mysql_affected_rows($hander); 
    } 
 
-    /**
-     * 打开Session 
-     * @access public 
-     */
-    public function execute() {
-        session_set_save_handler(array(&$this,"open"), 
-                         array(&$this,"close"), 
-                         array(&$this,"read"), 
-                         array(&$this,"write"), 
-                         array(&$this,"destroy"), 
-                         array(&$this,"gc")); 
-    }
 }
