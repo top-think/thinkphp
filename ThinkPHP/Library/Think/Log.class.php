@@ -34,11 +34,7 @@ class Log {
     // 日志初始化
     static public function init($config=array()){
         $type   =   isset($config['type'])?$config['type']:'File';
-        if(strpos($type,'\\')){
-            $class  =   $type;
-        }else{
-            $class  =   'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
-        }        
+        $class  =   strpos($type,'\\')? $type: 'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
         unset($config['type']);
         self::$storage = new $class($config);
     }
