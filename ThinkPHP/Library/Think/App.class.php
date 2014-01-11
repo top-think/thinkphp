@@ -61,8 +61,9 @@ class App {
                 // 空控制器
                 $namespace  =   MODULE_NAME.'\\'.C('DEFAULT_C_LAYER').'\\_empty\\';                    
             }
-            if(class_exists($namespace.ACTION_NAME)){
-                $class   =  $namespace.ACTION_NAME;
+            $actionName     =   strtolower(ACTION_NAME);
+            if(class_exists($namespace.$actionName)){
+                $class   =  $namespace.$actionName;
             }elseif(class_exists($namespace.'_empty')){
                 // 空操作
                 $class   =  $namespace.'_empty';
