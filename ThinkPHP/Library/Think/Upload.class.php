@@ -52,11 +52,7 @@ class Upload{
         $driver     =   $driver? $driver : C('FILE_UPLOAD_TYPE');
 
         /* 设置上传驱动 */
-        if(!strpos($driver,'\\')){
-            $class  =   'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
-        }else{
-            $class  =   $driver;
-        }
+        $class      =   strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
     	$this->setDriver($class, $driverConfig);
 
         /* 调整配置，把字符串配置参数转换为数组 */
@@ -83,6 +79,16 @@ class Upload{
         return $this->config[$name];
     }
 
+    public function __set($name,$value){
+        if(isset($this->config[$name])) {
+            $this->config[$name]    =   $value;
+        }
+    }
+
+    public function __isset($name){
+        return isset($this->config[$name]);
+    }
+    
     /**
      * 获取最后一次上传错误信息
      * @return string 错误信息
