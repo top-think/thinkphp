@@ -88,7 +88,7 @@ class Upload{
     public function __isset($name){
         return isset($this->config[$name]);
     }
-    
+
     /**
      * 获取最后一次上传错误信息
      * @return string 错误信息
@@ -195,7 +195,7 @@ class Upload{
                 $this->error = $this->uploader->getError();
             }
         }
-
+        finfo_close($finfo);
         return empty($info) ? false : $info;
     }
 
