@@ -56,13 +56,13 @@ class Image{
         /* 判断调用库的类型 */
         switch ($type) {
             case self::IMAGE_GD:
-                $class = 'ImageGd';
+                $class = 'Gd';
                 break;
             case self::IMAGE_IMAGICK:
-                $class = 'ImageImagick';
+                $class = 'Imagick';
                 break;
             default:
-                throw new Exception('不支持的图片处理库类型');
+                E('不支持的图片处理库类型');
         }
 
         /* 引入处理库，实例化图片处理对象 */
