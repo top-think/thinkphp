@@ -297,7 +297,7 @@ class Gd{
      * @param  integer $locate 水印位置
      * @param  integer $alpha  水印透明度
      */
-    public function water($source, $locate = Image::IMAGE_WATER_SOUTHEAST){
+    public function water($source, $locate = Image::IMAGE_WATER_SOUTHEAST,$alpha=80){
         //资源检测
         if(empty($this->img)) E('没有可以被添加水印的图像资源');
         if(!is_file($source)) E('水印图像不存在');
@@ -388,7 +388,7 @@ class Gd{
 
             imagecopy($src, $this->img, 0, 0, $x, $y, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
-            imagecopymerge($this->img, $src, $x, $y, 0, 0, $info[0], $info[1], 100);
+            imagecopymerge($this->img, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
 
             //销毁零时图片资源
             imagedestroy($src);

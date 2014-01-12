@@ -344,7 +344,7 @@ class Imagick{
      * @param  integer $locate 水印位置
      * @param  integer $alpha  水印透明度
      */
-    public function water($source, $locate = Image::IMAGE_WATER_SOUTHEAST){
+    public function water($source, $locate = Image::IMAGE_WATER_SOUTHEAST,$alpha=80){
         //资源检测
         if(empty($this->img)) E('没有可以被添加水印的图像资源');
         if(!is_file($source)) E('水印图像不存在');

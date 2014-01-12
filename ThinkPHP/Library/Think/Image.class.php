@@ -166,8 +166,8 @@ class Image{
      * @param  integer $alpha  水印透明度
      * @return Object          当前图片处理库对象
      */
-    public function water($source, $locate = self::IMAGE_WATER_SOUTHEAST){
-        $this->img->water($source, $locate);
+    public function water($source, $locate = self::IMAGE_WATER_SOUTHEAST,$alpha=80){
+        $this->img->water($source, $locate,$alpha);
         return $this;
     }
 
