@@ -188,7 +188,7 @@ class Upload{
             }
 
             /* 保存文件 并记录保存成功的文件 */
-            if ($this->uploader->save($file)) {
+            if ($this->uploader->save($file,$this->replace)) {
                 unset($file['error'], $file['tmp_name']);
                 $info[$key] = $file;
             } else {

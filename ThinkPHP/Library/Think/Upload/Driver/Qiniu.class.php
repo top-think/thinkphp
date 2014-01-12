@@ -77,7 +77,7 @@ class Qiniu{
      * @param  boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
      */
-    public function save(&$file) {
+    public function save(&$file,$replace=true) {
         $file['name'] = $file['savepath'] . $file['savename'];
         $key = str_replace('/', '_', $file['name']);
         $upfile = array(
