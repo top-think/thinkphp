@@ -206,7 +206,7 @@ class Imagick{
         /* 计算缩略图生成的必要参数 */
         switch ($type) {
             /* 等比例缩放 */
-            case Image::IMAGE_THUMB_SCALING:
+            case Image::IMAGE_THUMB_SCALE:
                 //原图尺寸小于缩略图尺寸则不进行缩略
                 if($w < $width && $h < $height) return;
 
