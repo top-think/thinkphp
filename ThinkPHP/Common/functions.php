@@ -109,7 +109,7 @@ function compile($filename) {
     // 替换预编译指令
     $content    =   preg_replace('/\/\/\[RUNTIME\](.*?)\/\/\[\/RUNTIME\]/s', '', $content);
     if(0===strpos($content,'namespace')){
-        $content    =   preg_replace('/namespace\s(.*?);/','namespace \\1{',$content);
+        $content    =   preg_replace('/namespace\s(.*?);/','namespace \\1{',$content,1);
     }else{
         $content    =   'namespace {'.$content;
     }
