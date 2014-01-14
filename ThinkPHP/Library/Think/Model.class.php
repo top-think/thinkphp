@@ -487,6 +487,15 @@ class Model {
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
+        // 判断查询缓存
+        if(isset($options['cache'])){
+            $cache  =   $options['cache'];
+            $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $data   =   S($key,'',$cache);
+            if(false !== $data){
+                return $data;
+            }
+        }        
         $resultSet  = $this->db->select($options);
         if(false === $resultSet) {
             return false;
@@ -496,6 +505,9 @@ class Model {
         }
         $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
         $this->_after_select($resultSet,$options);
+        if(isset($cache)){
+            S($key,$resultSet,$cache);
+        }           
         return $resultSet;
     }
     // 查询成功后的回调方法
@@ -618,6 +630,16 @@ class Model {
         $options['limit']   =   1;
         // 分析表达式
         $options            =   $this->_parseOptions($options);
+        // 判断查询缓存
+        if(isset($options['cache'])){
+            $cache  =   $options['cache'];
+            $key    =   is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $data   =   S($key,'',$cache);
+            if(false !== $data){
+                $this->data     =   $data;
+                return $data;
+            }
+        }
         $resultSet          =   $this->db->select($options);
         if(false === $resultSet) {
             return false;
@@ -632,6 +654,9 @@ class Model {
             return $this->returnResult($data,$this->options['result']);
         }
         $this->data     =   $data;
+        if(isset($cache)){
+            S($key,$data,$cache);
+        }
         return $this->data;
     }
     // 查询成功的回调方法
@@ -728,6 +753,15 @@ class Model {
     public function getField($field,$sepa=null) {
         $options['field']       =   $field;
         $options                =   $this->_parseOptions($options);
+        // 判断查询缓存
+        if(isset($options['cache'])){
+            $cache  =   $options['cache'];
+            $key    =   is_string($cache['key'])?$cache['key']:md5($sepa.serialize($options));
+            $data   =   S($key,'',$cache);
+            if(false !== $data){
+                return $data;
+            }
+        }        
         $field                  =   trim($field);
         if(strpos($field,',')) { // 多字段
             if(!isset($options['limit'])){
@@ -749,6 +783,9 @@ class Model {
                         $cols[$name]   =  is_string($sepa)?implode($sepa,$result):$result;
                     }
                 }
+                if(isset($cache)){
+                    S($key,$cols,$cache);
+                }
                 return $cols;
             }
         }else{   // 查找一条记录
@@ -758,10 +795,19 @@ class Model {
             }
             $result = $this->db->select($options);
             if(!empty($result)) {
-                if(true !== $sepa && 1==$options['limit']) return reset($result[0]);
+                if(true !== $sepa && 1==$options['limit']) {
+                    $data   =   reset($result[0]);
+                    if(isset($cache)){
+                        S($key,$data,$cache);
+                    }            
+                    return $data;
+                }
                 foreach ($result as $val){
                     $array[]    =   $val[$field];
                 }
+                if(isset($cache)){
+                    S($key,$array,$cache);
+                }                
                 return $array;
             }
         }
