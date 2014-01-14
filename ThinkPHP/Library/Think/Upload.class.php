@@ -137,13 +137,17 @@ class Upload{
 
         /* 逐个检测并上传文件 */
         $info    =  array();
-        $finfo   =  finfo_open ( FILEINFO_MIME_TYPE );
+        if(function_exists('finfo_open')){
+            $finfo   =  finfo_open ( FILEINFO_MIME_TYPE );
+        }
         // 对上传文件数组信息处理
         $files   =  $this->dealFiles($files);    
         foreach ($files as $key => $file) {
             if(!isset($file['key']))   $file['key']    =   $key;
             /* 通过扩展获取文件类型，可解决FLASH上传$FILES数组返回文件类型错误的问题 */
-            $file['type']   =   finfo_file ( $finfo ,  $file['tmp_name'] );
+            if(isset($finfo)){
+                $file['type']   =   finfo_file ( $finfo ,  $file['tmp_name'] );
+            }
 
             /* 获取上传文件后缀，允许上传无后缀文件 */
             $file['ext']    =   pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -204,7 +208,9 @@ class Upload{
                 $this->error = $this->uploader->getError();
             }
         }
-        finfo_close($finfo);
+        if(isset($finfo)){
+            finfo_close($finfo);
+        }
         return empty($info) ? false : $info;
     }
 
