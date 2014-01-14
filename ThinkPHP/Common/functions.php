@@ -136,18 +136,18 @@ function T($template='',$layer=''){
     $extend =   $info['scheme'];
     $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
 
+    // 获取主题
+    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME').'/' : '';
+
     // 获取当前主题的模版路径
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
     }elseif(C('VIEW_PATH')){ // 指定视图目录
-        $baseUrl    =   C('VIEW_PATH').$module.'/';
+        $baseUrl    =   C('VIEW_PATH').$theme.$module.'/';
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
-
-    // 获取主题
-    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
 
     // 分析模板文件规则
     $depr   =   C('TMPL_FILE_DEPR');
@@ -163,7 +163,7 @@ function T($template='',$layer=''){
             $file   =   str_replace('/', $depr, $file);
         }
     }
-    return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
+    return $baseUrl.(!C('VIEW_PATH')?$theme:'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
 
 /**
