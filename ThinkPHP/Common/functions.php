@@ -819,7 +819,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             }
         }
 
-        if($suffix && !C('URL_VARS')) {
+        if($suffix && (empty($vars) || !C('URL_VARS'))) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
