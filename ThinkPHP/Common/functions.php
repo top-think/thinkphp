@@ -800,7 +800,26 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
                 if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
             }                
         }
-        if($suffix) {
+        if(!empty($vars)) { // 添加参数
+            if(C('URL_VARS')){
+                if($suffix) {
+                    $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
+                    if($pos = strpos($suffix, '|')){
+                        $suffix = substr($suffix, 0, $pos);
+                    }
+                    if($suffix && '/' != substr($url,-1)){
+                        $url  .=  '.'.ltrim($suffix,'.');
+                    }
+                }
+                $url .= '?'.http_build_query($vars);
+            }else{
+                foreach ($vars as $var => $val){
+                    if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
+                }
+            }
+        }
+
+        if($suffix && !C('URL_VARS')) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
