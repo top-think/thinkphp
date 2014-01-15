@@ -707,7 +707,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
     }
 
     // 解析参数
-    if(is_string($vars)) { // aaa=1&bbb=2 转换成数组
+    if($is_str = is_string($vars)) { // aaa=1&bbb=2 转换成数组
         parse_str($vars,$vars);
     }elseif(!is_array($vars)){
         $vars = array();
@@ -800,7 +800,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
                 if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
             }                
         }
-        if(!empty($vars)) { // 添加参数
+        if(!empty($vars) || $is_str) { // 添加参数
             if(C('URL_VARS')){
                 if($suffix) {
                     $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
