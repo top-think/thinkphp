@@ -136,18 +136,18 @@ function T($template='',$layer=''){
     $extend =   $info['scheme'];
     $layer  =   $layer?$layer:C('DEFAULT_V_LAYER');
 
+    // 获取主题
+    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME').'/' : '';
+
     // 获取当前主题的模版路径
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
     }elseif(C('VIEW_PATH')){ // 指定视图目录
-        $baseUrl    =   C('VIEW_PATH').$module.'/';
+        $baseUrl    =   C('VIEW_PATH').$theme.$module.'/';
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
-
-    // 获取主题
-    $theme  =   substr_count($file,'/')<2 ? C('DEFAULT_THEME') : '';
 
     // 分析模板文件规则
     $depr   =   C('TMPL_FILE_DEPR');
@@ -163,7 +163,7 @@ function T($template='',$layer=''){
             $file   =   str_replace('/', $depr, $file);
         }
     }
-    return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
+    return $baseUrl.(!C('VIEW_PATH')?$theme:'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
 
 /**
@@ -672,7 +672,7 @@ function layout($layout) {
  * @param boolean $domain 是否显示域名
  * @return string
  */
-function U($url='',$vars='',$suffix=true,$domain=false) {
+function U($url='',$vars='',$suffix=true,$domain=true) {
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
@@ -707,7 +707,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
     }
 
     // 解析参数
-    if(is_string($vars)) { // aaa=1&bbb=2 转换成数组
+    if($is_str = is_string($vars)) { // aaa=1&bbb=2 转换成数组
         parse_str($vars,$vars);
     }elseif(!is_array($vars)){
         $vars = array();
@@ -788,6 +788,17 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
     }else{ // PATHINFO模式或者兼容URL模式
         $module =   defined('BIND_MODULE') ? '' : $module;
         if(isset($route)) {
+            /* 此处新增 lu yan hua*/
+            if(strpos($url,'/')){
+                list($t_controller,$t_action) = explode('/',$url);
+                if($t_action === 'index'){
+                    $url = $t_controller;
+                    if(strtolower($t_controller) === 'index') $url = '';
+                }
+            }else{
+                if(strtolower($url) == 'index') $url = '';
+            }
+            /**********************/
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').rtrim($url,$depr);
         }else{
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
@@ -795,12 +806,25 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
         if(C('URL_CASE_INSENSITIVE')){
             $url    =   strtolower($url);
         }
+
         if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
-            }                
-        }
-        if($suffix) {
+            if(C('URL_VARS') || $is_str){
+                if($suffix) {
+                    $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
+                    if($pos = strpos($suffix, '|')){
+                        $suffix = substr($suffix, 0, $pos);
+                    }
+                    if($suffix && '/' != substr($url,-1)){
+                        $url  .=  '.'.ltrim($suffix,'.');
+                    }
+                }
+                $url .= '?'.http_build_query($vars);
+            }else{
+                foreach ($vars as $var => $val){
+                    if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
+                }
+            }
+        } elseif ($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
@@ -818,6 +842,9 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
     }
     return $url;
 }
+
+
+
 
 /**
  * 渲染输出Widget

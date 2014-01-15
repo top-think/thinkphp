@@ -153,7 +153,7 @@ class View {
         // 获取当前主题的模版路径
         if(!defined('THEME_PATH')){
             if(C('VIEW_PATH')){ // 视图目录
-                define('THEME_PATH',   C('VIEW_PATH').$module.'/'.$theme);
+                define('THEME_PATH',   C('VIEW_PATH').$theme.$module.'/');
             }else{ // 模块视图
                 define('THEME_PATH',   APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme);
             }
