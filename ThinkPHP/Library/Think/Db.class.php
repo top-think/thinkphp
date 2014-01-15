@@ -775,19 +775,8 @@ class Db {
      */
     public function select($options=array()) {
         $this->model  =   $options['model'];
-        $sql    = $this->buildSelectSql($options);
-        $cache  =  isset($options['cache'])?$options['cache']:false;
-        if($cache) { // 查询缓存检测
-            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
-            $value  =  S($key,'',$cache);
-            if(false !== $value) {
-                return $value;
-            }
-        }
-        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
-        if($cache && false !== $result ) { // 查询缓存写入
-            S($key,$result,$cache);
-        }
+        $sql        =   $this->buildSelectSql($options);
+        $result     =   $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
         return $result;
     }
 
@@ -817,8 +806,8 @@ class Db {
                 return $value;
             }
         }
-        $sql  =   $this->parseSql($this->selectSql,$options);
-        $sql .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql  =     $this->parseSql($this->selectSql,$options);
+        $sql .=     $this->parseLock(isset($options['lock'])?$options['lock']:false);
         if(isset($key)) { // 写入SQL创建缓存
             S($key,$sql,array('expire'=>0,'length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
         }
