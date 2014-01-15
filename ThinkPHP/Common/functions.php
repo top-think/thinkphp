@@ -788,6 +788,17 @@ function U($url='',$vars='',$suffix=true,$domain=true) {
     }else{ // PATHINFO模式或者兼容URL模式
         $module =   defined('BIND_MODULE') ? '' : $module;
         if(isset($route)) {
+            /* 此处新增 lu yan hua*/
+            if(strpos($url,'/')){
+                list($t_controller,$t_action) = explode('/',$url);
+                if($t_action === 'index'){
+                    $url = $t_controller;
+                    if(strtolower($t_controller) === 'index') $url = '';
+                }
+            }else{
+                if(strtolower($url) == 'index') $url = '';
+            }
+            /**********************/
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').rtrim($url,$depr);
         }else{
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
@@ -796,8 +807,8 @@ function U($url='',$vars='',$suffix=true,$domain=true) {
             $url    =   strtolower($url);
         }
 
-        if(!empty($vars) || $is_str) { // 添加参数
-            if(C('URL_VARS')){
+        if(!empty($vars)) { // 添加参数
+            if(C('URL_VARS') || $is_str){
                 if($suffix) {
                     $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
                     if($pos = strpos($suffix, '|')){
@@ -813,9 +824,7 @@ function U($url='',$vars='',$suffix=true,$domain=true) {
                     if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
                 }
             }
-        }
-
-        if($suffix && (empty($vars) || !C('URL_VARS'))) {
+        } elseif ($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
             if($pos = strpos($suffix, '|')){
                 $suffix = substr($suffix, 0, $pos);
@@ -833,6 +842,9 @@ function U($url='',$vars='',$suffix=true,$domain=true) {
     }
     return $url;
 }
+
+
+
 
 /**
  * 渲染输出Widget
