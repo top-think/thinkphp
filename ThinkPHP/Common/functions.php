@@ -795,11 +795,7 @@ function U($url='',$vars='',$suffix=true,$domain=true) {
         if(C('URL_CASE_INSENSITIVE')){
             $url    =   strtolower($url);
         }
-        if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
-            }                
-        }
+
         if(!empty($vars) || $is_str) { // 添加参数
             if(C('URL_VARS')){
                 if($suffix) {
