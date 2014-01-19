@@ -247,7 +247,7 @@ class  Template {
             //替换extend标签
             $content    =   str_replace($matches[0],'',$content);
             // 记录页面中的block标签
-            preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', array($this, 'parseBlock'),$content);
+            preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', array($this, 'parseBlock'),$content);
             // 读取继承模板
             $array      =   $this->parseXmlAttrs($matches[1]);
             $content    =   $this->parseTemplateName($array['name']);
@@ -255,7 +255,7 @@ class  Template {
             // 替换block标签
             $content = $this->replaceBlock($content);
         }else{
-            $content    =   preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);            
+            $content    =   preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);            
         }
         return $content;
     }
@@ -333,14 +333,14 @@ class  Template {
         static $parse = 0;
         $begin = $this->config['taglib_begin'];
         $end   = $this->config['taglib_end'];
-        $reg   = '/('.$begin.'block\sname=(.+?)\s*?'.$end.')(.*?)'.$begin.'\/block'.$end.'/is';
+        $reg   = '/('.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.')(.*?)'.$begin.'\/block'.$end.'/is';
         if(is_string($content)){
             do{
                 $content = preg_replace_callback($reg, array($this, 'replaceBlock'), $content);
             } while ($parse && $parse--);
             return $content;
         } elseif(is_array($content)){
-            if(preg_match('/'.$begin.'block\sname=(.+?)\s*?'.$end.'/is', $content[3])){ //存在嵌套，进一步解析
+            if(preg_match('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'/is', $content[3])){ //存在嵌套，进一步解析
                 $parse = 1;
                 $content[3] = preg_replace_callback($reg, array($this, 'replaceBlock'), "{$content[3]}{$begin}/block{$end}");
                 return $content[1] . $content[3];
