@@ -58,7 +58,7 @@ class Route {
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
-                        retrun self::invokeRegx($route, $matches);
+                        return self::invokeRegx($route, $matches);
                     }else{
                         return self::parseRegex($matches,$route,$regx);
                     }
