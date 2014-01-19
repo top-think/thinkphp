@@ -59,7 +59,6 @@ class Route {
                     if($route instanceof \Closure) {
                         // 执行闭包并中止
                         self::invokeRegx($route, $matches);
-                        exit;
                     }
                     return self::parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
@@ -78,7 +77,6 @@ class Route {
                             if($route instanceof \Closure) {
                                 // 执行闭包并中止
                                 self::invokeRule($route, $match);
-                                exit;
                             }
                             return self::parseRule($rule,$route,$regx);
                         }
@@ -219,7 +217,11 @@ class Route {
             }
             // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
-                parse_str($route[1],$params);
+                if(is_array($route[1])){
+                    $params     =   $route[1];
+                }else{
+                    parse_str($route[1],$params);
+                }                
                 $var   =   array_merge($var,$params);
             }
             $_GET   =  array_merge($var,$_GET);
@@ -261,7 +263,11 @@ class Route {
             }
             // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
-                parse_str($route[1],$params);
+                if(is_array($route[1])){
+                    $params     =   $route[1];
+                }else{
+                    parse_str($route[1],$params);
+                }
                 $var   =   array_merge($var,$params);
             }
             $_GET   =  array_merge($var,$_GET);
@@ -300,4 +306,5 @@ class Route {
         }
         $reflect->invokeArgs($args);
     }
+
 }
