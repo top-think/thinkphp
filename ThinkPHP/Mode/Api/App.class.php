@@ -62,8 +62,7 @@ class App {
         }
 
         // 获取当前操作名 支持动态路由
-        $action     =   C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
-        $action    .=   C('ACTION_SUFFIX');  
+        $action     =   ACTION_NAME;
 
         try{
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){

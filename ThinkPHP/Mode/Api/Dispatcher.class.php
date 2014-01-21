@@ -140,12 +140,8 @@ class Dispatcher {
         define('MODULE_NAME', self::getModule($varModule));
         // 检测模块是否存在
         if( MODULE_NAME && (!in_array_case(MODULE_NAME,C('MODULE_DENY_LIST')) || $domainModule ) && is_dir(APP_PATH.MODULE_NAME)){
-            
             // 定义当前模块路径
             define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
-            // 定义当前模块的模版缓存路径
-            C('CACHE_PATH',CACHE_PATH.MODULE_NAME.'/');
-
             // 加载模块配置文件
             if(is_file(MODULE_PATH.'Conf/config.php'))
                 C(include MODULE_PATH.'Conf/config.php');
