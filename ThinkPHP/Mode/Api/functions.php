@@ -477,16 +477,6 @@ function R($url,$vars=array(),$layer='') {
 }
 
 /**
- * 处理标签扩展
- * @param string $tag 标签名称
- * @param mixed $params 传入参数
- * @return mixed
- */
-function tag($tag, &$params=NULL) {
-    return \Think\Hook::listen($tag,$params);
-}
-
-/**
  * 执行某个行为
  * @param string $name 行为名称
  * @param Mixed $params 传入的参数

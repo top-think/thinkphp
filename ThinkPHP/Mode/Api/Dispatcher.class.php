@@ -136,9 +136,6 @@ class Dispatcher {
             $_SERVER['PATH_INFO'] = __INFO__;
         }
 
-        // URL常量
-        define('__SELF__',strip_tags($_SERVER[C('URL_REQUEST_URI')]));
-
         // 获取模块名称
         define('MODULE_NAME', self::getModule($varModule));
         // 检测模块是否存在
@@ -160,24 +157,6 @@ class Dispatcher {
                 include MODULE_PATH.'Common/function.php';
         }else{
             E(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
-        }
-        if(!IS_CLI){
-            $urlMode        =   C('URL_MODEL');
-            if($urlMode == URL_COMPAT ){// 兼容模式判断
-                define('PHP_FILE',_PHP_FILE_.'?'.$varPath.'=');
-            }elseif($urlMode == URL_REWRITE ) {
-                $url    =   dirname(_PHP_FILE_);
-                if($url == '/' || $url == '\\')
-                    $url    =   '';
-                define('PHP_FILE',$url);
-            }else {
-                define('PHP_FILE',_PHP_FILE_);
-            }
-            // 当前应用地址
-            define('__APP__',strip_tags(PHP_FILE));
-            // 模块URL地址
-            $moduleName    =   defined('MODULE_ALIAS')?MODULE_ALIAS:MODULE_NAME;
-            define('__MODULE__',(!empty($domainModule) || !C('MULTI_MODULE'))?__APP__ : __APP__.'/'.(C('URL_CASE_INSENSITIVE') ? strtolower($moduleName) : $moduleName));            
         }
 
         if('' != $_SERVER['PATH_INFO'] ){
@@ -213,15 +192,6 @@ class Dispatcher {
         }
         define('CONTROLLER_NAME',   self::getController($varController));
         define('ACTION_NAME',       self::getAction($varAction));
-        if(!IS_CLI){
-            // 当前控制器地址
-            $controllerName    =   defined('CONTROLLER_ALIAS')?CONTROLLER_ALIAS:CONTROLLER_NAME;
-            define('__CONTROLLER__',!empty($domainController)?__MODULE__.$depr : __MODULE__.$depr.( C('URL_CASE_INSENSITIVE') ? strtolower($controllerName) : $controllerName ) );
-
-            // 当前操作地址
-            define('__ACTION__',__CONTROLLER__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));            
-        }
-
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
