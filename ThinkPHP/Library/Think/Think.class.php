@@ -45,7 +45,7 @@ class Think {
               Storage::unlink($runtimefile,'runtime');
           $content =  '';
           // 读取应用模式
-          $mode   =   include is_file(CONF_PATH.'core.php')?CONF_PATH.'core.php':THINK_PATH.'Conf/Mode/'.APP_MODE.'.php';
+          $mode   =   include is_file(CONF_PATH.'core.php')?CONF_PATH.'core.php':MODE_PATH.APP_MODE.'.php';
           // 加载核心文件
           foreach ($mode['core'] as $file){
               if(is_file($file)) {
