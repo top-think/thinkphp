@@ -294,7 +294,7 @@ class Route {
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
 
     // 执行规则匹配下的闭包方法 支持参数调用
@@ -310,7 +310,7 @@ class Route {
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
 
 }
