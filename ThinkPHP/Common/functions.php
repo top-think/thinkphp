@@ -1098,7 +1098,7 @@ function session($name,$value='') {
         }
     }else{ // 设置session
         if($prefix){
-            if (!is_array($_SESSION[$prefix])) {
+            if (!isset($_SESSION[$prefix])) {
                 $_SESSION[$prefix] = array();
             }
             $_SESSION[$prefix][$name]   =  $value;
