@@ -534,8 +534,7 @@ class Model {
     protected function _parseOptions($options=array()) {
         if(is_array($options))
             $options =  array_merge($this->options,$options);
-        // 查询过后清空sql表达式组装 避免影响下次查询
-        $this->options  =   array();
+
         if(!isset($options['table'])){
             // 自动获取表名
             $options['table']   =   $this->getTableName();
@@ -544,7 +543,9 @@ class Model {
             // 指定数据表 则重新获取字段列表 但不支持类型检测
             $fields             =   $this->getDbFields();
         }
-
+        // 查询过后清空sql表达式组装 避免影响下次查询
+        $this->options  =   array();
+        // 数据表别名
         if(!empty($options['alias'])) {
             $options['table']  .=   ' '.$options['alias'];
         }
