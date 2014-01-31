@@ -254,7 +254,7 @@ class Dispatcher {
                 // 记录当前别名
                 define('CONTROLLER_ALIAS',strtolower($controller));
                 // 获取实际的控制器名
-                return   $maps[CONTROLLER_ALIAS];
+                return   ucfirst($maps[CONTROLLER_ALIAS]);
             }elseif(array_search(strtolower($controller),$maps)){
                 // 禁止访问原始控制器
                 return   '';
@@ -265,7 +265,7 @@ class Dispatcher {
             // 智能识别方式 user_type 识别到 UserTypeController 控制器
             $controller = parse_name($controller,1);
         }
-        return strip_tags(ucfirst(strtolower($controller)));
+        return strip_tags(ucfirst($controller));
     }
 
     /**
