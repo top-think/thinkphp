@@ -718,7 +718,8 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
     }
     
     // URL组装
-    $depr = C('URL_PATHINFO_DEPR');
+    $depr       =   C('URL_PATHINFO_DEPR');
+    $urlCase    =   C('URL_CASE_INSENSITIVE');
     if($url) {
         if(0=== strpos($url,'/')) {// 定义路由
             $route      =   true;
@@ -734,43 +735,46 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $url        =   trim($url,$depr);
             $path       =   explode($depr,$url);
             $var        =   array();
-            $var[C('VAR_ACTION')]       =   !empty($path)?array_pop($path):ACTION_NAME;
-            $var[C('VAR_CONTROLLER')]   =   !empty($path)?array_pop($path):CONTROLLER_NAME;
+            $varModule      =   C('VAR_MODULE');
+            $varController  =   C('VAR_CONTROLLER');
+            $varAction      =   C('VAR_ACTION');
+            $var[$varAction]       =   !empty($path)?array_pop($path):ACTION_NAME;
+            $var[$varController]   =   !empty($path)?array_pop($path):CONTROLLER_NAME;
             if($maps = C('URL_ACTION_MAP')) {
-                if(isset($maps[strtolower($var[C('VAR_CONTROLLER')])])) {
-                    $maps    =   $maps[strtolower($var[C('VAR_CONTROLLER')])];
-                    if($action = array_search(strtolower($var[C('VAR_ACTION')]),$maps)){
-                        $var[C('VAR_ACTION')] = $action;
+                if(isset($maps[strtolower($var[$varController])])) {
+                    $maps    =   $maps[strtolower($var[$varController])];
+                    if($action = array_search(strtolower($var[$varAction]),$maps)){
+                        $var[$varAction] = $action;
                     }
                 }
             }
             if($maps = C('URL_CONTROLLER_MAP')) {
-                if($controller = array_search(strtolower($var[C('VAR_CONTROLLER')]),$maps)){
-                    $var[C('VAR_CONTROLLER')] = $controller;
+                if($controller = array_search(strtolower($var[$varController]),$maps)){
+                    $var[$varController] = $controller;
                 }
             }
-            if(C('URL_CASE_INSENSITIVE')) {
-                $var[C('VAR_CONTROLLER')]   =   parse_name($var[C('VAR_CONTROLLER')]);
+            if($urlCase) {
+                $var[$varController]   =   parse_name($var[$varController]);
             }
             $module =   '';
             
             if(!empty($path)) {
-                $var[C('VAR_MODULE')]    =   array_pop($path);
+                $var[$varModule]    =   array_pop($path);
             }else{
                 if(C('MULTI_MODULE')) {
                     if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
-                        $var[C('VAR_MODULE')]=   MODULE_NAME;
+                        $var[$varModule]=   MODULE_NAME;
                     }
                 }
             }
             if($maps = C('URL_MODULE_MAP')) {
-                if($_module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
-                    $var[C('VAR_MODULE')] = $_module;
+                if($_module = array_search(strtolower($var[$varModule]),$maps)){
+                    $var[$varModule] = $_module;
                 }
             }
-            if(isset($var[C('VAR_MODULE')])){
-                $module =   $var[C('VAR_MODULE')];
-                unset($var[C('VAR_MODULE')]);
+            if(isset($var[$varModule])){
+                $module =   $var[$varModule];
+                unset($var[$varModule]);
             }
             
         }
@@ -778,7 +782,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
 
     if(C('URL_MODEL') == 0) { // 普通模式URL转换
         $url        =   __APP__.'?'.C('VAR_MODULE')."={$module}&".http_build_query(array_reverse($var));
-        if(C('URL_CASE_INSENSITIVE')){
+        if($urlCase){
             $url    =   strtolower($url);
         }        
         if(!empty($vars)) {
@@ -792,7 +796,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $module =   defined('BIND_MODULE') ? '' : $module;
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
         }
-        if(C('URL_CASE_INSENSITIVE')){
+        if($urlCase){
             $url    =   strtolower($url);
         }
         if(!empty($vars)) { // 添加参数

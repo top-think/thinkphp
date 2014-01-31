@@ -254,7 +254,7 @@ class Dispatcher {
                 // 记录当前别名
                 define('CONTROLLER_ALIAS',strtolower($controller));
                 // 获取实际的控制器名
-                return   $maps[CONTROLLER_ALIAS];
+                return   ucfirst($maps[CONTROLLER_ALIAS]);
             }elseif(array_search(strtolower($controller),$maps)){
                 // 禁止访问原始控制器
                 return   '';
@@ -263,9 +263,9 @@ class Dispatcher {
         if(C('URL_CASE_INSENSITIVE')) {
             // URL地址不区分大小写
             // 智能识别方式 user_type 识别到 UserTypeController 控制器
-            $controller = ucfirst(parse_name($controller,1));
+            $controller = parse_name($controller,1);
         }
-        return strip_tags($controller);
+        return strip_tags(ucfirst($controller));
     }
 
     /**
@@ -299,7 +299,7 @@ class Dispatcher {
                 }
             }
         }        
-        return strip_tags(C('URL_CASE_INSENSITIVE')?strtolower($action):$action);
+        return strip_tags(strtolower($action));
     }
 
     /**
@@ -321,7 +321,7 @@ class Dispatcher {
                 return   '';
             }
         }
-        return strip_tags(C('URL_CASE_INSENSITIVE') ?ucfirst(strtolower($module)):$module);
+        return strip_tags(ucfirst(strtolower($module)));
     }
 
 }

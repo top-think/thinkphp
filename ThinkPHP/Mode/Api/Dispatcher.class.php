@@ -203,9 +203,9 @@ class Dispatcher {
         if(C('URL_CASE_INSENSITIVE')) {
             // URL地址不区分大小写
             // 智能识别方式 user_type 识别到 UserTypeController 控制器
-            $controller = ucfirst(parse_name($controller,1));
+            $controller = parse_name($controller,1);
         }
-        return strip_tags($controller);
+        return strip_tags(ucfirst($controller));
     }
 
     /**
@@ -218,7 +218,7 @@ class Dispatcher {
             $_POST[$var] :
             (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_ACTION'));
         unset($_POST[$var],$_GET[$var]);
-        return strip_tags(C('URL_CASE_INSENSITIVE')?strtolower($action):$action);
+        return strip_tags(strtolower($action));
     }
 
     /**
@@ -240,7 +240,7 @@ class Dispatcher {
                 return   '';
             }
         }
-        return strip_tags(C('URL_CASE_INSENSITIVE') ?ucfirst(strtolower($module)):$module);
+        return strip_tags(ucfirst(strtolower($module)));
     }
 
 }
