@@ -397,8 +397,7 @@ class Db {
             $tables  =  explode(',',$tables);
             array_walk($tables, array(&$this, 'parseKey'));
         }
-        //将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀
-        $tables = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match){ return C('DB_PREFIX').strtolower($match[1]);}, implode(',',$tables));
+        $tables = implode(',',$tables);
         return $tables;
     }
 
@@ -584,17 +583,13 @@ class Db {
     /**
      * join分析
      * @access protected
-     * @param mixed $join
+     * @param array $join
      * @return string
      */
     protected function parseJoin($join) {
         $joinStr = '';
         if(!empty($join)) {
-            foreach ($join as $key=>$_join){
-                $joinStr .= false !== stripos($_join,'JOIN')? ' '.$_join : ' JOIN ' .$_join;
-            }
-            //将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀和后缀
-            $joinStr  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match){ return C('DB_PREFIX').strtolower($match[1]);}, $joinStr);
+            $joinStr    =   ' '.implode(' ',$join).' ';
         }
         return $joinStr;
     }
