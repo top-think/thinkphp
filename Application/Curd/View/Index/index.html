@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>ThinkPHP示例：CURD操作</title>
+	<style type="text/css">
+	*{ padding: 0; margin: 0;font-size:16px; font-family: "微软雅黑"} 
+	div{ padding: 3px 20px;} 
+	body{ background: #fff; color: #333;}
+	h2{font-size:36px}
+	input,textarea {border:1px solid silver;padding:5px;width:350px}
+	input{height:30px}
+	input.button,input.submit{width:68px; margin:2px 5px;letter-spacing:4px;font-size:16px; font-weight:bold;border:1px solid silver; text-align:center; background-color:#F0F0FF;cursor:pointer}
+	div.result{border:1px solid #d4d4d4; background:#FFC;color:#393939; padding:8px 20px;float:auto; width:85%;margin:2px}
+	</style>
+ </head>
+ <body><script language="JavaScript">
+ <!--
+	function add(){
+		window.location.href="__URL__/add";
+	}
+	function edit(id){
+		window.location.href="__URL__/edit/id/"+id;
+	}
+	function del(id){
+		window.location.href="__URL__/delete/id/"+id;
+	}
+ //-->
+ </script>
+ <div class="main">
+ <h2>ThinkPHP示例之：CURD操作</h2>
+ <table cellpadding=2 cellspacing=2>
+  <tr>
+	<td colspan="2"><input type="button" class="button" value="新 增" onClick="add()"></td>
+ </tr>
+  <tr>
+  <td></td>
+	<td> <div id="list" >
+	<volist name="list" id="vo"><div id="div_{$vo.id}" class="result" style='font-weight:normal;<eq name="key%2" value="1">background:#ECECFF</eq>'><div style="border-bottom:1px dotted silver">{$vo.title}  [{$vo.email} {$vo.create_time|date='Y-m-d H:i:s',###}] </div>
+	<div class="content">{$vo.content|nl2br}</div>
+	<input type="button" value="编辑" class="small button" onClick="edit({$vo.id})"> <input type="button" value="删除" class="small button" onClick="del({$vo.id})">
+	</div>
+	</volist></div></td>
+  </tr>
+ </table>
+</div>
+ </body>
+</html>
