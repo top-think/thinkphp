@@ -1478,7 +1478,9 @@ class Model {
         }
         // 转换union表达式
         if(is_string($union) ) {
-            $options =  $union;
+            $prefix =   $this->tablePrefix;
+            //将__TABLE_NAME__字符串替换成带前缀的表名
+            $options  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $union);
         }elseif(is_array($union)){
             if(isset($union[0])) {
                 $this->options['union']  =  array_merge($this->options['union'],$union);
