@@ -43,12 +43,8 @@ return array(
         CORE_PATH . 'Route'.EXT,
         CORE_PATH . 'Controller'.EXT,
         CORE_PATH . 'View'.EXT,
-        CORE_PATH . 'Behavior'.EXT,
-        BEHAVIOR_PATH . 'ReadHtmlCacheBehavior'.EXT,
-        BEHAVIOR_PATH . 'ShowPageTraceBehavior'.EXT,
         BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
         BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
-        BEHAVIOR_PATH . 'WriteHtmlCacheBehavior'.EXT,
     ),
     // 行为扩展定义
     'tags'  =>  array(
