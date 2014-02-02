@@ -9,13 +9,11 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
 use Think\Storage;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：静态缓存写入
  */
-class WriteHtmlCacheBehavior extends Behavior {
+class WriteHtmlCacheBehavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$content){

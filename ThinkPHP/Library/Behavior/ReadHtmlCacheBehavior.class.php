@@ -9,20 +9,11 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
 use Think\Storage;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：静态缓存读取
  */
-class ReadHtmlCacheBehavior extends Behavior {
-    protected $options   =  array(
-            'HTML_CACHE_ON'     =>  false,
-            'HTML_CACHE_TIME'   =>  60,
-            'HTML_CACHE_RULES'  =>  array(),
-            'HTML_FILE_SUFFIX'  =>  '.html',
-        );
-
+class ReadHtmlCacheBehavior {
     // 行为扩展的执行入口必须是run
     public function run(&$params){
         // 开启静态缓存
@@ -82,15 +73,16 @@ class ReadHtmlCacheBehavior extends Behavior {
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace_callback('/{|(\w+)}/', function($match){return $match[1]();},$rule);
+                $cacheTime  =   C('HTML_CACHE_TIME',null,60);
                 if(is_array($html)){
                     if(!empty($html[2])) $rule    =   $html[2]($rule); // 应用附加函数
-                    $cacheTime  =   isset($html[1])?$html[1]:C('HTML_CACHE_TIME'); // 缓存有效期
+                    $cacheTime  =   isset($html[1])?$html[1]:$cacheTime; // 缓存有效期
                 }else{
-                    $cacheTime  =   C('HTML_CACHE_TIME');
+                    $cacheTime  =   $cacheTime;
                 }
                 
                 // 当前缓存文件
-                define('HTML_FILE_NAME',HTML_PATH . $rule.C('HTML_FILE_SUFFIX'));
+                define('HTML_FILE_NAME',HTML_PATH . $rule.C('HTML_FILE_SUFFIX',null,'.html'));
                 return $cacheTime;
             }
         }

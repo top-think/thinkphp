@@ -9,19 +9,12 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
 use Think\Log;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：页面Trace显示输出
  */
-class ShowPageTraceBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'SHOW_PAGE_TRACE'   => false,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'   => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
-        'PAGE_TRACE_SAVE'   => false,
-    );
+class ShowPageTraceBehavior {
+    protected $tracePageTabs =  array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试');
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
@@ -59,7 +52,7 @@ class ShowPageTraceBehavior extends Behavior {
             $base   =   array_merge($base,include $traceFile);
         }
         $debug  =   trace();
-        $tabs   =   C('TRACE_PAGE_TABS');
+        $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
         foreach ($tabs as $name=>$title){
             switch(strtoupper($name)) {
                 case 'BASE':// 基本信息
@@ -84,7 +77,7 @@ class ShowPageTraceBehavior extends Behavior {
         }
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志
             if(is_array($save)) {// 选择选项卡保存
-                $tabs   =   C('TRACE_PAGE_TABS');
+                $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
                 $array  =   array();
                 foreach ($save as $tab){
                     $array[] =   $tabs[$tab];

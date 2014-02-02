@@ -72,7 +72,7 @@ class File extends Storage{
      * @param array $vars  传入变量
      * @return void        
      */
-    public function load($filename,$vars=null,$type=''){
+    public function load($filename,$vars=null){
         if(!is_null($vars))
             extract($vars, EXTR_OVERWRITE);
         include $filename;
@@ -85,7 +85,7 @@ class File extends Storage{
      * @return boolean     
      */
     public function has($filename,$type=''){
-        return file_exists($filename);
+        return is_file($filename);
     }
 
     /**
@@ -96,7 +96,7 @@ class File extends Storage{
      */
     public function unlink($filename,$type=''){
         unset($this->contents[$filename]);
-        return file_exists($filename) ? unlink($filename) : false; 
+        return is_file($filename) ? unlink($filename) : false; 
     }
 
     /**

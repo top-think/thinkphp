@@ -24,8 +24,9 @@ abstract class Behavior {
     public function __construct() {
         if(!empty($this->options)) {
             foreach ($this->options as $name=>$val){
-                if(NULL !== C($name)) { // 参数已设置 则覆盖行为参数
-                    $this->options[$name]  =  C($name);
+                $_val   =   C($name);
+                if(NULL !== $_val) { // 参数已设置 则覆盖行为参数
+                    $this->options[$name]  =  $_val;
                 }else{ // 参数未设置 则传入默认值到配置
                     C($name,$val);
                 }

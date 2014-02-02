@@ -55,11 +55,12 @@ class App {
             $module  =  false;
         }elseif(C('ACTION_BIND_CLASS')){
             // 操作绑定到类：模块\Controller\控制器\操作
-            if(is_dir(MODULE_PATH.C('DEFAULT_C_LAYER').'/'.CONTROLLER_NAME)){
-                $namespace  =   MODULE_NAME.'\\'.C('DEFAULT_C_LAYER').'\\'.CONTROLLER_NAME.'\\';
+            $layer  =   C('DEFAULT_C_LAYER');
+            if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\'.CONTROLLER_NAME.'\\';
             }else{
                 // 空控制器
-                $namespace  =   MODULE_NAME.'\\'.C('DEFAULT_C_LAYER').'\\_empty\\';                    
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\_empty\\';                    
             }
             $actionName     =   strtolower(ACTION_NAME);
             if(class_exists($namespace.$actionName)){
@@ -93,8 +94,7 @@ class App {
 
         // 获取当前操作名 支持动态路由
         if(!isset($action)){
-            $action     =   C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
-            $action    .=   C('ACTION_SUFFIX');  
+            $action    =   ACTION_NAME.C('ACTION_SUFFIX');  
         }
         try{
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){
@@ -113,7 +113,7 @@ class App {
                     }
                 }
                 // URL参数绑定检测
-                if(C('URL_PARAMS_BIND') && $method->getNumberOfParameters()>0){
+                if($method->getNumberOfParameters()>0 && C('URL_PARAMS_BIND')){
                     switch($_SERVER['REQUEST_METHOD']) {
                         case 'POST':
                             $vars    =  array_merge($_GET,$_POST);
