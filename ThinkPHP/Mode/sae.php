@@ -44,27 +44,17 @@ return array(
         CORE_PATH . 'Route'.EXT,
         CORE_PATH . 'Controller'.EXT,
         CORE_PATH . 'View'.EXT,
-        CORE_PATH . 'Behavior'.EXT,		
-        BEHAVIOR_PATH . 'ReadHtmlCacheBehavior'.EXT,
-        BEHAVIOR_PATH . 'ShowPageTraceBehavior'.EXT,
         BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
         BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
-        BEHAVIOR_PATH . 'WriteHtmlCacheBehavior'.EXT,
     ),
     // 行为扩展定义
     'tags'  =>  array(
-        'app_init'      =>  array(
-        ),
         'app_begin'     =>  array(
             'Behavior\ReadHtmlCache', // 读取静态缓存
         ),
         'app_end'       =>  array(
             'Behavior\ShowPageTrace', // 页面Trace显示
         ),
-        'path_info'     =>  array(),
-        'action_begin'  =>  array(),
-        'action_end'    =>  array(),
-        'view_begin'    =>  array(),
         'view_parse'    =>  array(
             'Behavior\ParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
         ),
@@ -74,6 +64,5 @@ return array(
         'view_filter'   =>  array(
             'Behavior\WriteHtmlCache', // 写入静态缓存
         ),
-        'view_end'      =>  array(),
     ),
 );

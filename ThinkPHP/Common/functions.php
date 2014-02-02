@@ -1224,16 +1224,15 @@ function cookie($name, $value='', $option=null) {
  */
 function load_ext_file($path) {
     // 加载自定义外部文件
-    if(C('LOAD_EXT_FILE')) {
-        $files      =  explode(',',C('LOAD_EXT_FILE'));
+    if($files = C('LOAD_EXT_FILE')) {
+        $files      =  explode(',',$files);
         foreach ($files as $file){
             $file   = $path.'Common/'.$file.'.php';
             if(is_file($file)) include $file;
         }
     }
     // 加载自定义的动态配置文件
-    if(C('LOAD_EXT_CONFIG')) {
-        $configs    =  C('LOAD_EXT_CONFIG');
+    if($configs = C('LOAD_EXT_CONFIG')) {
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
             $file   = $path.'Conf/'.$config.'.php';
