@@ -15,15 +15,20 @@ namespace Behavior;
 class BuildLiteBehavior {
     public function run(&$params) {
         if(!defined('BUILD_LITE_FILE')) return ;
+        $litefile   =   C('RUNTIME_LITE_FILE',null,RUNTIME_PATH.'lite.php');
+        if(is_file($litefile)) return;
+        
         $defs       =   get_defined_constants(TRUE);
         $content    =   'namespace {$GLOBALS[\'_beginTime\'] = microtime(TRUE);';
         if(MEMORY_LIMIT_ON) {
             $content .= '$GLOBALS[\'_startUseMems\'] = memory_get_usage();';
         }
+
         // 生成数组定义
         unset($defs['user']['BUILD_LITE_FILE']);
         $content   .=   $this->buildArrayDefine($defs['user']).'}';
 
+        // 读取编译列表文件
         $filelist   =   is_file(CONF_PATH.'lite.php')?
             include CONF_PATH.'lite.php':
             array(
@@ -51,12 +56,13 @@ class BuildLiteBehavior {
             $content   .= compile($file);
           }
         }
+
         // 处理Think类的start方法
         $content  =  preg_replace('/\$runtimefile = RUNTIME_PATH(.+?)(if\(APP_STATUS)/','\2',$content,1);
         $content  .=  "\nnamespace { Think\Think::addMap(".var_export(\Think\Think::getMap(),true).");";
         $content  .=  "\nL(".var_export(L(),true).");\nC(".var_export(C(),true).');Think\Hook::import('.var_export(\Think\Hook::get(),true).');Think\Think::start();}';
+
         // 生成运行Lite文件
-        $litefile   =   C('RUNTIME_LITE_FILE',null,RUNTIME_PATH.'lite.php');
         file_put_contents($litefile,strip_whitespace('<?php '.$content));
     }
 
