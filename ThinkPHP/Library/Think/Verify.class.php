@@ -68,14 +68,12 @@ class Verify {
      * @return bool 用户验证码是否正确
      */
     public function check($code, $id = '') {
-        $key = $this->authcode($this->seKey);
+        $key = $this->authcode($this->seKey).$id;
         // 验证码不能为空
-        $session = session($key);
-        if(empty($code) || empty($session)) {
+        $secode = session($key);
+        if(empty($code) || empty($secode)) {
             return false;
         }
-
-        $secode = $id ? $session[$id] : $session;
         // session 过期
         if(NOW_TIME - $secode['verify_time'] > $this->expire) {
             session($key, null);
@@ -152,19 +150,13 @@ class Verify {
         $this->useZh && imagettftext($this->_image, $this->fontSize, 0, ($this->imageW - $this->fontSize*$this->length*1.2)/3, $this->fontSize * 1.5, $this->_color, $this->fontttf, iconv("GB2312","UTF-8", join('', $code)));
         
         // 保存验证码
-        $key = $this->authcode($this->seKey);
-        $code = $this->authcode(strtoupper(implode('', $code)));
-        $session = array();
-        if($id) {
-            $session[$id]['verify_code'] = $code; // 把校验码保存到session
-            $session[$id]['verify_time'] = NOW_TIME;  // 验证码创建时间
-        } else {
-            $session['verify_code'] = $code; // 把校验码保存到session
-            $session['verify_time'] = NOW_TIME;  // 验证码创建时间
-        }
-        session($key, $session);
-
-                
+        $key        =   $this->authcode($this->seKey);
+        $code       =   $this->authcode(strtoupper(implode('', $code)));
+        $secode     =   array();
+        $secode['verify_code'] = $code; // 把校验码保存到session
+        $secode['verify_time'] = NOW_TIME;  // 验证码创建时间
+        session($key.$id, $secode);
+                        
         header('Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate');
         header('Cache-Control: post-check=0, pre-check=0', false);		
         header('Pragma: no-cache');
