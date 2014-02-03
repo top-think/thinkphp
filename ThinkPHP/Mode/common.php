@@ -43,11 +43,15 @@ return array(
         CORE_PATH . 'Route'.EXT,
         CORE_PATH . 'Controller'.EXT,
         CORE_PATH . 'View'.EXT,
+        BEHAVIOR_PATH . 'BuildLiteBehavior'.EXT,
         BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
         BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
     ),
     // 行为扩展定义
     'tags'  =>  array(
+        'app_init'     =>  array(
+            'Behavior\BuildLite', // 生成运行Lite文件
+        ),        
         'app_begin'     =>  array(
             'Behavior\ReadHtmlCache', // 读取静态缓存
         ),
