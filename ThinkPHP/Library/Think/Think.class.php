@@ -126,6 +126,17 @@ class Think {
         }        
     }
 
+    // 获取classmap
+    static public function getMap($class=''){
+        if(''===$class){
+            return self::$_map;
+        }elseif(isset(self::$_map[$class])){
+            return self::$_map[$class];
+        }else{
+            return null;
+        }
+    }
+
     /**
      * 类库自动加载
      * @param string $class 对象类名
