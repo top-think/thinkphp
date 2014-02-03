@@ -23,10 +23,10 @@ class BuildLiteBehavior {
         // 生成数组定义
         unset($defs['user']['BUILD_LITE_FILE']);
         $content   .=   $this->buildArrayDefine($defs['user']).'}';
-        if(is_file(CONF_PATH.'lite.php')){
-            $filelist   =   include CONF_PATH.'lite.php';
-        }else{
-            $filelist   =   array(
+
+        $filelist   =   is_file(CONF_PATH.'lite.php')?
+            include CONF_PATH.'lite.php':
+            array(
                 THINK_PATH.'Common/functions.php',
                 COMMON_PATH.'Common/function.php',
                 CORE_PATH . 'Think'.EXT,
@@ -44,7 +44,7 @@ class BuildLiteBehavior {
                 BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
                 BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
             );
-        }
+
         // 编译文件
         foreach ($filelist as $file){
           if(is_file($file)) {
