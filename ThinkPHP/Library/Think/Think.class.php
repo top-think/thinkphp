@@ -311,9 +311,6 @@ class Think {
             return $_trace;
         }else{
             $info   =   ($label?$label.':':'').print_r($value,true);
-            if('ERR' == $level && C('TRACE_EXCEPTION')) {// 抛出异常
-                E($info);
-            }
             $level  =   strtoupper($level);
             if(!isset($_trace[$level]) || count($_trace[$level])>C('TRACE_MAX_RECORD')) {
                 $_trace[$level] =   array();
