@@ -234,9 +234,6 @@ class Think {
             if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
             self::halt($errorStr);
             break;
-          case E_STRICT:
-          case E_USER_WARNING:
-          case E_USER_NOTICE:
           default:
             $errorStr = "[$errno] $errstr ".$errfile." 第 $errline 行.";
             self::trace($errorStr,'','NOTIC');
@@ -290,19 +287,13 @@ class Think {
             if (!empty($error_page)) {
                 redirect($error_page);
             } else {
-                if (C('SHOW_ERROR_MSG'))
-                    $e['message'] = is_array($error) ? $error['message'] : $error;
-                else
-                    $e['message'] = C('ERROR_MESSAGE');
+                $message        = is_array($error) ? $error['message'] : $error;
+                $e['message']   = C('SHOW_ERROR_MSG')? $message : C('ERROR_MESSAGE');
             }
         }
         // 包含异常页面模板
-        $TMPL_EXCEPTION_FILE=C('TMPL_EXCEPTION_FILE');
-        if(!$TMPL_EXCEPTION_FILE){
-            //显示在加载配置文件之前的程序错误
-            exit('<b>Error:</b>'.$e['message'].' in <b> '.$e['file'].' </b> on line <b>'.$e['line'].'</b>'); 
-        }
-        include $TMPL_EXCEPTION_FILE;
+        $exceptionFile =  C('TMPL_EXCEPTION_FILE',null,THINK_PATH.'Tpl/think_exception.tpl');
+        include $exceptionFile;
         exit;
     }
 
