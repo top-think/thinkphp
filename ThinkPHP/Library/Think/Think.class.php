@@ -146,7 +146,7 @@ class Think {
         // 检查是否存在映射
         if(isset(self::$_map[$class])) {
             include self::$_map[$class];
-        }else{
+        }elseif(strpos($class,'\\')){
           $name           =   strstr($class, '\\', true);
           if(in_array($name,array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PATH.$name)){ 
               // Library目录下面的命名空间自动定位
@@ -164,7 +164,22 @@ class Think {
               }
               include $filename;
           }
-        }
+        }else{
+            // 自动加载的类库层
+            foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
+                if(substr($class,-strlen($layer))==$layer){
+                    if(require_cache(MODULE_PATH.$layer.'/'.$class.EXT)) {
+                        return ;
+                    }
+                }            
+            }
+            // 根据自动加载路径设置进行尝试搜索
+            foreach (explode(',',C('APP_AUTOLOAD_PATH')) as $path){
+                if(import($path.'.'.$class))
+                    // 如果加载类成功则返回
+                    return ;
+            }
+          }
     }
 
     /**
@@ -251,7 +266,7 @@ class Think {
               case E_CORE_ERROR:
               case E_COMPILE_ERROR:
               case E_USER_ERROR:  
-                ob_end_clean();
+                //ob_end_clean();
                 self::halt($e);
                 break;
             }
