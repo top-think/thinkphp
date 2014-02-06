@@ -19,7 +19,6 @@ defined('THINK_PATH') or exit();
 return  array(
     /* 应用设定 */
     'APP_USE_NAMESPACE'     =>  true,    // 应用类库是否使用命名空间
-    'APP_FILE_CASE'         =>  false,   // 是否检查文件的大小写 对Windows平台有效
     'APP_SUB_DOMAIN_DEPLOY' =>  false,   // 是否开启子域名部署
     'APP_SUB_DOMAIN_RULES'  =>  array(), // 子域名部署规则
     'APP_DOMAIN_SUFFIX'     =>  '', // 域名后缀 如果是com.cn net.cn 之类的后缀必须设置    

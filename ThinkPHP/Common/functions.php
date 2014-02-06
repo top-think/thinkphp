@@ -357,7 +357,7 @@ function require_cache($filename) {
  */
 function file_exists_case($filename) {
     if (is_file($filename)) {
-        if (IS_WIN && C('APP_FILE_CASE')) {
+        if (IS_WIN && APP_DEBUG) {
             if (basename(realpath($filename)) != basename($filename))
                 return false;
         }
