@@ -9,6 +9,6 @@ namespace Boris;
  */
 class ExportInspector implements Inspector {
   public function inspect($variable) {
-    return var_export($variable, true);
+    return sprintf(" → %s", var_export($variable, true));
   }
 }

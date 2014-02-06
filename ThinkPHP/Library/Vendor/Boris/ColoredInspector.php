@@ -6,7 +6,7 @@
  * @author Rob Morris <rob@irongaze.com>
  * @author Chris Corbyn <chris@w3style.co.uk>
  *
- * Copyright © 2013 Rob Morris.
+ * Copyright © 2013-2014 Rob Morris.
  */
 
 namespace Boris;
@@ -85,7 +85,23 @@ class ColoredInspector implements Inspector {
   }
 
   public function inspect($variable) {
-    return $this->_dump($variable);
+    return preg_replace(
+      '/^/m',
+      $this->_colorize('comment', '// '),
+      $this->_dump($variable)
+    );
+  }
+
+  /**
+   * Returns an associative array of an object's properties.
+   *
+   * This method is public so that subclasses may override it.
+   *
+   * @param object $value
+   * @return array
+   * */
+  public function objectVars($value) {
+    return get_object_vars($value);
   }
 
   // -- Private Methods
@@ -136,7 +152,7 @@ class ColoredInspector implements Inspector {
   private function _dumpObject($value) {
     return $this->_dumpStructure(
       sprintf('object(%s)', get_class($value)),
-      get_object_vars($value)
+      $this->objectVars($value)
     );
   }
 
@@ -153,7 +169,7 @@ class ColoredInspector implements Inspector {
     }
 
     if (is_object($value)) {
-      $vars = get_object_vars($value);
+      $vars = $this->objectVars($value);
     } else {
       $vars = $value;
     }
@@ -227,6 +243,7 @@ class ColoredInspector implements Inspector {
       'string'  => 'light_red',
       'bool'    => 'light_purple',
       'keyword' => 'light_cyan',
+      'comment' => 'dark_grey',
       'default' => 'none'
     );
   }

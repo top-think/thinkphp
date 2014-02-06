@@ -11,6 +11,6 @@ class DumpInspector implements Inspector {
   public function inspect($variable) {
     ob_start();
     var_dump($variable);
-    return trim(ob_get_clean());
+    return sprintf(" → %s", trim(ob_get_clean()));
   }
 }

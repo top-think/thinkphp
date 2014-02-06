@@ -95,7 +95,7 @@ class EvalWorker {
 
       $this->_cancelled = false;
 
-      $__input = $this->_read($this->_socket);
+      $__input = $this->_transform($this->_read($this->_socket));
 
       if ($__input === null) {
         continue;
@@ -139,7 +139,7 @@ class EvalWorker {
         }
 
         if (preg_match('/\s*return\b/i', $__input)) {
-          fwrite(STDOUT, sprintf(" → %s\n", $this->_inspector->inspect($__result)));
+          fwrite(STDOUT, sprintf("%s\n", $this->_inspector->inspect($__result)));
         }
         $this->_expungeOldWorker();
       }
@@ -209,16 +209,39 @@ class EvalWorker {
 
   private function _read($socket)
   {
-    $read = array($socket);
-    $write = null;
+    $read   = array($socket);
     $except = array($socket);
 
-    if (stream_select($read, $write, $except, 10) > 0) {
+    if ($this->_select($read, $except) > 0) {
       if ($read) {
         return stream_get_contents($read[0]);
       } else if ($except) {
         throw new \UnexpectedValueException("Socket error: closed");
       }
     }
+  }
+
+  private function _select(&$read, &$except) {
+    $write = null;
+    set_error_handler(function(){return true;}, E_WARNING);
+    $result = stream_select($read, $write, $except, 10);
+    restore_error_handler();
+    return $result;
+  }
+
+  private function _transform($input) {
+    if ($input === null) {
+      return null;
+    }
+
+    $transforms = array(
+      'exit' => 'exit(0)'
+    );
+
+    foreach ($transforms as $from => $to) {
+      $input = preg_replace('/^\s*' . preg_quote($from, '/') . '\s*;?\s*$/', $to . ';', $input);
+    }
+
+    return $input;
   }
 }

@@ -98,7 +98,7 @@ class ShallowParser {
     $combined = array();
 
     foreach ($result->statements as $scope) {
-      if (substr(trim($scope), -1) != ';') {
+      if (trim($scope) == ';' || substr(trim($scope), -1) != ';') {
         $combined[] = ((string) array_pop($combined)) . $scope;
       } else {
         $combined[] = $scope;
@@ -191,23 +191,36 @@ class ShallowParser {
     }
 
     if (empty($result->states) && ($chr == ';' || $chr == '}')) {
-      $result->statements[] = $result->stmt;
-      $result->stmt = '';
+      if (!$this->_isLambda($result->stmt) || $chr == ';') {
+        $result->statements[] = $result->stmt;
+        $result->stmt = '';
+      }
     }
 
     return true;
   }
 
+  private function _isLambda($input) {
+    return preg_match(
+      '/^([^=]*?=\s*)?function\s*\([^\)]*\)\s*(use\s*\([^\)]*\)\s*)?\s*\{.*\}\s*;?$/is',
+      trim($input)
+    );
+  }
+
   private function _isReturnable($input) {
     $input = trim($input);
-    return substr($input, -1) == ';' && !preg_match(
-      '/^(' .
-      'echo|print|exit|die|goto|global|include|include_once|require|require_once|list|' .
-      'return|do|for|foreach|while|if|function|namespace|class|interface|abstract|switch|' .
-      'declare|throw|try|unset' .
-      ')\b/i',
-      $input
-    );
+    if (substr($input, -1) == ';' && substr($input, 0, 1) != '{') {
+      return $this->_isLambda($input) || !preg_match(
+        '/^(' .
+        'echo|print|exit|die|goto|global|include|include_once|require|require_once|list|' .
+        'return|do|for|foreach|while|if|function|namespace|class|interface|abstract|switch|' .
+        'declare|throw|try|unset' .
+        ')\b/i',
+        $input
+      );
+    } else {
+      return false;
+    }
   }
 
   private function _prepareDebugStmt($input) {

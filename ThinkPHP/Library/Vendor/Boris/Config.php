@@ -49,7 +49,6 @@ class Config {
    * @return bool
    */
   public function apply(Boris $boris) {
-    $paths   = $this->_searchPaths;
     $applied = false;
 
     foreach($this->_searchPaths as $path) {
