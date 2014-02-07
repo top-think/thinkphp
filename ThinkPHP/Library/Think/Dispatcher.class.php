@@ -149,6 +149,9 @@ class Dispatcher {
             // 定义当前模块的模版缓存路径
             C('CACHE_PATH',CACHE_PATH.MODULE_NAME.'/');
 
+            // 模块检测
+            Hook::listen('module_check');
+
             // 加载模块配置文件
             if(is_file(MODULE_PATH.'Conf/config.php'))
                 C(include MODULE_PATH.'Conf/config.php');

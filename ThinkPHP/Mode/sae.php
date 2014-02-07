@@ -50,19 +50,19 @@ return array(
     // 行为扩展定义
     'tags'  =>  array(
         'app_begin'     =>  array(
-            'Behavior\ReadHtmlCache', // 读取静态缓存
+            'Behavior\ReadHtmlCacheBehavior', // 读取静态缓存
         ),
         'app_end'       =>  array(
-            'Behavior\ShowPageTrace', // 页面Trace显示
+            'Behavior\ShowPageTraceBehavior', // 页面Trace显示
         ),
         'view_parse'    =>  array(
-            'Behavior\ParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
+            'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
         ),
         'template_filter'=> array(
-            'Behavior\ContentReplace', // 模板输出替换
+            'Behavior\ContentReplaceBehavior', // 模板输出替换
         ),
         'view_filter'   =>  array(
-            'Behavior\WriteHtmlCache', // 写入静态缓存
+            'Behavior\WriteHtmlCacheBehavior', // 写入静态缓存
         ),
     ),
 );
