@@ -47,7 +47,7 @@ class Pgsql extends Db{
                 E($this->error(false));
             }
             //设置编码
-            pg_set_client_encoding($this->linkID[$linkNum], C('DB_CHARSET'));
+            pg_set_client_encoding($this->linkID[$linkNum], $config['db_charset']);
             //$pgInfo = pg_version($this->linkID[$linkNum]);
             //$dbVersion = $pgInfo['server'];
             // 标记连接成功

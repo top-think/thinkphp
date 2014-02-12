@@ -56,7 +56,7 @@ class Mysql extends Db{
             }
             $dbVersion = mysql_get_server_info($this->linkID[$linkNum]);
             //使用UTF8存取数据库
-            mysql_query("SET NAMES '".C('DB_CHARSET')."'", $this->linkID[$linkNum]);
+            mysql_query("SET NAMES '".$config['db_charset']."'", $this->linkID[$linkNum]);
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 mysql_query("SET sql_mode=''",$this->linkID[$linkNum]);
