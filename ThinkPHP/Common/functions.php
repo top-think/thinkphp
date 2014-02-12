@@ -119,7 +119,7 @@ function L($name=null, $value=null) {
             // 支持变量
             $replace = array_keys($value);
             foreach($replace as &$v){
-                $v = "{$".$v."}";
+                $v = '{$'.$v.'}';
             }
             return str_replace($replace,$value,isset($_lang[$name]) ? $_lang[$name] : $name);        
         }
