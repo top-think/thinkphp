@@ -21,13 +21,15 @@ class MongoModel extends Model{
     const TYPE_STRING   = 3;
 
     // 主键名称
-    protected $pk               = '_id';
+    protected $pk               =   '_id';
     // _id 类型 1 Object 采用MongoId对象 2 Int 整形 支持自动增长 3 String 字符串Hash
-    protected $_idType          =  self::TYPE_OBJECT;
+    protected $_idType          =   self::TYPE_OBJECT;
+    // 主键是否自增
+    protected $_autoinc         =   true;
     // Mongo默认关闭字段检测 可以动态追加字段
     protected $autoCheckFields  =   false;
     // 链操作方法列表
-    protected $methods          = array('table','order','auto','filter','validate');
+    protected $methods          =   array('table','order','auto','filter','validate');
 
     /**
      * 利用__call方法实现一些特殊的Model方法
@@ -120,7 +122,7 @@ class MongoModel extends Model{
     // 插入数据前的回调方法
     protected function _before_insert(&$data,$options) {
         // 写入数据到数据库
-        if($this->autoinc && $this->_idType== self::TYPE_INT) { // 主键自动增长
+        if($this->_autoinc && $this->_idType== self::TYPE_INT) { // 主键自动增长
             $pk   =  $this->getPk();
             if(!isset($data[$pk])) {
                 $data[$pk]   =  $this->db->mongo_next_id($pk);
