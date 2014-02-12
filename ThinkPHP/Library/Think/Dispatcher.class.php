@@ -291,8 +291,12 @@ class Dispatcher {
                     return   '';
                 }
             }
-        }        
-        return strip_tags(strtolower($action));
+        }
+        if(C('URL_CASE_INSENSITIVE')) {
+            // URL地址不区分大小写 操作方法转小写
+            $action = strtolower($action);
+        }
+        return strip_tags($action);
     }
 
     /**
