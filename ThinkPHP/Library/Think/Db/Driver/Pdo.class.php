@@ -59,7 +59,7 @@ class Pdo extends Db{
                 // 由于PDO对于以上的数据库支持不够完美，所以屏蔽了 如果仍然希望使用PDO 可以注释下面一行代码
                 E('由于目前PDO暂时不能完美支持'.$this->dbType.' 请使用官方的'.$this->dbType.'驱动');
             }
-            $this->linkID[$linkNum]->exec('SET NAMES '.$config['db_charset']);
+            $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
             // 标记连接成功
             $this->connected    =   true;
             // 注销数据库连接配置信息

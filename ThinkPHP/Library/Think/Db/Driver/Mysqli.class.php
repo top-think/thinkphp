@@ -46,7 +46,7 @@ class Mysqli extends Db{
             $dbVersion = $this->linkID[$linkNum]->server_version;
             
             // 设置数据库编码
-            $this->linkID[$linkNum]->query("SET NAMES '".$config['db_charset']."'");
+            $this->linkID[$linkNum]->query("SET NAMES '".$config['charset']."'");
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 $this->linkID[$linkNum]->query("SET sql_mode=''");
