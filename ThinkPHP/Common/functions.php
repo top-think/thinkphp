@@ -112,9 +112,17 @@ function L($name=null, $value=null) {
     // 判断语言获取(或设置)
     // 若不存在,直接返回全大写$name
     if (is_string($name)) {
-        $name = strtoupper($name);
-        if (is_null($value))
+        $name   =   strtoupper($name);
+        if (is_null($value)){
             return isset($_lang[$name]) ? $_lang[$name] : $name;
+        }elseif(is_array($value)){
+            // 支持变量
+            $replace = array_keys($value);
+            foreach($replace as &$v){
+                $v = "{".$v."}";
+            }
+            return str_replace($replace,$value,isset($_lang[$name]) ? $_lang[$name] : $name);        
+        }
         $_lang[$name] = $value; // 语言定义
         return;
     }
