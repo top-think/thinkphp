@@ -101,7 +101,7 @@ function G($start,$end='',$dec=4) {
 /**
  * 获取和设置语言定义(不区分大小写)
  * @param string|array $name 语言变量
- * @param string $value 语言值
+ * @param mixed $value 语言值或者变量
  * @return mixed
  */
 function L($name=null, $value=null) {
