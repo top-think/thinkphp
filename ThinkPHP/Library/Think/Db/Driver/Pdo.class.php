@@ -44,6 +44,9 @@ class Pdo extends Db{
             if($this->pconnect) {
                 $config['params'][\PDO::ATTR_PERSISTENT] = true;
             }
+            if(version_compare(PHP_VERSION,'5.3.6','<=')){ //禁用模拟预处理语句
+                $config['params'][\PDO::ATTR_EMULATE_PREPARES]  =   false;
+            }
             //$config['params'][PDO::ATTR_CASE] = C("DB_CASE_LOWER")?PDO::CASE_LOWER:PDO::CASE_UPPER;
             try{
                 $this->linkID[$linkNum] = new \PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
