@@ -11,11 +11,7 @@
 
 /**
  * ThinkPHP English language package
- * @category   Think
- * @package  Lang
- * @author   liu21st <liu21st@gmail.com>
- * @version  $Id: zh-cn.php 3034 2012-10-17 21:14:00Z yangweijiester@gmail.com $
-  */
+ */
 return array(
 	/* core language pachage */ 
     '_MODULE_NOT_EXIST_'     => "Module can't be loaded",
