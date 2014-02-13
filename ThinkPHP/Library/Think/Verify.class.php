@@ -224,12 +224,13 @@ class Verify {
      * 往图片上写不同颜色的字母或数字
      */
     private function _writeNoise() {
+        $codeSet = '2345678abcdefhijkmnpqrstuvwxyz';
         for($i = 0; $i < 10; $i++){
             //杂点颜色
             $noiseColor = imagecolorallocate($this->_image, mt_rand(150,225), mt_rand(150,225), mt_rand(150,225));
             for($j = 0; $j < 5; $j++) {
                 // 绘杂点
-                imagestring($this->_image, 5, mt_rand(-10, $this->imageW),  mt_rand(-10, $this->imageH), $this->codeSet[mt_rand(0, 27)], $noiseColor);
+                imagestring($this->_image, 5, mt_rand(-10, $this->imageW),  mt_rand(-10, $this->imageH), $codeSet[mt_rand(0, 29)], $noiseColor);
             }
         }
     }
