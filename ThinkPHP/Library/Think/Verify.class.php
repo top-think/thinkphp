@@ -131,23 +131,24 @@ class Verify {
         // 绘验证码
         $code = array(); // 验证码
         $codeNX = 0; // 验证码第N个字符的左边距
-        for ($i = 0; $i<$this->length; $i++) {
-            if($this->useZh) {
+        if($this->useZh){ // 中文验证码
+            for ($i = 0; $i<$this->length; $i++) {
                 if($this->zhSet){
                     $code[$i] = iconv_substr($this->zhSet,floor(mt_rand(0,mb_strlen($this->zhSet,'utf-8')-1)),1,'utf-8');
                 }else{
                     $code[$i] = chr(mt_rand(0xB0,0xF7)).chr(mt_rand(0xA1,0xFE));
-                }
-            } else {
+                }                
+            }
+            imagettftext($this->_image, $this->fontSize, 0, ($this->imageW - $this->fontSize*$this->length*1.2)/3, $this->fontSize * 1.5, $this->_color, $this->fontttf, join('', $code));            
+        }else{
+            for ($i = 0; $i<$this->length; $i++) {
                 $code[$i] = $this->codeSet[mt_rand(0, 51)];
                 $codeNX += mt_rand($this->fontSize*1.2, $this->fontSize*1.6);
                 // 写一个验证码字符
-                $this->useZh || imagettftext($this->_image, $this->fontSize, mt_rand(-40, 40), $codeNX, $this->fontSize*1.6, $this->_color, $this->fontttf, $code[$i]);
+                imagettftext($this->_image, $this->fontSize, mt_rand(-40, 40), $codeNX, $this->fontSize*1.6, $this->_color, $this->fontttf, $code[$i]);
             }
         }
-        
-        $this->useZh && imagettftext($this->_image, $this->fontSize, 0, ($this->imageW - $this->fontSize*$this->length*1.2)/3, $this->fontSize * 1.5, $this->_color, $this->fontttf, iconv("GB2312","UTF-8", join('', $code)));
-        
+       
         // 保存验证码
         $key        =   $this->authcode($this->seKey);
         $code       =   $this->authcode(strtoupper(implode('', $code)));
