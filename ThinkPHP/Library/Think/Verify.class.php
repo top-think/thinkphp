@@ -13,27 +13,22 @@ namespace Think;
 
 class Verify {
     protected $config =	array(
-        'seKey'     => 'ThinkPHP.CN',   //验证码加密密钥
-        'expire'    => 1800,            // 验证码过期时间（s）
-        'useZh'     => false,           // 使用中文验证码 
-        'useImgBg'  => false,           // 使用背景图片 
-        'fontSize'  => 25,              // 验证码字体大小(px)
-        'useCurve'  => true,            // 是否画混淆曲线
-        'useNoise'  => true,            // 是否添加杂点	
-        'imageH'    => 0,               // 验证码图片高度
-        'imageW'    => 0,               // 验证码图片宽度
-        'length'    => 5,               // 验证码位数
-        'fontttf'   => '',              // 验证码字体，不设置随机获取
-        'bg'        => array(243, 251, 254),  // 背景颜色
+        'seKey'     =>  'ThinkPHP.CN',   // 验证码加密密钥
+        'codeSet'   =>  '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY',             // 验证码字符集合
+        'expire'    =>  1800,            // 验证码过期时间（s）
+        'useZh'     =>  false,           // 使用中文验证码 
+        'zhSet'     =>  '',              // 中文验证码字符串
+        'useImgBg'  =>  false,           // 使用背景图片 
+        'fontSize'  =>  25,              // 验证码字体大小(px)
+        'useCurve'  =>  true,            // 是否画混淆曲线
+        'useNoise'  =>  true,            // 是否添加杂点	
+        'imageH'    =>  0,               // 验证码图片高度
+        'imageW'    =>  0,               // 验证码图片宽度
+        'length'    =>  5,               // 验证码位数
+        'fontttf'   =>  '',              // 验证码字体，不设置随机获取
+        'bg'        =>  array(243, 251, 254),  // 背景颜色
         );
 
-
-    /**
-     * 验证码中使用的字符，01IO容易混淆，建议不用
-     *
-     * @var string
-     */
-    private $_codeSet = '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY';
     private $_image   = NULL;     // 验证码图片实例
     private $_color   = NULL;     // 验证码字体颜色
 
@@ -138,9 +133,13 @@ class Verify {
         $codeNX = 0; // 验证码第N个字符的左边距
         for ($i = 0; $i<$this->length; $i++) {
             if($this->useZh) {
-                $code[$i] = chr(mt_rand(0xB0,0xF7)).chr(mt_rand(0xA1,0xFE));
+                if($this->zhSet){
+                    $code[$i] = iconv_substr($this->zhSet,floor(mt_rand(0,mb_strlen($this->zhSet,'utf-8')-1)),1,'utf-8');
+                }else{
+                    $code[$i] = chr(mt_rand(0xB0,0xF7)).chr(mt_rand(0xA1,0xFE));
+                }
             } else {
-                $code[$i] = $this->_codeSet[mt_rand(0, 51)];
+                $code[$i] = $this->codeSet[mt_rand(0, 51)];
                 $codeNX += mt_rand($this->fontSize*1.2, $this->fontSize*1.6);
                 // 写一个验证码字符
                 $this->useZh || imagettftext($this->_image, $this->fontSize, mt_rand(-40, 40), $codeNX, $this->fontSize*1.6, $this->_color, $this->fontttf, $code[$i]);
@@ -234,7 +233,7 @@ class Verify {
             $noiseColor = imagecolorallocate($this->_image, mt_rand(150,225), mt_rand(150,225), mt_rand(150,225));
             for($j = 0; $j < 5; $j++) {
                 // 绘杂点
-                imagestring($this->_image, 5, mt_rand(-10, $this->imageW),  mt_rand(-10, $this->imageH), $this->_codeSet[mt_rand(0, 27)], $noiseColor);
+                imagestring($this->_image, 5, mt_rand(-10, $this->imageW),  mt_rand(-10, $this->imageH), $this->codeSet[mt_rand(0, 27)], $noiseColor);
             }
         }
     }
