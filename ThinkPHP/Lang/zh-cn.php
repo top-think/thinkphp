@@ -11,9 +11,6 @@
 
 /**
  * ThinkPHP 简体中文语言包
- * @category   Think
- * @package  Lang
- * @author   liu21st <liu21st@gmail.com>
  */
 return array(
     /* 核心语言变量 */  
