@@ -134,7 +134,7 @@ class Verify {
         if($this->useZh){ // 中文验证码
             for ($i = 0; $i<$this->length; $i++) {
                 $code[$i] = iconv_substr($this->zhSet,floor(mt_rand(0,mb_strlen($this->zhSet,'utf-8')-1)),1,'utf-8');
-                imagettftext($this->_image, $this->fontSize, mt_rand(-60, 60), $this->fontSize*($i+1)*1.2, $this->fontSize + mt_rand(0, 15), $this->_color, $this->fontttf, $code[$i]);
+                imagettftext($this->_image, $this->fontSize, mt_rand(-60, 60), $this->fontSize*($i+1)*1.5, $this->fontSize + mt_rand(10, 20), $this->_color, $this->fontttf, $code[$i]);
             }
             //imagettftext($this->_image, $this->fontSize, 0, ($this->imageW - $this->fontSize*$this->length*1.2)/3, $this->fontSize * 1.5, $this->_color, $this->fontttf, join('', $code));            
         }else{
