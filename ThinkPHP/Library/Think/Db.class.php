@@ -230,7 +230,7 @@ class Db {
             'hostname'  =>  isset($info['host']) ? $info['host'] : '',
             'hostport'  =>  isset($info['port']) ? $info['port'] : '',
             'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
-            'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf-8',
+            'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf8',
             );
         }else {
             preg_match('/^(.*?)\:\/\/(.*?)\:(.*?)\@(.*?)\:([0-9]{1, 6})\/(.*?)$/',trim($dsnStr),$matches);
