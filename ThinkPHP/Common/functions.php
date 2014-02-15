@@ -592,14 +592,13 @@ function tag($tag, &$params=NULL) {
 /**
  * 执行某个行为
  * @param string $name 行为名称
+ * @param string $tag 标签名称（行为类无需传入） 
  * @param Mixed $params 传入的参数
  * @return void
  */
-function B($name, &$params=NULL) {
-    if(strpos($name,'/')){
-        list($name,$tag) = explode('/',$name);
-    }else{
-        $tag     =   'run';
+function B($name, $tag='',&$params=NULL) {
+    if(''==$tag){
+        $name   .=  'Behavior';
     }
     return \Think\Hook::exec($name,$tag,$params);
 }
