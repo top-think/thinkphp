@@ -24,7 +24,7 @@ class JsonRpcController {
             $this->_initialize();
         //导入类库
         Vendor('jsonRPC.jsonRPCServer');
-        //实例化phprpc
+        // 启动server
         \jsonRPCServer::handle($this);
     }
 

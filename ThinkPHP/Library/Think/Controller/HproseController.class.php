@@ -30,7 +30,7 @@ class HproseController {
             $this->_initialize();
         //导入类库
         Vendor('Hprose.HproseHttpServer');
-        //实例化phprpc
+        //实例化HproseHttpServer
         $server     =   new \HproseHttpServer();
         if($this->allowMethodList){
             $methods    =   $this->allowMethodList;
