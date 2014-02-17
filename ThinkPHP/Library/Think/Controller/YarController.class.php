@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think\Controller;
 /**
- * ThinkPHP Hprose控制器类
+ * ThinkPHP Yar控制器类
  */
 class YarController {
 
@@ -25,7 +25,7 @@ class YarController {
         //判断扩展是否存在
         if(!extension_loaded('yar'))
             E(L('_NOT_SUPPERT_').':yar');
-        //实例化phprpc
+        //实例化Yar_Server
         $server     =   new \Yar_Server($this);
         // 启动server
         $server->handle();
