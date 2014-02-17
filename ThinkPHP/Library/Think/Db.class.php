@@ -128,7 +128,7 @@ class Db {
                   'database'  =>  $db_config['db_name'],
                   'dsn'       =>  $db_config['db_dsn'],
                   'params'    =>  $db_config['db_params'],
-                  'charset'   =>  $db_config['db_charset'],
+                  'charset'   =>  isset($db_config['db_charset'])?$db_config['db_charset']:'utf8',
              );
         }elseif(empty($db_config)) {
             // 如果配置为空，读取配置文件设置
