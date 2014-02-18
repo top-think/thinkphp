@@ -83,7 +83,7 @@ function build_app_dir() {
 function build_first_action($module) {
     $file   =   APP_PATH.$module.'/Controller/IndexController'.EXT;
     if(!is_file($file)){
-        $content = file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
+        $content = str_replace('[MODULE]',$module,file_get_contents(THINK_PATH.'Tpl/default_index.tpl'));
         file_put_contents($file,$content);
     }
 }
