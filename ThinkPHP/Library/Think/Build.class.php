@@ -22,6 +22,13 @@ class [CONTROLLER]Controller extends Controller {
         $this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px }</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>[ 您现在访问的是[MODULE]模块的[CONTROLLER]控制器 ]</div><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');
     }
 }';
+
+    static protected $model         =   '<?php
+namespace [MODULE]\Model;
+use Think\Model;
+class [MODEL]Model extends Model {
+
+}';
     // 检测应用目录是否需要自动创建
     static public function checkDir($module){
         if(!is_dir(APP_PATH.$module)) {
@@ -65,8 +72,25 @@ class [CONTROLLER]Controller extends Controller {
             // 写入模块配置文件
             if(!is_file(APP_PATH.$module.'/Conf/config.php'))
                 file_put_contents(APP_PATH.$module.'/Conf/config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
-            // 写入模块的测试控制器
-            self::buildController($module);
+            // 生成模块的测试控制器
+            if(defined('BUILD_CONTROLLER_LIST')){
+                // 自动生成的控制器列表（注意大小写）
+                $list = explode(',',BUILD_CONTROLLER_LIST);
+                foreach($list as $controller){
+                    self::buildController($module,$controller);
+                }
+            }else{
+                // 生成默认的控制器
+                self::buildController($module);
+            }
+            // 生成模块的模型
+            if(defined('BUILD_MODEL_LIST')){
+                // 自动生成的控制器列表（注意大小写）
+                $list = explode(',',BUILD_MODEL_LIST);
+                foreach($list as $model){
+                    self::buildModel($module,$model);
+                }
+            }            
         }else{
             header('Content-Type:text/html; charset=utf-8');
             exit('应用目录['.APP_PATH.']不可写，目录无法自动生成！<BR>请手动生成项目目录~');
@@ -88,11 +112,23 @@ class [CONTROLLER]Controller extends Controller {
         return true;
     }
 
-    // 创建测试控制器
+    // 创建控制器类
     static public function buildController($module,$controller='Index') {
         $file   =   APP_PATH.$module.'/Controller/'.$controller.'Controller'.EXT;
         if(!is_file($file)){
             $content = str_replace(array('[MODULE]','[CONTROLLER]'),array($module,$controller),self::$controller);
+            if(!C('APP_USE_NAMESPACE')){
+                $content    =   preg_replace('/namespace\s(.*?);/','',$content,1);
+            }
+            file_put_contents($file,$content);
+        }
+    }
+
+    // 创建模型类
+    static public function buildModel($module,$model) {
+        $file   =   APP_PATH.$module.'/Model/'.$model.'Model'.EXT;
+        if(!is_file($file)){
+            $content = str_replace(array('[MODULE]','[MODEL]'),array($module,$model),self::$model);
             if(!C('APP_USE_NAMESPACE')){
                 $content    =   preg_replace('/namespace\s(.*?);/','',$content,1);
             }
