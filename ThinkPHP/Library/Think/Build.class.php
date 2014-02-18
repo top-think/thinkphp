@@ -93,6 +93,9 @@ class [CONTROLLER]Controller extends Controller {
         $file   =   APP_PATH.$module.'/Controller/'.$controller.'Controller'.EXT;
         if(!is_file($file)){
             $content = str_replace(array('[MODULE]','[CONTROLLER]'),array($module,$controller),self::$controller);
+            if(!C('APP_USE_NAMESPACE')){
+                $content    =   preg_replace('/namespace\s(.*?);/','',$content,1);
+            }
             file_put_contents($file,$content);
         }
     }
