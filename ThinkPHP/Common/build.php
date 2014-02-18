@@ -43,16 +43,17 @@ function build_app_dir() {
     // 没有创建的话自动创建
     if(!is_dir(APP_PATH)) mkdir(APP_PATH,0755,true);
     if(is_writeable(APP_PATH)) {
+        $module     =   defined('BIND_MODULE') ? BIND_MODULE : C('DEFAULT_MODULE');
         $dirs  = array(
             COMMON_PATH,
             COMMON_PATH.'Common/',
             CONF_PATH,
-            APP_PATH.C('DEFAULT_MODULE').'/',
-            APP_PATH.C('DEFAULT_MODULE').'/Common/',
-            APP_PATH.C('DEFAULT_MODULE').'/Controller/',
-            APP_PATH.C('DEFAULT_MODULE').'/Model/',
-            APP_PATH.C('DEFAULT_MODULE').'/Conf/',
-            APP_PATH.C('DEFAULT_MODULE').'/View/',
+            APP_PATH.$module.'/',
+            APP_PATH.$module.'/Common/',
+            APP_PATH.$module.'/Controller/',
+            APP_PATH.$module.'/Model/',
+            APP_PATH.$module.'/Conf/',
+            APP_PATH.$module.'/View/',
             RUNTIME_PATH,
             CACHE_PATH,
             LOG_PATH,
@@ -64,20 +65,23 @@ function build_app_dir() {
         }
         // 写入目录安全文件
         build_dir_secure($dirs);
-        // 写入初始配置文件
+        // 写入应用配置文件
         if(!is_file(CONF_PATH.'config.php'))
             file_put_contents(CONF_PATH.'config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
-        // 写入测试Action
-        build_first_action();
+        // 写入模块配置文件
+        if(!is_file(APP_PATH.$module.'/Conf/config.php'))
+            file_put_contents(APP_PATH.$module.'/Conf/config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
+        // 写入模块的测试控制器
+        build_first_action($module);
     }else{
         header('Content-Type:text/html; charset=utf-8');
         exit('应用目录['.APP_PATH.']不可写，目录无法自动生成！<BR>请手动生成项目目录~');
     }
 }
 
-// 创建测试Action
-function build_first_action() {
-    $file   =   APP_PATH.C('DEFAULT_MODULE').'/Controller/IndexController'.EXT;
+// 创建测试控制器
+function build_first_action($module) {
+    $file   =   APP_PATH.$module.'/Controller/IndexController'.EXT;
     if(!is_file($file)){
         $content = file_get_contents(THINK_PATH.'Tpl/default_index.tpl');
         file_put_contents($file,$content);
