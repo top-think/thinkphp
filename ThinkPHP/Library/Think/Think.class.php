@@ -106,9 +106,12 @@ class Think {
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));
 
       // 检查应用目录结构 如果不存在则自动创建
-      if(C('CHECK_APP_DIR') && !is_dir(LOG_PATH)) {
-          // 创建应用目录结构
-          require THINK_PATH.'Common/build.php';
+      if(C('CHECK_APP_DIR')) {
+          $module     =   defined('BIND_MODULE') ? BIND_MODULE : C('DEFAULT_MODULE');
+          if(!is_dir(APP_PATH.$module) || !is_dir(LOG_PATH)){
+              // 检测应用目录结构
+              Build::checkDir($module);
+          }
       }
 
       // 记录加载文件时间
