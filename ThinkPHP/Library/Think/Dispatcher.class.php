@@ -150,6 +150,9 @@ class Dispatcher {
             // 加载应用模式对应的配置文件
             if('common' != APP_MODE && is_file(MODULE_PATH.'Conf/config_'.APP_MODE.'.php'))
                 C(include MODULE_PATH.'Conf/config_'.APP_MODE.'.php');
+            // 当前应用状态对应的配置文件
+            if(APP_STATUS && is_file(MODULE_PATH.'Conf/'.APP_STATUS.'.php'))
+                C(include MODULE_PATH.'Conf/'.APP_STATUS.'.php');
 
             // 加载模块别名定义
             if(is_file(MODULE_PATH.'Conf/alias.php'))
