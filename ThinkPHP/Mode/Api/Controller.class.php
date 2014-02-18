@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think;
 /**
- * ThinkPHP 控制器基类 抽象类
+ * ThinkPHP API模式控制器基类
  */
 abstract class Controller {
 
