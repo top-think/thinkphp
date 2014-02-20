@@ -68,7 +68,7 @@ class Log {
         if(empty($destination))
             $destination = C('LOG_PATH').date('y_m_d').'.log';
         if(!self::$storage){
-            $type = $type?$type:C('LOG_TYPE');
+            $type = $type?:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }
@@ -90,7 +90,7 @@ class Log {
      */
     static function write($message,$level=self::ERR,$type='',$destination='') {
         if(!self::$storage){
-            $type = $type?$type:C('LOG_TYPE');
+            $type = $type?:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }

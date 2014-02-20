@@ -51,8 +51,8 @@ class Upload{
     public function __construct($config = array(), $driver = '', $driverConfig = null){
     	/* 获取配置 */
         $this->config   =   array_merge($this->config, $config);
-        $driver         =   $driver? $driver : ($this->driver? $this->driver : C('FILE_UPLOAD_TYPE'));
-        $driverConfig   =   $driverConfig? $driverConfig : ($this->driverConfig? $this->driverConfig :C('UPLOAD_TYPE_CONFIG'));
+        $driver         =   $driver? : ($this->driver? : C('FILE_UPLOAD_TYPE'));
+        $driverConfig   =   $driverConfig? : ($this->driverConfig? :C('UPLOAD_TYPE_CONFIG'));
 
         /* 设置上传驱动 */
         $class      =   strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));

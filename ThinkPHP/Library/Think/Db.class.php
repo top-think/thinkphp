@@ -789,7 +789,7 @@ class Db {
             }else{
                 $page = $options['page'];
             }
-            $page    =  $page?$page:1;
+            $page    =  $page?:1;
             $listRows=  isset($listRows)?$listRows:(is_numeric($options['limit'])?$options['limit']:20);
             $offset  =  $listRows*((int)$page-1);
             $options['limit'] =  $offset.','.$listRows;
