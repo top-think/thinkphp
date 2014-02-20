@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -38,12 +38,12 @@ class Qiniu{
      * @param string $root   根目录
      * @param array  $config FTP配置
      */
-	public function __construct($root, $config){
+    public function __construct($root, $config){
         $this->config = array_merge($this->config, $config);
         /* 设置根目录 */
         $this->qiniu = new QiniuStorage($config);
         $this->rootPath = trim($root, './') . '/';
-	}
+    }
 
     /**
      * 检测上传根目录(七牛上传时支持自动创建目录，直接返回)
@@ -58,8 +58,8 @@ class Qiniu{
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-	public function checkSavePath($savepath){
-		return true;
+    public function checkSavePath($savepath){
+        return true;
     }
 
     /**
@@ -68,7 +68,7 @@ class Qiniu{
      * @return boolean          true-创建成功，false-创建失败
      */
     public function mkdir($savepath){
-    	return true;
+        return true;
     }
 
     /**

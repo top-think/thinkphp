@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think\Upload\Driver;
 use Think\Upload\Driver\Bcs\BaiduBcs;
-class Bcs{
+class Bcs {
     /**
      * 上传文件根目录
      * @var string
@@ -131,7 +131,7 @@ class Bcs{
         }
 
         $length = 0;
-		$date   = gmdate('D, d M Y H:i:s \G\M\T');
+        $date   = gmdate('D, d M Y H:i:s \G\M\T');
 
         if (!is_null($body)) {
             if(is_resource($body)){
@@ -159,12 +159,12 @@ class Bcs{
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         if ($method == 'PUT' || $method == 'POST') {
-			curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
         } else {
-			curl_setopt($ch, CURLOPT_POST, 0);
+            curl_setopt($ch, CURLOPT_POST, 0);
         }
 
         if ($method == 'HEAD') {
@@ -204,30 +204,30 @@ class Bcs{
      * @return string          请求签名
      */
     private function sign($method, $Bucket, $object='/', $size=''){
-    	if(!$size)
-    		$size = $this->config['size'];
-    	$param = array(
-    		'ak'=>$this->config['AccessKey'],
-    		'sk'=>$this->config['SecretKey'],
-    		'size'=>$size,
-    		'bucket'=>$Bucket,
-    		'host'=>self :: DEFAULT_URL,
-    		'date'=>time()+$this->config['timeout'],
-    		'ip'=>'',
-    		'object'=>$object
-		);
-    	$response = $this->request($this->apiurl.'?'.http_build_query($param), 'POST');
-    	if($response)
-    		$response = json_decode($response, true);
-		return $response['content'][$method];
-	}
+        if(!$size)
+            $size = $this->config['size'];
+        $param = array(
+            'ak'=>$this->config['AccessKey'],
+            'sk'=>$this->config['SecretKey'],
+            'size'=>$size,
+            'bucket'=>$Bucket,
+            'host'=>self :: DEFAULT_URL,
+            'date'=>time()+$this->config['timeout'],
+            'ip'=>'',
+            'object'=>$object
+        );
+        $response = $this->request($this->apiurl.'?'.http_build_query($param), 'POST');
+        if($response)
+            $response = json_decode($response, true);
+        return $response['content'][$method];
+    }
 
 
     /**
      * 获取请求错误信息
      * @param  string $header 请求返回头信息
      */
-	private function error($header) {
+    private function error($header) {
         list($status, $stash) = explode("\r\n", $header, 2);
         list($v, $code, $message) = explode(" ", $status, 3);
         $message = is_null($message) ? 'File Not Found' : "[{$status}]:{$message}";

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -21,7 +21,6 @@ class Dispatcher {
      * @return void
      */
     static public function dispatch() {
-        
         $varPath        =   C('VAR_PATHINFO');
         $varModule      =   C('VAR_MODULE');
         $varController  =   C('VAR_CONTROLLER');
@@ -78,7 +77,6 @@ class Dispatcher {
                     if($controller){
                         define('BIND_CONTROLLER',$controller);
                     }
-                    
                 }
                 if(isset($vars)) { // 传入参数
                     parse_str($vars,$parms);

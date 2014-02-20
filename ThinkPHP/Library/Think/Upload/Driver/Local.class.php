@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -27,9 +27,9 @@ class Local{
      * 构造函数，用于设置上传根路径
      * @param string $root 根目录
      */
-	public function __construct($root, $config = null){
+    public function __construct($root, $config = null){
         $this->rootPath = $root;
-	}
+    }
 
     /**
      * 检测上传根目录
@@ -48,19 +48,19 @@ class Local{
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-	public function checkSavePath($savepath){
+    public function checkSavePath($savepath){
         /* 检测并创建目录 */
-    	if (!$this->mkdir($savepath)) {
-    		return false;
-    	} else {
+        if (!$this->mkdir($savepath)) {
+            return false;
+        } else {
             /* 检测目录是否可写 */
-    		if (!is_writable($this->rootPath . $savepath)) {
-    			$this->error = '上传目录 ' . $savepath . ' 不可写！';
-    			return false;
-    		} else {
+            if (!is_writable($this->rootPath . $savepath)) {
+                $this->error = '上传目录 ' . $savepath . ' 不可写！';
+                return false;
+            } else {
                 return true;
             }
-    	}
+        }
     }
 
     /**

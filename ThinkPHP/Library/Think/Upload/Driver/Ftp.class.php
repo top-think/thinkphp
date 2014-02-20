@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Upload\Driver;
-class Ftp{
+class Ftp {
     /**
      * 上传文件根目录
      * @var string
@@ -42,7 +42,7 @@ class Ftp{
      * @param string $root   根目录
      * @param array  $config FTP配置
      */
-	public function __construct($root, $config){
+    public function __construct($root, $config){
         /* 默认FTP配置 */
         $this->config = array_merge($this->config, $config);
 
@@ -53,7 +53,7 @@ class Ftp{
         
         /* 设置根目录 */
         $this->rootPath = ftp_pwd($this->link) . '/' . ltrim($root, '/');
-	}
+    }
 
     /**
      * 检测上传根目录
@@ -72,14 +72,14 @@ class Ftp{
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-	public function checkSavePath($savepath){
+    public function checkSavePath($savepath){
         /* 检测并创建目录 */
-    	if (!$this->mkdir($savepath)) {
-    		return false;
-    	} else {
+        if (!$this->mkdir($savepath)) {
+            return false;
+        } else {
             //TODO:检测目录是否可写
-    		return true;
-    	}
+            return true;
+        }
     }
 
     /**
@@ -102,7 +102,6 @@ class Ftp{
             $this->error = '文件上传保存错误！';
             return false;
         }
-        
         return true;
     }
 

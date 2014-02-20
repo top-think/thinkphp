@@ -2,25 +2,25 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 namespace Think;
-class Upload{
-	/**
-	 * 默认上传配置
-	 * @var array
-	 */
+class Upload {
+    /**
+     * 默认上传配置
+     * @var array
+     */
     private $config = array(
         'mimes'         =>  array(), //允许上传的文件MiMe类型
         'maxSize'       =>  0, //上传的文件大小限制 (0-不做限制)
         'exts'          =>  array(), //允许上传的文件后缀
         'autoSub'       =>  true, //自动子目录保存文件
         'subName'       =>  array('date', 'Y-m-d'), //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
-    	'rootPath'      =>     './Uploads/', //保存根路径
+        'rootPath'      =>  './Uploads/', //保存根路径
         'savePath'      =>  '', //保存路径
         'saveName'      =>  array('uniqid', ''), //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
         'saveExt'       =>  '', //文件保存后缀，空则使用原后缀
@@ -49,14 +49,14 @@ class Upload{
      * @param string $driver 要使用的上传驱动 LOCAL-本地上传驱动，FTP-FTP上传驱动
      */
     public function __construct($config = array(), $driver = '', $driverConfig = null){
-    	/* 获取配置 */
+        /* 获取配置 */
         $this->config   =   array_merge($this->config, $config);
         $driver         =   $driver? : ($this->driver? : C('FILE_UPLOAD_TYPE'));
         $driverConfig   =   $driverConfig? : ($this->driverConfig? :C('UPLOAD_TYPE_CONFIG'));
 
         /* 设置上传驱动 */
         $class      =   strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
-    	$this->setDriver($class, $driverConfig);
+        $this->setDriver($class, $driverConfig);
 
         /* 调整配置，把字符串配置参数转换为数组 */
         if(!empty($this->config['mimes'])){

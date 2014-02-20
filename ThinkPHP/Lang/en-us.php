@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -13,9 +13,9 @@
  * ThinkPHP English language package
  */
 return array(
-	/* core language pachage */ 
+    /* core language pachage */ 
     '_MODULE_NOT_EXIST_'     => "Module can't be loaded",
-	'_CONTROLLER_NOT_EXIST_' =>	"Controler can't be loaded",
+    '_CONTROLLER_NOT_EXIST_' =>	"Controler can't be loaded",
     '_ERROR_ACTION_'         => 'Illegal Action',
     '_LANGUAGE_NOT_LOAD_'    => "Can't load language package",
     '_TEMPLATE_NOT_EXIST_'   => "Template does't exist",
@@ -33,15 +33,15 @@ return array(
     '_NOT_SUPPERT_'          => 'The system does not support',
     '_CACHE_TYPE_INVALID_'   => 'Unable to load the cache type',
     '_FILE_NOT_WRITEABLE_'   => 'Directory (file) is not writable',
-	'_METHOD_NOT_EXIST_'     => 'The method you requested  does not exist!',
+    '_METHOD_NOT_EXIST_'     => 'The method you requested  does not exist!',
     '_CLASS_NOT_EXIST_'      => 'Instantiating a class does not exist！',
     '_CLASS_CONFLICT_'       => 'Class name conflicts',
     '_TEMPLATE_ERROR_'       => 'Template Engine errors',
     '_CACHE_WRITE_ERROR_'    => 'Cache file write failed!',
     '_TAGLIB_NOT_EXIST_'     => 'Tag library is not defined',
-	'_OPERATION_FAIL_'       => 'Operation failed!',
-	'_OPERATION_SUCCESS_'    => 'Operation successed!',
-	'_SELECT_NOT_EXIST_'     => 'Record does not exist!',
+    '_OPERATION_FAIL_'       => 'Operation failed!',
+    '_OPERATION_SUCCESS_'    => 'Operation successed!',
+    '_SELECT_NOT_EXIST_'     => 'Record does not exist!',
     '_EXPRESS_ERROR_'        => 'Expression errors',
     '_TOKEN_ERROR_'          => "Form's token errors",
     '_RECORD_HAS_UPDATE_'    => 'Record has been updated',

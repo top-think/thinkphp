@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -15,42 +15,41 @@ class Sae{
      * Storage的Domain
      * @var string
      */
-    private $domain='';
+    private $domain     =   '';
 
-    private $rootPath='';
+    private $rootPath   =   '';
 
     /**
      * 本地上传错误信息
      * @var string
      */
-    private $error = ''; //上传错误信息
+    private $error      =   ''; //上传错误信息
 
     /**
      * 构造函数，设置storage的domain， 如果有传配置，则domain为配置项，如果没有传domain为第一个路径的目录名称。 
      * @param string $root 根目录
      */
-	public function __construct($root, $config = null){
-        $arr=explode('/',trim($root,'./'));
+    public function __construct($root, $config = null){
+        $arr    =   explode('/',trim($root,'./'));
         $domain=strtolower(array_shift($arr));
         if(is_array($config) && isset($config['domain'])){
-            $this->domain=strtolower($config['domain']);
+            $this->domain   =   strtolower($config['domain']);
         }else{
-            $this->domain=$domain;
+            $this->domain   =   $domain;
         }
-        $this->rootPath=implode('/',$arr);
-	}
+        $this->rootPath     =   implode('/',$arr);
+    }
 
     /**
      * 检测上传根目录
      * @return boolean true-检测通过，false-检测失败
      */
     public function checkRootPath(){
-        $st=new \SaeStorage();
+        $st =   new \SaeStorage();
         if(false===$st->getDomainCapacity($this->domain)){
-          $this->error='您好像没有建立Storage的domain['.$this->domain.']';
+          $this->error  =   '您好像没有建立Storage的domain['.$this->domain.']';
           return false;
         }
-
         return true;
     }
 
@@ -59,7 +58,7 @@ class Sae{
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-	public function checkSavePath($savepath){
+    public function checkSavePath($savepath){
         return true;
     }
 
@@ -71,7 +70,7 @@ class Sae{
      */
     public function save($file, $replace=true) {
         $filename = ltrim($this->rootPath .'/'. $file['savepath'] . $file['savename'],'/');
-        $st=new \SaeStorage();
+        $st =   new \SaeStorage();
         /* 不覆盖同名文件 */ 
         if (!$replace && $st->fileExists($this->domain,$filename)) {
             $this->error = '存在同名文件' . $file['savename'];
@@ -83,7 +82,6 @@ class Sae{
             $this->error = '文件上传保存错误！['.$st->errno().']:'.$st->errmsg();
             return false;
         }
-        
         return true;
     }
 
