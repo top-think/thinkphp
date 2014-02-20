@@ -151,7 +151,7 @@ class MongoModel extends Model{
         if(false !== $result ) {
             $this->_after_insert($data,$options);
             if(isset($data[$this->getPk()])){
-                return $data[$this->getPk()]
+                return $data[$this->getPk()];
             }
         }
         return $result;
