@@ -228,7 +228,7 @@ class Dispatcher {
 
         // 当前控制器的UR地址
         $controllerName    =   defined('CONTROLLER_ALIAS')? CONTROLLER_ALIAS : CONTROLLER_NAME;
-        define('__CONTROLLER__',__MODULE__.$depr.(defined('BIND_CONTROLLER')? '': ( C('URL_CASE_INSENSITIVE') ? strtolower($controllerName) : $controllerName )) );
+        define('__CONTROLLER__',__MODULE__.$depr.(defined('BIND_CONTROLLER')? '': ( C('URL_CASE_INSENSITIVE') ? parse_name($controllerName) : $controllerName )) );
 
         // 当前操作的URL地址
         define('__ACTION__',__CONTROLLER__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));
