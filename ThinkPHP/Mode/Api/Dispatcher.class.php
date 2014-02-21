@@ -25,6 +25,7 @@ class Dispatcher {
         $varModule      =   C('VAR_MODULE');
         $varController  =   C('VAR_CONTROLLER');
         $varAction      =   C('VAR_ACTION');
+        $urlCase        =   C('URL_CASE_INSENSITIVE');
         if(isset($_GET[$varPath])) { // 判断URL里面是否有兼容模式参数
             $_SERVER['PATH_INFO'] = $_GET[$varPath];
             unset($_GET[$varPath]);
@@ -177,21 +178,19 @@ class Dispatcher {
             $_GET   =  array_merge($var,$_GET);
         }
         // 获取控制器和操作名
-        define('CONTROLLER_NAME',   defined('BIND_CONTROLLER')? BIND_CONTROLLER : self::getController($varController));
-        define('ACTION_NAME',       defined('BIND_ACTION')? BIND_ACTION : self::getAction($varAction));
+        define('CONTROLLER_NAME',   defined('BIND_CONTROLLER')? BIND_CONTROLLER : self::getController($varController,$urlCase));
+        define('ACTION_NAME',       defined('BIND_ACTION')? BIND_ACTION : self::getAction($varAction,$urlCase));
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
     }
 
     /**
      * 获得实际的控制器名称
-     * @access private
-     * @return string
      */
-    static private function getController($var) {
+    static private function getController($var,$urlCase) {
         $controller = (!empty($_GET[$var])? $_GET[$var]:C('DEFAULT_CONTROLLER'));
         unset($_GET[$var]);
-        if(C('URL_CASE_INSENSITIVE')) {
+        if($urlCase) {
             // URL地址不区分大小写
             // 智能识别方式 user_type 识别到 UserTypeController 控制器
             $controller = parse_name($controller,1);
@@ -201,25 +200,17 @@ class Dispatcher {
 
     /**
      * 获得实际的操作名称
-     * @access private
-     * @return string
      */
-    static private function getAction($var) {
+    static private function getAction($var,$urlCase) {
         $action   = !empty($_POST[$var]) ?
             $_POST[$var] :
             (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_ACTION'));
         unset($_POST[$var],$_GET[$var]);
-        if(C('URL_CASE_INSENSITIVE')) {
-            // URL地址不区分大小写 操作方法转小写
-            $action = strtolower($action);
-        }
-        return strip_tags($action);
+        return strip_tags($urlCase?strtolower($action):$action);
     }
 
     /**
      * 获得实际的模块名称
-     * @access private
-     * @return string
      */
     static private function getModule($var) {
         $module   = (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_MODULE'));
