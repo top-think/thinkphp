@@ -128,7 +128,7 @@ class ViewModel extends Model {
             $orders = explode(',',$order);
             $_order = array();
             foreach ($orders as $order){
-                $array = explode(' ',$order);
+                $array = explode(' ',trim($order));
                 $field   =   $array[0];
                 $sort   =   isset($array[1])?$array[1]:'ASC';
                 // 解析成视图字段
