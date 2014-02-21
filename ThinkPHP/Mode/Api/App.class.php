@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -50,7 +50,7 @@ class App {
             $module  =  false;
         }else{
             //创建控制器实例
-            $module  =  A(CONTROLLER_NAME);                
+            $module  =  A(CONTROLLER_NAME);
         }
 
         if(!$module) {
@@ -121,7 +121,6 @@ class App {
      * @return void
      */
     static public function run() {
-
         App::init();
         // Session初始化
         if(!IS_CLI){

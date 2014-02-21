@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,5 +23,5 @@ return  array(
     'TMPL_CACHE_ON'         =>  false,        // 是否开启模板编译缓存,设为false则每次都会重新编译
     'TMPL_STRIP_SPACE'      =>  false,       // 是否去除模板文件里面的html空格与换行
     'SHOW_ERROR_MSG'        =>  true,    // 显示错误信息
-    'URL_CASE_INSENSITIVE'  =>  false,		 // URL区分大小写
+    'URL_CASE_INSENSITIVE'  =>  false,  // URL区分大小写
 );
