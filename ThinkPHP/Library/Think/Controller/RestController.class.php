@@ -199,7 +199,7 @@ class RestController extends Controller {
             $data = serialize($data);
         }// 默认直接输出
         $this->setContentType($type);
-        header('Content-Length: ' . strlen($data));
+        //header('Content-Length: ' . strlen($data));
         return $data;
     }
 
