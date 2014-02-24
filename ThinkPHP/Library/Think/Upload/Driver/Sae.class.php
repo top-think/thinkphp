@@ -23,15 +23,16 @@ class Sae{
      * 本地上传错误信息
      * @var string
      */
-    private $error      =   ''; //上传错误信息
+    private $error      =   ''; 
 
     /**
      * 构造函数，设置storage的domain， 如果有传配置，则domain为配置项，如果没有传domain为第一个路径的目录名称。 
      * @param string $root 根目录
+     * @param mixed $config 上传配置     
      */
     public function __construct($root, $config = null){
         $arr    =   explode('/',trim($root,'./'));
-        $domain=strtolower(array_shift($arr));
+        $domain =   strtolower(array_shift($arr));
         if(is_array($config) && isset($config['domain'])){
             $this->domain   =   strtolower($config['domain']);
         }else{
@@ -68,7 +69,7 @@ class Sae{
      * @param  boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
      */
-    public function save($file, $replace=true) {
+    public function save(&$file, $replace=true) {
         $filename = ltrim($this->rootPath .'/'. $file['savepath'] . $file['savename'],'/');
         $st =   new \SaeStorage();
         /* 不覆盖同名文件 */ 
@@ -81,6 +82,8 @@ class Sae{
         if (!$st->upload($this->domain,$filename,$file['tmp_name'])) {
             $this->error = '文件上传保存错误！['.$st->errno().']:'.$st->errmsg();
             return false;
+        }else{
+            $file['url'] = $st->getUrl($this->domain, $filename);
         }
         return true;
     }
