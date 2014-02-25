@@ -1205,7 +1205,7 @@ function cookie($name, $value='', $option=null) {
         }
         return;
     }
-    $name = $config['prefix'] . $name;
+    $name = $config['prefix'] . str_replace('.', '_', $name);
     if ('' === $value) {
         if(isset($_COOKIE[$name])){
             $value =    $_COOKIE[$name];
