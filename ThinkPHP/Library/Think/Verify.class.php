@@ -27,6 +27,7 @@ class Verify {
         'length'    =>  5,               // 验证码位数
         'fontttf'   =>  '',              // 验证码字体，不设置随机获取
         'bg'        =>  array(243, 251, 254),  // 背景颜色
+        'reset'     =>  true,           // 验证成功后是否重置
         );
 
     private $_image   = NULL;     // 验证码图片实例
@@ -76,7 +77,7 @@ class Verify {
         }
 
         if($this->authcode(strtoupper($code)) == $secode['verify_code']) {
-            session($key, null);
+            $this->reset && session($key, null);
             return true;
         }
 
