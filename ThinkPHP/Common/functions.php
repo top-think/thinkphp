@@ -57,7 +57,7 @@ function C($name=null, $value=null,$default=null) {
  * @param string $parse 配置格式 默认为空
  * @return void
  */
-function load_config($file,$parse=''){
+function load_config($file,$parse=CONF_PARSE){
     $ext  = pathinfo($file,PATHINFO_EXTENSION);
     switch($ext){
         case 'php':
@@ -1275,9 +1275,9 @@ function load_ext_file($path) {
     if($configs = C('LOAD_EXT_CONFIG')) {
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
-            $file   = $path.'Conf/'.$config.'.php';
+            $file   = $path.'Conf/'.$config.CONF_EXT;
             if(is_file($file)) {
-                is_numeric($key)?C(include $file):C($key,include $file);
+                is_numeric($key)?C(load_config($file)):C($key,load_config($file));
             }
         }
     }

@@ -144,14 +144,14 @@ class Dispatcher {
             Hook::listen('module_check');
 
             // 加载模块配置文件
-            if(is_file(MODULE_PATH.'Conf/config.php'))
-                C(include MODULE_PATH.'Conf/config.php');
+            if(is_file(MODULE_PATH.'Conf/config'.CONF_EXT))
+                C(load_config(MODULE_PATH.'Conf/config'.CONF_EXT));
             // 加载应用模式对应的配置文件
-            if('common' != APP_MODE && is_file(MODULE_PATH.'Conf/config_'.APP_MODE.'.php'))
-                C(include MODULE_PATH.'Conf/config_'.APP_MODE.'.php');
+            if('common' != APP_MODE && is_file(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT))
+                C(load_config(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT));
             // 当前应用状态对应的配置文件
-            if(APP_STATUS && is_file(MODULE_PATH.'Conf/'.APP_STATUS.'.php'))
-                C(include MODULE_PATH.'Conf/'.APP_STATUS.'.php');
+            if(APP_STATUS && is_file(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT))
+                C(load_config(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT));
 
             // 加载模块别名定义
             if(is_file(MODULE_PATH.'Conf/alias.php'))

@@ -56,12 +56,12 @@ class Think {
 
           // 加载应用模式配置文件
           foreach ($mode['config'] as $key=>$file){
-              is_numeric($key)?C(include $file):C($key,include $file);
+              is_numeric($key)?C(load_config($file)):C($key,load_config($file));
           }
 
           // 读取当前应用模式对应的配置文件
-          if('common' != APP_MODE && is_file(CONF_PATH.'config_'.APP_MODE.'.php'))
-              C(include CONF_PATH.'config_'.APP_MODE.'.php');  
+          if('common' != APP_MODE && is_file(CONF_PATH.'config_'.APP_MODE.CONF_EXT))
+              C(include CONF_PATH.'config_'.APP_MODE.CONF_EXT);  
 
           // 加载模式别名定义
           if(isset($mode['alias'])){
@@ -93,14 +93,14 @@ class Think {
             // 调试模式加载系统默认的配置文件
             C(include THINK_PATH.'Conf/debug.php');
             // 读取应用调试配置文件
-            if(is_file(CONF_PATH.'debug.php'))
-                C(include CONF_PATH.'debug.php');           
+            if(is_file(CONF_PATH.'debug'.CONF_EXT))
+                C(include CONF_PATH.'debug'.CONF_EXT);           
           }
       }
 
       // 读取当前应用状态对应的配置文件
-      if(APP_STATUS && is_file(CONF_PATH.APP_STATUS.'.php'))
-          C(include CONF_PATH.APP_STATUS.'.php');   
+      if(APP_STATUS && is_file(CONF_PATH.APP_STATUS.CONF_EXT))
+          C(include CONF_PATH.APP_STATUS.CONF_EXT);   
 
       // 设置系统时区
       date_default_timezone_set(C('DEFAULT_TIMEZONE'));

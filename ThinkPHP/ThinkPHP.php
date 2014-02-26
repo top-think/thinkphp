@@ -59,6 +59,8 @@ defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // �
 defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 应用缓存目录
 defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 应用数据目录
 defined('CACHE_PATH')   or define('CACHE_PATH',     RUNTIME_PATH.'Cache/'); // 应用模板缓存目录
+defined('CONF_EXT')     or define('CONF_EXT',       '.php'); // 配置文件后缀
+defined('CONF_PARSE')   or define('CONF_PARSE',     '');    // 配置文件解析方法
 
 // 系统信息
 if(version_compare(PHP_VERSION,'5.4.0','<')) {
