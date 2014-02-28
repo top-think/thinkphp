@@ -48,7 +48,7 @@ class Ftp {
 
         /* 登录FTP服务器 */
         if(!$this->login()){
-            throw new \Exception($this->error);
+            E($this->error);
         }
         
         /* 设置根目录 */
