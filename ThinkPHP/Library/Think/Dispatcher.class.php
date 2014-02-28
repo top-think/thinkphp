@@ -106,25 +106,28 @@ class Dispatcher {
                 }
             }
         }
-        if(empty($_SERVER['PATH_INFO'])) {
-            $_SERVER['PATH_INFO'] = '';
-        }
+
         $depr = C('URL_PATHINFO_DEPR');
         define('MODULE_PATHINFO_DEPR',  $depr);
-        define('__INFO__',trim($_SERVER['PATH_INFO'],'/'));
-        // URL后缀
-        define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
 
-        $_SERVER['PATH_INFO'] = __INFO__;
-
-        if (__INFO__ && C('MULTI_MODULE') && !defined('BIND_MODULE')){ // 获取模块名
-            $paths      =   explode($depr,__INFO__,2);
-            $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
-            $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
-            if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
-                $_GET[$varModule]       =   $module;
-                $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
-            }
+        if(empty($_SERVER['PATH_INFO'])) {
+            $_SERVER['PATH_INFO'] = '';
+            define('__INFO__','');
+            define('__EXT__','');
+        }else{
+            define('__INFO__',trim($_SERVER['PATH_INFO'],'/'));
+            // URL后缀
+            define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
+            $_SERVER['PATH_INFO'] = __INFO__;     
+            if (__INFO__ && !defined('BIND_MODULE') && C('MULTI_MODULE')){ // 获取模块名
+                $paths      =   explode($depr,__INFO__,2);
+                $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
+                $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
+                if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
+                    $_GET[$varModule]       =   $module;
+                    $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
+                }
+            }                   
         }
 
         // URL常量
