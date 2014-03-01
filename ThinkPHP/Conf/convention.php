@@ -143,6 +143,8 @@ return  array(
     'URL_DENY_SUFFIX'       =>  'ico|png|gif|jpg', // URL禁止访问的后缀设置
     'URL_PARAMS_BIND'       =>  true, // URL变量绑定到Action方法参数
     'URL_PARAMS_BIND_TYPE'  =>  0, // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
+    'URL_PARAMS_FILTER'     =>  false, // URL变量绑定过滤
+    'URL_PARAMS_FILTER_TYPE'=>  '', // URL变量绑定过滤方法 如果为空 调用DEFAULT_FILTER
     'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
     'URL_ROUTER_ON'         =>  false,   // 是否开启URL路由
     'URL_ROUTE_RULES'       =>  array(), // 默认路由规则 针对模块

@@ -139,6 +139,17 @@ class App {
                             E(L('_PARAM_ERROR_').':'.$name);
                         }   
                     }
+                    // 开启绑定参数过滤机制
+                    if(C('URL_PARAMS_SAFE')){
+                        array_walk_recursive($args,'filter_exp');
+                        $filters     =   C('URL_PARAMS_FILTER')?:C('DEFAULT_FILTER');
+                        if($filters) {
+                            $filters    =   explode(',',$filters);
+                            foreach($filters as $filter){
+                                $args   =   array_map_recursive($filter,$args); // 参数过滤
+                            }
+                        }                        
+                    }
                     $method->invokeArgs($module,$args);
                 }else{
                     $method->invoke($module);

@@ -251,9 +251,10 @@ function T($template='',$layer=''){
  * @param string $name 变量的名称 支持指定类型
  * @param mixed $default 不存在的时候默认值
  * @param mixed $filter 参数过滤方法
+ * @param mixed $datas 要获取的额外数据源
  * @return mixed
  */
-function I($name,$default='',$filter=null) {
+function I($name,$default='',$filter=null,$datas=null) {
     if(strpos($name,'.')) { // 指定参数来源
         list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
@@ -280,6 +281,7 @@ function I($name,$default='',$filter=null) {
         case 'cookie'  :   $input =& $_COOKIE;    break;
         case 'server'  :   $input =& $_SERVER;    break;
         case 'globals' :   $input =& $GLOBALS;    break;
+        case 'data'    :   $input =& $datas;      break;
         default:
             return NULL;
     }
