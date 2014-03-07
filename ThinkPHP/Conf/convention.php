@@ -152,7 +152,7 @@ return  array(
 
     /* 系统变量名称设置 */
     'VAR_MODULE'            =>  'm',     // 默认模块获取变量
-    'VAR_ADDON'             =>  'Addon',     // 默认的插件控制器命名空间变量
+    'VAR_ADDON'             =>  'addon',     // 默认的插件控制器命名空间变量
     'VAR_CONTROLLER'        =>  'c',    // 默认控制器获取变量
     'VAR_ACTION'            =>  'a',    // 默认操作获取变量
     'VAR_AJAX_SUBMIT'       =>  'ajax',  // 默认的AJAX提交变量
