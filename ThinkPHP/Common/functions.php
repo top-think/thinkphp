@@ -584,7 +584,7 @@ function controller($name,$path=''){
         $class .=   $layer;
     }
     if(class_exists($class)) {
-        return   new $class();
+        return new $class();
     }else {
         return false;
     }
