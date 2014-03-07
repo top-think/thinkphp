@@ -479,7 +479,7 @@ function vendor($class, $baseUrl = '', $ext='.php') {
 }
 
 /**
- * D函数用于实例化模型类 格式 [资源://][模块/]模型
+ * 实例化模型类 格式 [资源://][模块/]模型
  * @param string $name 资源地址
  * @param string $layer 模型层名称
  * @return Model
@@ -510,7 +510,7 @@ function D($name='',$layer='') {
 }
 
 /**
- * M函数用于实例化一个没有模型文件的Model
+ * 实例化一个没有模型文件的Model
  * @param string $name Model名称 支持指定基础模型 例如 MongoModel:User
  * @param string $tablePrefix 表前缀
  * @param mixed $connection 数据库连接信息
@@ -571,13 +571,13 @@ function parse_res_name($name,$layer,$level=1){
  * @return Controller|false
  */
 function controller($name,$path=''){
-    $array  =   explode('/',$name);
     $layer  =   C('DEFAULT_C_LAYER');
     if(!C('APP_USE_NAMESPACE')){
         $class  =   parse_name($name, 1);
         import(MODULE_NAME.'/'.$layer.'/'.$class.$layer);
     }else{
         $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
+        $array  =   explode('/',$name);
         foreach($array as $name){
             $class  .=   '\\'.parse_name($name, 1);
         }
@@ -591,7 +591,7 @@ function controller($name,$path=''){
 }
 
 /**
- * A函数用于实例化控制器 格式：[资源://][模块/]控制器
+ * 实例化多层控制器 格式：[资源://][模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
  * @param integer $level 控制器层次
