@@ -77,7 +77,7 @@ class App {
             $action  =  'run';
         }else{
             //创建控制器实例
-            $module  =  A(CONTROLLER_NAME);                
+            $module  =  controller(CONTROLLER_NAME,CONTROLLER_PATH);                
         }
 
         if(!$module) {

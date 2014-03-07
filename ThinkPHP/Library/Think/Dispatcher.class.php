@@ -22,6 +22,7 @@ class Dispatcher {
      */
     static public function dispatch() {
         $varPath        =   C('VAR_PATHINFO');
+        $varSpace       =   C('VAR_SPACE');
         $varModule      =   C('VAR_MODULE');
         $varController  =   C('VAR_CONTROLLER');
         $varAction      =   C('VAR_ACTION');
@@ -224,6 +225,8 @@ class Dispatcher {
             }
             $_GET   =  array_merge($var,$_GET);
         }
+        // 获取控制器的命名空间（路径）
+        define('CONTROLLER_PATH',   !empty($_GET[$varSpace])?$varSpace.'\\'.$_GET[$varSpace]:'');
         // 获取控制器和操作名
         define('CONTROLLER_NAME',   defined('BIND_CONTROLLER')? BIND_CONTROLLER : self::getController($varController,$urlCase));
         define('ACTION_NAME',       defined('BIND_ACTION')? BIND_ACTION : self::getAction($varAction,$urlCase));

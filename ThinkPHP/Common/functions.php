@@ -565,6 +565,32 @@ function parse_res_name($name,$layer,$level=1){
 }
 
 /**
+ * 用于实例化访问控制器
+ * @param string $name 控制器名
+ * @param string $path 控制器命名空间（路径）
+ * @return Controller|false
+ */
+function controller($name,$path=''){
+    $array  =   explode('/',$name);
+    $layer  =   C('DEFAULT_C_LAYER');
+    if(!C('APP_USE_NAMESPACE')){
+        $class  =   parse_name($name, 1);
+        import(MODULE_NAME.'/'.$layer.'/'.$class.$layer);
+    }else{
+        $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
+        foreach($array as $name){
+            $class  .=   '\\'.parse_name($name, 1);
+        }
+        $class .=   $layer;
+    }
+    if(class_exists($class)) {
+        return   new $class();
+    }else {
+        return false;
+    }
+}
+
+/**
  * A函数用于实例化控制器 格式：[资源://][模块/]控制器
  * @param string $name 资源地址
  * @param string $layer 控制层名称
@@ -577,6 +603,7 @@ function A($name,$layer='',$level='') {
     $level  =   $level? : ($layer == C('DEFAULT_C_LAYER')?C('CONTROLLER_LEVEL'):1);
     if(isset($_action[$name.$layer]))
         return $_action[$name.$layer];
+    
     $class  =   parse_res_name($name,$layer,$level);
     if(class_exists($class)) {
         $action             =   new $class();
