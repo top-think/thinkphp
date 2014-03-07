@@ -435,11 +435,11 @@ class Pdo extends Db{
      */
     public function escapeString($str) {
          switch($this->dbType) {
-            case 'PGSQL':
             case 'MSSQL':
             case 'SQLSRV':
             case 'MYSQL':
                 return addslashes($str);
+            case 'PGSQL':                
             case 'IBASE':                
             case 'SQLITE':
             case 'ORACLE':
