@@ -1225,7 +1225,7 @@ class Model {
             $parse  =   array_map(array($this->db,'escapeString'),$parse);
             $sql    =   vsprintf($sql,$parse);
         }else{
-            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>C('DB_PREFIX')));
+            $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix));
         }
         $this->db->setModel($this->name);
         return $sql;
