@@ -316,7 +316,7 @@ class Dispatcher {
                 return   '';
             }
         }
-        return strip_tags(ucfirst(strtolower($module)));
+        return strip_tags(ucfirst($module));
     }
 
 }
