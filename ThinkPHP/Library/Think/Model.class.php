@@ -442,9 +442,14 @@ class Model {
         }
         // 分析表达式
         $options =  $this->_parseOptions($options);
+        if(empty($options['where'])){
+            // 如果条件为空 不进行删除操作 除非设置 1=1
+            return false;
+        }        
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue            =  $options['where'][$pk];
         }
+
         if(false === $this->_before_delete($options)) {
             return false;
         }        
