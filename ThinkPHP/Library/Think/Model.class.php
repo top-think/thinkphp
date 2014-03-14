@@ -915,7 +915,7 @@ class Model {
         // 支持使用token(false) 关闭令牌验证
         if(isset($this->options['token']) && !$this->options['token']) return true;
         if(C('TOKEN_ON')){
-            $name   = C('TOKEN_NAME');
+            $name   = C('TOKEN_NAME', null, '__hash__');
             if(!isset($data[$name]) || !isset($_SESSION[$name])) { // 令牌数据无效
                 return false;
             }
