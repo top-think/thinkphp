@@ -305,10 +305,14 @@ class Model {
             if($insertId) {
                 // 自增主键返回插入ID
                 $data[$this->getPk()]  = $insertId;
-                $this->_after_insert($data,$options);
+                if(false === $this->_after_insert($data,$options)) {
+                    return false;
+                }
                 return $insertId;
             }
-            $this->_after_insert($data,$options);
+            if(false === $this->_after_insert($data,$options)) {
+                return false;
+            }
         }
         return $result;
     }
