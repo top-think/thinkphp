@@ -226,7 +226,7 @@ class Dispatcher {
             $_GET   =  array_merge($var,$_GET);
         }
         // 获取控制器的命名空间（路径）
-        define('CONTROLLER_PATH',   !empty($_GET[$varAddon])?ucfirst($varAddon).'\\'.strip_tags($_GET[$varAddon]):'');
+        define('CONTROLLER_PATH',   self::getSpace($varAddon,$urlCase));
         // 获取控制器和操作名
         define('CONTROLLER_NAME',   defined('BIND_CONTROLLER')? BIND_CONTROLLER : self::getController($varController,$urlCase));
         define('ACTION_NAME',       defined('BIND_ACTION')? BIND_ACTION : self::getAction($varAction,$urlCase));
@@ -240,6 +240,15 @@ class Dispatcher {
 
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
+    }
+
+    /**
+     * 获得控制器的命名空间路径 便于插件机制访问
+     */
+    static private function getSpace($var,$urlCase) {
+        $space  =   !empty($_GET[$var])?ucfirst($var).'\\'.strip_tags($_GET[$var]):'';
+        unset($_GET[$var]);
+        return $space;
     }
 
     /**
