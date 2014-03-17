@@ -276,6 +276,13 @@ function I($name,$default='',$filter=null,$datas=null) {
                     $input  =  $_GET;
             }
             break;
+        case 'path'    :   
+            $input  =   array();
+            if(!empty($_SERVER['PATH_INFO'])){
+                $depr   =   C('URL_PATHINFO_DEPR');
+                $input  =   explode($depr,trim($_SERVER['PATH_INFO'],$depr));            
+            }
+            break;
         case 'request' :   $input =& $_REQUEST;   break;
         case 'session' :   $input =& $_SESSION;   break;
         case 'cookie'  :   $input =& $_COOKIE;    break;

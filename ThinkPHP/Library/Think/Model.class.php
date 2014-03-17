@@ -305,10 +305,14 @@ class Model {
             if($insertId) {
                 // 自增主键返回插入ID
                 $data[$this->getPk()]  = $insertId;
-                $this->_after_insert($data,$options);
+                if(false === $this->_after_insert($data,$options)) {
+                    return false;
+                }
                 return $insertId;
             }
-            $this->_after_insert($data,$options);
+            if(false === $this->_after_insert($data,$options)) {
+                return false;
+            }
         }
         return $result;
     }
@@ -915,7 +919,7 @@ class Model {
         // 支持使用token(false) 关闭令牌验证
         if(isset($this->options['token']) && !$this->options['token']) return true;
         if(C('TOKEN_ON')){
-            $name   = C('TOKEN_NAME');
+            $name   = C('TOKEN_NAME', null, '__hash__');
             if(!isset($data[$name]) || !isset($_SESSION[$name])) { // 令牌数据无效
                 return false;
             }

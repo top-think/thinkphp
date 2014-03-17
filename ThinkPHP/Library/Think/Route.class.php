@@ -116,7 +116,7 @@ class Route {
                     }
                     $name = substr($val, 1, -2);
                 }elseif($pos = strpos($val,'^')){
-                    $array   =  explode('|',substr(strstr($val,'^'),1));
+                    $array   =  explode('-',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
                     }
