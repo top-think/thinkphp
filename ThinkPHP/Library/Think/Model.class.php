@@ -557,8 +557,7 @@ class Model {
             // 指定数据表 则重新获取字段列表 但不支持类型检测
             $fields             =   $this->getDbFields();
         }
-        // 查询过后清空sql表达式组装 避免影响下次查询
-        $this->options  =   array();
+
         // 数据表别名
         if(!empty($options['alias'])) {
             $options['table']  .=   ' '.$options['alias'];
@@ -580,7 +579,8 @@ class Model {
                 }
             }
         }
-
+        // 查询过后清空sql表达式组装 避免影响下次查询
+        $this->options  =   array();
         // 表达式过滤
         $this->_options_filter($options);
         return $options;
