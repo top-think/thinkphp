@@ -38,7 +38,6 @@ class RestController extends Controller {
      * @access public
      */
     public function __construct() {
-        parent::__construct();
         // 资源类型检测
         if(''==__EXT__) { // 自动检测资源类型
             $this->_type   =  $this->getAcceptType();
@@ -57,6 +56,8 @@ class RestController extends Controller {
             $method = $this->defaultMethod;
         }
         $this->_method = $method;
+        
+        parent::__construct();
     }
 
     /**
