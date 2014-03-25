@@ -51,12 +51,9 @@ class Upload {
     public function __construct($config = array(), $driver = '', $driverConfig = null){
         /* 获取配置 */
         $this->config   =   array_merge($this->config, $config);
-        $driver         =   $driver? : ($this->driver? : C('FILE_UPLOAD_TYPE'));
-        $driverConfig   =   $driverConfig? : ($this->driverConfig? :C('UPLOAD_TYPE_CONFIG'));
 
         /* 设置上传驱动 */
-        $class      =   strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
-        $this->setDriver($class, $driverConfig);
+        $this->setDriver($driver, $driverConfig);
 
         /* 调整配置，把字符串配置参数转换为数组 */
         if(!empty($this->config['mimes'])){
@@ -84,7 +81,12 @@ class Upload {
 
     public function __set($name,$value){
         if(isset($this->config[$name])) {
-            $this->config[$name]    =   $value;
+            $this->config[$name] = $value;
+            if($name == 'driverConfig'){
+                //改变驱动配置后重置上传驱动
+                //注意：必须选改变驱动然后再改变驱动配置
+                $this->setDriver(); 
+            }
         }
     }
 
@@ -124,7 +126,7 @@ class Upload {
         }
 
         /* 检测上传根目录 */
-        if(!$this->uploader->checkRootPath()){
+        if(!$this->uploader->checkRootPath($this->rootPath)){
             $this->error = $this->uploader->getError();
             return false;
         }
@@ -235,7 +237,8 @@ class Upload {
                     $n++;
                 }
             }else{
-               $fileArray[$key] = $file;
+               $fileArray = $files;
+               break;
             }
         }
        return $fileArray;
@@ -245,8 +248,11 @@ class Upload {
      * 设置上传驱动
      * @param string $class 驱动类名称
      */
-    private function setDriver($class, $config){
-        $this->uploader = new $class($this->rootPath, $config);
+    private function setDriver($driver = null, $config = null){
+        $driver = $driver ? : ($this->driver       ? : C('FILE_UPLOAD_TYPE'));
+        $config = $config ? : ($this->driverConfig ? : C('UPLOAD_TYPE_CONFIG'));
+        $class = strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
+        $this->uploader = new $class($config);
         if(!$this->uploader){
             E("不存在上传驱动：{$name}");
         }

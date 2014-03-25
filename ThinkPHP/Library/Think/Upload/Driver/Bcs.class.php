@@ -36,25 +36,26 @@ class Bcs {
 
     /**
      * 构造函数，用于设置上传根路径
-     * @param string $root   根目录
      * @param array  $config FTP配置
      */
-	public function __construct($root, $config){
+    public function __construct($config){
         /* 默认FTP配置 */
         $this->config = array_merge($this->config, $config);
-        /* 设置根目录 */
-        $this->rootPath = str_replace('./', '/', $root);
+        
         $bcsClass = dirname(__FILE__). "/Bcs/bcs.class.php";
         if(is_file($bcsClass))
             require_once($bcsClass);
         $this->bcs = new BaiduBCS ( $this->config['AccessKey'], $this->config['SecretKey'], self:: DEFAULT_URL );
-	}
+    }
 
     /**
      * 检测上传根目录(百度云上传时支持自动创建目录，直接返回)
+     * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath(){
+    public function checkRootPath($rootpath){
+        /* 设置根目录 */
+        $this->rootPath = str_replace('./', '/', $rootpath);
     	return true;
     }
 
