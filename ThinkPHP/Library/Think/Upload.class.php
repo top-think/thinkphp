@@ -246,7 +246,8 @@ class Upload {
 
     /**
      * 设置上传驱动
-     * @param string $class 驱动类名称
+     * @param string $driver 驱动名称
+     * @param array $config 驱动配置     
      */
     private function setDriver($driver = null, $config = null){
         $driver = $driver ? : ($this->driver       ? : C('FILE_UPLOAD_TYPE'));
