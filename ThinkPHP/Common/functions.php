@@ -1244,6 +1244,7 @@ function cookie($name, $value='', $option=null) {
         'expire'    =>  C('COOKIE_EXPIRE'), // cookie 保存时间
         'path'      =>  C('COOKIE_PATH'), // cookie 保存路径
         'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
+        'httponly'  =>  C('COOKIE_HTTPONLY'), // httponly设置
     );
     // 参数设置(会覆盖黙认设置)
     if (!is_null($option)) {
@@ -1252,6 +1253,9 @@ function cookie($name, $value='', $option=null) {
         elseif (is_string($option))
             parse_str($option, $option);
         $config     = array_merge($config, array_change_key_case($option));
+    }
+    if(!empty($config['httponly'])){
+        ini_set("session.cookie_httponly", 1);
     }
     // 清除指定前缀的所有cookie
     if (is_null($name)) {
