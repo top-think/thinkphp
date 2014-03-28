@@ -34,6 +34,7 @@ return  array(
     'COOKIE_DOMAIN'         =>  '',      // Cookie有效域名
     'COOKIE_PATH'           =>  '/',     // Cookie路径
     'COOKIE_PREFIX'         =>  '',      // Cookie前缀 避免冲突
+    'COOKIE_HTTPONLY'       =>  '',      // Cookie httponly设置
 
     /* 默认设定 */
     'DEFAULT_M_LAYER'       =>  'Model', // 默认的模型层名称
