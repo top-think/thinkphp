@@ -215,7 +215,7 @@ function T($template='',$layer=''){
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
     }elseif(C('VIEW_PATH')){ // 指定视图目录
-        $baseUrl    =   C('VIEW_PATH').$module.'/';
+        $baseUrl    =   C('VIEW_PATH');
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
@@ -231,11 +231,7 @@ function T($template='',$layer=''){
     }elseif(false === strpos($file, '/')){
         $file = CONTROLLER_NAME . $depr . $file;
     }elseif('/' != $depr){
-        if(substr_count($file,'/')>1){
-            $file   =   substr_replace($file,$depr,strrpos($file,'/'),1);
-        }else{
-            $file   =   str_replace('/', $depr, $file);
-        }
+        $file   =   substr_count($file,'/')>1 ? substr_replace($file,$depr,strrpos($file,'/'),1) : str_replace('/', $depr, $file);
     }
     return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
