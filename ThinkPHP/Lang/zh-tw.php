@@ -47,4 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => '記錄已經更新',
     '_NOT_ALLOW_PHP_'        => '模板禁用PHP代碼',
     '_PARAM_ERROR_'          => '參數錯誤或者未定義',
+    '_ERROR_QUERY_EXPRESS_'  => '錯誤的查詢條件',    
 );
