@@ -293,7 +293,9 @@ function I($name,$default='',$filter=null,$datas=null) {
         array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
-            $filters    =   explode(',',$filters);
+            if(is_string($filters)){
+                $filters    =   explode(',',$filters);
+            }
             foreach($filters as $filter){
                 $data   =   array_map_recursive($filter,$data); // 参数过滤
             }
@@ -303,7 +305,12 @@ function I($name,$default='',$filter=null,$datas=null) {
         is_array($data) && array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
-            $filters    =   explode(',',$filters);
+            if(is_string($filters)){
+                $filters    =   explode(',',$filters);
+            }elseif(is_int($filters)){
+                $filters    =   array($filters);
+            }
+            
             foreach($filters as $filter){
                 if(function_exists($filter)) {
                     $data   =   is_array($data)?array_map_recursive($filter,$data):$filter($data); // 参数过滤
