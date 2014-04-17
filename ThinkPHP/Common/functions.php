@@ -214,8 +214,12 @@ function T($template='',$layer=''){
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
-    }elseif(C('VIEW_PATH')){ // 指定视图目录
+    }elseif(C('VIEW_PATH')){ 
+        // 改变模块视图目录
         $baseUrl    =   C('VIEW_PATH');
+    }elseif(defined('TMPL_PATH')){ 
+        // 指定全局视图目录
+        $baseUrl    =   TMPL_PATH.$module;
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
