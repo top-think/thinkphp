@@ -292,7 +292,7 @@ function I($name,$default='',$filter=null,$datas=null) {
         default:
             return NULL;
     }
-    if(empty($name)) { // 获取全部变量
+    if(''==$name) { // 获取全部变量
         $data       =   $input;
         array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
