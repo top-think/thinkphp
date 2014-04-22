@@ -75,9 +75,10 @@ class Gd{
      * 保存图像
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
+     * @param  integer $quality   JPEG图像质量     
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
      */
-    public function save($imgname, $type = null, $interlace = true){
+    public function save($imgname, $type = null, $quality=90,$interlace = true){
         if(empty($this->img)) E('没有可以被保存的图像资源');
 
         //自动获取图像类型
@@ -86,19 +87,15 @@ class Gd{
         } else {
             $type = strtolower($type);
         }
-
-        //JPEG图像设置隔行扫描
-        if('jpeg' == $type || 'jpg' == $type){
-            $type = 'jpeg';
-            imageinterlace($this->img, $interlace);
-        }
-
         //保存图像
-        if('gif' == $type && !empty($this->gif)){
+        if('jpeg' == $type || 'jpg' == $type){
+            //JPEG图像设置隔行扫描
+            imageinterlace($this->img, $interlace);
+            imagejpeg($this->img, $imgname,$quality);
+        }elseif('gif' == $type && !empty($this->gif)){
             $this->gif->save($imgname);
-        } else {
-            $fun = "image{$type}";
-            $fun($this->img, $imgname);
+        }else{
+            imagepng($this->img, $imgname);
         }
     }
 
