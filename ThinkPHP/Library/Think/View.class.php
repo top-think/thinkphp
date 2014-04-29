@@ -155,7 +155,7 @@ class View {
             if(C('VIEW_PATH')){ // 模块设置独立的视图目录
                 $tmplPath   =   C('VIEW_PATH');
             }else{  // 定义TMPL_PATH 改变全局的视图目录到模块之外
-                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
+                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
             }
             define('THEME_PATH', $tmplPath.$theme);
         }
