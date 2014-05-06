@@ -525,11 +525,11 @@ class Model {
         if(isset($options['index'])){ // 对数据集进行索引
             $index  =   explode(',',$options['index']);
             foreach ($resultSet as $result){
-                $key   =  $result[$index[0]];
+                $_key   =  $result[$index[0]];
                 if(isset($index[1]) && isset($result[$index[1]])){
-                    $cols[$key] =  $result[$index[1]];
+                    $cols[$_key] =  $result[$index[1]];
                 }else{
-                    $cols[$key] =  $result;
+                    $cols[$_key] =  $result;
                 }
             }
             $resultSet  =   $cols;         
