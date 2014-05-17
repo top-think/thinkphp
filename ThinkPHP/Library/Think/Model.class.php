@@ -614,7 +614,7 @@ class Model {
      * @return void
      */
     protected function _parseType(&$data,$key) {
-        if(empty($this->options['bind'][':'.$key]) && isset($this->fields['_type'][$key])){
+        if(!isset($this->options['bind'][':'.$key]) && isset($this->fields['_type'][$key])){
             $fieldType = strtolower($this->fields['_type'][$key]);
             if(false !== strpos($fieldType,'enum')){
                 // 支持ENUM类型优先检测

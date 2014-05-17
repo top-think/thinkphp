@@ -30,6 +30,7 @@ class Pdo extends Db{
             if(empty($this->config['params'])) {
                 $this->config['params'] =   array();
             }
+            $this->dbType = $this->_getDsnType($config['dsn']);            
         }
 
     }
