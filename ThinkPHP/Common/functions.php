@@ -884,7 +884,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $module =   '';
             
             if(!empty($path)) {
-                $var[$varModule]    =   array_pop($path);
+                $var[$varModule]    =   implode($depr,$path);
             }else{
                 if(C('MULTI_MODULE')) {
                     if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
@@ -918,7 +918,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
         if(isset($route)) {
             $url    =   __APP__.'/'.rtrim($url,$depr);
         }else{
-            $module =   defined('BIND_MODULE') ? '' : $module;
+            $module =   (defined('BIND_MODULE') && BIND_MODULE==$module )? '' : $module;
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
         }
         if($urlCase){
