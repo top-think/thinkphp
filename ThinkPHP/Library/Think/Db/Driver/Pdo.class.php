@@ -388,7 +388,7 @@ class Pdo extends Db{
      * @return string
      */
     protected function parseKey(&$key) {
-        if($this->dbType=='MYSQL'){
+        if(!is_numeric($key) && $this->dbType=='MYSQL'){
             $key   =  trim($key);
             if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
                $key = '`'.$key.'`';

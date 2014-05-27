@@ -339,7 +339,7 @@ class Mysql extends Db{
      */
     protected function parseKey(&$key) {
         $key   =  trim($key);
-        if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
+        if(!is_numeric($key) && !preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
            $key = '`'.$key.'`';
         }
         return $key;
