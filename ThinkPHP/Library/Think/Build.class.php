@@ -68,10 +68,10 @@ class [MODEL]Model extends Model {
             self::buildDirSecure($dirs);
             // 写入应用配置文件
             if(!is_file(CONF_PATH.'config'.CONF_EXT))
-                file_put_contents(CONF_PATH.'config'.CONF_EXT,'.php' == CONF_EXT ? "<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);":'');
+                file_put_contents(CONF_PATH.'config'.CONF_EXT,"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
             // 写入模块配置文件
             if(!is_file(APP_PATH.$module.'/Conf/config'.CONF_EXT))
-                file_put_contents(APP_PATH.$module.'/Conf/config'.CONF_EXT,'.php' == CONF_EXT ? "<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);":'');
+                file_put_contents(APP_PATH.$module.'/Conf/config'.CONF_EXT,"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
             // 生成模块的测试控制器
             if(defined('BUILD_CONTROLLER_LIST')){
                 // 自动生成的控制器列表（注意大小写）
