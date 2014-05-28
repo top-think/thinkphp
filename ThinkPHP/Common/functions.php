@@ -80,6 +80,16 @@ function load_config($file,$parse=CONF_PARSE){
 }
 
 /**
+ * 解析yaml文件返回一个数组
+ * @param string $file 配置文件名
+ * @return array
+ */
+function yaml_parse_file($file) {
+    vendor('spyc.Spyc');
+    return Spyc::YAMLLoad($file);
+}
+
+/**
  * 抛出异常处理
  * @param string $msg 异常消息
  * @param integer $code 异常代码 默认为0
