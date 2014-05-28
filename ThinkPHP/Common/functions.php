@@ -84,9 +84,11 @@ function load_config($file,$parse=CONF_PARSE){
  * @param string $file 配置文件名
  * @return array
  */
-function yaml_parse_file($file) {
-    vendor('spyc.Spyc');
-    return Spyc::YAMLLoad($file);
+if (!function_exists('yaml_parse_file')) {
+    function yaml_parse_file($file) {
+        vendor('spyc.Spyc');
+        return Spyc::YAMLLoad($file);
+    }
 }
 
 /**
