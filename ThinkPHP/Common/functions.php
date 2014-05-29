@@ -599,8 +599,8 @@ function parse_res_name($name,$layer,$level=1){
 function controller($name,$path=''){
     $layer  =   C('DEFAULT_C_LAYER');
     if(!C('APP_USE_NAMESPACE')){
-        $class  =   parse_name($name, 1);
-        import(MODULE_NAME.'/'.$layer.'/'.$class.$layer);
+        $class  =   parse_name($name, 1).$layer;
+        import(MODULE_NAME.'/'.$layer.'/'.$class);
     }else{
         $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
         $array  =   explode('/',$name);
