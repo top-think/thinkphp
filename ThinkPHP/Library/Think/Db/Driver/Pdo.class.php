@@ -170,7 +170,7 @@ class Pdo extends Db{
             }else{
               $val  = array($key,$val);
             }
-            call_user_func_array(array($this->PDOStatement,'bindParam'),$val);
+            call_user_func_array(array($this->PDOStatement,'bindValue'),$val);
         }      
     }
 
