@@ -1640,7 +1640,10 @@ class Model {
      * @return Model
      */
     public function limit($offset,$length=null){
-        $this->options['limit'] =   is_null($length)?$offset:$offset.','.$length;
+        if(is_null($length)){
+            list($offset,$length)   =   explode(',',$offset);
+        }
+        $this->options['limit']     =   intval($offset).( $length? ','.intval($length) : '' );
         return $this;
     }
 
@@ -1652,7 +1655,10 @@ class Model {
      * @return Model
      */
     public function page($page,$listRows=null){
-        $this->options['page'] =   is_null($listRows)?$page:$page.','.$listRows;
+        if(is_null($listRows)){
+            list($page,$listRows)   =   explode(',',$page);
+        }
+        $this->options['page']      =   array(intval($page),intval($listRows));
         return $this;
     }
 
