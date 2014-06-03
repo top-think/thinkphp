@@ -153,13 +153,18 @@ class View {
         // 获取当前主题的模版路径
         if(!defined('THEME_PATH')){
             if(C('VIEW_PATH')){ // 模块设置独立的视图目录
-                $tmplPath   =   C('VIEW_PATH');
+                $tmplPath   =   C('VIEW_PATH').$theme;
             }else{  // 定义TMPL_PATH 改变全局的视图目录到模块之外
-                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
+                if (C('DENY_TMPL_PATH')) {
+                    $tmplPath = APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme;
+                } elseif (defined('TMPL_PATH')) {
+                    $tmplPath   =   TMPL_PATH.$theme.$module.'/';
+                } else {
+                    $tmplPath = APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/'.$theme;
+                }
             }
-            define('THEME_PATH', $tmplPath.$theme);
+            define('THEME_PATH', $tmplPath);
         }
-
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
