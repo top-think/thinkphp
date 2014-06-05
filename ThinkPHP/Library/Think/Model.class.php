@@ -1640,7 +1640,7 @@ class Model {
      * @return Model
      */
     public function limit($offset,$length=null){
-        if(is_null($length)){
+        if(is_null($length) && strpos($offset,',')){
             list($offset,$length)   =   explode(',',$offset);
         }
         $this->options['limit']     =   intval($offset).( $length? ','.intval($length) : '' );
@@ -1655,7 +1655,7 @@ class Model {
      * @return Model
      */
     public function page($page,$listRows=null){
-        if(is_null($listRows)){
+        if(is_null($listRows) && strpos($page,',')){
             list($page,$listRows)   =   explode(',',$page);
         }
         $this->options['page']      =   array(intval($page),intval($listRows));
