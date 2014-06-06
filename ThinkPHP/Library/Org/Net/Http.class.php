@@ -155,21 +155,21 @@ class Http {
         }
         if(empty($showname)) {
             $showname = $filename;
+            $showname = basename($showname);
         }
-        $showname = basename($showname);
-		if(!empty($filename)) {
-			$finfo 	= 	new \finfo(FILEINFO_MIME);
-			$type 	= 	$finfo->file($filename);			
-		}else{
-			$type	=	"application/octet-stream";
-		}
+        if(!empty($filename)) {
+		$finfo 	= 	new \finfo(FILEINFO_MIME);
+		$type 	= 	$finfo->file($filename);			
+	}else{
+		$type	=	"application/octet-stream";
+	}
         //发送Http Header信息 开始下载
         header("Pragma: public");
         header("Cache-control: max-age=".$expire);
         //header('Cache-Control: no-store, no-cache, must-revalidate');
         header("Expires: " . gmdate("D, d M Y H:i:s",time()+$expire) . "GMT");
         header("Last-Modified: " . gmdate("D, d M Y H:i:s",time()) . "GMT");
-        header("Content-Disposition: attachment; filename=".$showname);
+        header("Content-Disposition: attachment; filename=".iconv("UTF-8","GB2312//TRANSLIT",$showname));//中文编码转换
         header("Content-Length: ".$length);
         header("Content-type: ".$type);
         header('Content-Encoding: none');
