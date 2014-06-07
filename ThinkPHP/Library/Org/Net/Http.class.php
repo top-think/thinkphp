@@ -169,7 +169,12 @@ class Http {
         //header('Cache-Control: no-store, no-cache, must-revalidate');
         header("Expires: " . gmdate("D, d M Y H:i:s",time()+$expire) . "GMT");
         header("Last-Modified: " . gmdate("D, d M Y H:i:s",time()) . "GMT");
-        header("Content-Disposition: attachment; filename=".iconv("UTF-8","GB2312//TRANSLIT",$showname));//中文编码转换
+        $ua = $_SERVER ["HTTP_USER_AGENT"];
+	if (preg_match ( "/Firefox/", $ua )) {//火狐浏览器中文支持
+		header ( "Content-Disposition: attachment; filename=" . $showname );
+	}else{
+		header("Content-Disposition: attachment; filename=".iconv("UTF-8","GB2312//TRANSLIT",$showname));//中文编码转换
+	}
         header("Content-Length: ".$length);
         header("Content-type: ".$type);
         header('Content-Encoding: none');
