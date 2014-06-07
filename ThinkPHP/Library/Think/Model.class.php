@@ -796,7 +796,7 @@ class Model {
             }
         }        
         $field                  =   trim($field);
-        if(strpos($field,',')) { // 多字段
+        if(strpos($field,',') && false !== $sepa) { // 多字段
             if(!isset($options['limit'])){
                 $options['limit']   =   is_numeric($sepa)?$sepa:'';
             }
