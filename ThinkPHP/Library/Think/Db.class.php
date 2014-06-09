@@ -126,8 +126,8 @@ class Db {
                   'hostname'  =>  $db_config['db_host'],
                   'hostport'  =>  $db_config['db_port'],
                   'database'  =>  $db_config['db_name'],
-                  'dsn'       =>  $db_config['db_dsn'],
-                  'params'    =>  $db_config['db_params'],
+                  'dsn'       =>  isset($db_config['db_dsn'])?$db_config['db_dsn']:'',
+                  'params'    =>  isset($db_config['db_params'])?$db_config['db_params']:array(),
                   'charset'   =>  isset($db_config['db_charset'])?$db_config['db_charset']:'utf8',
              );
         }elseif(empty($db_config)) {
