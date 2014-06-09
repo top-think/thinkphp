@@ -97,7 +97,7 @@ class ShowPageTraceBehavior {
                     $content .= "\r\n";
                 }
             }
-            error_log(str_replace('<br/>',"\r\n",$content), Log::FILE,LOG_PATH.date('y_m_d').'_trace.log');
+            error_log(str_replace('<br/>',"\r\n",$content), 3,C('LOG_PATH').date('y_m_d').'_trace.log');
         }
         unset($files,$info,$base);
         // 调用Trace页面模板
