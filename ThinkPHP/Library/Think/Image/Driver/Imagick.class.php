@@ -274,13 +274,13 @@ class Imagick{
                 $posy = ($height - $h * $scale)/2;
 
                 //创建一张新图像
-                $newimg = new Imagick();
+                $newimg = new \Imagick();
                 $newimg->newImage($width, $height, 'white', $this->info['type']);
 
 
                 if('gif' == $this->info['type']){
                     $imgs = $this->img->coalesceImages();
-                    $img  = new Imagick();
+                    $img  = new \Imagick();
                     $this->img->destroy(); //销毁原图
 
                     //循环填充每一帧
@@ -333,7 +333,7 @@ class Imagick{
         is_null($img) && $img = $this->img;
 
         /* 将指定图片绘入空白图片 */
-        $draw  = new ImagickDraw();
+        $draw  = new \ImagickDraw();
         $draw->composite($img->getImageCompose(), $posx, $posy, $neww, $newh, $img);
         $image = $newimg->clone();
         $image->drawImage($draw);
@@ -354,7 +354,7 @@ class Imagick{
         if(!is_file($source)) E('水印图像不存在');
 
         //创建水印图像资源
-        $water = new Imagick(realpath($source));
+        $water = new \Imagick(realpath($source));
         $info  = array($water->getImageWidth(), $water->getImageHeight());
 
         /* 设定水印位置 */
@@ -422,7 +422,7 @@ class Imagick{
         }
 
         //创建绘图资源
-        $draw = new ImagickDraw();
+        $draw = new \ImagickDraw();
         $draw->composite($water->getImageCompose(), $x, $y, $info[0], $info[1], $water);
         
         if('gif' == $this->info['type']){
@@ -479,7 +479,7 @@ class Imagick{
         
 
         //获取文字信息
-        $draw = new ImagickDraw();
+        $draw = new \ImagickDraw();
         $draw->setFont(realpath($font));
         $draw->setFontSize($size);
         $draw->setFillColor($col);
