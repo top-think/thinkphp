@@ -113,10 +113,11 @@ class View {
         ob_start();
         ob_implicit_flush(0);
         if('php' == strtolower(C('TMPL_ENGINE_TYPE'))) { // 使用PHP原生模板
+            $_content   =   $content;
             // 模板阵列变量分解成为独立变量
             extract($this->tVar, EXTR_OVERWRITE);
             // 直接载入PHP模板
-            empty($content)?include $templateFile:eval('?>'.$content);
+            empty($_content)?include $templateFile:eval('?>'.$_content);
         }else{
             // 视图解析标签
             $params = array('var'=>$this->tVar,'file'=>$templateFile,'content'=>$content,'prefix'=>$prefix);
