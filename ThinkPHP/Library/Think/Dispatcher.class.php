@@ -248,7 +248,7 @@ class Dispatcher {
      * 获得控制器的命名空间路径 便于插件机制访问
      */
     static private function getSpace($var,$urlCase) {
-        $space  =   !empty($_GET[$var])?ucfirst($var).'\\'.strip_tags($_GET[$var]):'';
+        $space  =   !empty($_GET[$var])?strip_tags($_GET[$var]):'';
         unset($_GET[$var]);
         return $space;
     }

@@ -602,7 +602,7 @@ function controller($name,$path=''){
         $class  =   parse_name($name, 1).$layer;
         import(MODULE_NAME.'/'.$layer.'/'.$class);
     }else{
-        $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
+        $class  =   ( $path ? basename(ADDON_PATH).'\\'.$path : MODULE_NAME ).'\\'.$layer;
         $array  =   explode('/',$name);
         foreach($array as $name){
             $class  .=   '\\'.parse_name($name, 1);

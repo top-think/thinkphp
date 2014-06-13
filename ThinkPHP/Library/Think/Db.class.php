@@ -703,6 +703,9 @@ class Db {
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }        
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -720,6 +723,9 @@ class Db {
         array_walk($fields, array($this, 'parseKey'));
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }        
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -740,6 +746,9 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }            
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -758,6 +767,9 @@ class Db {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -770,17 +782,20 @@ class Db {
     public function select($options=array()) {
         $this->model  =   $options['model'];
         $sql        =   $this->buildSelectSql($options);
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }
         $result     =   $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
         return $result;
     }
 
     /**
      * 生成查询SQL
-     * @access public
+     * @access protected
      * @param array $options 表达式
      * @return string
      */
-    public function buildSelectSql($options=array()) {
+    protected function buildSelectSql($options=array()) {
         if(isset($options['page'])) {
             // 根据页数计算limit
             list($page,$listRows)   =   $options['page'];

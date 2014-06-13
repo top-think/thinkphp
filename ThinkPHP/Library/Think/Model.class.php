@@ -500,7 +500,7 @@ class Model {
             $options            =  array();
             // 分析表达式
             $options            =  $this->_parseOptions($options);
-            return  '( '.$this->db->buildSelectSql($options).' )';
+            return  '( '.$this->fetchSql(true)->select($options).' )';
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
@@ -551,7 +551,7 @@ class Model {
     public function buildSql($options=array()) {
         // 分析表达式
         $options =  $this->_parseOptions($options);
-        return  '( '.$this->db->buildSelectSql($options).' )';
+        return  '( '.$this->fetchSql(true)->select($options).' )';
     }
 
     /**
@@ -1670,6 +1670,17 @@ class Model {
      */
     public function comment($comment){
         $this->options['comment'] =   $comment;
+        return $this;
+    }
+
+    /**
+     * 获取执行的SQL语句
+     * @access public
+     * @param boolean $fetch 是否返回sql
+     * @return Model
+     */
+    public function fetchSql($fetch){
+        $this->options['fetch_sql'] =   $fetch;
         return $this;
     }
 
