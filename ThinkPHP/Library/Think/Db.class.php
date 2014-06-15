@@ -738,13 +738,18 @@ class Db {
      */
     public function update($data,$options) {
         $this->model  =   $options['model'];
-        $sql   = 'UPDATE '
-            .$this->parseTable($options['table'])
-            .$this->parseSet($data)
-            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
-            .$this->parseOrder(!empty($options['order'])?$options['order']:'')
-            .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+        $table  =   $this->parseTable($options['table']);
+        $sql   = 'UPDATE ' . $table . $this->parseSet($data);
+        if(strpos($table,',')){// 多表更新支持JOIN操作
+            $sql .= $this->parseJoin(!empty($options['join'])?$options['join']:'');
+        }
+        $sql .= $this->parseWhere(!empty($options['where'])?$options['where']:'');
+        if(!strpos($table,',')){
+            //  单表更新支持order和lmit
+            $sql   .=  $this->parseOrder(!empty($options['order'])?$options['order']:'')
+                .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
+        }
+        $sql .=   $this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         if(!empty($options['fetch_sql'])){
             return $sql;
@@ -760,12 +765,18 @@ class Db {
      */
     public function delete($options=array()) {
         $this->model  =   $options['model'];
-        $sql   = 'DELETE FROM '
-            .$this->parseTable($options['table'])
-            .$this->parseWhere(!empty($options['where'])?$options['where']:'')
-            .$this->parseOrder(!empty($options['order'])?$options['order']:'')
-            .$this->parseLimit(!empty($options['limit'])?$options['limit']:'')
-            .$this->parseLock(isset($options['lock'])?$options['lock']:false)
+        $table  =   $this->parseTable($options['table']);
+        $sql   = 'DELETE FROM '.$table;
+        if(strpos($table,',')){// 多表删除支持JOIN操作
+            $sql .= $this->parseJoin(!empty($options['join'])?$options['join']:'');
+        }        
+        $sql .= $this->parseWhere(!empty($options['where'])?$options['where']:'');
+        if(!strpos($table,',')){
+            // 单表删除支持order和limit
+            $sql .= $this->parseOrder(!empty($options['order'])?$options['order']:'')
+            .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
+        }
+        $sql .=   $this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
         if(!empty($options['fetch_sql'])){
             return $sql;
