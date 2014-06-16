@@ -15,7 +15,7 @@ use Think\Model;
  */
 class MergeModel extends Model {
 
-    protected $mergeModel   =   array();    //  包含的模型列表 第一个必须是主表模型
+    protected $modelList    =   array();    //  包含的模型列表 第一个必须是主表模型
     protected $masterModel  =   '';         //  主模型
     protected $joinType     =   'INNER';    //  聚合模型的查询JOIN类型
     protected $fk           =   '';         //  外键名 默认为主表名_id
@@ -32,9 +32,9 @@ class MergeModel extends Model {
     public function __construct($name='',$tablePrefix='',$connection=''){
         parent::__construct($name,$tablePrefix,$connection);
         // 聚合模型的字段信息
-        if(empty($this->fields) && !empty($this->mergeModel)){
+        if(empty($this->fields) && !empty($this->modelList)){
             $fields     =   array();
-            foreach($this->mergeModel as $model){
+            foreach($this->modelList as $model){
                 // 获取模型的字段信息
                 $result     =   $this->db->getFields(M($model)->getTableName());
                 $_fields    =   array_keys($result);
@@ -45,8 +45,8 @@ class MergeModel extends Model {
         }
 
         // 设置第一个模型为主表模型
-        if(empty($this->masterModel) && !empty($this->mergeModel)){
-            $this->masterModel  =   $this->mergeModel[0];
+        if(empty($this->masterModel) && !empty($this->modelList)){
+            $this->masterModel  =   $this->modelList[0];
         }
         // 主表的主键名
         $this->pk =   M($this->masterModel)->getPk();
@@ -66,7 +66,7 @@ class MergeModel extends Model {
     public function getTableName() {
         if(empty($this->trueTableName)) {
             $tableName  =   array();
-            $models     =   $this->mergeModel;
+            $models     =   $this->modelList;
             foreach($models as $model){
                 $tableName[]    =   M($model)->getTableName().' '.$model;
             }
@@ -109,7 +109,7 @@ class MergeModel extends Model {
         if($result){
             // 写入外键数据
             $data[$this->fk]    =   $result;
-            $models     =   $this->mergeModel;
+            $models     =   $this->modelList;
             array_shift($models);
             // 写入附表数据
             foreach($models as $model){
@@ -167,7 +167,13 @@ class MergeModel extends Model {
         return $data;
      }
 
-
+    /**
+     * 保存聚合模型数据
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 表达式
+     * @return boolean
+     */
     public function save($data='',$options=array()){
         // 根据主表的主键更新
         if(empty($data)) {
@@ -212,6 +218,12 @@ class MergeModel extends Model {
         return $result;
     }
 
+    /**
+     * 删除聚合模型数据
+     * @access public
+     * @param mixed $options 表达式
+     * @return mixed
+     */
     public function delete($options=array()){
         $pk   =  $this->pk;
         if(empty($options) && empty($this->options['where'])) {
@@ -243,7 +255,7 @@ class MergeModel extends Model {
             $pkValue            =  $options['where'][$pk];
         }
         
-        $options['table']   =   implode(',',$this->mergeModel);
+        $options['table']   =   implode(',',$this->modelList);
         $options['using']   =   $this->getTableName();
         if(false === $this->_before_delete($options)) {
             return false;
@@ -266,7 +278,7 @@ class MergeModel extends Model {
      */
     protected function _options_filter(&$options) {
         if(!isset($options['join'])){
-            $models     =   $this->mergeModel;
+            $models     =   $this->modelList;
             array_shift($models);
             foreach($models as $model){
                 $options['join'][]    =   $this->joinType.' JOIN '.M($model)->getTableName().' '.$model.' ON '.$this->masterModel.'.'.$this->pk.' = '.$model.'.'.$this->fk;
