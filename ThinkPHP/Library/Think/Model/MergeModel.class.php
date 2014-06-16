@@ -17,10 +17,9 @@ class MergeModel extends Model {
 
     protected $mergeModel   =   array();    //  包含的模型列表 第一个必须是主表模型
     protected $masterModel  =   '';         //  主模型
-    protected $joinType     =   'INNER';    //  合体模型JOIN类型
-    protected $masterPk     =   'id';       //  主表主键
-    protected $foreignKey   =   '';         //  外键名 默认为主表名_id
-    protected $mapFields    =   array();    //  需要处理的模型映射字段 array( id => 'user.id'  )
+    protected $joinType     =   'INNER';    //  聚合模型的查询JOIN类型
+    protected $fk           =   '';         //  外键名 默认为主表名_id
+    protected $mapFields    =   array();    //  需要处理的模型映射字段，避免混淆 array( id => 'user.id'  )
 
     /**
      * 架构函数
@@ -32,7 +31,7 @@ class MergeModel extends Model {
      */
     public function __construct($name='',$tablePrefix='',$connection=''){
         parent::__construct($name,$tablePrefix,$connection);
-
+        // 聚合模型的字段信息
         if(empty($this->fields) && !empty($this->mergeModel)){
             $fields     =   array();
             foreach($this->mergeModel as $model){
@@ -44,20 +43,19 @@ class MergeModel extends Model {
             }
             $this->fields   =   $fields;
         }
-        // 设置主表模型 默认为第一个
+
+        // 设置第一个模型为主表模型
         if(empty($this->masterModel) && !empty($this->mergeModel)){
             $this->masterModel  =   $this->mergeModel[0];
         }
-        
-        // 设置外键名
-        if(empty($this->foreignKey)){
-            $this->foreignKey  =   strtolower($this->masterModel).'_id';
+        // 主表的主键名
+        $this->pk =   M($this->masterModel)->getPk();
+
+        // 设置默认外键名 仅支持单一外键
+        if(empty($this->fk)){
+            $this->fk  =   strtolower($this->masterModel).'_id';
         }
 
-    }
-
-    public function getPk(){
-        return $this->masterPk;
     }
 
     /**
@@ -85,7 +83,7 @@ class MergeModel extends Model {
     protected function _checkTableInfo() {}
 
     /**
-     * 新增数据
+     * 新增聚合数据
      * @access public
      * @param mixed $data 数据
      * @param array $options 表达式
@@ -106,12 +104,11 @@ class MergeModel extends Model {
         }
         // 启动事务
         $this->startTrans();
-        // 先写入主表
-        $master     =   M($this->masterModel);
-        $result     =   $master->strict(false)->add($data);
+        // 写入主表数据
+        $result     =   M($this->masterModel)->strict(false)->add($data);
         if($result){
             // 写入外键数据
-            $data[$this->foreignKey]    =   $result;
+            $data[$this->fk]    =   $result;
             $models     =   $this->mergeModel;
             array_shift($models);
             // 写入附表数据
@@ -119,6 +116,7 @@ class MergeModel extends Model {
                 $res =   M($model)->strict(false)->add($data);
                 if(!$res){
                     $this->rollback();
+                    return false;
                 }
             }
             // 提交事务
@@ -189,7 +187,7 @@ class MergeModel extends Model {
             return false;
         }            
         // 如果存在主键数据 则自动作为更新条件
-        $pk         =   $this->getPk();
+        $pk         =   $this->pk;
         if(isset($data[$pk])) {
             $where[$pk]         =   $data[$pk];
             $options['where']   =   $where;
@@ -197,20 +195,8 @@ class MergeModel extends Model {
         }
         $options['join']    =   '';
         $options    =   $this->_parseOptions($options);
+        // 更新操作不使用JOIN 
         $options['table']   =   $this->getTableName();
-
-        if(!isset($options['where']) ) {
-            // 如果存在主键数据 则自动作为更新条件
-            if(isset($data[$pk])) {
-                $where[$pk]         =   $data[$pk];
-                $options['where']   =   $where;
-                unset($data[$pk]);
-            }else{
-                // 如果没有任何更新条件则不执行
-                $this->error        =   L('_OPERATION_WRONG_');
-                return false;
-            }
-        }
 
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue    =   $options['where'][$pk];
@@ -227,7 +213,7 @@ class MergeModel extends Model {
     }
 
     public function delete($options=array()){
-        $pk   =  $this->getPk();
+        $pk   =  $this->pk;
         if(empty($options) && empty($this->options['where'])) {
             // 如果删除条件为空 则删除当前数据对象所对应的记录
             if(!empty($this->data) && isset($this->data[$pk]))
@@ -256,7 +242,7 @@ class MergeModel extends Model {
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue            =  $options['where'][$pk];
         }
-
+        
         $options['table']   =   implode(',',$this->mergeModel);
         $options['using']   =   $this->getTableName();
         if(false === $this->_before_delete($options)) {
@@ -283,7 +269,7 @@ class MergeModel extends Model {
             $models     =   $this->mergeModel;
             array_shift($models);
             foreach($models as $model){
-                $options['join'][]    =   'INNER JOIN '.M($model)->getTableName().' '.$model.' ON '.$this->masterModel.'.'.$this->masterPk.' = '.$model.'.'.$this->foreignKey;
+                $options['join'][]    =   $this->joinType.' JOIN '.M($model)->getTableName().' '.$model.' ON '.$this->masterModel.'.'.$this->pk.' = '.$model.'.'.$this->fk;
             }
         }
         $options['table']   =   M($this->masterModel)->getTableName().' '.$this->masterModel;
@@ -297,22 +283,7 @@ class MergeModel extends Model {
     }
 
     /**
-     * 检查是否定义了所有字段
-     * @access protected
-     * @param string $name 模型名称
-     * @param array $fields 字段数组
-     * @return array
-     */
-    private function _checkFields($name,$fields) {
-        if(false !== $pos = array_search('*',$fields)) {// 定义所有字段
-            $fields  =  array_merge($fields,M($name)->getDbFields());
-            unset($fields[$pos]);
-        }
-        return $fields;
-    }
-
-    /**
-     * 检查条件中的视图字段
+     * 检查条件中的聚合字段
      * @access protected
      * @param mixed $data 条件表达式
      * @return array
@@ -333,7 +304,7 @@ class MergeModel extends Model {
     }
 
     /**
-     * 检查Order表达式中的视图字段
+     * 检查Order表达式中的聚合字段
      * @access protected
      * @param string $order 字段
      * @return string
@@ -358,7 +329,7 @@ class MergeModel extends Model {
     }
 
     /**
-     * 检查Group表达式中的视图字段
+     * 检查Group表达式中的聚合字段
      * @access protected
      * @param string $group 字段
      * @return string
@@ -368,7 +339,7 @@ class MergeModel extends Model {
             $groups = explode(',',$group);
             $_group = array();
             foreach ($groups as $field){
-                // 解析成视图字段
+                // 解析成聚合字段
                 if(array_key_exists($field,$this->mapFields)){
                     // 需要处理映射字段
                     $field  =   $this->mapFields[$field];
@@ -381,20 +352,20 @@ class MergeModel extends Model {
     }
 
     /**
-     * 检查fields表达式中的视图字段
+     * 检查fields表达式中的聚合字段
      * @access protected
      * @param string $fields 字段
      * @return string
      */
     protected function checkFields($fields='') {
         if(empty($fields) || '*'==$fields ) {
-            // 获取全部视图字段
+            // 获取全部聚合字段
             $fields =   $this->fields;
         }
         if(!is_array($fields))
             $fields =   explode(',',$fields);
 
-        // 解析成视图字段
+        // 解析成聚合字段
         $array =  array();
         foreach ($fields as $field){
             if(array_key_exists($field,$this->mapFields)){
