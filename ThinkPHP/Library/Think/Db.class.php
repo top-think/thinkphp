@@ -572,11 +572,21 @@ class Db {
     /**
      * limit分析
      * @access protected
-     * @param mixed $lmit
+     * @param string $lmit
      * @return string
      */
     protected function parseLimit($limit) {
         return !empty($limit)?   ' LIMIT '.$limit.' ':'';
+    }
+
+    /**
+     * using分析
+     * @access protected
+     * @param mixed $using
+     * @return string
+     */
+    protected function parseUsing($using) {
+        return !empty($using)?   ' USING '.$this->parseTable($using).' ':'';
     }
 
     /**
@@ -765,7 +775,10 @@ class Db {
         $this->model  =   $options['model'];
         $table  =   $this->parseTable($options['table']);
         $sql   = 'DELETE FROM '.$table;
-        if(strpos($table,',')){// 多表删除支持JOIN操作
+        if(strpos($table,',')){// 多表删除支持USING和JOIN操作
+            if(!empty($options['using'])){
+                $sql .= ' USING '.$this->parseTable($options['using']).' ';
+            }
             $sql .= $this->parseJoin(!empty($options['join'])?$options['join']:'');
         }        
         $sql .= $this->parseWhere(!empty($options['where'])?$options['where']:'');

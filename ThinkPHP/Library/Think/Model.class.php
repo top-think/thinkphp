@@ -434,14 +434,14 @@ class Model {
      * @return mixed
      */
     public function delete($options=array()) {
+        $pk   =  $this->getPk();
         if(empty($options) && empty($this->options['where'])) {
             // 如果删除条件为空 则删除当前数据对象所对应的记录
-            if(!empty($this->data) && isset($this->data[$this->getPk()]))
-                return $this->delete($this->data[$this->getPk()]);
+            if(!empty($this->data) && isset($this->data[$pk]))
+                return $this->delete($this->data[$pk]);
             else
                 return false;
         }
-        $pk   =  $this->getPk();
         if(is_numeric($options)  || is_string($options)) {
             // 根据主键删除记录
             if(strpos($options,',')) {
@@ -1468,6 +1468,24 @@ class Model {
             //将__TABLE_NAME__替换成带前缀的表名
             $table  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $table);
             $this->options['table'] =   $table;
+        }
+        return $this;
+    }
+
+    /**
+     * USING支持 用于多表删除
+     * @access public
+     * @param mixed $using
+     * @return Model
+     */
+    public function using($using){
+        $prefix =   $this->tablePrefix;
+        if(is_array($using)) {
+            $this->options['using'] =   $using;
+        }elseif(!empty($using)) {
+            //将__TABLE_NAME__替换成带前缀的表名
+            $using  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $using);
+            $this->options['using'] =   $using;
         }
         return $this;
     }
