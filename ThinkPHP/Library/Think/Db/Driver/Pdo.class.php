@@ -61,10 +61,6 @@ class Pdo extends Db{
                 E('由于目前PDO暂时不能完美支持'.$this->dbType.' 请使用官方的'.$this->dbType.'驱动');
             }
             $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
-            // 标记连接成功
-            $this->connected    =   true;
-            // 注销数据库连接配置信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }

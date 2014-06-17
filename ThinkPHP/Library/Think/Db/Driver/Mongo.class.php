@@ -53,10 +53,6 @@ class Mongo extends Db{
             }catch (\MongoConnectionException $e){
                 E($e->getmessage());
             }
-            // 标记连接成功
-            $this->connected    =   true;
-            // 注销数据库连接配置信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }
