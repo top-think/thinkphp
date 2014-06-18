@@ -57,7 +57,9 @@ class [MODEL]Model extends Model {
                 APP_PATH.$module.'/View/',
                 RUNTIME_PATH,
                 CACHE_PATH,
+                CACHE_PATH.$module.'/',
                 LOG_PATH,
+                LOG_PATH.$module.'/',
                 TEMP_PATH,
                 DATA_PATH,
                 );
