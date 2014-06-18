@@ -129,7 +129,7 @@ class Ibase extends Db{
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function commit() {
         if ($this->transTimes > 0) {
@@ -146,7 +146,7 @@ class Ibase extends Db{
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function rollback() {
         if ($this->transTimes > 0) {

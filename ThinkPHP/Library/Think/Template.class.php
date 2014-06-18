@@ -376,9 +376,9 @@ class  Template {
     /**
      * TagLib库解析
      * @access public
-     * @param string $tagLib 要解析的标签库
-     * @param string $content 要解析的模板内容
-     * @param boolen $hide 是否隐藏标签库前缀
+     * @param string  $tagLib 要解析的标签库
+     * @param string  $content 要解析的模板内容
+     * @param boolean $hide 是否隐藏标签库前缀
      * @return string
      */
     public function parseTagLib($tagLib,&$content,$hide=false) {
