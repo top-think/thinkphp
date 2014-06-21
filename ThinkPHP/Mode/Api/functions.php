@@ -52,6 +52,34 @@ function C($name=null, $value=null,$default=null) {
 }
 
 /**
+ * 加载配置文件 支持格式转换 仅支持一级配置
+ * @param string $file 配置文件名
+ * @param string $parse 配置解析方法 有些格式需要用户自己解析
+ * @return void
+ */
+function load_config($file,$parse=CONF_PARSE){
+    $ext  = pathinfo($file,PATHINFO_EXTENSION);
+    switch($ext){
+        case 'php':
+            return include $file;
+        case 'ini':
+            return parse_ini_file($file);
+        case 'yaml':
+            return yaml_parse_file($file);
+        case 'xml': 
+            return (array)simplexml_load_file($file);
+        case 'json':
+            return json_decode(file_get_contents($file), true);
+        default:
+            if(function_exists($parse)){
+                return $parse($file);
+            }else{
+                E(L('_NOT_SUPPERT_').':'.$ext);
+            }
+    }
+}
+
+/**
  * 抛出异常处理
  * @param string $msg 异常消息
  * @param integer $code 异常代码 默认为0

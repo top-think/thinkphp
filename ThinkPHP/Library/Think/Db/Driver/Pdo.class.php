@@ -30,6 +30,7 @@ class Pdo extends Db{
             if(empty($this->config['params'])) {
                 $this->config['params'] =   array();
             }
+            $this->dbType = $this->_getDsnType($config['dsn']);            
         }
 
     }
@@ -60,10 +61,6 @@ class Pdo extends Db{
                 E('由于目前PDO暂时不能完美支持'.$this->dbType.' 请使用官方的'.$this->dbType.'驱动');
             }
             $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
-            // 标记连接成功
-            $this->connected    =   true;
-            // 注销数据库连接配置信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }
@@ -169,7 +166,7 @@ class Pdo extends Db{
             }else{
               $val  = array($key,$val);
             }
-            call_user_func_array(array($this->PDOStatement,'bindParam'),$val);
+            call_user_func_array(array($this->PDOStatement,'bindValue'),$val);
         }      
     }
 
@@ -192,7 +189,7 @@ class Pdo extends Db{
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function commit() {
         if ($this->transTimes > 0) {
@@ -209,7 +206,7 @@ class Pdo extends Db{
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function rollback() {
         if ($this->transTimes > 0) {
@@ -387,7 +384,7 @@ class Pdo extends Db{
      * @return string
      */
     protected function parseKey(&$key) {
-        if($this->dbType=='MYSQL'){
+        if(!is_numeric($key) && $this->dbType=='MYSQL'){
             $key   =  trim($key);
             if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
                $key = '`'.$key.'`';

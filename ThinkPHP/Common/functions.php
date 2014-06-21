@@ -80,6 +80,18 @@ function load_config($file,$parse=CONF_PARSE){
 }
 
 /**
+ * 解析yaml文件返回一个数组
+ * @param string $file 配置文件名
+ * @return array
+ */
+if (!function_exists('yaml_parse_file')) {
+    function yaml_parse_file($file) {
+        vendor('spyc.Spyc');
+        return Spyc::YAMLLoad($file);
+    }
+}
+
+/**
  * 抛出异常处理
  * @param string $msg 异常消息
  * @param integer $code 异常代码 默认为0
@@ -587,10 +599,10 @@ function parse_res_name($name,$layer,$level=1){
 function controller($name,$path=''){
     $layer  =   C('DEFAULT_C_LAYER');
     if(!C('APP_USE_NAMESPACE')){
-        $class  =   parse_name($name, 1);
-        import(MODULE_NAME.'/'.$layer.'/'.$class.$layer);
+        $class  =   parse_name($name, 1).$layer;
+        import(MODULE_NAME.'/'.$layer.'/'.$class);
     }else{
-        $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
+        $class  =   ( $path ? basename(ADDON_PATH).'\\'.$path : MODULE_NAME ).'\\'.$layer;
         $array  =   explode('/',$name);
         foreach($array as $name){
             $class  .=   '\\'.parse_name($name, 1);
@@ -884,7 +896,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $module =   '';
             
             if(!empty($path)) {
-                $var[$varModule]    =   array_pop($path);
+                $var[$varModule]    =   implode($depr,$path);
             }else{
                 if(C('MULTI_MODULE')) {
                     if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
@@ -918,7 +930,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
         if(isset($route)) {
             $url    =   __APP__.'/'.rtrim($url,$depr);
         }else{
-            $module =   defined('BIND_MODULE') ? '' : $module;
+            $module =   (defined('BIND_MODULE') && BIND_MODULE==$module )? '' : $module;
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
         }
         if($urlCase){
@@ -1377,18 +1389,53 @@ function get_client_ip($type = 0,$adv=false) {
  */
 function send_http_status($code) {
     static $_status = array(
-        // Success 2xx
-        200 => 'OK',
-        // Redirection 3xx
-        301 => 'Moved Permanently',
-        302 => 'Moved Temporarily ',  // 1.1
-        // Client Error 4xx
-        400 => 'Bad Request',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        // Server Error 5xx
-        500 => 'Internal Server Error',
-        503 => 'Service Unavailable',
+            // Informational 1xx
+            100 => 'Continue',
+            101 => 'Switching Protocols',
+            // Success 2xx
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+            // Redirection 3xx
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Moved Temporarily ',  // 1.1
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            // 306 is deprecated but reserved
+            307 => 'Temporary Redirect',
+            // Client Error 4xx
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            // Server Error 5xx
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported',
+            509 => 'Bandwidth Limit Exceeded'
     );
     if(isset($_status[$code])) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);

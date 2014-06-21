@@ -113,10 +113,11 @@ class View {
         ob_start();
         ob_implicit_flush(0);
         if('php' == strtolower(C('TMPL_ENGINE_TYPE'))) { // 使用PHP原生模板
+            $_content   =   $content;
             // 模板阵列变量分解成为独立变量
             extract($this->tVar, EXTR_OVERWRITE);
             // 直接载入PHP模板
-            empty($content)?include $templateFile:eval('?>'.$content);
+            empty($_content)?include $templateFile:eval('?>'.$_content);
         }else{
             // 视图解析标签
             $params = array('var'=>$this->tVar,'file'=>$templateFile,'content'=>$content,'prefix'=>$prefix);
@@ -155,7 +156,7 @@ class View {
             if(C('VIEW_PATH')){ // 模块设置独立的视图目录
                 $tmplPath   =   C('VIEW_PATH');
             }else{  // 定义TMPL_PATH 改变全局的视图目录到模块之外
-                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
+                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
             }
             define('THEME_PATH', $tmplPath.$theme);
         }

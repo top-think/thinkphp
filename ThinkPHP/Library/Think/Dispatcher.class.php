@@ -172,19 +172,21 @@ class Dispatcher {
             E(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
         }
 
-        $urlMode        =   C('URL_MODEL');
-        if($urlMode == URL_COMPAT ){// 兼容模式判断
-            define('PHP_FILE',_PHP_FILE_.'?'.$varPath.'=');
-        }elseif($urlMode == URL_REWRITE ) {
-            $url    =   dirname(_PHP_FILE_);
-            if($url == '/' || $url == '\\')
-                $url    =   '';
-            define('PHP_FILE',$url);
-        }else {
-            define('PHP_FILE',_PHP_FILE_);
-        }
-        // 当前应用地址
-        define('__APP__',strip_tags(PHP_FILE));
+        if(!defined('__APP__')){
+	        $urlMode        =   C('URL_MODEL');
+	        if($urlMode == URL_COMPAT ){// 兼容模式判断
+	            define('PHP_FILE',_PHP_FILE_.'?'.$varPath.'=');
+	        }elseif($urlMode == URL_REWRITE ) {
+	            $url    =   dirname(_PHP_FILE_);
+	            if($url == '/' || $url == '\\')
+	                $url    =   '';
+	            define('PHP_FILE',$url);
+	        }else {
+	            define('PHP_FILE',_PHP_FILE_);
+	        }
+	        // 当前应用地址
+	        define('__APP__',strip_tags(PHP_FILE));
+	    }
         // 模块URL地址
         $moduleName    =   defined('MODULE_ALIAS')? MODULE_ALIAS : MODULE_NAME;
         define('__MODULE__',(defined('BIND_MODULE') || !C('MULTI_MODULE'))? __APP__ : __APP__.'/'.($urlCase ? strtolower($moduleName) : $moduleName));
@@ -246,7 +248,7 @@ class Dispatcher {
      * 获得控制器的命名空间路径 便于插件机制访问
      */
     static private function getSpace($var,$urlCase) {
-        $space  =   !empty($_GET[$var])?ucfirst($var).'\\'.strip_tags($_GET[$var]):'';
+        $space  =   !empty($_GET[$var])?strip_tags($_GET[$var]):'';
         unset($_GET[$var]);
         return $space;
     }

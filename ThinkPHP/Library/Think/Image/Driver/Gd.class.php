@@ -75,10 +75,10 @@ class Gd{
      * 保存图像
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
-     * @param  integer $quality   JPEG图像质量     
+     * @param  integer $quality   图像质量     
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
      */
-    public function save($imgname, $type = null, $quality=90,$interlace = true){
+    public function save($imgname, $type = null, $quality=80,$interlace = true){
         if(empty($this->img)) E('没有可以被保存的图像资源');
 
         //自动获取图像类型
