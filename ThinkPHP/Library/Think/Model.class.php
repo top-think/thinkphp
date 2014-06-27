@@ -417,6 +417,9 @@ class Model {
         }        
         $result     =   $this->db->update($data,$options);
         if(false !== $result) {
+            if(is_string($result)){
+                return $result;
+            }
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_update($data,$options);
         }
@@ -467,6 +470,9 @@ class Model {
         }        
         $result  =    $this->db->delete($options);
         if(false !== $result) {
+            if(is_string($result)){
+                return $result;
+            }            
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_delete($data,$options);
@@ -500,7 +506,8 @@ class Model {
             $options            =  array();
             // 分析表达式
             $options            =  $this->_parseOptions($options);
-            return  '( '.$this->fetchSql(true)->select($options).' )';
+            $options['fetch_sql'] = true;
+            return  '( '.$this->db->select($options).' )';
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
@@ -517,9 +524,15 @@ class Model {
         if(false === $resultSet) {
             return false;
         }
+
         if(empty($resultSet)) { // 查询结果为空
             return null;
         }
+
+        if(is_string($resultSet)){
+            return $resultSet;
+        }
+                
         $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
         $this->_after_select($resultSet,$options);
         if(isset($options['index'])){ // 对数据集进行索引
@@ -680,6 +693,9 @@ class Model {
         if(empty($resultSet)) {// 查询结果为空
             return null;
         }
+        if(is_string($resultSet)){
+            return $resultSet;
+        }        
         // 读取数据后的处理
         $data   =   $this->_read_data($resultSet[0]);
         $this->_after_find($data,$options);

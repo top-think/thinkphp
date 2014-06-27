@@ -571,7 +571,7 @@ function parse_res_name($name,$layer,$level=1){
     if(strpos($name,'/') && substr_count($name, '/')>=$level){ // 指定模块
         list($module,$name) =  explode('/',$name,2);
     }else{
-        $module =   MODULE_NAME;
+        $module =   defined('MODULE_NAME') ? MODULE_NAME : '' ;
     }
     $array  =   explode('/',$name);
     if(!C('APP_USE_NAMESPACE')){
