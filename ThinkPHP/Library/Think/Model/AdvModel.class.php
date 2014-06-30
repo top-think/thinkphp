@@ -103,8 +103,12 @@ class AdvModel extends Model {
     // 更新前的回调方法
     protected function _before_update(&$data,$options='') {
         // 检查乐观锁
-        if(!$this->checkLockVersion($data,$options)) {
-            return false;
+        $pk     =   $this->getPK();
+        if(isset($options['where'][$pk])){
+            $id     =   $options['where'][$pk];   
+            if(!$this->checkLockVersion($id,$data)) {
+                return false;
+            }
         }
         // 检查文本字段
         $data = $this->checkBlobFields($data);
@@ -158,12 +162,11 @@ class AdvModel extends Model {
     /**
      * 检查乐观锁
      * @access protected
+     * @param inteter $id  当前主键     
      * @param array $data  当前数据
-     * @param array $options 查询表达式
      * @return mixed
      */
-    protected function checkLockVersion(&$data,$options) {
-        $id = $data[$this->getPk()];
+    protected function checkLockVersion($id,&$data) {
         // 检查乐观锁
         $identify   = $this->name.'_'.$id.'_lock_version';
         if($this->optimLock && isset($_SESSION[$identify])) {

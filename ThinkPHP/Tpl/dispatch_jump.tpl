@@ -21,13 +21,13 @@ body{ background: #fff; font-family: '微软雅黑'; color: #333; font-size: 16p
 </head>
 <body>
 <div class="system-message">
-<present name="message">
+<?php if(isset($message)) {?>
 <h1>:)</h1>
 <p class="success"><?php echo($message); ?></p>
-<else/>
+<?php }else{?>
 <h1>:(</h1>
 <p class="error"><?php echo($error); ?></p>
-</present>
+<?php }?>
 <p class="detail"></p>
 <p class="jump">
 页面自动 <a id="href" href="<?php echo($jumpUrl); ?>">跳转</a> 等待时间： <b id="wait"><?php echo($waitSecond); ?></b>

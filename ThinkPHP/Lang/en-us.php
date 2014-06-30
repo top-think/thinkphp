@@ -47,4 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => 'Record has been updated',
     '_NOT_ALLOW_PHP_'        => 'PHP codes are not allowed in the template',
     '_PARAM_ERROR_'          => 'Parameter error or undefined',
+    '_ERROR_QUERY_EXPRESS_'  => 'Query express error',       
 );

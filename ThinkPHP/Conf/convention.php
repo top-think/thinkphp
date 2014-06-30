@@ -34,6 +34,7 @@ return  array(
     'COOKIE_DOMAIN'         =>  '',      // Cookie有效域名
     'COOKIE_PATH'           =>  '/',     // Cookie路径
     'COOKIE_PREFIX'         =>  '',      // Cookie前缀 避免冲突
+    'COOKIE_HTTPONLY'       =>  '',      // Cookie httponly设置
 
     /* 默认设定 */
     'DEFAULT_M_LAYER'       =>  'Model', // 默认的模型层名称
@@ -145,7 +146,6 @@ return  array(
     'URL_PARAMS_BIND_TYPE'  =>  0, // URL变量绑定的类型 0 按变量名绑定 1 按变量顺序绑定
     'URL_PARAMS_FILTER'     =>  false, // URL变量绑定过滤
     'URL_PARAMS_FILTER_TYPE'=>  '', // URL变量绑定过滤方法 如果为空 调用DEFAULT_FILTER
-    'URL_404_REDIRECT'      =>  '', // 404 跳转页面 部署模式有效
     'URL_ROUTER_ON'         =>  false,   // 是否开启URL路由
     'URL_ROUTE_RULES'       =>  array(), // 默认路由规则 针对模块
     'URL_MAP_RULES'         =>  array(), // URL映射定义规则

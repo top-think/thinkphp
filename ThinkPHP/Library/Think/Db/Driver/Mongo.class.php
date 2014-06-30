@@ -53,10 +53,6 @@ class Mongo extends Db{
             }catch (\MongoConnectionException $e){
                 E($e->getmessage());
             }
-            // 标记连接成功
-            $this->connected    =   true;
-            // 注销数据库连接配置信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }
@@ -381,13 +377,9 @@ class Mongo extends Db{
                 $_cursor =  $_cursor->sort($order);
             }
             if(isset($options['page'])) { // 根据页数计算limit
-                if(strpos($options['page'],',')) {
-                    list($page,$length) =  explode(',',$options['page']);
-                }else{
-                    $page    = $options['page'];
-                }
-                $page    = $page?$page:1;
-                $length = isset($length)?$length:(is_numeric($options['limit'])?$options['limit']:20);
+                list($page,$length)   =   $options['page'];
+                $page    =  $page>0 ? $page : 1;
+                $length  =  $length>0 ? $length : (is_numeric($options['limit'])?$options['limit']:20);                
                 $offset  =  $length*((int)$page-1);
                 $options['limit'] =  $offset.','.$length;
             }

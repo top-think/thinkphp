@@ -52,10 +52,6 @@ class Oracle extends Db{
             if (!$this->linkID[$linkNum]){
                 $this->error(false);
             }
-            // 标记连接成功
-            $this->connected = true;
-            //注销数据库安全信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }
@@ -151,7 +147,7 @@ class Oracle extends Db{
     /**
      * 用于非自动提交状态下面的查询提交
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function commit(){
         if ($this->transTimes > 0) {
@@ -168,7 +164,7 @@ class Oracle extends Db{
     /**
      * 事务回滚
      * @access public
-     * @return boolen
+     * @return boolean
      */
      public function rollback(){
         if ($this->transTimes > 0) {

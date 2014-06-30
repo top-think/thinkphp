@@ -80,6 +80,18 @@ function load_config($file,$parse=CONF_PARSE){
 }
 
 /**
+ * 解析yaml文件返回一个数组
+ * @param string $file 配置文件名
+ * @return array
+ */
+if (!function_exists('yaml_parse_file')) {
+    function yaml_parse_file($file) {
+        vendor('spyc.Spyc');
+        return Spyc::YAMLLoad($file);
+    }
+}
+
+/**
  * 抛出异常处理
  * @param string $msg 异常消息
  * @param integer $code 异常代码 默认为0
@@ -214,8 +226,12 @@ function T($template='',$layer=''){
     $auto   =   C('AUTOLOAD_NAMESPACE');
     if($auto && isset($auto[$extend])){ // 扩展资源
         $baseUrl    =   $auto[$extend].$module.$layer.'/';
-    }elseif(C('VIEW_PATH')){ // 指定视图目录
-        $baseUrl    =   C('VIEW_PATH').$module.'/';
+    }elseif(C('VIEW_PATH')){ 
+        // 改变模块视图目录
+        $baseUrl    =   C('VIEW_PATH');
+    }elseif(defined('TMPL_PATH')){ 
+        // 指定全局视图目录
+        $baseUrl    =   TMPL_PATH.$module;
     }else{
         $baseUrl    =   APP_PATH.$module.$layer.'/';
     }
@@ -231,11 +247,7 @@ function T($template='',$layer=''){
     }elseif(false === strpos($file, '/')){
         $file = CONTROLLER_NAME . $depr . $file;
     }elseif('/' != $depr){
-        if(substr_count($file,'/')>1){
-            $file   =   substr_replace($file,$depr,strrpos($file,'/'),1);
-        }else{
-            $file   =   str_replace('/', $depr, $file);
-        }
+        $file   =   substr_count($file,'/')>1 ? substr_replace($file,$depr,strrpos($file,'/'),1) : str_replace('/', $depr, $file);
     }
     return $baseUrl.($theme?$theme.'/':'').$file.C('TMPL_TEMPLATE_SUFFIX');
 }
@@ -292,12 +304,14 @@ function I($name,$default='',$filter=null,$datas=null) {
         default:
             return NULL;
     }
-    if(empty($name)) { // 获取全部变量
+    if(''==$name) { // 获取全部变量
         $data       =   $input;
         array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
-            $filters    =   explode(',',$filters);
+            if(is_string($filters)){
+                $filters    =   explode(',',$filters);
+            }
             foreach($filters as $filter){
                 $data   =   array_map_recursive($filter,$data); // 参数过滤
             }
@@ -307,7 +321,12 @@ function I($name,$default='',$filter=null,$datas=null) {
         is_array($data) && array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
-            $filters    =   explode(',',$filters);
+            if(is_string($filters)){
+                $filters    =   explode(',',$filters);
+            }elseif(is_int($filters)){
+                $filters    =   array($filters);
+            }
+            
             foreach($filters as $filter){
                 if(function_exists($filter)) {
                     $data   =   is_array($data)?array_map_recursive($filter,$data):$filter($data); // 参数过滤
@@ -552,7 +571,7 @@ function parse_res_name($name,$layer,$level=1){
     if(strpos($name,'/') && substr_count($name, '/')>=$level){ // 指定模块
         list($module,$name) =  explode('/',$name,2);
     }else{
-        $module =   MODULE_NAME;
+        $module =   defined('MODULE_NAME') ? MODULE_NAME : '' ;
     }
     $array  =   explode('/',$name);
     if(!C('APP_USE_NAMESPACE')){
@@ -580,10 +599,10 @@ function parse_res_name($name,$layer,$level=1){
 function controller($name,$path=''){
     $layer  =   C('DEFAULT_C_LAYER');
     if(!C('APP_USE_NAMESPACE')){
-        $class  =   parse_name($name, 1);
-        import(MODULE_NAME.'/'.$layer.'/'.$class.$layer);
+        $class  =   parse_name($name, 1).$layer;
+        import(MODULE_NAME.'/'.$layer.'/'.$class);
     }else{
-        $class  =   MODULE_NAME.'\\'.($path?$path.'\\':'').$layer;
+        $class  =   ( $path ? basename(ADDON_PATH).'\\'.$path : MODULE_NAME ).'\\'.$layer;
         $array  =   explode('/',$name);
         foreach($array as $name){
             $class  .=   '\\'.parse_name($name, 1);
@@ -877,7 +896,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $module =   '';
             
             if(!empty($path)) {
-                $var[$varModule]    =   array_pop($path);
+                $var[$varModule]    =   implode($depr,$path);
             }else{
                 if(C('MULTI_MODULE')) {
                     if(MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')){
@@ -911,7 +930,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
         if(isset($route)) {
             $url    =   __APP__.'/'.rtrim($url,$depr);
         }else{
-            $module =   defined('BIND_MODULE') ? '' : $module;
+            $module =   (defined('BIND_MODULE') && BIND_MODULE==$module )? '' : $module;
             $url    =   __APP__.'/'.($module?$module.MODULE_PATHINFO_DEPR:'').implode($depr,array_reverse($var));
         }
         if($urlCase){
@@ -1135,7 +1154,7 @@ function data_to_xml($data, $item='item', $id='id') {
  * @param mixed $value session值
  * @return mixed
  */
-function session($name,$value='') {
+function session($name='',$value='') {
     $prefix   =  C('SESSION_PREFIX');
     if(is_array($name)) { // session初始化 在session_start 之前调用
         if(isset($name['prefix'])) C('SESSION_PREFIX',$name['prefix']);
@@ -1171,7 +1190,10 @@ function session($name,$value='') {
         // 启动session
         if(C('SESSION_AUTO_START'))  session_start();
     }elseif('' === $value){ 
-        if(0===strpos($name,'[')) { // session 操作
+        if(''===$name){
+            // 获取全部的session
+            return $prefix ? $_SESSION[$prefix] : $_SESSION;
+        }elseif(0===strpos($name,'[')) { // session 操作
             if('[pause]'==$name){ // 暂停session
                 session_write_close();
             }elseif('[start]'==$name){ // 启动session
@@ -1237,13 +1259,14 @@ function session($name,$value='') {
  * @param mixed $options cookie参数
  * @return mixed
  */
-function cookie($name, $value='', $option=null) {
+function cookie($name='', $value='', $option=null) {
     // 默认设置
     $config = array(
         'prefix'    =>  C('COOKIE_PREFIX'), // cookie 名称前缀
         'expire'    =>  C('COOKIE_EXPIRE'), // cookie 保存时间
         'path'      =>  C('COOKIE_PATH'), // cookie 保存路径
         'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
+        'httponly'  =>  C('COOKIE_HTTPONLY'), // httponly设置
     );
     // 参数设置(会覆盖黙认设置)
     if (!is_null($option)) {
@@ -1252,6 +1275,9 @@ function cookie($name, $value='', $option=null) {
         elseif (is_string($option))
             parse_str($option, $option);
         $config     = array_merge($config, array_change_key_case($option));
+    }
+    if(!empty($config['httponly'])){
+        ini_set("session.cookie_httponly", 1);
     }
     // 清除指定前缀的所有cookie
     if (is_null($name)) {
@@ -1268,6 +1294,9 @@ function cookie($name, $value='', $option=null) {
             }
         }
         return;
+    }elseif('' === $name){
+        // 获取全部的cookie
+        return $_COOKIE;
     }
     $name = $config['prefix'] . str_replace('.', '_', $name);
     if ('' === $value) {
@@ -1360,18 +1389,53 @@ function get_client_ip($type = 0,$adv=false) {
  */
 function send_http_status($code) {
     static $_status = array(
-        // Success 2xx
-        200 => 'OK',
-        // Redirection 3xx
-        301 => 'Moved Permanently',
-        302 => 'Moved Temporarily ',  // 1.1
-        // Client Error 4xx
-        400 => 'Bad Request',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        // Server Error 5xx
-        500 => 'Internal Server Error',
-        503 => 'Service Unavailable',
+            // Informational 1xx
+            100 => 'Continue',
+            101 => 'Switching Protocols',
+            // Success 2xx
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+            // Redirection 3xx
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Moved Temporarily ',  // 1.1
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            // 306 is deprecated but reserved
+            307 => 'Temporary Redirect',
+            // Client Error 4xx
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            // Server Error 5xx
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported',
+            509 => 'Bandwidth Limit Exceeded'
     );
     if(isset($_status[$code])) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);
