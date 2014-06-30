@@ -820,12 +820,12 @@ class Model {
             if(!empty($resultSet)) {
                 $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
-                $key            =   array_shift($field);
+                $key1           =   array_shift($field);
                 $key2           =   array_shift($field);
                 $cols           =   array();
                 $count          =   count($_field);
                 foreach ($resultSet as $result){
-                    $name   =  $result[$key];
+                    $name   =  $result[$key1];
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
