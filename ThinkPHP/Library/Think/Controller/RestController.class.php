@@ -109,7 +109,7 @@ class RestController extends Controller {
             'jpg'   =>  'image/jpg,image/jpeg,image/pjpeg',
             'gif'   =>  'image/gif',
             'csv'   =>  'text/csv',
-            'html'  =>  'text/html,application/xhtml+xml,*/*',
+            'html'  =>  'text/html,application/xhtml+xml,*/*'
         );
         
         foreach($type as $key=>$val){
