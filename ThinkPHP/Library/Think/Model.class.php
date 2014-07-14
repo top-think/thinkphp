@@ -315,8 +315,9 @@ class Model {
         // 写入数据到数据库
         $result = $this->db->insert($data,$options,$replace);
         if(false !== $result ) {
+            $pk     =   $this->getPk();
               // 增加复合主键支持
-            if (is_array($this->getPk())) return $result;
+            if (is_array($pk)) return $result;
             $insertId   =   $this->getLastInsID();
             if($insertId) {
                 // 自增主键返回插入ID
