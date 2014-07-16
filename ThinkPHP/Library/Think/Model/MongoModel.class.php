@@ -114,7 +114,7 @@ class MongoModel extends Model{
     public function distinct($field, $where=array() ){
         // 分析表达式
         $this->options =  $this->_parseOptions();
-        $this->options['where'] = array_merge((array)$options['where'], $where);
+        $this->options['where'] = array_merge((array)$this->options['where'], $where);
 
         $command = array(
             "distinct" => $this->options['table'],
@@ -376,11 +376,7 @@ class MongoModel extends Model{
 
         //合并查询条件
         if(isset($option['where']))
-        {
-            if(!isset($option['condition']))
-                $option['condition'] = array();
-            $option['condition'] = array_merge($option['condition'], $option['where']);
-        }
+            $option['condition'] = array_merge((array)$option['condition'], $option['where']);
 
         return $this->db->group($key, $init, $reduce, $option);
     }
