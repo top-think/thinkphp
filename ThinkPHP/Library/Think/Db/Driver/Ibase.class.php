@@ -321,7 +321,7 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
         if(!empty($limit)) {
             $limit  =   explode(',',$limit);
             if(count($limit)>1) {
-                 $limitStr = ' FIRST '.($limit[1]-$limit[0]).' SKIP '.$limit[0].' ';
+                 $limitStr = ' FIRST '.$limit[1].' SKIP '.$limit[0].' ';
             }else{
               $limitStr = ' FIRST '.$limit[0].' ';
             }
