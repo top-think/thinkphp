@@ -114,7 +114,7 @@ class MongoModel extends Model{
     public function distinct($field, $where=array() ){
         // 分析表达式
         $options =  $this->_parseOptions();
-        $where = array_merge($options['where'], $where);
+        $where = array_merge((array)$options['where'], $where);
 
         $command = array(
             "distinct" => $options['table'],
