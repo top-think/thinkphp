@@ -113,16 +113,16 @@ class MongoModel extends Model{
      */
     public function distinct($field, $where=array() ){
         // 分析表达式
-        $options =  $this->_parseOptions();
-        $where = array_merge((array)$options['where'], $where);
+        $this->options =  $this->_parseOptions();
+        $this->options['where'] = array_merge((array)$options['where'], $where);
 
         $command = array(
-            "distinct" => $options['table'],
+            "distinct" => $this->options['table'],
             "key" => $field,
-            "query" => $where
+            "query" => $this->options['where']
         );
 
-        $result = $this->db->command($command);
+        $result = $this->command($command);
         return isset($result['values']) ? $result['values'] : false;
     }
 
@@ -325,8 +325,9 @@ class MongoModel extends Model{
      * @param array $command  指令
      * @return mixed
      */
-    public function command($command) {
-        return $this->db->command($command);
+    public function command($command, $options=array()) {
+        $options =  $this->_parseOptions($options);
+        return $this->db->command($command, $options);
     }
 
     /**
@@ -382,5 +383,24 @@ class MongoModel extends Model{
         }
 
         return $this->db->group($key, $init, $reduce, $option);
+    }
+
+    /**
+     * 返回Mongo运行错误信息
+     * @access public
+     * @return json
+     */
+    public function getLastError(){
+        return $this->db->command(array('getLastError'=>1));
+    }
+
+    /**
+     * 返回指定集合的统计信息，包括数据大小、已分配的存储空间和索引的大小
+     * @access public
+     * @return json
+     */
+    public function status(){
+        $option = $this->_parseOptions();
+        return $this->db->command(array('collStats'=>$option['table']));
     }
 }

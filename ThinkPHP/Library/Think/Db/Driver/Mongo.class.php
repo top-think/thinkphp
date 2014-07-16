@@ -105,17 +105,35 @@ class Mongo extends Db{
      * @param array $command  指令
      * @return array
      */
-    public function command($command=array()) {
-        N('db_write',1);
-        $this->queryStr = 'command:'.json_encode($command);
-        // 记录开始执行时间
-        G('queryStartTime');
-        $result   = $this->_mongo->command($command);
-        $this->debug();
-        if(!$result['ok']) {
-            E($result['errmsg']);
+    public function command($command=array(), $options=array()) {
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) { // 查询缓存检测
+            $key =  is_string($cache['key'])?$cache['key']:md5(serialize($command));
+            $value   =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+            }
         }
-        return $result;
+
+        N('db_query',1);
+        try{
+            if(C('DB_SQL_LOG')) {
+                $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.runCommand(';
+                $this->queryStr  .=  json_encode($command);
+                echo $this->queryStr  .=  ')';
+            }
+            // 记录开始执行时间
+            G('queryStartTime');
+            $result   = $this->_mongo->command($command);
+            $this->debug();
+            
+            if($cache && $result['ok']) { // 查询缓存写入
+                S($key,$result,$cache['expire'],$cache['type']);
+            }
+            return $result;
+        } catch (\MongoCursorException $e) {
+            E($e->getMessage());
+        }
     }
 
     /**
