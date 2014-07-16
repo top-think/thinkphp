@@ -450,7 +450,44 @@ class Mongo extends Db{
     }
 
     public function group($keys,$initial,$reduce,$options=array()){
-        $this->_collection->group($keys,$initial,$reduce,$options);
+        if(isset($options['table']) && $this->_collectionName != $options['table']) {
+            $this->switchCollection($options['table'],'',false);
+        }
+        
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) {
+            $key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $value  =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+            }
+        }
+        
+        $this->model  =   $options['model'];
+        N('db_query',1);
+        $query  =  $this->parseWhere($options['where']);
+        
+        if(C('DB_SQL_LOG')) {
+            $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.group({key:'.json_encode($keys).',cond:'.
+            json_encode($options['condition']) . ',reduce:' .
+            json_encode($reduce).',initial:'.
+            json_encode($initial).'})';
+        }
+        try{
+            // 记录开始执行时间
+            G('queryStartTime');
+            
+            $option = array('condition'=>$options['condition'], 'finalize'=>$options['finalize'], 'maxTimeMS'=>$options['maxTimeMS']);
+            $group = $this->_collection->group($keys,$initial,$reduce,$options);
+            $this->debug();
+            
+            if($cache && $group['ok'])
+                S($key,$group,$cache['expire'],$cache['type']);
+            
+            return $group;
+        } catch (\MongoCursorException $e) {
+            throw_exception($e->getMessage());
+        }
     }
 
     /**

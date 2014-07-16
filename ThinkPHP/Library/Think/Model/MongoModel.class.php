@@ -363,4 +363,24 @@ class MongoModel extends Model{
         }
         return $this->trueTableName;
     }
+
+    /**
+     * 分组查询
+     * @access public
+     * @return string
+     */
+    public function group($key, $init, $reduce, $option=array())
+    {
+        $option = $this->_parseOptions($option);
+
+        //合并查询条件
+        if(isset($option['where']))
+        {
+            if(!isset($option['condition']))
+                $option['condition'] = array();
+            $option['condition'] = array_merge($option['condition'], $option['where']);
+        }
+
+        return $this->db->group($key, $init, $reduce, $option);
+    }
 }
