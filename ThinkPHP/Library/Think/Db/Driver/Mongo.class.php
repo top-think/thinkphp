@@ -415,39 +415,9 @@ class Mongo extends Db{
      * @return array
      */
     public function find($options=array()){
-        if(isset($options['table'])) {
-            $this->switchCollection($options['table'],'',false);
-        }
-        $cache  =  isset($options['cache'])?$options['cache']:false;
-        if($cache) { // 查询缓存检测
-            $key =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
-            $value   =  S($key,'','',$cache['type']);
-            if(false !== $value) {
-                return $value;
-            }
-        }
-        $this->model  =   $options['model'];
-        N('db_query',1);
-        $query  =  $this->parseWhere($options['where']);
-        $fields    = $this->parseField($options['field']);
-        if(C('DB_SQL_LOG')) {
-            $this->queryStr = $this->_dbName.'.'.$this->_collectionName.'.findOne(';
-            $this->queryStr .= $query?json_encode($query):'{}';
-            $this->queryStr .= $fields?','.json_encode($fields):'';
-            $this->queryStr .= ')';
-        }
-        try{
-            // 记录开始执行时间
-            G('queryStartTime');
-            $result   = $this->_collection->findOne($query,$fields);
-            $this->debug();
-            if($cache && $result ) { // 查询缓存写入
-                S($key,$result,$cache['expire'],$cache['type']);
-            }
-            return $result;
-        } catch (\MongoCursorException $e) {
-            E($e->getMessage());
-        }
+        $options['limit'] = 1;
+        $find = $this->select($options);
+        return array_shift($find);
     }
 
     /**
