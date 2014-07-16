@@ -107,6 +107,26 @@ class MongoModel extends Model{
     }
 
     /**
+     * 获取唯一值
+     * @access public
+     * @return array | false
+     */
+    public function distinct($field, $where=array() ){
+        // 分析表达式
+        $options =  $this->_parseOptions();
+        $where = array_merge($options['where'], $where);
+
+        $command = array(
+            "distinct" => $options['table'],
+            "key" => $field,
+            "query" => $where
+        );
+
+        $result = $this->db->command($command);
+        return isset($result['values']) ? $result['values'] : false;
+    }
+
+    /**
      * 获取下一ID 用于自动增长型
      * @access public
      * @param string $pk 字段名 默认为主键
