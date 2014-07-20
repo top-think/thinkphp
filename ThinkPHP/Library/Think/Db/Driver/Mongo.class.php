@@ -30,7 +30,7 @@ class Mongo extends Db{
      */
     public function __construct($config=''){
         if ( !class_exists('mongoClient') ) {
-            E(L('_NOT_SUPPERT_').':mongoClient');
+            E(L('_NOT_SUPPORT_').':mongoClient');
         }
         if(!empty($config)) {
             $this->config   =   $config;

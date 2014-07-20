@@ -23,7 +23,7 @@ class Pgsql extends Db{
      */
     public function __construct($config='') {
         if ( !extension_loaded('pgsql') ) {
-            E(L('_NOT_SUPPERT_').':pgsql');
+            E(L('_NOT_SUPPORT_').':pgsql');
         }
         if(!empty($config)) {
             $this->config   =   $config;

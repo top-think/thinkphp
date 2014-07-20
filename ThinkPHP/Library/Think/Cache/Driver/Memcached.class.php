@@ -27,7 +27,7 @@ class Memcached extends Cache
     public function __construct($options = array())
     {
         if ( !extension_loaded('memcached') ) {
-            E(L('_NOT_SUPPERT_').':memcached');
+            E(L('_NOT_SUPPORT_').':memcached');
         }
 
         $options = array_merge(array(
