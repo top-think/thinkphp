@@ -140,7 +140,7 @@ class Model {
                   // 增加复合主键支持
                 if (isset($this->fields['_pk']) && $this->fields['_pk'] != null) {
                     if (is_string($this->fields['_pk'])) {
-                    	   $this->pk   =   array($this->fields['_pk']);
+                        $this->pk   =   array($this->fields['_pk']);
                         $this->fields['_pk']   =   $this->pk;
                     }
                     $this->pk[]   =   $key;
@@ -314,7 +314,7 @@ class Model {
         }
         // 写入数据到数据库
         $result = $this->db->insert($data,$options,$replace);
-        if(false !== $result ) {
+        if(false !== $result && is_numeric($result)) {
             $pk     =   $this->getPk();
               // 增加复合主键支持
             if (is_array($pk)) return $result;
@@ -418,7 +418,7 @@ class Model {
                     $where[$pk]     =   $data[$pk];
                 }
             } elseif (is_array($pk)) {
-            	// 增加复合主键支持
+                // 增加复合主键支持
                 foreach ($pk as $field) {
                     if(isset($data[$pk])) {
                         $where[$field]      =   $data[$field];
@@ -432,9 +432,9 @@ class Model {
             $options['where']       =   $where;
             unset($data[$pk]);
         }else{
-                // 如果没有任何更新条件则不执行
-                $this->error        =   L('_OPERATION_WRONG_');
-                return false;
+            // 如果没有任何更新条件则不执行
+            $this->error        =   L('_OPERATION_WRONG_');
+            return false;
         }
 
         if(is_array($options['where']) && isset($options['where'][$pk])){
@@ -444,7 +444,7 @@ class Model {
             return false;
         }        
         $result     =   $this->db->update($data,$options);
-        if(false !== $result) {
+        if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_update($data,$options);
         }
@@ -511,7 +511,7 @@ class Model {
             return false;
         }        
         $result  =    $this->db->delete($options);
-        if(false !== $result) {
+        if(false !== $result && is_numeric($result)) {
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_delete($data,$options);
@@ -542,7 +542,7 @@ class Model {
             $options            =  array();
             $options['where']   =  $where;
         }elseif (is_array($options) && (count($options) > 0) && is_array($pk)) {
-        	// 根据复合主键查询
+            // 根据复合主键查询
             $count = 0;
             foreach (array_keys($options) as $key) {
                 if (is_int($key)) $count++; 
@@ -581,6 +581,11 @@ class Model {
         if(empty($resultSet)) { // 查询结果为空
             return null;
         }
+
+        if(is_string($resultSet)){
+            return $resultSet;
+        }
+
         $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
         $this->_after_select($resultSet,$options);
         if(isset($options['index'])){ // 对数据集进行索引
@@ -593,11 +598,11 @@ class Model {
                     $cols[$_key] =  $result;
                 }
             }
-            $resultSet  =   $cols;         
+            $resultSet  =   $cols;
         }
         if(isset($cache)){
             S($key,$resultSet,$cache);
-        }           
+        }
         return $resultSet;
     }
     // 查询成功后的回调方法
@@ -723,7 +728,7 @@ class Model {
         // 根据复合主键删除记录
         $pk  =  $this->getPk();
         if (is_array($options) && (count($options) > 0) && is_array($pk)) {
-        	// 根据复合主键查询
+            // 根据复合主键查询
             $count = 0;
             foreach (array_keys($options) as $key) {
                 if (is_int($key)) $count++; 
@@ -760,6 +765,10 @@ class Model {
         if(empty($resultSet)) {// 查询结果为空
             return null;
         }
+        if(is_string($resultSet)){
+            return $resultSet;
+        }
+
         // 读取数据后的处理
         $data   =   $this->_read_data($resultSet[0]);
         $this->_after_find($data,$options);
