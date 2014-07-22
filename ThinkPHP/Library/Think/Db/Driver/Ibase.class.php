@@ -24,7 +24,7 @@ class Ibase extends Db{
      */
     public function __construct($config='') {
         if ( !extension_loaded('interbase') ) {
-            E(L('_NOT_SUPPERT_').':Interbase or Firebird');
+            E(L('_NOT_SUPPORT_').':Interbase or Firebird');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -37,7 +37,7 @@ class Ibase extends Db{
     /**
      * 连接数据库方法
      * @access public
-     * @throws Think\Execption
+     * @throws \Think\Exception
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {

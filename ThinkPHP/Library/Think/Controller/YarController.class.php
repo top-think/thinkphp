@@ -24,7 +24,7 @@ class YarController {
             $this->_initialize();
         //判断扩展是否存在
         if(!extension_loaded('yar'))
-            E(L('_NOT_SUPPERT_').':yar');
+            E(L('_NOT_SUPPORT_').':yar');
         //实例化Yar_Server
         $server     =   new \Yar_Server($this);
         // 启动server

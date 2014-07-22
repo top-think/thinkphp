@@ -23,7 +23,7 @@ class Sqlsrv extends Db{
      */
     public function __construct($config='') {
         if ( !function_exists('sqlsrv_connect') ) {
-            E(L('_NOT_SUPPERT_').':sqlsrv');
+            E(L('_NOT_SUPPORT_').':sqlsrv');
         }
         if(!empty($config)) {
             $this->config	=	$config;
