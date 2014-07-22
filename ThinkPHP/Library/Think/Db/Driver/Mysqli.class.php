@@ -23,7 +23,7 @@ class Mysqli extends Db{
      */
     public function __construct($config=''){
         if ( !extension_loaded('mysqli') ) {
-            E(L('_NOT_SUPPERT_').':mysqli');
+            E(L('_NOT_SUPPORT_').':mysqli');
         }
         if(!empty($config)) {
             $this->config   =   $config;

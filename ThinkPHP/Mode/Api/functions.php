@@ -74,7 +74,7 @@ function load_config($file,$parse=CONF_PARSE){
             if(function_exists($parse)){
                 return $parse($file);
             }else{
-                E(L('_NOT_SUPPERT_').':'.$ext);
+                E(L('_NOT_SUPPORT_').':'.$ext);
             }
     }
 }

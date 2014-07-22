@@ -23,7 +23,7 @@ class Sqlite extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('sqlite') ) {
-            E(L('_NOT_SUPPERT_').':sqlite');
+            E(L('_NOT_SUPPORT_').':sqlite');
         }
         if(empty($options)) {
             $options = array (

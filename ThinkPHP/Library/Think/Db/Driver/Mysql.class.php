@@ -24,7 +24,7 @@ class Mysql extends Db{
      */
     public function __construct($config=''){
         if ( !extension_loaded('mysql') ) {
-            E(L('_NOT_SUPPERT_').':mysql');
+            E(L('_NOT_SUPPORT_').':mysql');
         }
         if(!empty($config)) {
             $this->config   =   $config;

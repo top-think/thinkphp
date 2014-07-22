@@ -24,7 +24,7 @@ class Redis extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('redis') ) {
-            E(L('_NOT_SUPPERT_').':redis');
+            E(L('_NOT_SUPPORT_').':redis');
         }
         if(empty($options)) {
             $options = array (

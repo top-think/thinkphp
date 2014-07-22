@@ -13,7 +13,7 @@
  * ThinkPHP Portuguese language package
  */
 return array(
-    /* core language pachage */ 
+    /* core language package */ 
     '_MODULE_NOT_EXIST_'     => "Módulo não pode ser carregado",
     '_CONTROLLER_NOT_EXIST_' => "Controller não pode ser carregado",
     '_ERROR_ACTION_'         => 'Ação ilegal',
@@ -30,9 +30,9 @@ return array(
     '_NO_DB_DRIVER_'         => 'Impossível carregar driver do bando de dados',
     '_NOT_SUPPORT_DB_'       => 'Temporariamente sem suporte ao banco',
     '_NO_DB_CONFIG_'         => 'Não define a configuração do banco',
-    '_NOT_SUPPERT_'          => 'O sistema não suporta',
+    '_NOT_SUPPORT_'          => 'O sistema não suporta',
     '_CACHE_TYPE_INVALID_'   => 'Impossível carregar o tipo de cache',
-    '_FILE_NOT_WRITEABLE_'   => 'Diretório (arquivo) não pode ser escrito',
+    '_FILE_NOT_WRITABLE_'   => 'Diretório (arquivo) não pode ser escrito',
     '_METHOD_NOT_EXIST_'     => 'O método solicitado não existe!',
     '_CLASS_NOT_EXIST_'      => 'Não existe instância da classe',
     '_CLASS_CONFLICT_'       => 'Conflitos com nome da classe',
