@@ -132,12 +132,23 @@ class Model {
             return false;
         }
         $this->fields   =   array_keys($fields);
+        unset($this->fields['_pk']);
         foreach ($fields as $key=>$val){
             // 记录字段类型
             $type[$key]     =   $val['type'];
             if($val['primary']) {
-                $this->pk   =   $key;
-                $this->fields['_pk']   =   $key;
+                  // 增加复合主键支持
+                if (isset($this->fields['_pk']) && $this->fields['_pk'] != null) {
+                    if (is_string($this->fields['_pk'])) {
+                        $this->pk   =   array($this->fields['_pk']);
+                        $this->fields['_pk']   =   $this->pk;
+                    }
+                    $this->pk[]   =   $key;
+                    $this->fields['_pk'][]   =   $key;
+                } else {
+                    $this->pk   =   $key;
+                    $this->fields['_pk']   =   $key;
+                }
                 if($val['autoinc']) $this->autoinc   =   true;
             }
         }
@@ -303,11 +314,14 @@ class Model {
         }
         // 写入数据到数据库
         $result = $this->db->insert($data,$options,$replace);
-        if(false !== $result ) {
+        if(false !== $result && is_numeric($result)) {
+            $pk     =   $this->getPk();
+              // 增加复合主键支持
+            if (is_array($pk)) return $result;
             $insertId   =   $this->getLastInsID();
             if($insertId) {
                 // 自增主键返回插入ID
-                $data[$this->getPk()]  = $insertId;
+                $data[$pk]  = $insertId;
                 if(false === $this->_after_insert($data,$options)) {
                     return false;
                 }
@@ -399,16 +413,30 @@ class Model {
         $pk         =   $this->getPk();
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
-            if(isset($data[$pk])) {
-                $where[$pk]         =   $data[$pk];
-                $options['where']   =   $where;
-                unset($data[$pk]);
-            }else{
-                // 如果没有任何更新条件则不执行
-                $this->error        =   L('_OPERATION_WRONG_');
-                return false;
+            if (is_string($pk)) {
+                if(isset($data[$pk])) {
+                    $where[$pk]     =   $data[$pk];
+                }
+            } elseif (is_array($pk)) {
+                // 增加复合主键支持
+                foreach ($pk as $field) {
+                    if(isset($data[$pk])) {
+                        $where[$field]      =   $data[$field];
+                    } else {
+                           // 如果缺少复合主键数据则不执行
+                        $this->error        =   L('_OPERATION_WRONG_');
+                        return false;
+                    }
+                }
             }
+            $options['where']       =   $where;
+            unset($data[$pk]);
+        }else{
+            // 如果没有任何更新条件则不执行
+            $this->error        =   L('_OPERATION_WRONG_');
+            return false;
         }
+
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue    =   $options['where'][$pk];
         }        
@@ -416,10 +444,7 @@ class Model {
             return false;
         }        
         $result     =   $this->db->update($data,$options);
-        if(false !== $result) {
-            if(is_string($result)){
-                return $result;
-            }
+        if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_update($data,$options);
         }
@@ -455,6 +480,23 @@ class Model {
             $options            =  array();
             $options['where']   =  $where;
         }
+        // 根据复合主键删除记录
+        if (is_array($options) && (count($options) > 0) && is_array($pk)) {
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
+        }
         // 分析表达式
         $options =  $this->_parseOptions($options);
         if(empty($options['where'])){
@@ -469,10 +511,7 @@ class Model {
             return false;
         }        
         $result  =    $this->db->delete($options);
-        if(false !== $result) {
-            if(is_string($result)){
-                return $result;
-            }            
+        if(false !== $result && is_numeric($result)) {
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
             $this->_after_delete($data,$options);
@@ -492,9 +531,9 @@ class Model {
      * @return mixed
      */
     public function select($options=array()) {
+        $pk   =  $this->getPk();
         if(is_string($options) || is_numeric($options)) {
             // 根据主键查询
-            $pk   =  $this->getPk();
             if(strpos($options,',')) {
                 $where[$pk]     =  array('IN',$options);
             }else{
@@ -502,12 +541,27 @@ class Model {
             }
             $options            =  array();
             $options['where']   =  $where;
-        }elseif(false === $options){ // 用于子查询 不查询只返回SQL
+        }elseif (is_array($options) && (count($options) > 0) && is_array($pk)) {
+            // 根据复合主键查询
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
+        } elseif(false === $options){ // 用于子查询 不查询只返回SQL
             $options            =  array();
             // 分析表达式
             $options            =  $this->_parseOptions($options);
-            $options['fetch_sql'] = true;
-            return  '( '.$this->db->select($options).' )';
+            return  '( '.$this->fetchSql(true)->select($options).' )';
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
@@ -524,7 +578,6 @@ class Model {
         if(false === $resultSet) {
             return false;
         }
-
         if(empty($resultSet)) { // 查询结果为空
             return null;
         }
@@ -532,7 +585,7 @@ class Model {
         if(is_string($resultSet)){
             return $resultSet;
         }
-                
+
         $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
         $this->_after_select($resultSet,$options);
         if(isset($options['index'])){ // 对数据集进行索引
@@ -545,11 +598,11 @@ class Model {
                     $cols[$_key] =  $result;
                 }
             }
-            $resultSet  =   $cols;         
+            $resultSet  =   $cols;
         }
         if(isset($cache)){
             S($key,$resultSet,$cache);
-        }           
+        }
         return $resultSet;
     }
     // 查询成功后的回调方法
@@ -672,6 +725,25 @@ class Model {
             $options                =   array();
             $options['where']       =   $where;
         }
+        // 根据复合主键删除记录
+        $pk  =  $this->getPk();
+        if (is_array($options) && (count($options) > 0) && is_array($pk)) {
+            // 根据复合主键查询
+            $count = 0;
+            foreach (array_keys($options) as $key) {
+                if (is_int($key)) $count++; 
+            } 
+            if ($count == count($pk)) {
+                $i = 0;
+                foreach ($pk as $field) {
+                    $where[$field] = $options[$i];
+                    unset($options[$i++]);
+                }
+                $options['where']  =  $where;
+            } else {
+                return false;
+            }
+        }
         // 总是查找一条记录
         $options['limit']   =   1;
         // 分析表达式
@@ -695,7 +767,8 @@ class Model {
         }
         if(is_string($resultSet)){
             return $resultSet;
-        }        
+        }
+
         // 读取数据后的处理
         $data   =   $this->_read_data($resultSet[0]);
         $this->_after_find($data,$options);
@@ -820,12 +893,12 @@ class Model {
             if(!empty($resultSet)) {
                 $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
-                $key1           =   array_shift($field);
+                $key            =   array_shift($field);
                 $key2           =   array_shift($field);
                 $cols           =   array();
                 $count          =   count($_field);
                 foreach ($resultSet as $result){
-                    $name   =  $result[$key1];
+                    $name   =  $result[$key];
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
@@ -1164,7 +1237,7 @@ class Model {
                 }else{
                     $map[$val[0]] = $data[$val[0]];
                 }
-                if(!empty($data[$this->getPk()])) { // 完善编辑的时候验证唯一
+                if(is_string($this->getPk()) && !empty($data[$this->getPk()])) { // 完善编辑的时候验证唯一
                     $map[$this->getPk()] = array('neq',$data[$this->getPk()]);
                 }
                 if($this->where($map)->find())   return false;

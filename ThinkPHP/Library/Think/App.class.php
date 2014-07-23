@@ -30,13 +30,14 @@ class App {
         define('IS_POST',       REQUEST_METHOD =='POST' ? true : false);
         define('IS_PUT',        REQUEST_METHOD =='PUT' ? true : false);
         define('IS_DELETE',     REQUEST_METHOD =='DELETE' ? true : false);
-        define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         // URL调度
         Dispatcher::dispatch();
 
         // URL调度结束标签
         Hook::listen('url_dispatch');         
+
+        define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
         // 日志目录转换为绝对路径
         C('LOG_PATH',   realpath(LOG_PATH).'/'.MODULE_NAME.'/');

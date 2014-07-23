@@ -23,7 +23,7 @@ class Mssql extends Db{
      */
     public function __construct($config=''){
         if ( !function_exists('mssql_connect') ) {
-            E(L('_NOT_SUPPERT_').':mssql');
+            E(L('_NOT_SUPPORT_').':mssql');
         }
         if(!empty($config)) {
             $this->config	=	$config;

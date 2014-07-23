@@ -28,7 +28,7 @@ class Oracle extends Db{
     public function __construct($config=''){
         putenv("NLS_LANG=AMERICAN_AMERICA.UTF8");
         if ( !extension_loaded('oci8') ) {
-            E(L('_NOT_SUPPERT_').'oracle');
+            E(L('_NOT_SUPPORT_').'oracle');
         }
         if(!empty($config)) {
             $this->config        =        $config;
