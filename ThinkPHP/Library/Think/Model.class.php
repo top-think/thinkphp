@@ -983,7 +983,7 @@ class Model {
                 $fields =   explode(',',$fields);
             }
             // 判断令牌验证字段
-            if(C('TOKEN_ON'))   $fields[] = C('TOKEN_NAME');
+            if(C('TOKEN_ON'))   $fields[] = C('TOKEN_NAME', null, '__hash__');
             foreach ($data as $key=>$val){
                 if(!in_array($key,$fields)) {
                     unset($data[$key]);
