@@ -413,10 +413,9 @@ class Model {
         $pk         =   $this->getPk();
         if(!isset($options['where']) ) {
             // 如果存在主键数据 则自动作为更新条件
-            if (is_string($pk)) {
-                if(isset($data[$pk])) {
-                    $where[$pk]     =   $data[$pk];
-                }
+            if (is_string($pk) && isset($data[$pk])) {
+                $where[$pk]     =   $data[$pk];
+                unset($data[$pk]);
             } elseif (is_array($pk)) {
                 // 增加复合主键支持
                 foreach ($pk as $field) {
@@ -427,14 +426,16 @@ class Model {
                         $this->error        =   L('_OPERATION_WRONG_');
                         return false;
                     }
+                    unset($data[$pk]);
                 }
             }
-            $options['where']       =   $where;
-            unset($data[$pk]);
-        }else{
-            // 如果没有任何更新条件则不执行
-            $this->error        =   L('_OPERATION_WRONG_');
-            return false;
+            if(!isset($where)){
+                // 如果没有任何更新条件则不执行
+                $this->error        =   L('_OPERATION_WRONG_');
+                return false;
+            }else{
+                $options['where']   =   $where;
+            }
         }
 
         if(is_array($options['where']) && isset($options['where'][$pk])){
