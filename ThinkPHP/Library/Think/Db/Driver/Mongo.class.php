@@ -381,11 +381,18 @@ class Mongo extends Db{
             if(C('DB_SQL_LOG')) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.find(';
                 $this->queryStr  .=  $query? json_encode($query):'{}';
-                $this->queryStr  .=  $field? ','.json_encode($field):'';
+
+                if(is_array($field) && count($field)) {
+                    foreach ($field as $f=>$v)
+                        $_field_array[$f] = $v ? 1 : 0;
+
+                    $this->queryStr  .=  $field? ', '.json_encode($_field_array):', {}';
+                }
                 $this->queryStr  .=  ')';
             }
             // 记录开始执行时间
             G('queryStartTime');
+
             $_cursor   = $this->_collection->find($query,$field);
             if($options['order']) {
                 $order   =  $this->parseOrder($options['order']);
@@ -646,7 +653,19 @@ class Mongo extends Db{
             $fields    = array();
         }
         if(is_string($fields)) {
-            $fields    = explode(',',$fields);
+            $_fields    = explode(',',$fields);
+            $fields     = array();
+            foreach ($_fields as $f)
+                $fields[$f] = true;
+        }elseif(is_array($fields)) {
+            $_fields    = $fields;
+            $fields     = array();
+            foreach ($_fields as $f=>$v) {
+                if(is_numeric($f))
+                    $fields[$v] = true;
+                else
+                    $fields[$f] = $v ? true : false;
+            }
         }
         return $fields;
     }
@@ -723,10 +742,10 @@ class Mongo extends Db{
         
         //兼容 MongoClient OR条件查询方法
         if(isset($query['$or']) && !is_array(current($query['$or']))) {
-        	$val = array();
-        	foreach ($query['$or'] as $k=>$v)
-        		$val[] = array($k=>$v);
-        	$query['$or'] = $val;
+            $val = array();
+            foreach ($query['$or'] as $k=>$v)
+                $val[] = array($k=>$v);
+            $query['$or'] = $val;
         }
 
         return $query;
