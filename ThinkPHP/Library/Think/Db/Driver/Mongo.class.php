@@ -677,7 +677,14 @@ class Mongo extends Db{
      * @return array
      */
     public function parseWhere($where){
-        $query   = array();
+        $query      = array();
+        $return     = array();
+        $_logic     = '$and';
+        if(isset($where['_logic'])){
+            $where['_logic']    = strtolower($where['_logic']);
+            $_logic             = in_array($where['_logic'], array('or','xor','nor', 'and'))?'$'.$where['_logic']:$_logic;
+            unset($where['_logic']);
+        }
         foreach ($where as $key=>$val){
             if('_id' != $key && 0===strpos($key,'_')) {
                 // 解析特殊条件表达式
@@ -709,7 +716,13 @@ class Mongo extends Db{
                 }
             }
         }
-        return $query;
+        
+        if($_logic == '$and')
+        	return $query;
+        
+        foreach($query as $key=>$val)
+        	$return[$_logic][]  = array($key=>$val);
+        return $return;
     }
 
     /**
