@@ -662,7 +662,8 @@ class Mongo extends Db{
         foreach ($where as $key=>$val){
             if('_id' != $key && 0===strpos($key,'_')) {
                 // 解析特殊条件表达式
-                $query   = $this->parseThinkWhere($key,$val);
+                $parse   = $this->parseThinkWhere($key,$val);
+                $query   = array_merge($query,$parse);
             }else{
                 // 查询字段的安全过滤
                 if(!preg_match('/^[A-Z_\|\&\-.a-z0-9]+$/',trim($key))){
