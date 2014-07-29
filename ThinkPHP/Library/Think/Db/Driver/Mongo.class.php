@@ -721,18 +721,22 @@ class Mongo extends Db{
      */
     protected function parseThinkWhere($key,$val) {
         $query   = array();
+        
+        $_logic = array('or', 'and', 'nor');
         switch($key) {
             case '_query': // 字符串模式查询条件
                 parse_str($val,$query);
-                if(isset($query['_logic']) && strtolower($query['_logic']) == 'or' ) {
+                $__logic = strtolower($query['_logic']);
+                if(isset($query['_logic']) && in_array($__logic, $_logic) ) {
                     unset($query['_logic']);
-                    $query['$or']   =  $query;
+                    $query['$'.$__logic]   =  $query;
                 }
                 break;
             case '_complex': // 子查询模式查询条件
-                if(isset($val['_logic']) && strtolower($val['_logic']) == 'or' ) {
+                $__logic = strtolower($val['_logic']);
+                if(isset($val['_logic']) && in_array($__logic, $_logic) ) {
                     unset($val['_logic']);
-                    $query['$or']   =  $val;
+                    $query['$'.$__logic]   =  $val;
                 }
                 break;
             case '_string':// MongoCode查询
