@@ -709,10 +709,25 @@ class Mongo extends Db{
                     $query['$or']   =  $query;
                 }
                 break;
+            case '_complex': // 子查询模式查询条件
+                if(isset($val['_logic']) && strtolower($val['_logic']) == 'or' ) {
+                    unset($val['_logic']);
+                    $query['$or']   =  $val;
+                }
+                break;
             case '_string':// MongoCode查询
                 $query['$where']  = new \MongoCode($val);
                 break;
         }
+        
+        //兼容 MongoClient OR条件查询方法
+        if(isset($query['$or']) && !is_array(current($query['$or']))) {
+        	$val = array();
+        	foreach ($query['$or'] as $k=>$v)
+        		$val[] = array($k=>$v);
+        	$query['$or'] = $val;
+        }
+
         return $query;
     }
 
