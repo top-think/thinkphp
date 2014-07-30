@@ -102,7 +102,8 @@ class  Template {
                 $tmplContent = str_replace('{__NOLAYOUT__}','',$tmplContent);
             }else{ // 替换布局的主体内容
                 $layoutFile  =  THEME_PATH.C('LAYOUT_NAME').$this->config['template_suffix'];
-                $tmplContent = str_replace($this->config['layout_item'],$tmplContent,file_get_contents($layoutFile));
+                if ($layoutContent = file_get_contents($layoutFile))
+                    $tmplContent = str_replace($this->config['layout_item'],$tmplContent,$layoutContent);
             }
         }
         // 编译模板内容
