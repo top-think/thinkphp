@@ -827,6 +827,7 @@ class Db {
      * @return string
      */
     protected function buildSelectSql($options=array()) {
+        static $cache;
         if(isset($options['page'])) {
             // 根据页数计算limit
             list($page,$listRows)   =   $options['page'];
@@ -836,15 +837,22 @@ class Db {
             $options['limit'] =  $offset.','.$listRows;
         }
         if(C('DB_SQL_BUILD_CACHE')) { // SQL创建缓存
+            if (!isset($cache)) {
+                $cache = \Think\Cache::getInstance('', array(
+                    'expire'    =>  0,
+                    'length'    =>  C('DB_SQL_BUILD_LENGTH'),
+                    'queue'     =>  C('DB_SQL_BUILD_QUEUE')
+               ));
+            }            
             $key    =  md5(serialize($options));
-            $value  =  S($key);
+            $value  =  $cache->get($key);
             if(false !== $value) {
                 return $value;
             }
         }
         $sql  =     $this->parseSql($this->selectSql,$options);
         if(isset($key)) { // 写入SQL创建缓存
-            S($key,$sql,array('expire'=>0,'length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
+            $cache->set($key, $sql);
         }
         return $sql;
     }
