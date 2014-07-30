@@ -44,7 +44,7 @@ class Route {
                         // URL后缀检测
                         continue;
                     }
-                    if(isset($options['method']) && REQUEST_METHOD != $options['method']){
+                    if(isset($options['method']) && REQUEST_METHOD != strtoupper($options['method'])){
                         // 请求类型检测
                         continue;
                     }
