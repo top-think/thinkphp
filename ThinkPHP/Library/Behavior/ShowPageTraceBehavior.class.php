@@ -75,6 +75,7 @@ class ShowPageTraceBehavior {
                     }
             }
         }
+        unset($array);
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志
             if(is_array($save)) {// 选择选项卡保存
                 $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
