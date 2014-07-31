@@ -120,7 +120,7 @@ class Mongo extends Db{
             if(C('DB_SQL_LOG')) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.runCommand(';
                 $this->queryStr  .=  json_encode($command);
-                echo $this->queryStr  .=  ')';
+                $this->queryStr  .=  ')';
             }
             // 记录开始执行时间
             G('queryStartTime');
