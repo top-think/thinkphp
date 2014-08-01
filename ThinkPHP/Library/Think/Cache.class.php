@@ -38,13 +38,10 @@ class Cache {
     public function connect($type='',$options=array()) {
         if(empty($type))  $type = C('DATA_CACHE_TYPE');
         $class  =   strpos($type,'\\')? $type : 'Think\\Cache\\Driver\\'.ucwords(strtolower($type));            
-        if(class_exists($class)) {
-            $this->options['queue'] = isset($options['queue']) ? $options['queue'] : null;
-            $this->options['queue_name'] = isset($options['queue_name']) ? $options['queue_name'] : null;
+        if(class_exists($class))
             $cache = new $class($options);
-        } else {
+        else
             E(L('_CACHE_TYPE_INVALID_').':'.$type);
-        }
         return $cache;
     }
 
