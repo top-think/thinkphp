@@ -521,9 +521,9 @@ class Db {
             }
         }else {
             //对字符串类型字段采用模糊匹配
-            if(C('DB_LIKE_FIELDS') && preg_match('/('.C('DB_LIKE_FIELDS').')/i',$key)) {
-                $val  =  '%'.$val.'%';
-                $whereStr .= $key.' LIKE '.$this->parseValue($val);
+            $likeFields   =   C('DB_LIKE_FIELDS');
+            if($likeFields && preg_match('/^('.$likeFields.')$/i',$key)) {
+                $whereStr .= $key.' LIKE '.$this->parseValue('%'.$val.'%');
             }else {
                 $whereStr .= $key.' = '.$this->parseValue($val);
             }
@@ -827,6 +827,7 @@ class Db {
      * @return string
      */
     protected function buildSelectSql($options=array()) {
+        static $cache;
         if(isset($options['page'])) {
             // 根据页数计算limit
             list($page,$listRows)   =   $options['page'];
@@ -836,15 +837,22 @@ class Db {
             $options['limit'] =  $offset.','.$listRows;
         }
         if(C('DB_SQL_BUILD_CACHE')) { // SQL创建缓存
+            if (!isset($cache)) {
+                $cache = \Think\Cache::getInstance('', array(
+                    'expire'    =>  0,
+                    'length'    =>  C('DB_SQL_BUILD_LENGTH'),
+                    'queue'     =>  C('DB_SQL_BUILD_QUEUE')
+               ));
+            }            
             $key    =  md5(serialize($options));
-            $value  =  S($key);
+            $value  =  $cache->get($key);
             if(false !== $value) {
                 return $value;
             }
         }
         $sql  =     $this->parseSql($this->selectSql,$options);
         if(isset($key)) { // 写入SQL创建缓存
-            S($key,$sql,array('expire'=>0,'length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
+            $cache->set($key, $sql);
         }
         return $sql;
     }

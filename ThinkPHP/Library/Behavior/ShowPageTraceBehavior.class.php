@@ -64,9 +64,9 @@ class ShowPageTraceBehavior {
                 default:// 调试信息
                     $name       =   strtoupper($name);
                     if(strpos($name,'|')) {// 多组信息
-                        $array  =   explode('|',$name);
+                        $names  =   explode('|',$name);
                         $result =   array();
-                        foreach($array as $name){
+                        foreach($names as $name){
                             $result   +=   isset($debug[$name])?$debug[$name]:array();
                         }
                         $trace[$title]  =   $result;
@@ -85,7 +85,7 @@ class ShowPageTraceBehavior {
             }
             $content    =   date('[ c ]').' '.get_client_ip().' '.$_SERVER['REQUEST_URI']."\r\n";
             foreach ($trace as $key=>$val){
-                if(!isset($array) || in_array($key,$array)) {
+                if(!isset($array) || in_array_case($key,$array)) {
                     $content    .=  '[ '.$key." ]\r\n";
                     if(is_array($val)) {
                         foreach ($val as $k=>$v){
