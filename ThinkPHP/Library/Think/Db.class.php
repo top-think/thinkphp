@@ -838,12 +838,11 @@ class Db {
         }
         if(C('DB_SQL_BUILD_CACHE')) { // SQL创建缓存
             if (!isset($cache)) {
-                $cache_options = C('DB_SQL_BUILD_CACHE_CONFIG', null, array(
-                    'expire'    => 0,
-                    'length'    => C('DB_SQL_BUILD_LENGTH'),
-                    'queue'     => C('DB_SQL_BUILD_QUEUE')
-                ));
-                $cache = \Think\Cache::getInstance('', $cache_options);
+                $cache = \Think\Cache::getInstance('', array(
+                    'expire'    =>  0,
+                    'length'    =>  C('DB_SQL_BUILD_LENGTH'),
+                    'queue'     =>  C('DB_SQL_BUILD_QUEUE')
+               ));
             }            
             $key    =  md5(serialize($options));
             $value  =  $cache->get($key);
