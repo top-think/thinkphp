@@ -181,10 +181,10 @@ function L($name=null, $value=null) {
  * @param string $label 标签
  * @param string $level 日志级别
  * @param boolean $record 是否记录日志
- * @return void
+ * @return void|array
  */
 function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
-    Think\Think::trace($value,$label,$level,$record);
+    return Think\Think::trace($value,$label,$level,$record);
 }
 
 /**
