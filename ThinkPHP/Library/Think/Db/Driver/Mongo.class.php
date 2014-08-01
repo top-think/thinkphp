@@ -569,6 +569,24 @@ class Mongo extends Db{
         }
         return $info;
     }
+    
+    /**
+     * 取得当前数据库的对象
+     * @access public
+     * @return object mongoClient
+     */
+    public function getDB(){
+    	return $this->_mongo;
+    }
+    
+    /**
+     * 取得当前集合的对象
+     * @access public
+     * @return object MongoCollection
+     */
+    public function getCollection(){
+    	return $this->_collection;
+    }
 
     /**
      * set分析
