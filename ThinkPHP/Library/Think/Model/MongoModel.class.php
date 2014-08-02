@@ -399,4 +399,22 @@ class MongoModel extends Model{
         $option = $this->_parseOptions();
         return $this->db->command(array('collStats'=>$option['table']));
     }
+    
+    /**
+     * 取得当前数据库的对象
+     * @access public
+     * @return object
+     */
+    public function getDB(){
+    	return $this->db->getDB();
+    }
+    
+    /**
+     * 取得集合对象，可以进行创建索引等查询
+     * @access public
+     * @return object
+     */
+    public function getCollection(){
+    	return $this->db->getCollection();
+    }
 }

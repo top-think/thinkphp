@@ -120,7 +120,7 @@ class Mongo extends Db{
             if(C('DB_SQL_LOG')) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.runCommand(';
                 $this->queryStr  .=  json_encode($command);
-                echo $this->queryStr  .=  ')';
+                $this->queryStr  .=  ')';
             }
             // 记录开始执行时间
             G('queryStartTime');
@@ -381,11 +381,18 @@ class Mongo extends Db{
             if(C('DB_SQL_LOG')) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.find(';
                 $this->queryStr  .=  $query? json_encode($query):'{}';
-                $this->queryStr  .=  $field? ','.json_encode($field):'';
+
+                if(is_array($field) && count($field)) {
+                    foreach ($field as $f=>$v)
+                        $_field_array[$f] = $v ? 1 : 0;
+
+                    $this->queryStr  .=  $field? ', '.json_encode($_field_array):', {}';
+                }
                 $this->queryStr  .=  ')';
             }
             // 记录开始执行时间
             G('queryStartTime');
+
             $_cursor   = $this->_collection->find($query,$field);
             if($options['order']) {
                 $order   =  $this->parseOrder($options['order']);
@@ -562,6 +569,24 @@ class Mongo extends Db{
         }
         return $info;
     }
+    
+    /**
+     * 取得当前数据库的对象
+     * @access public
+     * @return object mongoClient
+     */
+    public function getDB(){
+    	return $this->_mongo;
+    }
+    
+    /**
+     * 取得当前集合的对象
+     * @access public
+     * @return object MongoCollection
+     */
+    public function getCollection(){
+    	return $this->_collection;
+    }
 
     /**
      * set分析
@@ -646,7 +671,19 @@ class Mongo extends Db{
             $fields    = array();
         }
         if(is_string($fields)) {
-            $fields    = explode(',',$fields);
+            $_fields    = explode(',',$fields);
+            $fields     = array();
+            foreach ($_fields as $f)
+                $fields[$f] = true;
+        }elseif(is_array($fields)) {
+            $_fields    = $fields;
+            $fields     = array();
+            foreach ($_fields as $f=>$v) {
+                if(is_numeric($f))
+                    $fields[$v] = true;
+                else
+                    $fields[$f] = $v ? true : false;
+            }
         }
         return $fields;
     }
@@ -658,11 +695,19 @@ class Mongo extends Db{
      * @return array
      */
     public function parseWhere($where){
-        $query   = array();
+        $query      = array();
+        $return     = array();
+        $_logic     = '$and';
+        if(isset($where['_logic'])){
+            $where['_logic']    = strtolower($where['_logic']);
+            $_logic             = in_array($where['_logic'], array('or','xor','nor', 'and'))?'$'.$where['_logic']:$_logic;
+            unset($where['_logic']);
+        }
         foreach ($where as $key=>$val){
             if('_id' != $key && 0===strpos($key,'_')) {
                 // 解析特殊条件表达式
-                $query   = $this->parseThinkWhere($key,$val);
+                $parse   = $this->parseThinkWhere($key,$val);
+                $query   = array_merge($query,$parse);
             }else{
                 // 查询字段的安全过滤
                 if(!preg_match('/^[A-Z_\|\&\-.a-z0-9]+$/',trim($key))){
@@ -689,7 +734,13 @@ class Mongo extends Db{
                 }
             }
         }
-        return $query;
+        
+        if($_logic == '$and')
+        	return $query;
+        
+        foreach($query as $key=>$val)
+        	$return[$_logic][]  = array($key=>$val);
+        return $return;
     }
 
     /**
@@ -701,18 +752,37 @@ class Mongo extends Db{
      */
     protected function parseThinkWhere($key,$val) {
         $query   = array();
+        
+        $_logic = array('or', 'and', 'nor');
         switch($key) {
             case '_query': // 字符串模式查询条件
                 parse_str($val,$query);
-                if(isset($query['_logic']) && strtolower($query['_logic']) == 'or' ) {
+                $__logic = strtolower($query['_logic']);
+                if(isset($query['_logic']) && in_array($__logic, $_logic) ) {
                     unset($query['_logic']);
-                    $query['$or']   =  $query;
+                    $query['$'.$__logic]   =  $query;
+                }
+                break;
+            case '_complex': // 子查询模式查询条件
+                $__logic = strtolower($val['_logic']);
+                if(isset($val['_logic']) && in_array($__logic, $_logic) ) {
+                    unset($val['_logic']);
+                    $query['$'.$__logic]   =  $val;
                 }
                 break;
             case '_string':// MongoCode查询
                 $query['$where']  = new \MongoCode($val);
                 break;
         }
+        
+        //兼容 MongoClient OR条件查询方法
+        if(isset($query['$or']) && !is_array(current($query['$or']))) {
+            $val = array();
+            foreach ($query['$or'] as $k=>$v)
+                $val[] = array($k=>$v);
+            $query['$or'] = $val;
+        }
+
         return $query;
     }
 
