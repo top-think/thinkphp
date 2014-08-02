@@ -102,6 +102,10 @@ class  Template {
                 $tmplContent = str_replace('{__NOLAYOUT__}','',$tmplContent);
             }else{ // 替换布局的主体内容
                 $layoutFile  =  THEME_PATH.C('LAYOUT_NAME').$this->config['template_suffix'];
+                // 检查布局文件
+                if(!is_file($layoutFile)) {
+                    E(L('_TEMPLATE_NOT_EXIST_').':'.$layoutFile);
+                }
                 $tmplContent = str_replace($this->config['layout_item'],$tmplContent,file_get_contents($layoutFile));
             }
         }
@@ -255,7 +259,7 @@ class  Template {
             // 替换block标签
             $content = $this->replaceBlock($content);
         }else{
-            $content    =   preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);            
+            $content    =   preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);
         }
         return $content;
     }
@@ -439,10 +443,10 @@ class  Template {
      */
     public function parseXmlTag($tagLib,$tag,$attr,$content) {
         if(ini_get('magic_quotes_sybase'))
-            $attr   =	str_replace('\"','\'',$attr);
-        $parse      =	'_'.$tag;
-        $content    =	trim($content);
-		$tags		=   $tagLib->parseXmlAttr($attr,$tag);
+            $attr   =   str_replace('\"','\'',$attr);
+        $parse      =   '_'.$tag;
+        $content    =   trim($content);
+        $tags       =   $tagLib->parseXmlAttr($attr,$tag);
         return $tagLib->$parse($tags,$content);
     }
 

@@ -108,6 +108,8 @@ class View {
             $templateFile   =   $this->parseTemplate($templateFile);
             // 模板文件不存在直接返回
             if(!is_file($templateFile)) E(L('_TEMPLATE_NOT_EXIST_').':'.$templateFile);
+        }else{
+            defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath());
         }
         // 页面缓存
         ob_start();
@@ -143,8 +145,6 @@ class View {
         }
         $depr       =   C('TMPL_FILE_DEPR');
         $template   =   str_replace(':', $depr, $template);
-        // 获取当前主题名称
-        $theme = $this->getTemplateTheme();
 
         // 获取当前模块
         $module   =  MODULE_NAME;
@@ -152,14 +152,7 @@ class View {
             list($module,$template)  =   explode('@',$template);
         }
         // 获取当前主题的模版路径
-        if(!defined('THEME_PATH')){
-            if(C('VIEW_PATH')){ // 模块设置独立的视图目录
-                $tmplPath   =   C('VIEW_PATH');
-            }else{  // 定义TMPL_PATH 改变全局的视图目录到模块之外
-                $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
-            }
-            define('THEME_PATH', $tmplPath.$theme);
-        }
+        defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath($module));
 
         // 分析模板文件规则
         if('' == $template) {
@@ -174,6 +167,24 @@ class View {
             $file   =   dirname(THEME_PATH).'/'.C('DEFAULT_THEME').'/'.$template.C('TMPL_TEMPLATE_SUFFIX');
         }
         return $file;
+    }
+
+    /**
+     * 获取当前的模板路径
+     * @access protected
+     * @param  string $module 模块名
+     * @return string
+     */
+    protected function getThemePath($module=MODULE_NAME){
+        // 获取当前主题名称
+        $theme = $this->getTemplateTheme();
+        // 获取当前主题的模版路径
+        $tmplPath   =   C('VIEW_PATH'); // 模块设置独立的视图目录
+        if(!$tmplPath){ 
+            // 定义TMPL_PATH 则改变全局的视图目录到模块之外
+            $tmplPath   =   defined('TMPL_PATH')? TMPL_PATH.$module.'/' : APP_PATH.$module.'/'.C('DEFAULT_V_LAYER').'/';
+        }
+        return $tmplPath.$theme;
     }
 
     /**
