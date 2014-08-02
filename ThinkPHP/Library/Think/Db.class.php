@@ -56,13 +56,13 @@ class Db {
      * @return mixed 返回数据库驱动类
      */
     public static function getInstance($db_config='') {
-		static $_instance	=	array();
-		$guid	=	to_guid_string($db_config);
-		if(!isset($_instance[$guid])){
-			$obj	=	new Db();
-			$_instance[$guid]	=	$obj->factory($db_config);
-		}
-		return $_instance[$guid];
+        static $_instance   =   array();
+        $guid   =   to_guid_string($db_config);
+        if(!isset($_instance[$guid])){
+            $obj    =   new Db();
+            $_instance[$guid]   =   $obj->factory($db_config);
+        }
+        return $_instance[$guid];
     }
 
     /**
@@ -423,7 +423,7 @@ class Db {
             foreach ($where as $key=>$val){
                 if(is_numeric($key)){
                     $key  = '_complex';
-                }                    
+                }
                 if(0===strpos($key,'_')) {
                     // 解析特殊条件表达式
                     $whereStr   .= $this->parseThinkWhere($key,$val);
@@ -724,7 +724,7 @@ class Db {
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         if(!empty($options['fetch_sql'])){
             return $sql;
-        }        
+        }
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -771,7 +771,7 @@ class Db {
         $sql .=   $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         if(!empty($options['fetch_sql'])){
             return $sql;
-        }            
+        }
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
@@ -877,7 +877,7 @@ class Db {
                 $this->parseOrder(!empty($options['order'])?$options['order']:''),
                 $this->parseLimit(!empty($options['limit'])?$options['limit']:''),
                 $this->parseUnion(!empty($options['union'])?$options['union']:''),
-                $this->parseLock(isset($options['lock'])?$options['lock']:false),             
+                $this->parseLock(isset($options['lock'])?$options['lock']:false),
                 $this->parseComment(!empty($options['comment'])?$options['comment']:''),
                 $this->parseForce(!empty($options['force'])?$options['force']:'')
             ),$sql);

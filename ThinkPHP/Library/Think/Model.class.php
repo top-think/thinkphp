@@ -264,7 +264,7 @@ class Model {
                 if(!in_array($key,$fields,true)){
                     if(!empty($this->options['strict'])){
                         E(L('_DATA_TYPE_INVALID_').':['.$key.'=>'.$val.']');
-                    }                 
+                    }
                     unset($data[$key]);
                 }elseif(is_scalar($val)) {
                     // 字段类型检查 和 强制转换
@@ -440,10 +440,10 @@ class Model {
 
         if(is_array($options['where']) && isset($options['where'][$pk])){
             $pkValue    =   $options['where'][$pk];
-        }        
+        }
         if(false === $this->_before_update($data,$options)) {
             return false;
-        }        
+        }
         $result     =   $this->db->update($data,$options);
         if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
@@ -726,7 +726,7 @@ class Model {
             $options                =   array();
             $options['where']       =   $where;
         }
-        // 根据复合主键删除记录
+        // 根据复合主键查找记录
         $pk  =  $this->getPk();
         if (is_array($options) && (count($options) > 0) && is_array($pk)) {
             // 根据复合主键查询
@@ -894,12 +894,12 @@ class Model {
             if(!empty($resultSet)) {
                 $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
-                $key            =   array_shift($field);
+                $key1           =   array_shift($field);
                 $key2           =   array_shift($field);
                 $cols           =   array();
                 $count          =   count($_field);
                 foreach ($resultSet as $result){
-                    $name   =  $result[$key];
+                    $name   =  $result[$key1];
                     if(2==$count) {
                         $cols[$name]   =  $result[$key2];
                     }else{
@@ -1056,7 +1056,7 @@ class Model {
         $validate = array(
             'require'   =>  '/\S+/',
             'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
-            'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(:\d+)?(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',            
+            'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(:\d+)?(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
             'currency'  =>  '/^\d+(\.\d+)?$/',
             'number'    =>  '/^\d+$/',
             'zip'       =>  '/^\d{6}$/',
@@ -1238,8 +1238,9 @@ class Model {
                 }else{
                     $map[$val[0]] = $data[$val[0]];
                 }
-                if(is_string($this->getPk()) && !empty($data[$this->getPk()])) { // 完善编辑的时候验证唯一
-                    $map[$this->getPk()] = array('neq',$data[$this->getPk()]);
+                $pk =   $this->getPk();
+                if(!empty($data[$pk]) && is_string($pk)) { // 完善编辑的时候验证唯一
+                    $map[$pk] = array('neq',$data[$pk]);
                 }
                 if($this->where($map)->find())   return false;
                 return true;
