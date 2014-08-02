@@ -612,13 +612,10 @@ class Model {
     /**
      * 生成查询SQL 可用于子查询
      * @access public
-     * @param array $options 表达式参数
      * @return string
      */
-    public function buildSql($options=array()) {
-        // 分析表达式
-        $options =  $this->_parseOptions($options);
-        return  '( '.$this->fetchSql(true)->select($options).' )';
+    public function buildSql() {
+        return  '( '.$this->fetchSql(true)->select().' )';
     }
 
     /**
