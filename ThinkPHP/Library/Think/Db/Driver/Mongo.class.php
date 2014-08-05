@@ -81,6 +81,7 @@ class Mongo extends Driver {
             }
             if($this->_collectionName != $collection) {
                 $this->queryTimes++;
+                N('db_query',1); // 兼容代码                
                 $this->debug(true);
                 $this->_collection =  $this->_mongo->selectCollection($collection);
                 $this->debug(false);
@@ -114,7 +115,7 @@ class Mongo extends Driver {
                 return $value;
             }
         }
-
+        N('db_write',1); // 兼容代码
         $this->executeTimes++;
         try{
             if($this->config['debug']) {
@@ -144,6 +145,7 @@ class Mongo extends Driver {
      */
     public function execute($code,$args=array()) {
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码
         $this->debug(true);
         $this->queryStr = 'execute:'.$code;
         $result   = $this->_mongo->execute($code,$args);
@@ -194,6 +196,7 @@ class Mongo extends Driver {
         }
         $this->model  =   $options['model'];
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.insert(';
             $this->queryStr   .= $data?json_encode($data):'{}';
@@ -229,6 +232,7 @@ class Mongo extends Driver {
         }
         $this->model  =   $options['model'];
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         try{
             $this->debug(true);
             $result =  $this->_collection->batchInsert($dataList);
@@ -272,6 +276,7 @@ class Mongo extends Driver {
             $this->switchCollection($options['table']);
         }
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         $this->model  =   $options['model'];
         $query   = $this->parseWhere($options['where']);
         $set  =  $this->parseSet($data);
@@ -308,6 +313,7 @@ class Mongo extends Driver {
         $query   = $this->parseWhere($options['where']);
         $this->model  =   $options['model'];
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.remove('.json_encode($query).')';
         }
@@ -333,6 +339,7 @@ class Mongo extends Driver {
         }
         $this->model  =   $options['model'];
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.remove({})';
         }
@@ -358,6 +365,7 @@ class Mongo extends Driver {
         }
         $this->model  =   $options['model'];
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         $query  =  $this->parseWhere($options['where']);
         $field =  $this->parseField($options['field']);
         try{
@@ -434,6 +442,7 @@ class Mongo extends Driver {
         }
         $this->model  =   $options['model'];
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         $query  =  $this->parseWhere($options['where']);
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName;
@@ -466,6 +475,7 @@ class Mongo extends Driver {
         
         $this->model  =   $options['model'];
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         $query  =  $this->parseWhere($options['where']);
         
         if($this->config['debug']) {
@@ -499,6 +509,7 @@ class Mongo extends Driver {
             $this->switchCollection($collection,'',false);
         }
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.findOne()';
         }
@@ -532,6 +543,7 @@ class Mongo extends Driver {
             $this->queryStr   =  $this->_dbName.'.getCollenctionNames()';
         }
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         $this->debug(true);
         $list   = $this->_mongo->listCollections();
         $this->debug(false);
