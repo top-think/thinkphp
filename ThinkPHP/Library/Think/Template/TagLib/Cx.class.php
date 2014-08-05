@@ -69,6 +69,7 @@ class Cx extends TagLib {
         $name  =    $tag['name'];
         $id    =    $tag['id'];
         $empty =    isset($tag['empty'])?$tag['empty']:'';
+        $emptyIsVar = strlen($empty) > 0 && $empty[0] == '$' ? TRUE : FALSE;
         $key   =    !empty($tag['key'])?$tag['key']:'i';
         $mod   =    isset($tag['mod'])?$tag['mod']:'2';
         // 允许使用函数设定数据集 <volist name=":fun('arg')" id="vo">{$vo.name}</volist>
@@ -87,13 +88,13 @@ class Cx extends TagLib {
         }else{
             $parseStr .= ' $__LIST__ = '.$name.';';
         }
-        $parseStr .= 'if( count($__LIST__)==0 ) : echo "'.$empty.'" ;';
+        $parseStr .= 'if( count($__LIST__)==0 ) : echo ' . ($emptyIsVar ? $empty : '"'.$empty.'"') . ';';
         $parseStr .= 'else: ';
         $parseStr .= 'foreach($__LIST__ as $key=>$'.$id.'): ';
         $parseStr .= '$mod = ($'.$key.' % '.$mod.' );';
         $parseStr .= '++$'.$key.';?>';
         $parseStr .= $this->tpl->parse($content);
-        $parseStr .= '<?php endforeach; endif; else: echo "'.$empty.'" ;endif; ?>';
+        $parseStr .= '<?php endforeach; endif; else: echo ' . ($emptyIsVar ? $empty : '"'.$empty.'"') . ';endif; ?>';
 
         if(!empty($parseStr)) {
             return $parseStr;
