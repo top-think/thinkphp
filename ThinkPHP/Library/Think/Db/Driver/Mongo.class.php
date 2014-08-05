@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | TOPThink [ WE CAN DO IT JUST THINK IT ]
+// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
 // | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
@@ -8,13 +8,14 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
 namespace Think\Db\Driver;
-use Think\Db;
-defined('THINK_PATH') or exit();
+use Think\Db\Driver;
+
 /**
- * Mongo数据库驱动 必须配合MongoModel使用
+ * Mongo数据库驱动
  */
-class Mongo extends Db{
+class Mongo extends Driver {
 
     protected $_mongo           =   null; // MongoDb Object
     protected $_collection      =   null; // MongoCollection Object
@@ -30,13 +31,13 @@ class Mongo extends Db{
      */
     public function __construct($config=''){
         if ( !class_exists('mongoClient') ) {
-            E(L('_NOT_SUPPORT_').':mongoClient');
+            E(L('_NOT_SUPPORT_').':Mongo');
         }
         if(!empty($config)) {
-            $this->config   =   $config;
-            if(empty($this->config['params'])) {
+            $this->config           =   array_merge($this->config,$config);
+            if(empty($this->config['params'])){
                 $this->config['params'] =   array();
-            }
+            }            
         }
     }
 
@@ -46,10 +47,10 @@ class Mongo extends Db{
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
-            if(empty($config))  $config =   $this->config;
+            if(empty($config))  $config =   $this->config['connection'];
             $host = 'mongodb://'.($config['username']?"{$config['username']}":'').($config['password']?":{$config['password']}@":'').$config['hostname'].($config['hostport']?":{$config['hostport']}":'').'/'.($config['database']?"{$config['database']}":'');
             try{
-                $this->linkID[$linkNum] = new \mongoClient( $host,$config['params']);
+                $this->linkID[$linkNum] = new \mongoClient( $host,$this->config['params']);
             }catch (\MongoConnectionException $e){
                 E($e->getmessage());
             }
@@ -75,18 +76,17 @@ class Mongo extends Db{
                 $this->_mongo = $this->_linkID->selectDb($db);
             }
             // 当前MongoCollection对象
-            if(C('DB_SQL_LOG')) {
+            if($this->config['debug']) {
                 $this->queryStr   =  $this->_dbName.'.getCollection('.$collection.')';
             }
             if($this->_collectionName != $collection) {
-                N('db_read',1);
-                // 记录开始执行时间
-                G('queryStartTime');
+                $this->queryTimes++;
+                $this->debug(true);
                 $this->_collection =  $this->_mongo->selectCollection($collection);
-                $this->debug();
+                $this->debug(false);
                 $this->_collectionName  = $collection; // 记录当前Collection名称
             }
-        }catch (\MongoException $e){
+        }catch (MongoException $e){
             E($e->getMessage());
         }
     }
@@ -115,17 +115,16 @@ class Mongo extends Db{
             }
         }
 
-        N('db_query',1);
+        $this->executeTimes++;
         try{
-            if(C('DB_SQL_LOG')) {
+            if($this->config['debug']) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.runCommand(';
                 $this->queryStr  .=  json_encode($command);
                 $this->queryStr  .=  ')';
             }
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result   = $this->_mongo->command($command);
-            $this->debug();
+            $this->debug(false);
             
             if($cache && $result['ok']) { // 查询缓存写入
                 S($key,$result,$cache['expire'],$cache['type']);
@@ -144,12 +143,11 @@ class Mongo extends Db{
      * @return mixed
      */
     public function execute($code,$args=array()) {
-        N('db_write',1);
+        $this->executeTimes++;
+        $this->debug(true);
         $this->queryStr = 'execute:'.$code;
-        // 记录开始执行时间
-        G('queryStartTime');
         $result   = $this->_mongo->execute($code,$args);
-        $this->debug();
+        $this->debug(false);
         if($result['ok']) {
             return $result['retval'];
         }else{
@@ -195,17 +193,16 @@ class Mongo extends Db{
             $this->switchCollection($options['table']);
         }
         $this->model  =   $options['model'];
-        N('db_write',1);
-        if(C('DB_SQL_LOG')) {
+        $this->executeTimes++;
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.insert(';
             $this->queryStr   .= $data?json_encode($data):'{}';
             $this->queryStr   .= ')';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result =  $replace?   $this->_collection->save($data):  $this->_collection->insert($data);
-            $this->debug();
+            $this->debug(false);
             if($result) {
                $_id    = $data['_id'];
                 if(is_object($_id)) {
@@ -231,13 +228,12 @@ class Mongo extends Db{
             $this->switchCollection($options['table']);
         }
         $this->model  =   $options['model'];
-        N('db_write',1);
+        $this->executeTimes++;
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
-           $result =  $this->_collection->batchInsert($dataList);
-           $this->debug();
-           return $result;
+            $this->debug(true);
+            $result =  $this->_collection->batchInsert($dataList);
+            $this->debug(false);
+            return $result;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
         }
@@ -249,16 +245,14 @@ class Mongo extends Db{
      * @param string $pk 主键名
      * @return integer
      */
-    public function mongo_next_id($pk) {
-        N('db_read',1);
-        if(C('DB_SQL_LOG')) {
+    public function getMongoNextId($pk) {
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.find({},{'.$pk.':1}).sort({'.$pk.':-1}).limit(1)';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result   =  $this->_collection->find(array(),array($pk=>1))->sort(array($pk=>-1))->limit(1);
-            $this->debug();
+            $this->debug(false);
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
         }
@@ -277,25 +271,24 @@ class Mongo extends Db{
         if(isset($options['table'])) {
             $this->switchCollection($options['table']);
         }
+        $this->executeTimes++;
         $this->model  =   $options['model'];
-        N('db_write',1);
         $query   = $this->parseWhere($options['where']);
         $set  =  $this->parseSet($data);
-        if(C('DB_SQL_LOG')) {
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.update(';
             $this->queryStr   .= $query?json_encode($query):'{}';
             $this->queryStr   .=  ','.json_encode($set).')';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             if(isset($options['limit']) && $options['limit'] == 1) {
                 $multiple   =   array("multiple" => false);
             }else{
                 $multiple   =   array("multiple" => true);
             }
             $result   = $this->_collection->update($query,$set,$multiple);
-            $this->debug();
+            $this->debug(false);
             return $result;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -314,15 +307,14 @@ class Mongo extends Db{
         }
         $query   = $this->parseWhere($options['where']);
         $this->model  =   $options['model'];
-        N('db_write',1);
-        if(C('DB_SQL_LOG')) {
+        $this->executeTimes++;
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.remove('.json_encode($query).')';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result   = $this->_collection->remove($query);
-            $this->debug();
+            $this->debug(false);
             return $result;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -340,15 +332,14 @@ class Mongo extends Db{
             $this->switchCollection($options['table']);
         }
         $this->model  =   $options['model'];
-        N('db_write',1);
-        if(C('DB_SQL_LOG')) {
+        $this->executeTimes++;
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.remove({})';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result   =  $this->_collection->drop();
-            $this->debug();
+            $this->debug(false);
             return $result;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -365,23 +356,14 @@ class Mongo extends Db{
         if(isset($options['table'])) {
             $this->switchCollection($options['table'],'',false);
         }
-        $cache  =  isset($options['cache'])?$options['cache']:false;
-        if($cache) { // 查询缓存检测
-            $key =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
-            $value   =  S($key,'','',$cache['type']);
-            if(false !== $value) {
-                return $value;
-            }
-        }
         $this->model  =   $options['model'];
-        N('db_query',1);
+        $this->queryTimes++;
         $query  =  $this->parseWhere($options['where']);
         $field =  $this->parseField($options['field']);
         try{
-            if(C('DB_SQL_LOG')) {
+            if($this->config['debug']) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.find(';
                 $this->queryStr  .=  $query? json_encode($query):'{}';
-
                 if(is_array($field) && count($field)) {
                     foreach ($field as $f=>$v)
                         $_field_array[$f] = $v ? 1 : 0;
@@ -390,13 +372,11 @@ class Mongo extends Db{
                 }
                 $this->queryStr  .=  ')';
             }
-            // 记录开始执行时间
-            G('queryStartTime');
-
+            $this->debug(true);
             $_cursor   = $this->_collection->find($query,$field);
             if($options['order']) {
                 $order   =  $this->parseOrder($options['order']);
-                if(C('DB_SQL_LOG')) {
+                if($this->config['debug']) {
                     $this->queryStr .= '.sort('.json_encode($order).')';
                 }
                 $_cursor =  $_cursor->sort($order);
@@ -404,29 +384,26 @@ class Mongo extends Db{
             if(isset($options['page'])) { // 根据页数计算limit
                 list($page,$length)   =   $options['page'];
                 $page    =  $page>0 ? $page : 1;
-                $length  =  $length>0 ? $length : (is_numeric($options['limit'])?$options['limit']:20);                
+                $length  =  $length>0 ? $length : (is_numeric($options['limit'])?$options['limit']:20);
                 $offset  =  $length*((int)$page-1);
                 $options['limit'] =  $offset.','.$length;
             }
             if(isset($options['limit'])) {
                 list($offset,$length) =  $this->parseLimit($options['limit']);
                 if(!empty($offset)) {
-                    if(C('DB_SQL_LOG')) {
+                    if($this->config['debug']) {
                         $this->queryStr .= '.skip('.intval($offset).')';
                     }
                     $_cursor =  $_cursor->skip(intval($offset));
                 }
-                if(C('DB_SQL_LOG')) {
+                if($this->config['debug']) {
                     $this->queryStr .= '.limit('.intval($length).')';
                 }
                 $_cursor =  $_cursor->limit(intval($length));
             }
-            $this->debug();
+            $this->debug(false);
             $this->_cursor =  $_cursor;
             $resultSet  =  iterator_to_array($_cursor);
-            if($cache && $resultSet ) { // 查询缓存写入
-                S($key,$resultSet,$cache['expire'],$cache['type']);
-            }
             return $resultSet;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -456,18 +433,17 @@ class Mongo extends Db{
             $this->switchCollection($options['table'],'',false);
         }
         $this->model  =   $options['model'];
-        N('db_query',1);
+        $this->queryTimes++;
         $query  =  $this->parseWhere($options['where']);
-        if(C('DB_SQL_LOG')) {
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName;
             $this->queryStr   .= $query?'.find('.json_encode($query).')':'';
             $this->queryStr   .= '.count()';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $count   = $this->_collection->count($query);
-            $this->debug();
+            $this->debug(false);
             return $count;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -489,29 +465,27 @@ class Mongo extends Db{
         }
         
         $this->model  =   $options['model'];
-        N('db_query',1);
+        $this->queryTimes++;
         $query  =  $this->parseWhere($options['where']);
         
-        if(C('DB_SQL_LOG')) {
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.group({key:'.json_encode($keys).',cond:'.
             json_encode($options['condition']) . ',reduce:' .
             json_encode($reduce).',initial:'.
             json_encode($initial).'})';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
-            
+            $this->debug(true);
             $option = array('condition'=>$options['condition'], 'finalize'=>$options['finalize'], 'maxTimeMS'=>$options['maxTimeMS']);
             $group = $this->_collection->group($keys,$initial,$reduce,$options);
-            $this->debug();
+            $this->debug(false);
             
             if($cache && $group['ok'])
                 S($key,$group,$cache['expire'],$cache['type']);
             
             return $group;
         } catch (\MongoCursorException $e) {
-            throw_exception($e->getMessage());
+            E($e->getMessage());
         }
     }
 
@@ -524,15 +498,14 @@ class Mongo extends Db{
         if(!empty($collection) && $collection != $this->_collectionName) {
             $this->switchCollection($collection,'',false);
         }
-        N('db_query',1);
-        if(C('DB_SQL_LOG')) {
+        $this->queryTimes++;
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.findOne()';
         }
         try{
-            // 记录开始执行时间
-            G('queryStartTime');
+            $this->debug(true);
             $result   =  $this->_collection->findOne();
-            $this->debug();
+            $this->debug(false);
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
         }
@@ -540,9 +513,9 @@ class Mongo extends Db{
             $info =  array();
             foreach ($result as $key=>$val){
                 $info[$key] =  array(
-                    'name'=>$key,
-                    'type'=>getType($val),
-                    );
+                    'name'  =>  $key,
+                    'type'  =>  getType($val),
+                );
             }
             return $info;
         }
@@ -555,28 +528,27 @@ class Mongo extends Db{
      * @access public
      */
     public function getTables(){
-        if(C('DB_SQL_LOG')) {
+        if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.getCollenctionNames()';
         }
-        N('db_query',1);
-        // 记录开始执行时间
-        G('queryStartTime');
+        $this->queryTimes++;
+        $this->debug(true);
         $list   = $this->_mongo->listCollections();
-        $this->debug();
+        $this->debug(false);
         $info =  array();
         foreach ($list as $collection){
             $info[]   =  $collection->getName();
         }
         return $info;
     }
-    
+
     /**
      * 取得当前数据库的对象
      * @access public
      * @return object mongoClient
      */
     public function getDB(){
-    	return $this->_mongo;
+        return $this->_mongo;
     }
     
     /**
@@ -585,7 +557,7 @@ class Mongo extends Db{
      * @return object MongoCollection
      */
     public function getCollection(){
-    	return $this->_collection;
+        return $this->_collection;
     }
 
     /**
@@ -695,7 +667,7 @@ class Mongo extends Db{
      * @return array
      */
     public function parseWhere($where){
-        $query      = array();
+        $query   = array();
         $return     = array();
         $_logic     = '$and';
         if(isset($where['_logic'])){
@@ -734,12 +706,12 @@ class Mongo extends Db{
                 }
             }
         }
-        
         if($_logic == '$and')
-        	return $query;
+            return $query;
         
         foreach($query as $key=>$val)
-        	$return[$_logic][]  = array($key=>$val);
+            $return[$_logic][]  = array($key=>$val);
+
         return $return;
     }
 
@@ -752,15 +724,12 @@ class Mongo extends Db{
      */
     protected function parseThinkWhere($key,$val) {
         $query   = array();
-        
-        $_logic = array('or', 'and', 'nor');
         switch($key) {
             case '_query': // 字符串模式查询条件
                 parse_str($val,$query);
-                $__logic = strtolower($query['_logic']);
-                if(isset($query['_logic']) && in_array($__logic, $_logic) ) {
+                if(isset($query['_logic']) && strtolower($query['_logic']) == 'or' ) {
                     unset($query['_logic']);
-                    $query['$'.$__logic]   =  $query;
+                    $query['$or']   =  $query;
                 }
                 break;
             case '_complex': // 子查询模式查询条件
@@ -774,7 +743,6 @@ class Mongo extends Db{
                 $query['$where']  = new \MongoCode($val);
                 break;
         }
-        
         //兼容 MongoClient OR条件查询方法
         if(isset($query['$or']) && !is_array(current($query['$or']))) {
             $val = array();
@@ -782,7 +750,6 @@ class Mongo extends Db{
                 $val[] = array($k=>$v);
             $query['$or'] = $val;
         }
-
         return $query;
     }
 
@@ -823,11 +790,11 @@ class Mongo extends Db{
                 }elseif('exp'==$con){ // 表达式查询
                     $query['$where']  = new \MongoCode($val[1]);
                 }elseif('exists'==$con){ // 字段是否存在
-                    $query[$key]  =array('$exists'=>(bool)$val[1]);
+                    $query[$key]  = array('$exists'=>(bool)$val[1]);
                 }elseif('size'==$con){ // 限制属性大小
-                    $query[$key]  =array('$size'=>intval($val[1]));
+                    $query[$key]  = array('$size'=>intval($val[1]));
                 }elseif('type'==$con){ // 限制字段类型 1 浮点型 2 字符型 3 对象或者MongoDBRef 5 MongoBinData 7 MongoId 8 布尔型 9 MongoDate 10 NULL 15 MongoCode 16 32位整型 17 MongoTimestamp 18 MongoInt64 如果是数组的话判断元素的类型
-                    $query[$key]  =array('$type'=>intval($val[1]));
+                    $query[$key]  = array('$type'=>intval($val[1]));
                 }else{
                     $query[$key]  =  $val;
                 }

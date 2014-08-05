@@ -370,8 +370,7 @@ class MongoModel extends Model{
      * @access public
      * @return string
      */
-    public function group($key, $init, $reduce, $option=array())
-    {
+    public function group($key, $init, $reduce, $option=array()) {
         $option = $this->_parseOptions($option);
 
         //合并查询条件
