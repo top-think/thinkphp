@@ -139,6 +139,7 @@ abstract class Driver {
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码
         // 调试开始
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -179,6 +180,7 @@ abstract class Driver {
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
