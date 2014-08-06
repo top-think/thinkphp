@@ -54,7 +54,29 @@ class Db {
      * @return array
      */
     static private function parseConfig($config){
-        if(empty($config)) {
+        if(!empty($config)){
+            if(is_string($config)) {
+                return self::parseDsn($config);
+            }
+            $config =   array_change_key_case($config);
+            $config = array (
+                'type'          =>  $config['db_type'],
+                'username'      =>  $config['db_user'],
+                'password'      =>  $config['db_pwd'],
+                'hostname'      =>  $config['db_host'],
+                'hostport'      =>  $config['db_port'],
+                'database'      =>  $config['db_name'],
+                'dsn'           =>  $config['db_dsn'],
+                'params'        =>  $config['db_params'],
+                'charset'       =>  isset($config['db_charset'])?$config['db_charset']:'utf8',
+                'deploy'        =>  isset($config['db_deploy_type'])?$config['db_deploy_type']:0,
+                'rw_separate'   =>  isset($config['db_rw_separate'])?$config['db_rw_separate']:false,
+                'master_num'    =>  isset($config['db_master_num'])?$config['db_master_num']:1,
+                'slave_no'      =>  isset($config['db_slave_no'])?$config['db_slave_no']:'',
+                'debug'         =>  APP_DEBUG,
+                'lite'          =>  isset($config['db_lite'])?$config['db_lite']:false,
+            );
+        }else {
             $config = array (
                 'type'          =>  C('DB_TYPE'),
                 'username'      =>  C('DB_USER'),
@@ -73,11 +95,7 @@ class Db {
                 'lite'          =>  C('DB_LITE'),
             );
         }
-        if(is_string($config)) {
-            return self::parseDsn($config);
-        }else{
-            return $config;
-        }
+        return $config;
     }
 
     /**

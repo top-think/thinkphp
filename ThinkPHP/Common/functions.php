@@ -77,7 +77,6 @@ function load_config($file,$parse=CONF_PARSE){
                 E(L('_NOT_SUPPORT_').':'.$ext);
             }
     }
-	return array();
 }
 
 /**
@@ -138,7 +137,7 @@ function G($start,$end='',$dec=4) {
         $_info[$start]  =  microtime(TRUE);
         if(MEMORY_LIMIT_ON) $_mem[$start]           =  memory_get_usage();
     }
-	return null;
+    return null;
 }
 
 /**
@@ -348,13 +347,13 @@ function I($name,$default='',$filter=null,$datas=null) {
 }
 
 function array_map_recursive($filter, $data) {
-     $result = array();
-     foreach ($data as $key => $val) {
-         $result[$key] = is_array($val)
-             ? array_map_recursive($filter, $val)
-             : call_user_func($filter, $val);
-     }
-     return $result;
+    $result = array();
+    foreach ($data as $key => $val) {
+        $result[$key] = is_array($val)
+         ? array_map_recursive($filter, $val)
+         : call_user_func($filter, $val);
+    }
+    return $result;
  }
 
 /**
@@ -376,15 +375,15 @@ function N($key, $step=0,$save=false) {
     if (!isset($_num[$key])) {
         $_num[$key] = (false !== $save)? S('N_'.$key) :  0;
     }
-	if (empty($step)){
-		return $_num[$key];
-	}else{
-		$_num[$key] = $_num[$key] + (int)$step;
-	}
+    if (empty($step)){
+        return $_num[$key];
+    }else{
+        $_num[$key] = $_num[$key] + (int)$step;
+    }
     if(false !== $save){ // 保存结果
         S('N_'.$key,$_num[$key],$save);
     }
-	return null;
+    return null;
 }
 
 /**
@@ -470,7 +469,7 @@ function import($class, $baseUrl = '', $ext=EXT) {
         // 如果类不存在 则导入类库文件
         return require_cache($classfile);
     }
-	return null;
+    return null;
 }
 
 /**
@@ -819,10 +818,6 @@ function layout($layout) {
  * @return string
  */
 function U($url='',$vars='',$suffix=true,$domain=false) {
-	/**
-	 * @var string $module
-	 * @var array $var
-	 */
     // 解析URL
     $info   =  parse_url($url);
     $url    =  !empty($info['path'])?$info['path']:ACTION_NAME;
@@ -930,8 +925,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
         }
     }
 
-	
-	if(C('URL_MODEL') == 0) { // 普通模式URL转换
+    if(C('URL_MODEL') == 0) { // 普通模式URL转换
         $url        =   __APP__.'?'.C('VAR_MODULE')."={$module}&".http_build_query(array_reverse($var));
         if($urlCase){
             $url    =   strtolower($url);
