@@ -813,7 +813,7 @@ abstract class Driver {
             }
             $values[]    = 'SELECT '.implode(',', $value);
         }
-        $sql   =  'INSERT INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES '.implode(' UNION ALL ',$values);
+        $sql   =  'INSERT INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') '.implode(' UNION ALL ',$values);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         if(!empty($options['fetch_sql'])){
             return $sql;
