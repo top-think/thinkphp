@@ -47,7 +47,7 @@ class Mongo extends Driver {
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
-            if(empty($config))  $config =   $this->config['connection'];
+            if(empty($config))  $config =   $this->config;
             $host = 'mongodb://'.($config['username']?"{$config['username']}":'').($config['password']?":{$config['password']}@":'').$config['hostname'].($config['hostport']?":{$config['hostport']}":'').'/'.($config['database']?"{$config['database']}":'');
             try{
                 $this->linkID[$linkNum] = new \mongoClient( $host,$this->config['params']);
