@@ -89,4 +89,41 @@ class Mysql extends Driver{
         return $key;
     }
 
+    /**
+     * 批量插入记录
+     * @access public
+     * @param mixed $dataSet 数据集
+     * @param array $options 参数表达式
+     * @param boolean $replace 是否replace
+     * @return false | integer
+     */
+    public function insertAll($dataSet,$options=array(),$replace=false) {
+        $values  =  array();
+        $this->model  =   $options['model'];
+        if(!is_array($dataSet[0])) return false;
+        $fields =   array_map(array($this,'parseKey'),array_keys($dataSet[0]));
+        foreach ($dataSet as $data){
+            $value   =  array();
+            foreach ($data as $key=>$val){
+                if(is_array($val) && 'exp' == $val[0]){
+                    $value[]   =  $val[1];
+                }elseif(is_scalar($val)){
+                    if(0===strpos($val,':')){
+                        $value[]   =   $this->parseValue($val);
+                    }else{
+                        $name       =   count($this->bind);
+                        $value[]   =   ':'.$name;
+                        $this->bindParam($name,$val);
+                    }
+                }
+            }
+            $values[]    = '('.implode(',', $value).')';
+        }
+        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES '.implode(',',$values);
+        $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        if(!empty($options['fetch_sql'])){
+            return $sql;
+        }
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+    }
 }
