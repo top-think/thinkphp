@@ -846,9 +846,16 @@ class Model {
      * @access public
      * @param string $field  字段名
      * @param integer $step  增长值
+     * @param integer $lazyTime  延时时间(s)
      * @return boolean
      */
-    public function setInc($field,$step=1) {
+    public function setInc($field,$step=1,$lazyTime=0) {
+        if($lazyTime>0) {// 延迟写入
+            $condition   =  $this->options['where'];
+            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step = $this->lazyWrite($guid,$step,$lazyTime);
+            if(false === $step ) return true; // 等待下次写入
+        }
         return $this->setField($field,array('exp',$field.'+'.$step));
     }
 
@@ -857,10 +864,46 @@ class Model {
      * @access public
      * @param string $field  字段名
      * @param integer $step  减少值
+     * @param integer $lazyTime  延时时间(s)
      * @return boolean
      */
-    public function setDec($field,$step=1) {
+    public function setDec($field,$step=1,$lazyTime=0) {
+        if($lazyTime>0) {// 延迟写入
+            $condition   =  $this->options['where'];
+            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step = $this->lazyWrite($guid,$step,$lazyTime);
+            if(false === $step ) return true; // 等待下次写入
+        }
         return $this->setField($field,array('exp',$field.'-'.$step));
+    }
+
+    /**
+     * 延时更新检查 返回false表示需要延时
+     * 否则返回实际写入的数值
+     * @access public
+     * @param string $guid  写入标识
+     * @param integer $step  写入步进值
+     * @param integer $lazyTime  延时时间(s)
+     * @return false|integer
+     */
+    protected function lazyWrite($guid,$step,$lazyTime) {
+        if(false !== ($value = S($guid))) { // 存在缓存写入数据
+            if(NOW_TIME > S($guid.'_time')+$lazyTime) {
+                // 延时更新时间到了，删除缓存数据 并实际写入数据库
+                S($guid,NULL);
+                S($guid.'_time',NULL);
+                return $value+$step;
+            }else{
+                // 追加数据到缓存
+                S($guid,$value+$step);
+                return false;
+            }
+        }else{ // 没有缓存数据
+            S($guid,$step);
+            // 计时开始
+            S($guid.'_time',NOW_TIME);
+            return false;
+        }
     }
 
     /**
