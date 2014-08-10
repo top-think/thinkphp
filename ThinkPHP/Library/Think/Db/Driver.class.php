@@ -127,14 +127,18 @@ abstract class Driver {
      * @access public
      * @param string $str  sql指令
      * @param array $bind  参数绑定
+     * @param boolean $fetchSql  不执行只是获取SQL
      * @return mixed
      */
-    public function query($str,$bind=array()) {
+    public function query($str,$bind=array(),$fetchSql=false) {
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
         $this->queryStr     =   $str;
         if(!empty($bind)){
-            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
+            $this->queryStr =   strtr($this->queryStr,$bind);
+        }
+        if($fetchSql){
+            return $this->queryStr;
         }
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
@@ -168,15 +172,19 @@ abstract class Driver {
      * @access public
      * @param string $str  sql指令
      * @param array $bind  参数绑定
-     * @return integer
+     * @param boolean $fetchSql  不执行只是获取SQL
+     * @return mixed
      */
-    public function execute($str,$bind=array()) {
+    public function execute($str,$bind=array(),$fetchSql=false) {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
         if(!empty($bind)){
-            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
-        }        
+            $this->queryStr =   strtr($this->queryStr,$bind);
+        }
+        if($fetchSql){
+            return $this->queryStr;
+        }
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
@@ -776,10 +784,7 @@ abstract class Driver {
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
     }
 
 
@@ -815,10 +820,7 @@ abstract class Driver {
         }
         $sql   =  'INSERT INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') '.implode(' UNION ALL ',$values);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
     }
 
     /**
@@ -835,10 +837,7 @@ abstract class Driver {
         array_walk($fields, array($this, 'parseKey'));
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
     }
 
     /**
@@ -862,10 +861,7 @@ abstract class Driver {
                 .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
         }
         $sql .=   $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
     }
 
     /**
@@ -891,10 +887,7 @@ abstract class Driver {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
         }
         $sql .=   $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
     }
 
     /**
@@ -906,10 +899,7 @@ abstract class Driver {
     public function select($options=array()) {
         $this->model  =   $options['model'];
         $sql    = $this->buildSelectSql($options);
-        if(!empty($options['fetch_sql'])){
-            return $sql;
-        }
-        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
         return $result;
     }
 
