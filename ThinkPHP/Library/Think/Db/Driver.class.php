@@ -350,7 +350,7 @@ abstract class Driver {
             if(is_array($val) && 'exp' == $val[0]){
                 $set[]  =   $this->parseKey($key).'='.$val[1];
             }elseif(is_scalar($val)) {// 过滤非标量数据
-                if(0===strpos($val,':')){
+                if(0===strpos($val,':') && in_array($val,array_keys($this->bind)) ){
                     $set[]  =   $this->parseKey($key).'='.$this->escapeString($val);
                 }else{
                     $name   =   count($this->bind);
@@ -391,7 +391,7 @@ abstract class Driver {
      */
     protected function parseValue($value) {
         if(is_string($value)) {
-            $value =  strpos($value,':') === 0 ? $this->escapeString($value) : '\''.$this->escapeString($value).'\'';
+            $value =  strpos($value,':') === 0 && in_array($value,array_keys($this->bind))? $this->escapeString($value) : '\''.$this->escapeString($value).'\'';
         }elseif(isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp'){
             $value =  $this->escapeString($value[1]);
         }elseif(is_array($value)) {
@@ -773,7 +773,7 @@ abstract class Driver {
                 $values[]   =  $val[1];
             }elseif(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
-                if(0===strpos($val,':')){
+                if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                     $values[]   =   $this->parseValue($val);
                 }else{
                     $name       =   count($this->bind);
@@ -807,7 +807,7 @@ abstract class Driver {
                 if(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
-                    if(0===strpos($val,':')){
+                    if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);
                     }else{
                         $name       =   count($this->bind);
