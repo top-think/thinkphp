@@ -108,7 +108,7 @@ class Mysql extends Driver{
                 if(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
-                    if(0===strpos($val,':')){
+                    if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);
                     }else{
                         $name       =   count($this->bind);
