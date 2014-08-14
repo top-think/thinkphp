@@ -135,7 +135,8 @@ abstract class Driver {
         if ( !$this->_linkID ) return false;
         $this->queryStr     =   $str;
         if(!empty($bind)){
-            $this->queryStr =   strtr($this->queryStr,$bind);
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$bind));
         }
         if($fetchSql){
             return $this->queryStr;
@@ -180,7 +181,8 @@ abstract class Driver {
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
         if(!empty($bind)){
-            $this->queryStr =   strtr($this->queryStr,$bind);
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$bind));
         }
         if($fetchSql){
             return $this->queryStr;
