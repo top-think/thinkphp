@@ -78,8 +78,10 @@ abstract class Driver {
      */
     public function __construct($config=''){
         if(!empty($config)) {
-            $this->config           =   array_merge($this->config,$config);
-            $this->config['params'] =   is_array($this->config['params'])?$this->options+$this->config['params']:$this->options;
+            $this->config   =   array_merge($this->config,$config);
+            if(is_array($this->config['params'])){
+                $this->options  +=   $this->config['params'];
+            }
         }
     }
 
@@ -96,14 +98,9 @@ abstract class Driver {
                 }
                 if(version_compare(PHP_VERSION,'5.3.6','<=')){ 
                     // 禁用模拟预处理语句
-                    $config['params'][PDO::ATTR_EMULATE_PREPARES]  =   false;
-                    // PHP5.3.6以下不支持charset设置
-                    $sql    =   'SET NAMES '.$config['charset'];
+                    $this->options[PDO::ATTR_EMULATE_PREPARES]  =   false;
                 }
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
-                if(!empty($sql)){
-                    $this->linkID[$linkNum]->exec($sql);
-                }
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }

@@ -30,8 +30,14 @@ class Mysql extends Driver{
         }elseif(!empty($config['socket'])){
             $dsn  .= ';unix_socket='.$config['socket'];
         }
+
         if(!empty($config['charset'])){
-            $dsn  .= ';charset='.$config['charset'];
+            if(version_compare(PHP_VERSION,'5.3.6','<')){ 
+                // PHP5.3.6以下不支持charset设置
+                $this->options[PDO::MYSQL_ATTR_INIT_COMMAND]    =   'SET NAMES '.$config['charset'];
+            }else{
+                $dsn  .= ';charset='.$config['charset'];
+            }
         }
         return $dsn;
     }
