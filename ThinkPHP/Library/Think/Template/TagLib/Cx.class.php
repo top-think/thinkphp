@@ -491,7 +491,11 @@ class Cx extends TagLib {
             // 命名空间方式导入外部文件
             $array      =   explode(',',$file);
             foreach ($array as $val){
-                list($val,$version) =   explode('?',$val);
+                if(strpos ($val, '?')) {
+                    list($val,$version) =   explode('?',$val);
+                } else {
+                    $version = '';
+                }
                 switch($type) {
                 case 'js':
                     $parseStr .= '<script type="text/javascript" src="'.$basepath.'/'.str_replace(array('.','#'), array('/','.'),$val).'.js'.($version?'?'.$version:'').'"></script>';
