@@ -27,7 +27,7 @@ class Oracle extends Driver{
      * @return string
      */
     protected function parseDsn($config){
-        $dsn  =   'oci:dbname='.$config['database'];
+        $dsn  =   'oci:dbname=//'.$config['hostname'].($config['hostport']?':'.$config['hostport']:'').'/'.$config['database'];
         if(!empty($config['charset'])) {
             $dsn  .= ';charset='.$config['charset'];
         }
