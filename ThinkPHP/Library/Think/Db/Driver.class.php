@@ -415,7 +415,7 @@ abstract class Driver {
      * @return string
      */
     protected function parseField($fields) {
-        if(is_string($fields) && strpos($fields,',')) {
+        if(is_string($fields) && '' !== $fields) {
             $fields    = explode(',',$fields);
         }
         if(is_array($fields)) {
@@ -429,8 +429,6 @@ abstract class Driver {
                     $array[] =  $this->parseKey($field);
             }
             $fieldsStr = implode(',', $array);
-        }elseif(is_string($fields) && !empty($fields)) {
-            $fieldsStr = $this->parseKey($fields);
         }else{
             $fieldsStr = '*';
         }
