@@ -110,7 +110,9 @@ class Model {
                 $fields = F('_fields/'.strtolower($db.'.'.$this->name));
                 if($fields) {
                     $this->fields   =   $fields;
-                    $this->pk       =   $fields['_pk'];
+                    if(!empty($fields['_pk'])){
+                        $this->pk       =   $fields['_pk'];
+                    }
                     return ;
                 }
             }
