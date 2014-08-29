@@ -12,7 +12,7 @@ namespace Think\Db\Driver;
 use Think\Db\Driver;
 
 /**
- * mysql数据库驱动 
+ * Firebird数据库驱动 
  */
 class Firebird extends Driver{
     protected $selectSql  =     'SELECT %LIMIT% %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%';
