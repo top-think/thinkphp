@@ -1554,9 +1554,13 @@ class Model {
      */
     public function getDbFields(){
         if(isset($this->options['table'])) {// 动态指定表名
-            $array      =   explode(' ',$this->options['table']);
-            $fields     =   $this->db->getFields($array[0]);
-            return  $fields?array_keys($fields):false;
+            if(is_array($this->options['table'])){
+                $table  =   key($this->options['table']);
+            }else{
+                $table  =   $this->options['table'];
+            }
+            $fields     =   $this->db->getFields($table);
+            return  $fields ? array_keys($fields) : false;
         }
         if($this->fields) {
             $fields     =  $this->fields;
