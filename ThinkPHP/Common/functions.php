@@ -1247,10 +1247,11 @@ function session($name='',$value='') {
             }            
         }
     }elseif(is_null($value)){ // 删除session
-        if($prefix){
-            unset($_SESSION[$prefix][$name]);
+        if(strpos($name,'.')){
+            list($name1,$name2) =   explode('.',$name);
+            $prefix ? unset($_SESSION[$prefix][$name1][$name2]) : unset($_SESSION[$name1][$name2]);
         }else{
-            unset($_SESSION[$name]);
+            $prefix ? unset($_SESSION[$prefix][$name]) : unset($_SESSION[$name]);
         }
     }else{ // 设置session
         if($prefix){
