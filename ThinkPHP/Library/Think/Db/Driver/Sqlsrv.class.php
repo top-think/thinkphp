@@ -161,4 +161,13 @@ class Sqlsrv extends Driver{
         return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
     }
 
+    /**
+     * SQL指令安全过滤
+     * @access public
+     * @param string $str  SQL字符串
+     * @return string
+     */
+    public function escapeString($str) {
+        return preg_replace("/[']/", "\\0\\0", $str);
+    }
 }
