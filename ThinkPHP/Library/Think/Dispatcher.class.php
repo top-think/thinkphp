@@ -214,7 +214,7 @@ class Dispatcher {
                 }
             }
             // 获取操作
-            if(!defined('BIND_ACTION') ($action = array_shift($paths))){
+            if(!defined('BIND_ACTION') && ($action = array_shift($paths))){
                 $_GET[$varAction]  =   $action;
             }
             // 解析剩余的URL参数
