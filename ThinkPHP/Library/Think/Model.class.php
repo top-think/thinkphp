@@ -307,10 +307,10 @@ class Model {
                 return false;
             }
         }
-        // 分析表达式
-        $options    =   $this->_parseOptions($options);
         // 数据处理
         $data       =   $this->_facade($data);
+        // 分析表达式
+        $options    =   $this->_parseOptions($options);
         if(false === $this->_before_insert($data,$options)) {
             return false;
         }
@@ -345,12 +345,12 @@ class Model {
             $this->error = L('_DATA_TYPE_INVALID_');
             return false;
         }
-        // 分析表达式
-        $options =  $this->_parseOptions($options);
         // 数据处理
         foreach ($dataList as $key=>$data){
             $dataList[$key] = $this->_facade($data);
         }
+        // 分析表达式
+        $options =  $this->_parseOptions($options);
         // 写入数据到数据库
         $result = $this->db->insertAll($dataList,$options,$replace);
         if(false !== $result ) {
