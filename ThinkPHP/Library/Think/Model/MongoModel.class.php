@@ -136,7 +136,7 @@ class MongoModel extends Model{
         if(empty($pk)) {
             $pk   =  $this->getPk();
         }
-        return $this->db->mongo_next_id($pk);
+        return $this->db->getMongoNextId($pk);
     }
 
     /**
@@ -183,7 +183,7 @@ class MongoModel extends Model{
         if($this->_autoinc && $this->_idType== self::TYPE_INT) { // 主键自动增长
             $pk   =  $this->getPk();
             if(!isset($data[$pk])) {
-                $data[$pk]   =  $this->db->mongo_next_id($pk);
+                $data[$pk]   =  $this->db->getMongoNextId($pk);
             }
         }
     }
@@ -405,7 +405,7 @@ class MongoModel extends Model{
      * @return object
      */
     public function getDB(){
-    	return $this->db->getDB();
+        return $this->db->getDB();
     }
     
     /**
@@ -414,6 +414,6 @@ class MongoModel extends Model{
      * @return object
      */
     public function getCollection(){
-    	return $this->db->getCollection();
+        return $this->db->getCollection();
     }
 }

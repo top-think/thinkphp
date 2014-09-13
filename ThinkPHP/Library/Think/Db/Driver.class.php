@@ -78,8 +78,10 @@ abstract class Driver {
      */
     public function __construct($config=''){
         if(!empty($config)) {
-            $this->config           =   array_merge($this->config,$config);
-            $this->config['params'] =   is_array($this->config['params'])?$this->options+$this->config['params']:$this->options;
+            $this->config   =   array_merge($this->config,$config);
+            if(is_array($this->config['params'])){
+                $this->options  +=   $this->config['params'];
+            }
         }
     }
 
@@ -94,11 +96,11 @@ abstract class Driver {
                 if(empty($config['dsn'])) {
                     $config['dsn']  =   $this->parseDsn($config);
                 }
-                if(version_compare(PHP_VERSION,'5.3.6','<=')){ //禁用模拟预处理语句
-                    $config['params'][PDO::ATTR_EMULATE_PREPARES]  =   false;
+                if(version_compare(PHP_VERSION,'5.3.6','<=')){ 
+                    // 禁用模拟预处理语句
+                    $this->options[PDO::ATTR_EMULATE_PREPARES]  =   false;
                 }
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
-                $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }
@@ -126,16 +128,16 @@ abstract class Driver {
      * 执行查询 返回数据集
      * @access public
      * @param string $str  sql指令
-     * @param array $bind  参数绑定
      * @param boolean $fetchSql  不执行只是获取SQL
      * @return mixed
      */
-    public function query($str,$bind=array(),$fetchSql=false) {
+    public function query($str,$fetchSql=false) {
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
         $this->queryStr     =   $str;
-        if(!empty($bind)){
-            $this->queryStr =   strtr($this->queryStr,$bind);
+        if(!empty($this->bind)){
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$this->bind));
         }
         if($fetchSql){
             return $this->queryStr;
@@ -149,13 +151,14 @@ abstract class Driver {
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
             E($this->error());
-        foreach ($bind as $key => $val) {
+        foreach ($this->bind as $key => $val) {
             if(is_array($val)){
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             }else{
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
+        $this->bind =   array();
         $result =   $this->PDOStatement->execute();
         // 调试结束
         $this->debug(false);
@@ -171,16 +174,16 @@ abstract class Driver {
      * 执行语句
      * @access public
      * @param string $str  sql指令
-     * @param array $bind  参数绑定
      * @param boolean $fetchSql  不执行只是获取SQL
      * @return mixed
      */
-    public function execute($str,$bind=array(),$fetchSql=false) {
+    public function execute($str,$fetchSql=false) {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
-        if(!empty($bind)){
-            $this->queryStr =   strtr($this->queryStr,$bind);
+        if(!empty($this->bind)){
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$this->bind));
         }
         if($fetchSql){
             return $this->queryStr;
@@ -195,13 +198,14 @@ abstract class Driver {
         if(false === $this->PDOStatement) {
             E($this->error());
         }
-        foreach ($bind as $key => $val) {
+        foreach ($this->bind as $key => $val) {
             if(is_array($val)){
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
             }else{
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
+        $this->bind =   array();
         $result =   $this->PDOStatement->execute();
         $this->debug(false);
         if ( false === $result) {
@@ -350,7 +354,7 @@ abstract class Driver {
             if(is_array($val) && 'exp' == $val[0]){
                 $set[]  =   $this->parseKey($key).'='.$val[1];
             }elseif(is_scalar($val)) {// 过滤非标量数据
-                if(0===strpos($val,':')){
+                if(0===strpos($val,':') && in_array($val,array_keys($this->bind)) ){
                     $set[]  =   $this->parseKey($key).'='.$this->escapeString($val);
                 }else{
                     $name   =   count($this->bind);
@@ -391,7 +395,7 @@ abstract class Driver {
      */
     protected function parseValue($value) {
         if(is_string($value)) {
-            $value =  strpos($value,':') === 0 ? $this->escapeString($value) : '\''.$this->escapeString($value).'\'';
+            $value =  strpos($value,':') === 0 && in_array($value,array_keys($this->bind))? $this->escapeString($value) : '\''.$this->escapeString($value).'\'';
         }elseif(isset($value[0]) && is_string($value[0]) && strtolower($value[0]) == 'exp'){
             $value =  $this->escapeString($value[1]);
         }elseif(is_array($value)) {
@@ -411,7 +415,7 @@ abstract class Driver {
      * @return string
      */
     protected function parseField($fields) {
-        if(is_string($fields) && strpos($fields,',')) {
+        if(is_string($fields) && '' !== $fields) {
             $fields    = explode(',',$fields);
         }
         if(is_array($fields)) {
@@ -425,8 +429,6 @@ abstract class Driver {
                     $array[] =  $this->parseKey($field);
             }
             $fieldsStr = implode(',', $array);
-        }elseif(is_string($fields) && !empty($fields)) {
-            $fieldsStr = $this->parseKey($fields);
         }else{
             $fieldsStr = '*';
         }
@@ -739,9 +741,7 @@ abstract class Driver {
      * @return array
      */
     protected function parseBind($bind){
-        $bind   =   array_merge($this->bind,$bind);
-        $this->bind     =   array();
-        return $bind;
+        $this->bind   =   array_merge($this->bind,$bind);
     }
 
     /**
@@ -767,13 +767,14 @@ abstract class Driver {
     public function insert($data,$options=array(),$replace=false) {
         $values  =  $fields    = array();
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         foreach ($data as $key=>$val){
             if(is_array($val) && 'exp' == $val[0]){
                 $fields[]   =  $this->parseKey($key);
                 $values[]   =  $val[1];
             }elseif(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
-                if(0===strpos($val,':')){
+                if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                     $values[]   =   $this->parseValue($val);
                 }else{
                     $name       =   count($this->bind);
@@ -784,7 +785,7 @@ abstract class Driver {
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
 
@@ -800,6 +801,7 @@ abstract class Driver {
         $values  =  array();
         $this->model  =   $options['model'];
         if(!is_array($dataSet[0])) return false;
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $fields =   array_map(array($this,'parseKey'),array_keys($dataSet[0]));
         foreach ($dataSet as $data){
             $value   =  array();
@@ -807,7 +809,7 @@ abstract class Driver {
                 if(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
-                    if(0===strpos($val,':')){
+                    if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);
                     }else{
                         $name       =   count($this->bind);
@@ -820,7 +822,7 @@ abstract class Driver {
         }
         $sql   =  'INSERT INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') '.implode(' UNION ALL ',$values);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -833,11 +835,12 @@ abstract class Driver {
      */
     public function selectInsert($fields,$table,$options=array()) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         if(is_string($fields))   $fields    = explode(',',$fields);
         array_walk($fields, array($this, 'parseKey'));
         $sql   =    'INSERT INTO '.$this->parseTable($table).' ('.implode(',', $fields).') ';
         $sql   .= $this->buildSelectSql($options);
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -849,6 +852,7 @@ abstract class Driver {
      */
     public function update($data,$options) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $table  =   $this->parseTable($options['table']);
         $sql   = 'UPDATE ' . $table . $this->parseSet($data);
         if(strpos($table,',')){// 多表更新支持JOIN操作
@@ -861,7 +865,7 @@ abstract class Driver {
                 .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
         }
         $sql .=   $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -872,6 +876,7 @@ abstract class Driver {
      */
     public function delete($options=array()) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $table  =   $this->parseTable($options['table']);
         $sql    =   'DELETE FROM '.$table;
         if(strpos($table,',')){// 多表删除支持USING和JOIN操作
@@ -887,7 +892,7 @@ abstract class Driver {
             .$this->parseLimit(!empty($options['limit'])?$options['limit']:'');
         }
         $sql .=   $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -898,8 +903,9 @@ abstract class Driver {
      */
     public function select($options=array()) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $sql    = $this->buildSelectSql($options);
-        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        $result   = $this->query($sql,!empty($options['fetch_sql']) ? true : false);
         return $result;
     }
 

@@ -136,13 +136,14 @@ class Sqlsrv extends Driver{
      */
     public function update($data,$options) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $sql   = 'UPDATE '
             .$this->parseTable($options['table'])
             .$this->parseSet($data)
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
     /**
@@ -153,12 +154,13 @@ class Sqlsrv extends Driver{
      */
     public function delete($options=array()) {
         $this->model  =   $options['model'];
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $sql   = 'DELETE FROM '
             .$this->parseTable($options['table'])
             .$this->parseWhere(!empty($options['where'])?$options['where']:'')
             .$this->parseLock(isset($options['lock'])?$options['lock']:false)
             .$this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
 }

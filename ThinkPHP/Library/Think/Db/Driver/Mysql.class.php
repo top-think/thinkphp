@@ -30,8 +30,14 @@ class Mysql extends Driver{
         }elseif(!empty($config['socket'])){
             $dsn  .= ';unix_socket='.$config['socket'];
         }
+
         if(!empty($config['charset'])){
-            $dsn  .= ';charset='.$config['charset'];
+            if(version_compare(PHP_VERSION,'5.3.6','<')){ 
+                // PHP5.3.6以下不支持charset设置
+                $this->options[\PDO::MYSQL_ATTR_INIT_COMMAND]    =   'SET NAMES '.$config['charset'];
+            }else{
+                $dsn  .= ';charset='.$config['charset'];
+            }
         }
         return $dsn;
     }
@@ -101,6 +107,7 @@ class Mysql extends Driver{
         $values  =  array();
         $this->model  =   $options['model'];
         if(!is_array($dataSet[0])) return false;
+        $this->parseBind(!empty($options['bind'])?$options['bind']:array());
         $fields =   array_map(array($this,'parseKey'),array_keys($dataSet[0]));
         foreach ($dataSet as $data){
             $value   =  array();
@@ -108,7 +115,7 @@ class Mysql extends Driver{
                 if(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
-                    if(0===strpos($val,':')){
+                    if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);
                     }else{
                         $name       =   count($this->bind);
@@ -121,6 +128,6 @@ class Mysql extends Driver{
         }
         $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES '.implode(',',$values);
         $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
-        return $this->execute($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()),$options['fetch_sql']);
+        return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 }

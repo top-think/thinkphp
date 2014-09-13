@@ -66,14 +66,14 @@ class Db {
                 'hostname'      =>  $config['db_host'],
                 'hostport'      =>  $config['db_port'],
                 'database'      =>  $config['db_name'],
-                'dsn'           =>  $config['db_dsn'],
-                'params'        =>  $config['db_params'],
+                'dsn'           =>  isset($config['db_dsn'])?$config['db_dsn']:null,
+                'params'        =>  isset($config['db_params'])?$config['db_params']:null,
                 'charset'       =>  isset($config['db_charset'])?$config['db_charset']:'utf8',
                 'deploy'        =>  isset($config['db_deploy_type'])?$config['db_deploy_type']:0,
                 'rw_separate'   =>  isset($config['db_rw_separate'])?$config['db_rw_separate']:false,
                 'master_num'    =>  isset($config['db_master_num'])?$config['db_master_num']:1,
                 'slave_no'      =>  isset($config['db_slave_no'])?$config['db_slave_no']:'',
-                'debug'         =>  APP_DEBUG,
+                'debug'         =>  isset($config['db_debug'])?$config['db_debug']:APP_DEBUG,
                 'lite'          =>  isset($config['db_lite'])?$config['db_lite']:false,
             );
         }else {
@@ -91,7 +91,7 @@ class Db {
                 'rw_separate'   =>  C('DB_RW_SEPARATE'),
                 'master_num'    =>  C('DB_MASTER_NUM'),
                 'slave_no'      =>  C('DB_SLAVE_NO'),
-                'debug'         =>  APP_DEBUG,
+                'debug'         =>  C('DB_DEBUG',null,APP_DEBUG),
                 'lite'          =>  C('DB_LITE'),
             );
         }

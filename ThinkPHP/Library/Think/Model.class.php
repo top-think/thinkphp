@@ -107,10 +107,12 @@ class Model {
             // 如果数据表字段没有定义则自动获取
             if(C('DB_FIELDS_CACHE')) {
                 $db   =  $this->dbName?:C('DB_NAME');
-                $fields = F('_fields/'.strtolower($db.'.'.$this->name));
+                $fields = F('_fields/'.strtolower($db.'.'.$this->tablePrefix.$this->name));
                 if($fields) {
                     $this->fields   =   $fields;
-                    $this->pk       =   $fields['_pk'];
+                    if(!empty($fields['_pk'])){
+                        $this->pk       =   $fields['_pk'];
+                    }
                     return ;
                 }
             }
@@ -159,7 +161,7 @@ class Model {
         if(C('DB_FIELDS_CACHE')){
             // 永久缓存数据表信息
             $db   =  $this->dbName?:C('DB_NAME');
-            F('_fields/'.strtolower($db.'.'.$this->name),$this->fields);
+            F('_fields/'.strtolower($db.'.'.$this->tablePrefix.$this->name),$this->fields);
         }
     }
 
@@ -305,10 +307,10 @@ class Model {
                 return false;
             }
         }
-        // 分析表达式
-        $options    =   $this->_parseOptions($options);
         // 数据处理
         $data       =   $this->_facade($data);
+        // 分析表达式
+        $options    =   $this->_parseOptions($options);
         if(false === $this->_before_insert($data,$options)) {
             return false;
         }
@@ -343,12 +345,12 @@ class Model {
             $this->error = L('_DATA_TYPE_INVALID_');
             return false;
         }
-        // 分析表达式
-        $options =  $this->_parseOptions($options);
         // 数据处理
         foreach ($dataList as $key=>$data){
             $dataList[$key] = $this->_facade($data);
         }
+        // 分析表达式
+        $options =  $this->_parseOptions($options);
         // 写入数据到数据库
         $result = $this->db->insertAll($dataList,$options,$replace);
         if(false !== $result ) {
@@ -1552,9 +1554,13 @@ class Model {
      */
     public function getDbFields(){
         if(isset($this->options['table'])) {// 动态指定表名
-            $array      =   explode(' ',$this->options['table']);
-            $fields     =   $this->db->getFields($array[0]);
-            return  $fields?array_keys($fields):false;
+            if(is_array($this->options['table'])){
+                $table  =   key($this->options['table']);
+            }else{
+                $table  =   $this->options['table'];
+            }
+            $fields     =   $this->db->getFields($table);
+            return  $fields ? array_keys($fields) : false;
         }
         if($this->fields) {
             $fields     =  $this->fields;

@@ -77,7 +77,9 @@ class Lite {
     public function __construct($config=''){
         if(!empty($config)) {
             $this->config           =   array_merge($this->config,$config);
-            $this->config['params'] =   is_array($this->config['params'])?$this->options+$this->config['params']:$this->options;
+            if(is_array($this->config['params'])){
+                $this->options  +=   $this->config['params'];
+            }
         }
     }
 
@@ -90,19 +92,26 @@ class Lite {
             if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
-                    E('Lite方式Db 必须设置 dsn参数');
+                    $config['dsn']  =   $this->parseDsn($config);
                 }
                 if(version_compare(PHP_VERSION,'5.3.6','<=')){ //禁用模拟预处理语句
-                    $config['params'][PDO::ATTR_EMULATE_PREPARES]  =   false;
+                    $this->options[PDO::ATTR_EMULATE_PREPARES]  =   false;
                 }
-                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
-                $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
             }catch (\PDOException $e) {
                 E($e->getMessage());
             }
         }
         return $this->linkID[$linkNum];
     }
+
+    /**
+     * 解析pdo连接的dsn信息
+     * @access public
+     * @param array $config 连接信息
+     * @return string
+     */
+    protected function parseDsn($config){}
 
     /**
      * 释放查询结果
