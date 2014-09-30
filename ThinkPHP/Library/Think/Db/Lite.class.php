@@ -133,11 +133,13 @@ class Lite {
         if ( !$this->_linkID ) return false;
         $this->queryStr     =   $str;
         if(!empty($bind)){
-            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$bind));
         }
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->queryTimes++;
+        N('db_query',1); // 兼容代码        
         // 调试开始
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
@@ -173,11 +175,13 @@ class Lite {
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
         if(!empty($bind)){
-            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
-        }        
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$bind));
+        }      
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
@@ -408,16 +412,15 @@ class Lite {
      * @return void
      */
     protected function multiConnect($master=false) {
-        static $_config = [];
-        if(empty($_config)) {
-            // 缓存分布式数据库配置解析
-            $_config['username']    =   explode(',',$$this->config['username']);
-            $_config['password']    =   explode(',',$$this->config['password']);
-            $_config['hostname']    =   explode(',',$$this->config['hostname']);
-            $_config['hostport']    =   explode(',',$$this->config['hostport']);
-            $_config['database']    =   explode(',',$$this->config['database']);
-            $_config['dsn']         =   explode(',',$$this->config['dsn']);
-        }
+        // 分布式数据库配置解析
+        $_config['username']    =   explode(',',$this->config['username']);
+        $_config['password']    =   explode(',',$this->config['password']);
+        $_config['hostname']    =   explode(',',$this->config['hostname']);
+        $_config['hostport']    =   explode(',',$this->config['hostport']);
+        $_config['database']    =   explode(',',$this->config['database']);
+        $_config['dsn']         =   explode(',',$this->config['dsn']);
+        $_config['charset']     =   explode(',',$this->config['charset']);
+
         // 数据库读写是否分离
         if($this->config['rw_separate']){
             // 主从式采用读写分离
@@ -443,6 +446,7 @@ class Lite {
             'hostport'  =>  isset($_config['hostport'][$r])?$_config['hostport'][$r]:$_config['hostport'][0],
             'database'  =>  isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
+            'charset'   =>  isset($_config['charset'][$r])?$_config['charset'][$r]:$_config['charset'][0],
         );
         return $this->connect($db_config,$r);
     }
