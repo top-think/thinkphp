@@ -169,7 +169,7 @@ class Upload {
             /* 调用回调函数检测文件是否存在 */
             $data = call_user_func($this->callback, $file);
             if( $this->callback && $data ){
-                if ( file_exists('.'.$data['path'])  ) {
+                if ($this->isFileExists($data)) {
                     $info[$key] = $data;
                     continue;
                 }elseif($this->removeTrash){
@@ -216,7 +216,17 @@ class Upload {
         }
         return empty($info) ? false : $info;
     }
-
+    /**
+     * 检测文件是否存在
+     * @access private
+     * @param array $files  上传的文件变量
+     * @return bool
+     */
+    private function isFileExists($data){
+        $file = $data['url'];
+        $file_headers = @get_headers($file);
+        return $file_headers[0] != 'HTTP/1.1 404 Not Found';
+    }
     /**
      * 转换上传文件数组变量为正确的方式
      * @access private
