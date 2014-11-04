@@ -78,7 +78,7 @@ class Upyun{
      */
     public function save($file, $replace = true) {
         $header['Content-Type'] = $file['type'];
-        $header['Content-MD5'] = md5_file($file['md5']);
+        $header['Content-MD5'] 	= $file['md5'];
         $header['Mkdir'] = 'true';
         $resource = fopen($file['tmp_name'], 'r');
 
