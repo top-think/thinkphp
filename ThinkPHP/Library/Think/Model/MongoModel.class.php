@@ -385,7 +385,7 @@ class MongoModel extends Model{
      * @access public
      * @return json
      */
-    public function getLastError(){
+    public function getLastError() {
         return $this->db->command(array('getLastError'=>1));
     }
 
@@ -394,7 +394,7 @@ class MongoModel extends Model{
      * @access public
      * @return json
      */
-    public function status(){
+    public function status() {
         $option = $this->_parseOptions();
         return $this->db->command(array('collStats'=>$option['table']));
     }
@@ -404,7 +404,7 @@ class MongoModel extends Model{
      * @access public
      * @return object
      */
-    public function getDB(){
+    public function getDB() {
         return $this->db->getDB();
     }
     
@@ -413,7 +413,19 @@ class MongoModel extends Model{
      * @access public
      * @return object
      */
-    public function getCollection(){
+    public function getCollection() {
         return $this->db->getCollection();
+    }
+    
+    /**
+     * 设置查询超时时间，-1为不限时间
+     * @param int $timeout 毫秒
+     * @access public
+     * @return object
+     */
+    public function timeout($timeout=-1) {
+    	if(class_exists('MongoCursor'))
+    		MongoCursor::$timeout = $timeout;
+    	return $this;
     }
 }
