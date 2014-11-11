@@ -89,7 +89,7 @@ abstract class Driver {
      * 连接数据库方法
      * @access public
      */
-    public function connect($config='',$linkNum=0) {
+    public function connect($config='',$linkNum=0,$autoConnection=false) {
         if ( !isset($this->linkID[$linkNum]) ) {
             if(empty($config))  $config =   $this->config;
             try{
@@ -102,7 +102,12 @@ abstract class Driver {
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
             }catch (\PDOException $e) {
-                E($e->getMessage());
+                if($autoConnection){
+                    trace($e->getMessage(),'','ERR');
+                    return $this->connect($autoConnection,$linkNum);
+                }else{
+                    E($e->getMessage());
+                }
             }
         }
         return $this->linkID[$linkNum];
@@ -1053,12 +1058,13 @@ abstract class Driver {
         $_config['dsn']         =   explode(',',$this->config['dsn']);
         $_config['charset']     =   explode(',',$this->config['charset']);
 
+        $m     =   floor(mt_rand(0,$this->config['master_num']-1));
         // 数据库读写是否分离
         if($this->config['rw_separate']){
             // 主从式采用读写分离
             if($master)
                 // 主服务器写入
-                $r  =   floor(mt_rand(0,$this->config['master_num']-1));
+                $r  =   $m;
             else{
                 if(is_numeric($this->config['slave_no'])) {// 指定服务器读
                     $r = $this->config['slave_no'];
@@ -1071,6 +1077,17 @@ abstract class Driver {
             // 读写操作不区分服务器
             $r = floor(mt_rand(0,count($_config['hostname'])-1));   // 每次随机连接的数据库
         }
+        
+        $db_master  =   array(
+            'username'  =>  isset($_config['username'][$m])?$_config['username'][$m]:$_config['username'][0],
+            'password'  =>  isset($_config['password'][$m])?$_config['password'][$m]:$_config['password'][0],
+            'hostname'  =>  isset($_config['hostname'][$m])?$_config['hostname'][$m]:$_config['hostname'][0],
+            'hostport'  =>  isset($_config['hostport'][$m])?$_config['hostport'][$m]:$_config['hostport'][0],
+            'database'  =>  isset($_config['database'][$m])?$_config['database'][$m]:$_config['database'][0],
+            'dsn'       =>  isset($_config['dsn'][$m])?$_config['dsn'][$m]:$_config['dsn'][0],
+            'charset'   =>  isset($_config['charset'][$m])?$_config['charset'][$m]:$_config['charset'][0],
+        );
+
         $db_config = array(
             'username'  =>  isset($_config['username'][$r])?$_config['username'][$r]:$_config['username'][0],
             'password'  =>  isset($_config['password'][$r])?$_config['password'][$r]:$_config['password'][0],
@@ -1080,7 +1097,7 @@ abstract class Driver {
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
             'charset'   =>  isset($_config['charset'][$r])?$_config['charset'][$r]:$_config['charset'][0],
         );
-        return $this->connect($db_config,$r);
+        return $this->connect($db_config,$r,$db_master);
     }
 
    /**
