@@ -1097,7 +1097,7 @@ abstract class Driver {
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
             'charset'   =>  isset($_config['charset'][$r])?$_config['charset'][$r]:$_config['charset'][0],
         );
-        return $this->connect($db_config,$r,$db_master);
+        return $this->connect($db_config,$r,$r == $m ? false : $db_master);
     }
 
    /**
