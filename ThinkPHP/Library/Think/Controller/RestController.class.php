@@ -45,8 +45,7 @@ class RestController extends Controller {
             // 资源类型非法 则用默认资源类型访问
             $this->_type   =  $this->defaultType;
         }else{
-            // 检测实际资源类型
-            $this->_type   =  $this->getAcceptType() == __EXT__ ? __EXT__ : $this->defaultType;
+            $this->_type   =  __EXT__ ;
         }
 
         // 请求方式检测
