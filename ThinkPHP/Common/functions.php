@@ -1372,6 +1372,8 @@ function load_ext_file($path) {
             $file   = $path.'Conf/'.$config.CONF_EXT;
             if(is_file($file)) {
                 is_numeric($key)?C(load_config($file)):C($key,load_config($file));
+            }elseif(is_file($file = CONF_PATH.$config.CONF_EXT)) {
+            	is_numeric($key)?C(load_config($file)):C($key,load_config($file));
             }
         }
     }
