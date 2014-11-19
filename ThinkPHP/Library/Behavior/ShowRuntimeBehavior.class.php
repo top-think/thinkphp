@@ -2,29 +2,17 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：运行时间信息显示
  */
-class ShowRuntimeBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'SHOW_RUN_TIME'		=> false,   // 运行时间显示
-        'SHOW_ADV_TIME'		=> false,   // 显示详细的运行时间
-        'SHOW_DB_TIMES'		=> false,   // 显示数据库查询和写入次数
-        'SHOW_CACHE_TIMES'	=> false,   // 显示缓存操作次数
-        'SHOW_USE_MEM'		=> false,   // 显示内存开销
-        'SHOW_LOAD_FILE'    => false,   // 显示加载文件数
-        'SHOW_FUN_TIMES'    => false ,  // 显示函数调用次数
-    );
+class ShowRuntimeBehavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$content){
@@ -57,11 +45,11 @@ class ShowRuntimeBehavior extends Behavior {
             // 显示详细运行时间
             $showTime .= '( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
         }
-        if(C('SHOW_DB_TIMES') && class_exists('Db',false) ) {
+        if(C('SHOW_DB_TIMES') ) {
             // 显示数据库操作次数
             $showTime .= ' | DB :'.N('db_query').' queries '.N('db_write').' writes ';
         }
-        if(C('SHOW_CACHE_TIMES') && class_exists('Cache',false)) {
+        if(C('SHOW_CACHE_TIMES') ) {
             // 显示缓存读写次数
             $showTime .= ' | Cache :'.N('cache_read').' gets '.N('cache_write').' writes ';
         }

@@ -2,27 +2,18 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
 use Think\Storage;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：静态缓存读取
  */
-class ReadHtmlCacheBehavior extends Behavior {
-    protected $options   =  array(
-            'HTML_CACHE_ON'     =>  false,
-            'HTML_CACHE_TIME'   =>  60,
-            'HTML_CACHE_RULES'  =>  array(),
-            'HTML_FILE_SUFFIX'  =>  '.html',
-        );
-
+class ReadHtmlCacheBehavior {
     // 行为扩展的执行入口必须是run
     public function run(&$params){
         // 开启静态缓存
@@ -82,15 +73,16 @@ class ReadHtmlCacheBehavior extends Behavior {
                     $rule);
                 // {|FUN} 单独使用函数
                 $rule  = preg_replace_callback('/{|(\w+)}/', function($match){return $match[1]();},$rule);
+                $cacheTime  =   C('HTML_CACHE_TIME',null,60);
                 if(is_array($html)){
                     if(!empty($html[2])) $rule    =   $html[2]($rule); // 应用附加函数
-                    $cacheTime  =   isset($html[1])?$html[1]:C('HTML_CACHE_TIME'); // 缓存有效期
+                    $cacheTime  =   isset($html[1])?$html[1]:$cacheTime; // 缓存有效期
                 }else{
-                    $cacheTime  =   C('HTML_CACHE_TIME');
+                    $cacheTime  =   $cacheTime;
                 }
                 
                 // 当前缓存文件
-                define('HTML_FILE_NAME',HTML_PATH . $rule.C('HTML_FILE_SUFFIX'));
+                define('HTML_FILE_NAME',HTML_PATH . $rule.C('HTML_FILE_SUFFIX',null,'.html'));
                 return $cacheTime;
             }
         }
@@ -107,7 +99,7 @@ class ReadHtmlCacheBehavior extends Behavior {
      * @return boolean
      */
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
-        if(!is_file($cacheFile)){
+        if(!is_file($cacheFile) && 'sae' != APP_MODE ){
             return false;
         }elseif (filemtime(\Think\Think::instance('Think\View')->parseTemplate()) > Storage::get($cacheFile,'mtime','html')) {
             // 模板文件如果更新静态文件需要更新

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -107,9 +107,9 @@ class Cache {
             $key =  array_shift($value);
             // 删除缓存
             $this->rm($key);
-             if(APP_DEUBG){
+             if(APP_DEBUG){
                 //调试模式下，记录出列次数
-                N($queue_name.'_out_times',1,true);
+                N($queue_name.'_out_times',1);
             }
         }
         return $fun[1]($queue_name,$value);

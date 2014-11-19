@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -22,9 +22,7 @@ class App {
     static public function init() {
         // 加载动态应用公共文件和配置
         load_ext_file(COMMON_PATH);
-        // URL调度
-        Dispatcher::dispatch();
-
+        
         // 定义当前请求的系统常量
         define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
         define('REQUEST_METHOD',$_SERVER['REQUEST_METHOD']);
@@ -32,13 +30,17 @@ class App {
         define('IS_POST',       REQUEST_METHOD =='POST' ? true : false);
         define('IS_PUT',        REQUEST_METHOD =='PUT' ? true : false);
         define('IS_DELETE',     REQUEST_METHOD =='DELETE' ? true : false);
-        define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
+
+        // URL调度
+        Dispatcher::dispatch();
 
         // URL调度结束标签
         Hook::listen('url_dispatch');         
 
+        define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
+
         // 日志目录转换为绝对路径
-        C('LOG_PATH',realpath(LOG_PATH).'/');
+        C('LOG_PATH',   realpath(LOG_PATH).'/'.MODULE_NAME.'/');
         // TMPL_EXCEPTION_FILE 改为绝对地址
         C('TMPL_EXCEPTION_FILE',realpath(C('TMPL_EXCEPTION_FILE')));
         return ;
@@ -55,11 +57,12 @@ class App {
             $module  =  false;
         }elseif(C('ACTION_BIND_CLASS')){
             // 操作绑定到类：模块\Controller\控制器\操作
-            if(is_dir(MODULE_PATH.C('DEFAULT_C_LAYER').'/'.CONTROLLER_NAME)){
-                $namespace  =   MODULE_NAME.'\\'.C('DEFAULT_C_LAYER').'\\'.CONTROLLER_NAME.'\\';
+            $layer  =   C('DEFAULT_C_LAYER');
+            if(is_dir(MODULE_PATH.$layer.'/'.CONTROLLER_NAME)){
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\'.CONTROLLER_NAME.'\\';
             }else{
                 // 空控制器
-                $namespace  =   MODULE_NAME.'\\'.C('DEFAULT_C_LAYER').'\\_empty\\';                    
+                $namespace  =   MODULE_NAME.'\\'.$layer.'\\_empty\\';                    
             }
             $actionName     =   strtolower(ACTION_NAME);
             if(class_exists($namespace.$actionName)){
@@ -75,7 +78,7 @@ class App {
             $action  =  'run';
         }else{
             //创建控制器实例
-            $module  =  A(CONTROLLER_NAME);                
+            $module  =  controller(CONTROLLER_NAME,CONTROLLER_PATH);                
         }
 
         if(!$module) {
@@ -93,8 +96,7 @@ class App {
 
         // 获取当前操作名 支持动态路由
         if(!isset($action)){
-            $action     =   C('ACTION_NAME')?C('ACTION_NAME'):ACTION_NAME;
-            $action    .=   C('ACTION_SUFFIX');  
+            $action    =   ACTION_NAME.C('ACTION_SUFFIX');  
         }
         try{
             if(!preg_match('/^[A-Za-z](\w)*$/',$action)){
@@ -113,7 +115,7 @@ class App {
                     }
                 }
                 // URL参数绑定检测
-                if(C('URL_PARAMS_BIND') && $method->getNumberOfParameters()>0){
+                if($method->getNumberOfParameters()>0 && C('URL_PARAMS_BIND')){
                     switch($_SERVER['REQUEST_METHOD']) {
                         case 'POST':
                             $vars    =  array_merge($_GET,$_POST);
@@ -137,6 +139,17 @@ class App {
                         }else{
                             E(L('_PARAM_ERROR_').':'.$name);
                         }   
+                    }
+                    // 开启绑定参数过滤机制
+                    if(C('URL_PARAMS_SAFE')){
+                        array_walk_recursive($args,'filter_exp');
+                        $filters     =   C('URL_PARAMS_FILTER')?:C('DEFAULT_FILTER');
+                        if($filters) {
+                            $filters    =   explode(',',$filters);
+                            foreach($filters as $filter){
+                                $args   =   array_map_recursive($filter,$args); // 参数过滤
+                            }
+                        }                        
                     }
                     $method->invokeArgs($module,$args);
                 }else{

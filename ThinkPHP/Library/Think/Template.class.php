@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -102,6 +102,10 @@ class  Template {
                 $tmplContent = str_replace('{__NOLAYOUT__}','',$tmplContent);
             }else{ // 替换布局的主体内容
                 $layoutFile  =  THEME_PATH.C('LAYOUT_NAME').$this->config['template_suffix'];
+                // 检查布局文件
+                if(!is_file($layoutFile)) {
+                    E(L('_TEMPLATE_NOT_EXIST_').':'.$layoutFile);
+                }
                 $tmplContent = str_replace($this->config['layout_item'],$tmplContent,file_get_contents($layoutFile));
             }
         }
@@ -247,7 +251,7 @@ class  Template {
             //替换extend标签
             $content    =   str_replace($matches[0],'',$content);
             // 记录页面中的block标签
-            preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', array($this, 'parseBlock'),$content);
+            preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', array($this, 'parseBlock'),$content);
             // 读取继承模板
             $array      =   $this->parseXmlAttrs($matches[1]);
             $content    =   $this->parseTemplateName($array['name']);
@@ -255,7 +259,7 @@ class  Template {
             // 替换block标签
             $content = $this->replaceBlock($content);
         }else{
-            $content    =   preg_replace_callback('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);            
+            $content    =   preg_replace_callback('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/is', function($match){return stripslashes($match[2]);}, $content);
         }
         return $content;
     }
@@ -333,14 +337,14 @@ class  Template {
         static $parse = 0;
         $begin = $this->config['taglib_begin'];
         $end   = $this->config['taglib_end'];
-        $reg   = '/('.$begin.'block\sname=(.+?)\s*?'.$end.')(.*?)'.$begin.'\/block'.$end.'/is';
+        $reg   = '/('.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.')(.*?)'.$begin.'\/block'.$end.'/is';
         if(is_string($content)){
             do{
                 $content = preg_replace_callback($reg, array($this, 'replaceBlock'), $content);
             } while ($parse && $parse--);
             return $content;
         } elseif(is_array($content)){
-            if(preg_match('/'.$begin.'block\sname=(.+?)\s*?'.$end.'/is', $content[3])){ //存在嵌套，进一步解析
+            if(preg_match('/'.$begin.'block\sname=[\'"](.+?)[\'"]\s*?'.$end.'/is', $content[3])){ //存在嵌套，进一步解析
                 $parse = 1;
                 $content[3] = preg_replace_callback($reg, array($this, 'replaceBlock'), "{$content[3]}{$begin}/block{$end}");
                 return $content[1] . $content[3];
@@ -378,7 +382,7 @@ class  Template {
      * @access public
      * @param string $tagLib 要解析的标签库
      * @param string $content 要解析的模板内容
-     * @param boolen $hide 是否隐藏标签库前缀
+     * @param boolean $hide 是否隐藏标签库前缀
      * @return string
      */
     public function parseTagLib($tagLib,&$content,$hide=false) {
@@ -439,10 +443,10 @@ class  Template {
      */
     public function parseXmlTag($tagLib,$tag,$attr,$content) {
         if(ini_get('magic_quotes_sybase'))
-            $attr   =	str_replace('\"','\'',$attr);
-        $parse      =	'_'.$tag;
-        $content    =	trim($content);
-		$tags		=   $tagLib->parseXmlAttr($attr,$tag);
+            $attr   =   str_replace('\"','\'',$attr);
+        $parse      =   '_'.$tag;
+        $content    =   trim($content);
+        $tags       =   $tagLib->parseXmlAttr($attr,$tag);
         return $tagLib->$parse($tags,$content);
     }
 
@@ -559,7 +563,7 @@ class  Template {
         for($i=0;$i<$length ;$i++ ){
             $args = explode('=',$varArray[$i],2);
             //模板函数过滤
-            $fun = strtolower(trim($args[0]));
+            $fun = trim($args[0]);
             switch($fun) {
             case 'default':  // 特殊模板函数
                 $name = '(isset('.$name.') && ('.$name.' !== ""))?('.$name.'):'.$args[1];

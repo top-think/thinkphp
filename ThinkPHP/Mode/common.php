@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -16,7 +16,7 @@ return array(
     // 配置文件
     'config'    =>  array(
         THINK_PATH.'Conf/convention.php',   // 系统惯例配置
-        CONF_PATH.'config.php',      // 应用公共配置
+        CONF_PATH.'config'.CONF_EXT,      // 应用公共配置
     ),
 
     // 别名定义
@@ -43,36 +43,29 @@ return array(
         CORE_PATH . 'Route'.EXT,
         CORE_PATH . 'Controller'.EXT,
         CORE_PATH . 'View'.EXT,
-        CORE_PATH . 'Behavior'.EXT,
-        BEHAVIOR_PATH . 'ReadHtmlCacheBehavior'.EXT,
-        BEHAVIOR_PATH . 'ShowPageTraceBehavior'.EXT,
+        BEHAVIOR_PATH . 'BuildLiteBehavior'.EXT,
         BEHAVIOR_PATH . 'ParseTemplateBehavior'.EXT,
         BEHAVIOR_PATH . 'ContentReplaceBehavior'.EXT,
-        BEHAVIOR_PATH . 'WriteHtmlCacheBehavior'.EXT,
     ),
     // 行为扩展定义
     'tags'  =>  array(
-        'app_init'      =>  array(
-        ),
+        'app_init'     =>  array(
+            'Behavior\BuildLiteBehavior', // 生成运行Lite文件
+        ),        
         'app_begin'     =>  array(
-            'Behavior\ReadHtmlCache', // 读取静态缓存
+            'Behavior\ReadHtmlCacheBehavior', // 读取静态缓存
         ),
         'app_end'       =>  array(
-            'Behavior\ShowPageTrace', // 页面Trace显示
+            'Behavior\ShowPageTraceBehavior', // 页面Trace显示
         ),
-        'path_info'     =>  array(),
-        'action_begin'  =>  array(),
-        'action_end'    =>  array(),
-        'view_begin'    =>  array(),
         'view_parse'    =>  array(
-            'Behavior\ParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
+            'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
         ),
         'template_filter'=> array(
-            'Behavior\ContentReplace', // 模板输出替换
+            'Behavior\ContentReplaceBehavior', // 模板输出替换
         ),
         'view_filter'   =>  array(
-            'Behavior\WriteHtmlCache', // 写入静态缓存
+            'Behavior\WriteHtmlCacheBehavior', // 写入静态缓存
         ),
-        'view_end'      =>  array(),
     ),
 );

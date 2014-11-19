@@ -9,20 +9,15 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 机器人检测
  * @author   liu21st <liu21st@gmail.com>
  */
-class RobotCheckBehavior extends Behavior {
-    protected $options   =  array(
-            'LIMIT_ROBOT_VISIT' =>  true, // 禁止机器人访问
-        );
+class RobotCheckBehavior {
     
     public function run(&$params) {
         // 机器人访问检测
-        if(C('LIMIT_ROBOT_VISIT') && self::isRobot()) {
+        if(C('LIMIT_ROBOT_VISIT',null,true) && self::isRobot()) {
             // 禁止机器人访问
             exit('Access Denied');
         }

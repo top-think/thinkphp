@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Shmop extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('shmop') ) {
-            E(L('_NOT_SUPPERT_').':shmop');
+            E(L('_NOT_SUPPORT_').':shmop');
         }
         if(!empty($options)){
             $options = array(

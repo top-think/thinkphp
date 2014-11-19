@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace Think\Template\TagLib;
 use Think\Template\TagLib;
-defined('THINK_PATH') or exit();
 /**
  * CX标签库解析类
  */
@@ -39,7 +38,7 @@ class Cx extends TagLib {
         'import'    =>  array('attr'=>'file,href,type,value,basepath','close'=>0,'alias'=>'load,css,js'),
         'assign'    =>  array('attr'=>'name,value','close'=>0),
         'define'    =>  array('attr'=>'name,value','close'=>0),
-    	'for'       =>  array('attr'=>'start,end,name,comparison,step', 'level'=>3),
+        'for'       =>  array('attr'=>'start,end,name,comparison,step', 'level'=>3),
         );
 
     /**
@@ -81,9 +80,9 @@ class Cx extends TagLib {
             $name   = $this->autoBuildVar($name);
         }
         $parseStr  .=  'if(is_array('.$name.')): $'.$key.' = 0;';
-		if(isset($tag['length']) && '' !=$tag['length'] ) {
-			$parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].','.$tag['length'].',true);';
-		}elseif(isset($tag['offset'])  && '' !=$tag['offset']){
+        if(isset($tag['length']) && '' !=$tag['length'] ) {
+            $parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].','.$tag['length'].',true);';
+        }elseif(isset($tag['offset'])  && '' !=$tag['offset']){
             $parseStr  .= ' $__LIST__ = array_slice('.$name.','.$tag['offset'].',null,true);';
         }else{
             $parseStr .= ' $__LIST__ = '.$name.';';
@@ -492,7 +491,11 @@ class Cx extends TagLib {
             // 命名空间方式导入外部文件
             $array      =   explode(',',$file);
             foreach ($array as $val){
-                list($val,$version) =   explode('?',$val);
+                if(strpos ($val, '?')) {
+                    list($val,$version) =   explode('?',$val);
+                } else {
+                    $version = '';
+                }
                 switch($type) {
                 case 'js':
                     $parseStr .= '<script type="text/javascript" src="'.$basepath.'/'.str_replace(array('.','#'), array('/','.'),$val).'.js'.($version?'?'.$version:'').'"></script>';
@@ -608,4 +611,4 @@ class Cx extends TagLib {
         return $parseStr;
     }
 
-    }
+}

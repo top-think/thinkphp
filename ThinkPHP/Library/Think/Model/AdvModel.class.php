@@ -2,21 +2,16 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace Think\Model;
 use Think\Model;
 /**
  * 高级模型扩展 
- * @category   Extend
- * @package  Extend
- * @subpackage  Model
- * @author    liu21st <liu21st@gmail.com>
  */
 class AdvModel extends Model {
     protected $optimLock        =   'lock_version';
@@ -108,8 +103,12 @@ class AdvModel extends Model {
     // 更新前的回调方法
     protected function _before_update(&$data,$options='') {
         // 检查乐观锁
-        if(!$this->checkLockVersion($data,$options)) {
-            return false;
+        $pk     =   $this->getPK();
+        if(isset($options['where'][$pk])){
+            $id     =   $options['where'][$pk];   
+            if(!$this->checkLockVersion($id,$data)) {
+                return false;
+            }
         }
         // 检查文本字段
         $data = $this->checkBlobFields($data);
@@ -163,12 +162,11 @@ class AdvModel extends Model {
     /**
      * 检查乐观锁
      * @access protected
+     * @param inteter $id  当前主键     
      * @param array $data  当前数据
-     * @param array $options 查询表达式
      * @return mixed
      */
-    protected function checkLockVersion(&$data,$options) {
-        $id = $data[$this->getPk()];
+    protected function checkLockVersion($id,&$data) {
         // 检查乐观锁
         $identify   = $this->name.'_'.$id.'_lock_version';
         if($this->optimLock && isset($_SESSION[$identify])) {
@@ -432,77 +430,6 @@ class AdvModel extends Model {
                 $identify   =   $this->name.'/'.$id.'_'.$field;
                 F($identify,null);
             }
-        }
-    }
-
-    /**
-     * 字段值延迟增长
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  增长值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setLazyInc($field,$step=1,$lazyTime=0) {
-        $condition   =  $this->options['where'];
-        if(empty($condition)) { // 没有条件不做任何更新
-            return false;
-        }
-        if($lazyTime>0) {// 延迟写入
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
-        }
-        return $this->setField($field,array('exp',$field.'+'.$step));
-    }
-
-    /**
-     * 字段值延迟减少
-     * @access public
-     * @param string $field  字段名
-     * @param integer $step  减少值
-     * @param integer $lazyTime  延时时间(s)
-     * @return boolean
-     */
-    public function setLazyDec($field,$step=1,$lazyTime=0) {
-        $condition   =  $this->options['where'];
-        if(empty($condition)) { // 没有条件不做任何更新
-            return false;
-        }
-        if($lazyTime>0) {// 延迟写入
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
-        }
-        return $this->setField($field,array('exp',$field.'-'.$step));
-    }
-
-    /**
-     * 延时更新检查 返回false表示需要延时
-     * 否则返回实际写入的数值
-     * @access public
-     * @param string $guid  写入标识
-     * @param integer $step  写入步进值
-     * @param integer $lazyTime  延时时间(s)
-     * @return false|integer
-     */
-    protected function lazyWrite($guid,$step,$lazyTime) {
-        if(false !== ($value = F($guid))) { // 存在缓存写入数据
-            if(time()>F($guid.'_time')+$lazyTime) {
-                // 延时更新时间到了，删除缓存数据 并实际写入数据库
-                F($guid,NULL);
-                F($guid.'_time',NULL);
-                return $value+$step;
-            }else{
-                // 追加数据到缓存
-                F($guid,$value+$step);
-                return false;
-            }
-        }else{ // 没有缓存数据
-            F($guid,$step);
-            // 计时开始
-            F($guid.'_time',time());
-            return false;
         }
     }
 

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Wincache extends Cache {
      */
     public function __construct($options=array()) {
         if ( !function_exists('wincache_ucache_info') ) {
-            E(L('_NOT_SUPPERT_').':WinCache');
+            E(L('_NOT_SUPPORT_').':WinCache');
         }
         $this->options['expire']    =   isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
@@ -75,5 +75,14 @@ class Wincache extends Cache {
     public function rm($name) {
         return wincache_ucache_delete($this->options['prefix'].$name);
     }
+
+    /**
+     * 清除缓存
+     * @access public
+     * @return boolean
+     */
+    public function clear() {
+        return wincache_ucache_clear();
+    }    
 
 }
