@@ -428,7 +428,6 @@ class Model {
                         $this->error        =   L('_OPERATION_WRONG_');
                         return false;
                     }
-                    unset($data[$pk]);
                 }
             }
             if(!isset($where)){
@@ -446,6 +445,7 @@ class Model {
         if(false === $this->_before_update($data,$options)) {
             return false;
         }
+        unset($data[$pk]);
         $result     =   $this->db->update($data,$options);
         if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
