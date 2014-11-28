@@ -1078,16 +1078,17 @@ abstract class Driver {
             $r = floor(mt_rand(0,count($_config['hostname'])-1));   // 每次随机连接的数据库
         }
         
-        $db_master  =   array(
-            'username'  =>  isset($_config['username'][$m])?$_config['username'][$m]:$_config['username'][0],
-            'password'  =>  isset($_config['password'][$m])?$_config['password'][$m]:$_config['password'][0],
-            'hostname'  =>  isset($_config['hostname'][$m])?$_config['hostname'][$m]:$_config['hostname'][0],
-            'hostport'  =>  isset($_config['hostport'][$m])?$_config['hostport'][$m]:$_config['hostport'][0],
-            'database'  =>  isset($_config['database'][$m])?$_config['database'][$m]:$_config['database'][0],
-            'dsn'       =>  isset($_config['dsn'][$m])?$_config['dsn'][$m]:$_config['dsn'][0],
-            'charset'   =>  isset($_config['charset'][$m])?$_config['charset'][$m]:$_config['charset'][0],
-        );
-
+        if($m != $r ){
+            $db_master  =   array(
+                'username'  =>  isset($_config['username'][$m])?$_config['username'][$m]:$_config['username'][0],
+                'password'  =>  isset($_config['password'][$m])?$_config['password'][$m]:$_config['password'][0],
+                'hostname'  =>  isset($_config['hostname'][$m])?$_config['hostname'][$m]:$_config['hostname'][0],
+                'hostport'  =>  isset($_config['hostport'][$m])?$_config['hostport'][$m]:$_config['hostport'][0],
+                'database'  =>  isset($_config['database'][$m])?$_config['database'][$m]:$_config['database'][0],
+                'dsn'       =>  isset($_config['dsn'][$m])?$_config['dsn'][$m]:$_config['dsn'][0],
+                'charset'   =>  isset($_config['charset'][$m])?$_config['charset'][$m]:$_config['charset'][0],
+            );
+        }
         $db_config = array(
             'username'  =>  isset($_config['username'][$r])?$_config['username'][$r]:$_config['username'][0],
             'password'  =>  isset($_config['password'][$r])?$_config['password'][$r]:$_config['password'][0],

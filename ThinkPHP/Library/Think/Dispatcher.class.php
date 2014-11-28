@@ -120,15 +120,17 @@ class Dispatcher {
             // URL后缀
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
             $_SERVER['PATH_INFO'] = __INFO__;     
-            if (__INFO__ && !defined('BIND_MODULE') && C('MULTI_MODULE')){ // 获取模块名
-                $paths      =   explode($depr,__INFO__,2);
-                $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
-                $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
-                if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
-                    $_GET[$varModule]       =   $module;
-                    $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
+            if(!defined('BIND_MODULE') && (!C('URL_ROUTER_ON') || !Route::check())){
+                if (__INFO__ && C('MULTI_MODULE')){ // 获取模块名
+                    $paths      =   explode($depr,__INFO__,2);
+                    $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
+                    $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
+                    if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
+                        $_GET[$varModule]       =   $module;
+                        $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
+                    }
                 }
-            }                   
+            }             
         }
 
         // URL常量
