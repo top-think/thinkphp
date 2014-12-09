@@ -18,10 +18,10 @@ class ParseTemplateBehavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$_data){
-        $engine             =   strtolower(C('TMPL_ENGINE_TYPE'));
+        $engine             =   C('TMPL_ENGINE_TYPE');
         $_content           =   empty($_data['content'])?$_data['file']:$_data['content'];
         $_data['prefix']    =   !empty($_data['prefix'])?$_data['prefix']:C('TMPL_CACHE_PREFIX');
-        if('think'==$engine){ // 采用Think模板引擎
+        if('think'==strtolower($engine)){ // 采用Think模板引擎
             if((!empty($_data['content']) && $this->checkContentCache($_data['content'],$_data['prefix'])) 
                 ||  $this->checkCache($_data['file'],$_data['prefix'])) { // 缓存有效
                 //载入模版缓存文件
@@ -36,7 +36,7 @@ class ParseTemplateBehavior {
             if(strpos($engine,'\\')){
                 $class  =   $engine;
             }else{
-                $class   =  'Think\\Template\\Driver\\'.ucwords($engine);                
+                $class   =  'Think\\Template\\Driver\\'.ucwords(strtolower($engine));                
             }            
             if(class_exists($class)) {
                 $tpl   =  new $class;
