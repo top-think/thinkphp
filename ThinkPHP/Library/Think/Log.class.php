@@ -66,7 +66,7 @@ class Log {
         if(empty(self::$log)) return ;
 
         if(empty($destination))
-            $destination = C('LOG_PATH').date('y_m_d').'.log';
+            $destination = LOG_PATH.date('y_m_d').'.log';
         if(!self::$storage){
             $type = $type?:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
@@ -95,7 +95,7 @@ class Log {
             self::$storage = new $class();            
         }
         if(empty($destination))
-            $destination = C('LOG_PATH').date('y_m_d').'.log';        
+            $destination = LOG_PATH.date('y_m_d').'.log';        
         self::$storage->write("{$level}: {$message}", $destination);
     }
 }
