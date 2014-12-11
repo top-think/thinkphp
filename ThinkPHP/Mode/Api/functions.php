@@ -229,7 +229,6 @@ function I($name,$default='',$filter=null) {
     }
     if(empty($name)) { // 获取全部变量
         $data       =   $input;
-        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -239,7 +238,6 @@ function I($name,$default='',$filter=null) {
         }
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
-        is_array($data) && array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             $filters    =   explode(',',$filters);
@@ -1049,13 +1047,6 @@ function send_http_status($code) {
         header('HTTP/1.1 '.$code.' '.$_status[$code]);
         // 确保FastCGI模式下正常
         header('Status:'.$code.' '.$_status[$code]);
-    }
-}
-
-// 过滤表单中的表达式
-function filter_exp(&$value){
-    if (in_array(strtolower($value),array('exp','or'))){
-        $value .= ' ';
     }
 }
 

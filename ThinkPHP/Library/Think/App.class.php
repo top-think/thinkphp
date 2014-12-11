@@ -142,7 +142,6 @@ class App {
                     }
                     // 开启绑定参数过滤机制
                     if(C('URL_PARAMS_SAFE')){
-                        array_walk_recursive($args,'filter_exp');
                         $filters     =   C('URL_PARAMS_FILTER')?:C('DEFAULT_FILTER');
                         if($filters) {
                             $filters    =   explode(',',$filters);
