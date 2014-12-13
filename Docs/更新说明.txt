@@ -1,0 +1,79 @@
+﻿---------------------------------------
+2.2 更新说明
+---------------------------------------
+[入口]
+[改进] 内存起始记录移到ThinkPHP入口文件位置 更加准确
+[改进] 优化项目编译机制
+[调整] 部署模式和ALLINONE模式合并
+[调整] 调试模式更加方便调试
+[删除] 废除入口常量定义，包括APP_CACHE_NAME、NO_CACHE_RUNTIME、RUNTIME_ALLINONE、STRIP_RUNTIME_SPACE
+开启调试模式后就已经具有了NO_CACHE_RUNTIME的效果。
+
+[配置]
+[增加] 增加VAR_SESSION_ID 参数 默认为session_id 便于其他客户端访问
+[增加] 增加TOKEN_RESET 参数
+[增加] 增加 TMPL_DENY_PHP 参数 用于设置模板是否禁用原生PHP语法 默认为false
+[改进] DB_PORT 端口由默认配置3306 改为空 便于其他数据库的默认设置
+[改进] DATA_CACHE_TIME 默认由-1 改为 0 缓存永久缓存由原来的-1更改为0
+[改进] TMPL_CACHE_TIME 默认由-1 改为 0 缓存永久缓存由原来的-1更改为0
+[改进] SHOW_ERROR_MSG 默认由true改为false 开启调试模式后为true
+[改进] TMPL_STRIP_SPACE 默认改为true
+[改进] TMPL_ACTION_ERROR和TMPL_ACTION_SUCCESS 惯例设置更改为THINK_PATH.'/Tpl/dispatch_jump.html 采用内置模板
+[调整] APP_CONFIG_LIST 配置参数用法改为字符串方式 用逗号分隔 并兼容原来数组方式定义
+[删除] 废除TAG_EXTEND_PARS 参数
+[删除] APP_AUTOLOAD_REG 参数废弃 改为自动检测
+[删除] 废除URL_PATHINFO_MODEL参数
+[删除] 废除URL_AUTO_REDIRECT 参数
+[删除] 废除VAR_ROUTER 参数
+
+[控制器]
+[增加] 增加项目动态函数文件extend.php 支持
+[修正] 修正strip_whitespace方法对heredoc的支持
+[改进] U函数修正默认分组支持
+[改进] 修正分组Action不存在的时候 调用上级Action的错误
+[改进] 修正C方法对二级配置的大小写支持
+[改进] F方法增加去空白支持
+[改进] 修正array_define生成的常量判断定义
+[改进] Action析构方法增加日志保存支持
+[改进] Action的error和success增加跳转URL参数支持
+[改进] Action增加ajaxAssign方法支持
+[改进] 模块和操作不存在 发送404状态信息
+[改进] 自动生成目录结构的时候 生成项目Widget和Behavior目录
+[改进] 增加P_ACTION_NAME 支持
+[改进] 日志记录增加URL记录
+[删除] 废除操作链功能
+
+[模型]
+[新增] 增加_parseType 方法支持 用于验证字段类型
+[新增] Model增加parseFieldsMap方法 用于处理字段映射的数据写入和读取 create方法已经内置对字段映射的数据写入支持 字段映射的读取需要手动处理 在find方法之后调用，例如： $data = $Model->where()->find(); parseFieldsMap($data);
+[新增] 增加批量验证支持
+[新增] IN 查询增加表达式参数支持 用于某些特殊情况的IN查询 $map['id'] = array('IN',$subQuery,'exp'); 其中subQuery是一个子查询或者SQL函数语法等 就可以使用exp参数在后面
+[修正] 修正数据库驱动类的getFields方法
+[改进] Model的add和save方法 如果用了$this->data 则及时清空 避免混淆
+[改进] 字段映射放到自动验证之前
+[改进] 表单令牌验证放到自动验证之后
+[改进] 表单令牌验证改进 支持多窗口验证
+[改进] Model类db方法增加params参数 用于切换数据库的时候传人额外的模型参数 原则上支持任意Model类的属性
+[改进] Model类的db方法的第二个config参数支持配置参数
+[改进] 修正Model类的getTableName中关于dbName的获取
+[改进] Db类parseConfig方法支持数组配置信息
+[改进] mysql和mysqli驱动insertAll方法增加replace参数
+[修正] 修正Db类的parseWhere方法在not between 查询条件下面的BUG
+[改进] 完善mssql驱动类的端口支持
+[改进] Db类addSpecialChar方法更名为parseKey 用于统一处理字段名中的关键字
+[改进] 数据库驱动类的__destruct方法移到Db类
+[改进] 将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀和后缀 例如 $dao->join("__CHANNEL__ as c on c.pid = __COMPANY__.channelpid")->limit(10)->select(); 其中__CHANNEL__ 和 __COMPANY__ 将会翻译成对应的表名 这样使代码更好看也更易理解。
+[改进] 改进数据库驱动类对长连接配置的支持,配置下面参数即可 'DB_PARAMS'=>array('persist'=>true),
+[改进] 完善Db类的parseFields方法 改进对 Model中field('key,value')的支持
+[改进] 改进Db类的parseWhere方法对between数据的处理
+[改进] 完善Db类的table解析方法 可以支持数组方式 model类的table方法支持数组方式参数 支持表别名定义，例如 table(array('think_user'=>'user','think_article'=>'article'))
+[改进] 改进数据库的不等于判断符号 neq 解析为 <>
+[删除] 删除Db类中多余的addConnect和switchConnect方法
+[删除] 删除高级模型类里面的切换数据库相关方法 2.1版本以上推荐直接使用模型类的db方法切换
+
+[模板]
+[新增] 在模版中的include标签，可以使用自定义属性， 替换被包含模版中格式为[var]的变量。 如 <include file="xxx" varname="value"/>  则被导入的模版中 [varname] 标签会被替换为 value
+[新增] 模板禁用PHP语法支持
+[修正] 修正模板变量的函数解析的参数中带有=的BUG
+[修正] 修正Cx标签库的volist标签的mod属性
+[改进] 改进模板输出替换变量__GROUP__ 如果当前没有分组则输出同 __APP__

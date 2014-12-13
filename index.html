@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+ <head>
+  <title>ThinkPHP Framework For PHP5</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="Liu21st">
+  <meta name="Keywords" content="ThinkPHP,Framework">
+  <meta name="Description" content="PHP最佳实践框架">
+  <style>
+  body{font-family:微软雅黑,Tahoma;font-size:14px;}
+  table,div,p{line-height:155%;padding:5px}
+ ul{
+	list-style: none;
+	margin:3px 0px;
+}
+li{	padding:3px;}
+  </style>
+ </head>
+
+ <body style="margin:0">
+  <div style="font-size:22px;font-weight:bold;background:#88B5DD"><a href="./Examples/" title="示例中心"><img src="./logo.png"  border="0" alt="" ></a></div>
+  <div style="margin:5px 12px">
+  Version 2.2<br>
+  Copyright© 2006-2011 by <a href="http://thinkphp.cn">ThinkPHP.cn</a><br>
+  All Rights Reserved.<p>
+  <b>[ 简介 ]</b><br/>
+ThinkPHP是一个性能卓越并且功能丰富的轻量级PHP开发框架，本身具有很多的原创特性，并且倡导大道至简，开发由我的开发理念，用最少的代码完成更多的功能，宗旨就是让WEB应用开发更简单、更快速。遵循Apache2开源协议发布，是为了简化企业级应用开发和敏捷WEB应用开发而诞生的。借鉴了国外很多优秀的框架和模式，使用面向对象的开发结构和MVC模式，2.1版本更是在之前的基础上，经过全新的重构和无数次的完善以及改进，达到了一个新的阶段，足以达到企业级和门户级的开发标准。<br>
+使用ThinkPHP，你可以更方便和快捷的开发和部署应用，当然不仅仅是企业级应用，任何PHP应用开发都可以从ThinkPHP的简单、快速的特性中受益。简洁、快速和实用是ThinkPHP发展秉承的宗旨，为此ThinkPHP会不断吸收和融入更好的技术以保证其新鲜和活力，提供WEB应用开发的最佳实践！
+<ul>
+	<li><b>[ 协议 ]</b><br>
+ThinkPHP遵循Apache2开源许可协议发布，意味着你可以免费使用ThinkPHP，甚至允许把你的ThinkPHP应用采用商业闭源发布。<br>具体参考Apache2许可协议内容：
+<a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+	<li><b>[ 特性 ]</b><br>
+			<ul>
+ <li><b>类库导入</b>：ThinkPHP采用基于类库包和命名空间的方式导入类库，让类库导入看起来更加简单清晰，而且还支持冲突检测和别名导入。为了方便项目的跨平台移植，系统还可以严格检查加载文件的大小写。
+ <li><b>URL模式</b>：系统支持普通模式、PATHINFO模式、REWRITE模式和兼容模式的URL方式，支持不同的服务器和运行模式的部署，配合URL路由功能，让你随心所欲的构建需要的URL地址和进行SEO优化工作。
+ <li><b>编译机制</b>：独创的核心编译和项目的动态编译机制，有效减少OOP开发中文件加载的性能开销。ALLINONE模式更是让你体验飞一般的感觉。
+ <li><b>ORM</b>：简洁轻巧的ORM实现，配合简单的CURD以及AR模式，让开发效率无处不在。
+ <li><b>查询语言</b>：内建丰富的查询机制，包括组合查询、复合查询、区间查询、统计查询、定位查询、动态查询和原生查询，让你的数据查询简洁高效。
+ <li>	<b>动态模型</b>：无需创建任何对应的模型类，轻松完成CURD操作，支持多种模型之间的动态切换，让你领略数据操作的无比畅快和最佳体验。
+ <li>	<b>高级模型</b>：可以轻松支持序列化字段、文本字段、只读字段、延迟写入、乐观锁、数据分表等高级特性。
+ <li><b>视图模型</b>：轻松动态地创建数据库视图，多表查询不再烦恼。
+ <li><b>关联模型</b>：让你以出乎意料的简单、灵活的方式完成多表的关联操作。
+ <li><b>分组模块</b>：不用担心大项目的分工协调和部署问题，分组模块帮你解决跨项目的难题。
+ <li><b>模板引擎</b>：系统内建了一款卓越的基于XML的编译型模板引擎，支持两种类型的模板标签，融合了Smarty和JSP标签库的思想，支持标签库扩展。通过驱动还可以支持Smarty、EaseTemplate、TemplateLite、Smart等第三方模板引擎。
+ <li>	<b>AJAX支持</b>：内置AJAX数据返回方法，支持JSON、XML和EVAL格式返回客户端，并且系统不绑定任何AJAX类库，可随意使用自己熟悉的AJAX类库进行操作。
+ <li><b>多语言支持</b>：系统支持语言包功能，项目和模块都可以有单独的语言包，并且可以自动检测浏览器语言自动载入对应的语言包。
+ <li><b>模式扩展</b>：除了标准模式外，系统内置了Lite、Thin和Cli模式，针对不同级别的应用开发提供最佳核心框架，还可以自定义模式扩展。
+ <li><b>自动验证和完成</b>：自动完成表单数据的验证和过滤，生成安全的数据对象。
+ <li><b>字段类型检测</b>：字段类型强制转换，确保数据写入和查询更安全。
+ <li><b>数据库特性</b>：系统支持多数据库连接和动态切换机制，支持分布式数据库。犹如企业开发的一把利刃，跨数据库应用和分布式支持从此无忧。
+ <li><b>缓存机制</b>：系统支持包括文件方式、APC、Db、Memcache、Shmop、Eaccelerator和Xcache在内的多种动态数据缓存类型，以及可定制的静态缓存规则，并提供了快捷方法进行存取操作。
+ <li><b>扩展机制</b>：系统支持包括类库扩展、驱动扩展、应用扩展、模型扩展、控制器扩展、标签库扩展、模板引擎扩展、Widget扩展、行为扩展和模式扩展在内的强大灵活的扩展机制，让你不再受限于核心的不足和无所适从，随心DIY自己的框架和扩展应用。
+		</ul>
+	<li><b>[ 要求 ]</b><br>
+	ThinkPHP需要PHP5.0以上版本支持，2.0以上版本可以运行在任何系统环境下面。
+	<li><b>[ 安装 ]</b><br>
+	ThinkPHP无需安装，下载ThinkPHP核心包之后，把解压后的目录拷贝到你的WEB服务器或者WEB目录即可。
+	<li><b>[ 鸣谢 ]</b><br>
+	特别要鸣谢ThinkPHP团队和所有关注和支持ThinkPHP的用户。
+	<li><b>[ 案例 ]</b><br>
+	基于ThinkPHP的典型案例参考请访问官方网站：<a href="http://thinkphp.cn/Case/">http://thinkphp.cn/Case/</a>
+</ul>
+</div>
+ </body>
+</html>
