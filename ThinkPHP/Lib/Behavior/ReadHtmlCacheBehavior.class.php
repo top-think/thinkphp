@@ -59,7 +59,7 @@ class ReadHtmlCacheBehavior extends Behavior {
                 $html   =   $htmls['*']; // 全局静态规则
             }elseif(isset($htmls['empty:index']) && !class_exists(MODULE_NAME.'Action')){
                 $html   =    $htmls['empty:index']; // 空模块静态规则
-            }elseif(isset($htmls[$moduleName.':_empty']) && $this->isEmptyAction(MODULE_NAME,ACTION_NAME)){
+            }elseif(isset($htmls[$moduleName.':_empty']) && self::isEmptyAction(MODULE_NAME,ACTION_NAME)){
                 $html   =    $htmls[$moduleName.':_empty']; // 空操作静态规则
             }
             if(!empty($html)) {
@@ -95,7 +95,7 @@ class ReadHtmlCacheBehavior extends Behavior {
      * @access public
      * @param string $cacheFile  静态文件名
      * @param integer $cacheTime  缓存有效期
-     * @return boolen
+     * @return boolean
      */
     static public function checkHTMLCache($cacheFile='',$cacheTime='') {
         if(!is_file($cacheFile)){

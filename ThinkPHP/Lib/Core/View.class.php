@@ -111,7 +111,8 @@ class View {
         if(empty($content)) {
             $templateFile   =   $this->parseTemplate($templateFile);
             // 模板文件不存在直接返回
-            if(!is_file($templateFile)) return NULL;
+            if(!is_file($templateFile)) 
+                throw_exception(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
         }
         // 页面缓存
         ob_start();
@@ -141,14 +142,26 @@ class View {
      * @return string
      */
     public function parseTemplate($template='') {
+        $app_name=APP_NAME==basename(dirname($_SERVER['SCRIPT_FILENAME'])) && ''==__APP__?'':APP_NAME.'/';
         if(is_file($template)) {
+            $group  =   defined('GROUP_NAME')?GROUP_NAME.'/':'';
+            $theme  =   C('DEFAULT_THEME');
+            // 获取当前主题的模版路径
+            if(1==C('APP_GROUP_MODE')){ // 独立分组模式
+                define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            }else{ 
+                define('THEME_PATH',   TMPL_PATH.$group.$theme);
+                define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.basename(TMPL_PATH).'/'.$group.$theme);
+            }
             return $template;
         }
-        $template = str_replace(':', '/', $template);
+        $depr       =   C('TMPL_FILE_DEPR');
+        $template   =   str_replace(':', $depr, $template);
         // 获取当前主题名称
-        $theme = $this->getTemplateTheme();
+        $theme      =   $this->getTemplateTheme();
         // 获取当前模版分组
-        $group   =  defined('GROUP_NAME')?GROUP_NAME.'/':'';
+        $group      =   defined('GROUP_NAME')?GROUP_NAME.'/':'';
         if(defined('GROUP_NAME') && strpos($template,'@')){ // 跨分组调用模版文件
             list($group,$template)  =   explode('@',$template);
             $group  .=   '/';
@@ -156,18 +169,18 @@ class View {
         // 获取当前主题的模版路径
         if(1==C('APP_GROUP_MODE')){ // 独立分组模式
             define('THEME_PATH',   dirname(BASE_LIB_PATH).'/'.$group.basename(TMPL_PATH).'/'.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.C('APP_GROUP_PATH').'/'.$group.basename(TMPL_PATH).'/'.$theme);
         }else{ 
             define('THEME_PATH',   TMPL_PATH.$group.$theme);
-            define('APP_TMPL_PATH',__ROOT__.'/'.APP_NAME.(APP_NAME?'/':'').basename(TMPL_PATH).'/'.$group.$theme);
+            define('APP_TMPL_PATH',__ROOT__.'/'.$app_name.basename(TMPL_PATH).'/'.$group.$theme);
         }
 
         // 分析模板文件规则
         if('' == $template) {
             // 如果模板文件名为空 按照默认规则定位
-            $template = MODULE_NAME . '/' . ACTION_NAME;
+            $template = MODULE_NAME . $depr . ACTION_NAME;
         }elseif(false === strpos($template, '/')){
-            $template = MODULE_NAME . '/' . $template;
+            $template = MODULE_NAME . $depr . $template;
         }
         return THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
     }

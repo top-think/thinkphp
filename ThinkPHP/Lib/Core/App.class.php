@@ -58,7 +58,14 @@ class App {
             }
         }
 
-        C('CACHE_PATH',CACHE_PATH.$group);
+        if(C('REQUEST_VARS_FILTER')){
+			// 全局安全过滤
+			array_walk_recursive($_GET,		'think_filter');
+			array_walk_recursive($_POST,	'think_filter');
+			array_walk_recursive($_REQUEST,	'think_filter');
+		}
+
+        C('LOG_PATH',realpath(LOG_PATH).'/');
         //动态配置 TMPL_EXCEPTION_FILE,改为绝对地址
         C('TMPL_EXCEPTION_FILE',realpath(C('TMPL_EXCEPTION_FILE')));
         return ;
@@ -140,6 +147,7 @@ class App {
                             throw_exception(L('_PARAM_ERROR_').':'.$name);
                         }
                     }
+                    array_walk_recursive($args,'think_filter');
                     $method->invokeArgs($module,$args);
                 }else{
                     $method->invoke($module);

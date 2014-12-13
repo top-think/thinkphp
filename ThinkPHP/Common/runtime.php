@@ -76,7 +76,7 @@ defined('CONF_PATH')    or define('CONF_PATH',      APP_PATH.'Conf/'); // 项目
 defined('LANG_PATH')    or define('LANG_PATH',      APP_PATH.'Lang/'); // 项目语言包目录
 defined('TMPL_PATH')    or define('TMPL_PATH',      APP_PATH.'Tpl/'); // 项目模板目录
 defined('HTML_PATH')    or define('HTML_PATH',      APP_PATH.'Html/'); // 项目静态目录
-defined('LOG_PATH')     or define('LOG_PATH',       realpath(RUNTIME_PATH).'/Logs/'); // 项目日志目录
+defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 项目日志目录
 defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 项目缓存目录
 defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 项目数据目录
 defined('CACHE_PATH')   or define('CACHE_PATH',     RUNTIME_PATH.'Cache/'); // 项目模板缓存目录
@@ -219,7 +219,7 @@ function build_first_action() {
 }
 
 // 生成目录安全文件
-function build_dir_secure($dirs='') {
+function build_dir_secure($dirs=array()) {
     // 目录安全写入
     if(defined('BUILD_DIR_SECURE') && BUILD_DIR_SECURE) {
         defined('DIR_SECURE_FILENAME')  or define('DIR_SECURE_FILENAME',    'index.html');

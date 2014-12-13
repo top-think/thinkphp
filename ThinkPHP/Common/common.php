@@ -28,7 +28,7 @@ function T($template='',$layer=''){
         }
         // 解析模版资源地址
         if(false === strpos($template,'://')){
-            $template   =   APP_NAME.'://'.$template;
+            $template   =   APP_NAME.'://'.str_replace(':', '/',$template);
         }        
         $info   =   parse_url($template);
         $file   =   $info['host'].(isset($info['path'])?$info['path']:'');
@@ -48,9 +48,9 @@ function T($template='',$layer=''){
         // 分析模板文件规则
         if('' == $file) {
             // 如果模板文件名为空 按照默认规则定位
-            $file = MODULE_NAME . '/' . ACTION_NAME;
+            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . ACTION_NAME;
         }elseif(false === strpos($file, '/')){
-            $file = MODULE_NAME . '/' . $file;
+            $file = MODULE_NAME . C('TMPL_FILE_DEPR') . $file;
         }
         return $baseUrl.$file.C('TMPL_TEMPLATE_SUFFIX');
 }
@@ -70,7 +70,7 @@ function T($template='',$layer=''){
  */
 function I($name,$default='',$filter=null) {
     if(strpos($name,'.')) { // 指定参数来源
-        list($method,$name) =   explode('.',$name);
+        list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
         $method =   'param';
     }
@@ -102,7 +102,6 @@ function I($name,$default='',$filter=null) {
             return NULL;
     }
     // 全局过滤
-    // array_walk_recursive($input,'filter_exp');
     if(C('VAR_FILTERS')) {
         $_filters    =   explode(',',C('VAR_FILTERS'));
         foreach($_filters as $_filter){
@@ -112,6 +111,13 @@ function I($name,$default='',$filter=null) {
     }
     if(empty($name)) { // 获取全部变量
         $data       =   $input; 
+        $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
+        if($filters) {
+            $filters    =   explode(',',$filters);
+            foreach($filters as $filter){
+                $data   =   array_map($filter,$data); // 参数过滤
+            }
+        }        
     }elseif(isset($input[$name])) { // 取值操作
         $data       =	$input[$name];
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
@@ -131,6 +137,7 @@ function I($name,$default='',$filter=null) {
     }else{ // 变量默认值
         $data       =	 isset($default)?$default:NULL;
     }
+    is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
 }
 
