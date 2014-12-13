@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Pgsql extends Db{
      */
     public function __construct($config='') {
         if ( !extension_loaded('pgsql') ) {
-            throw_exception(L('_NOT_SUPPERT_').':pgsql');
+            E(L('_NOT_SUPPERT_').':pgsql');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -44,10 +44,10 @@ class Pgsql extends Db{
             $conn = $pconnect ? 'pg_pconnect':'pg_connect';
             $this->linkID[$linkNum] =  $conn('host='.$config['hostname'].' port='.$config['hostport'].' dbname='.$config['database'].' user='.$config['username'].'  password='.$config['password']);
             if (0 !== pg_connection_status($this->linkID[$linkNum])){
-                throw_exception($this->error(false));
+                E($this->error(false));
             }
             //设置编码
-            pg_set_client_encoding($this->linkID[$linkNum], C('DB_CHARSET'));
+            pg_set_client_encoding($this->linkID[$linkNum], $config['charset']);
             //$pgInfo = pg_version($this->linkID[$linkNum]);
             //$dbVersion = $pgInfo['server'];
             // 标记连接成功

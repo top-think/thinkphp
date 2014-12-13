@@ -2,21 +2,16 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace Think\Model;
 use Think\Model;
 /**
  * ThinkPHP视图模型扩展 
- * @category   Extend
- * @package  Extend
- * @subpackage  Model
- * @author    liu21st <liu21st@gmail.com>
  */
 class ViewModel extends Model {
 
@@ -40,7 +35,9 @@ class ViewModel extends Model {
             foreach ($this->viewFields as $key=>$view){
                 // 获取数据表名称
                 if(isset($view['_table'])) { // 2011/10/17 添加实际表名定义支持 可以实现同一个表的视图
-                    $tableName .= $view['_table'];
+                    $tableName .=   $view['_table'];
+                    $prefix     =   $this->tablePrefix;
+                    $tableName  =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $tableName);
                 }else{
                     $class  =   $key.'Model';
                     $Model  =  class_exists($class)?new $class():M($key);
@@ -133,7 +130,7 @@ class ViewModel extends Model {
             $orders = explode(',',$order);
             $_order = array();
             foreach ($orders as $order){
-                $array = explode(' ',$order);
+                $array = explode(' ',trim($order));
                 $field   =   $array[0];
                 $sort   =   isset($array[1])?$array[1]:'ASC';
                 // 解析成视图字段

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -30,6 +30,7 @@ class Pdo extends Db{
             if(empty($this->config['params'])) {
                 $this->config['params'] =   array();
             }
+            $this->dbType = $this->_getDsnType($config['dsn']);            
         }
 
     }
@@ -44,19 +45,22 @@ class Pdo extends Db{
             if($this->pconnect) {
                 $config['params'][\PDO::ATTR_PERSISTENT] = true;
             }
+            if(version_compare(PHP_VERSION,'5.3.6','<=')){ //禁用模拟预处理语句
+                $config['params'][\PDO::ATTR_EMULATE_PREPARES]  =   false;
+            }
             //$config['params'][PDO::ATTR_CASE] = C("DB_CASE_LOWER")?PDO::CASE_LOWER:PDO::CASE_UPPER;
             try{
                 $this->linkID[$linkNum] = new \PDO( $config['dsn'], $config['username'], $config['password'],$config['params']);
             }catch (\PDOException $e) {
-                throw_exception($e->getMessage());
+                E($e->getMessage());
             }
             // 因为PDO的连接切换可能导致数据库类型不同，因此重新获取下当前的数据库类型
             $this->dbType = $this->_getDsnType($config['dsn']);
             if(in_array($this->dbType,array('MSSQL','ORACLE','IBASE','OCI'))) {
                 // 由于PDO对于以上的数据库支持不够完美，所以屏蔽了 如果仍然希望使用PDO 可以注释下面一行代码
-                throw_exception('由于目前PDO暂时不能完美支持'.$this->dbType.' 请使用官方的'.$this->dbType.'驱动');
+                E('由于目前PDO暂时不能完美支持'.$this->dbType.' 请使用官方的'.$this->dbType.'驱动');
             }
-            $this->linkID[$linkNum]->exec('SET NAMES '.C('DB_CHARSET'));
+            $this->linkID[$linkNum]->exec('SET NAMES '.$config['charset']);
             // 标记连接成功
             $this->connected    =   true;
             // 注销数据库连接配置信息
@@ -94,9 +98,9 @@ class Pdo extends Db{
         G('queryStartTime');
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
-            throw_exception($this->error());
+            E($this->error());
         // 参数绑定
-        $this->bindParam($bind);
+        $this->bindPdoParam($bind);
         $result =   $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result ) {
@@ -135,10 +139,10 @@ class Pdo extends Db{
         G('queryStartTime');
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            throw_exception($this->error());
+            E($this->error());
         }
         // 参数绑定
-        $this->bindParam($bind);        
+        $this->bindPdoParam($bind);        
         $result = $this->PDOStatement->execute();
         $this->debug();
         if ( false === $result) {
@@ -158,7 +162,7 @@ class Pdo extends Db{
      * @access protected
      * @return void
      */
-    protected function bindParam($bind){
+    protected function bindPdoParam($bind){
         // 参数绑定
         foreach($bind as $key=>$val){
             if(is_array($val)){
@@ -166,7 +170,7 @@ class Pdo extends Db{
             }else{
               $val  = array($key,$val);
             }
-            call_user_func_array(array($this->PDOStatement,'bindParam'),$val);
+            call_user_func_array(array($this->PDOStatement,'bindValue'),$val);
         }      
     }
 
@@ -317,7 +321,7 @@ class Pdo extends Db{
                 break;
             case 'IBASE':
                 // 暂时不支持
-                throw_exception(L('_NOT_SUPPORT_DB_').':IBASE');
+                E(L('_NOT_SUPPORT_DB_').':IBASE');
                 break;
             case 'SQLITE':
                 $sql   = "SELECT name FROM sqlite_master WHERE type='table' "
@@ -384,7 +388,7 @@ class Pdo extends Db{
      * @return string
      */
     protected function parseKey(&$key) {
-        if($this->dbType=='MYSQL'){
+        if(!is_numeric($key) && $this->dbType=='MYSQL'){
             $key   =  trim($key);
             if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
                $key = '`'.$key.'`';
@@ -432,11 +436,11 @@ class Pdo extends Db{
      */
     public function escapeString($str) {
          switch($this->dbType) {
-            case 'PGSQL':
             case 'MSSQL':
             case 'SQLSRV':
             case 'MYSQL':
                 return addslashes($str);
+            case 'PGSQL':                
             case 'IBASE':                
             case 'SQLITE':
             case 'ORACLE':

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -169,16 +169,4 @@ class Db {
        return mysql_affected_rows($hander); 
    } 
 
-    /**
-     * 打开Session 
-     * @access public 
-     */
-    public function execute() {
-        session_set_save_handler(array(&$this,"open"), 
-                         array(&$this,"close"), 
-                         array(&$this,"read"), 
-                         array(&$this,"write"), 
-                         array(&$this,"destroy"), 
-                         array(&$this,"gc")); 
-    }
 }

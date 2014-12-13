@@ -13,10 +13,6 @@ use Think\Model;
 /**
  * MongoModel模型类
  * 实现了ODM和ActiveRecords模式
- * @category   Extend
- * @package  Extend
- * @subpackage  Model
- * @author    liu21st <liu21st@gmail.com>
  */
 class MongoModel extends Model{
     // 主键类型
@@ -25,13 +21,15 @@ class MongoModel extends Model{
     const TYPE_STRING   = 3;
 
     // 主键名称
-    protected $pk               = '_id';
+    protected $pk               =   '_id';
     // _id 类型 1 Object 采用MongoId对象 2 Int 整形 支持自动增长 3 String 字符串Hash
-    protected $_idType          =  self::TYPE_OBJECT;
+    protected $_idType          =   self::TYPE_OBJECT;
+    // 主键是否自增
+    protected $_autoinc         =   true;
     // Mongo默认关闭字段检测 可以动态追加字段
     protected $autoCheckFields  =   false;
     // 链操作方法列表
-    protected $methods          = array('table','order','auto','filter','validate');
+    protected $methods          =   array('table','order','auto','filter','validate');
 
     /**
      * 利用__call方法实现一些特殊的Model方法
@@ -56,7 +54,7 @@ class MongoModel extends Model{
             $where[$name] =$args[0];
             return $this->where($where)->getField($args[1]);
         }else{
-            throw_exception(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
             return;
         }
     }
@@ -93,7 +91,7 @@ class MongoModel extends Model{
         $pk   =  $this->getPk();
         // 根据主键类型处理主键数据
         if(isset($data[$pk]) && $this->_idType == self::TYPE_OBJECT) {
-            $data[$pk] =  new MongoId($data[$pk]);
+            $data[$pk] =  new \MongoId($data[$pk]);
         }    
     }
 
@@ -121,10 +119,48 @@ class MongoModel extends Model{
         return $this->db->mongo_next_id($pk);
     }
 
+    /**
+     * 新增数据
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 表达式
+     * @param boolean $replace 是否replace
+     * @return mixed
+     */
+    public function add($data='',$options=array(),$replace=false) {
+        if(empty($data)) {
+            // 没有传递数据，获取当前数据对象的值
+            if(!empty($this->data)) {
+                $data           =   $this->data;
+                // 重置数据
+                $this->data     = array();
+            }else{
+                $this->error    = L('_DATA_TYPE_INVALID_');
+                return false;
+            }
+        }
+        // 分析表达式
+        $options    =   $this->_parseOptions($options);
+        // 数据处理
+        $data       =   $this->_facade($data);
+        if(false === $this->_before_insert($data,$options)) {
+            return false;
+        }
+        // 写入数据到数据库
+        $result = $this->db->insert($data,$options,$replace);
+        if(false !== $result ) {
+            $this->_after_insert($data,$options);
+            if(isset($data[$this->getPk()])){
+                return $data[$this->getPk()];
+            }
+        }
+        return $result;
+    }
+
     // 插入数据前的回调方法
     protected function _before_insert(&$data,$options) {
         // 写入数据到数据库
-        if($this->autoinc && $this->_idType== self::TYPE_INT) { // 主键自动增长
+        if($this->_autoinc && $this->_idType== self::TYPE_INT) { // 主键自动增长
             $pk   =  $this->getPk();
             if(!isset($data[$pk])) {
                 $data[$pk]   =  $this->db->mongo_next_id($pk);
@@ -158,7 +194,7 @@ class MongoModel extends Model{
     protected function _options_filter(&$options) {
         $id = $this->getPk();
         if(isset($options['where'][$id]) && is_scalar($options['where'][$id]) && $this->_idType== self::TYPE_OBJECT) {
-            $options['where'][$id] = new MongoId($options['where'][$id]);
+            $options['where'][$id] = new \MongoId($options['where'][$id]);
         }
     }
 

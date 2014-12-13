@@ -9,16 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：操作路由检测
- * @category   Think
- * @package  Think
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
-class CheckActionRouteBehavior extends Behavior {
+class CheckActionRouteBehavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$config){
@@ -151,7 +145,7 @@ class CheckActionRouteBehavior extends Behavior {
             if($paths) {
                 preg_replace('@(\w+)\/([^\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', implode('/',$paths));
             }
-            // 解析路由自动传人参数
+            // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
                 parse_str($route[1],$params);
                 $var   =   array_merge($var,$params);
@@ -186,7 +180,7 @@ class CheckActionRouteBehavior extends Behavior {
             if($regx) {
                 preg_replace('@(\w+)\/([^,\/]+)@e', '$var[strtolower(\'\\1\')]=strip_tags(\'\\2\');', $regx);
             }
-            // 解析路由自动传人参数
+            // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
                 parse_str($route[1],$params);
                 $var   =   array_merge($var,$params);

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -24,7 +24,7 @@ class Redis extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('redis') ) {
-            throw_exception(L('_NOT_SUPPERT_').':redis');
+            E(L('_NOT_SUPPERT_').':redis');
         }
         if(empty($options)) {
             $options = array (
@@ -64,7 +64,7 @@ class Redis extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value, $expire = null) {
         N('cache_write',1);
@@ -90,7 +90,7 @@ class Redis extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         return $this->handler->delete($this->options['prefix'].$name);
@@ -99,7 +99,7 @@ class Redis extends Cache {
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         return $this->handler->flushDB();

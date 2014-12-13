@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -24,7 +24,7 @@ class Ibase extends Db{
      */
     public function __construct($config='') {
         if ( !extension_loaded('interbase') ) {
-            throw_exception(L('_NOT_SUPPERT_').':Interbase or Firebird');
+            E(L('_NOT_SUPPERT_').':Interbase or Firebird');
         }
         if(!empty($config)) {
             $this->config   =   $config;
@@ -46,9 +46,9 @@ class Ibase extends Db{
             $conn = $pconnect ? 'ibase_pconnect':'ibase_connect';
             // 处理不带端口号的socket连接情况
             $host = $config['hostname'].($config['hostport']?"/{$config['hostport']}":'');
-            $this->linkID[$linkNum] = $conn($host.':'.$config['database'], $config['username'], $config['password'],C('DB_CHARSET'),0,3);
+            $this->linkID[$linkNum] = $conn($host.':'.$config['database'], $config['username'], $config['password'],$config['charset'],0,3);
             if ( !$this->linkID[$linkNum]) {
-                throw_exception(ibase_errmsg());
+                E(ibase_errmsg());
             }
             // 标记连接成功
             $this->connected    =   true;

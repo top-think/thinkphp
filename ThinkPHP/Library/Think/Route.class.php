@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -57,11 +57,13 @@ class Route {
                 }
                 if(0===strpos($rule,'/') && preg_match($rule,$regx,$matches)) { // 正则路由
                     if($route instanceof \Closure) {
-                        // 执行闭包并中止
-                        self::invokeRegx($route, $matches);
-                        exit;
+                        // 执行闭包
+                        $result = self::invokeRegx($route, $matches);
+                        // 如果返回布尔值 则继续执行
+                        return is_bool($result) ? $result : exit;
+                    }else{
+                        return self::parseRegex($matches,$route,$regx);
                     }
-                    return self::parseRegex($matches,$route,$regx);
                 }else{ // 规则路由
                     $len1   =   substr_count($regx,'/');
                     $len2   =   substr_count($rule,'/');
@@ -76,11 +78,13 @@ class Route {
                         $match  =  self::checkUrlMatch($regx,$rule);
                         if(false !== $match)  {
                             if($route instanceof \Closure) {
-                                // 执行闭包并中止
-                                self::invokeRule($route, $match);
-                                exit;
+                                // 执行闭包
+                                $result = self::invokeRule($route, $match);
+                                // 如果返回布尔值 则继续执行
+                                return is_bool($result) ? $result : exit;
+                            }else{
+                                return self::parseRule($rule,$route,$regx);
                             }
-                            return self::parseRule($rule,$route,$regx);
                         }
                     }
                 }
@@ -112,7 +116,7 @@ class Route {
                     }
                     $name = substr($val, 1, -2);
                 }elseif($pos = strpos($val,'^')){
-                    $array   =  explode('|',substr(strstr($val,'^'),1));
+                    $array   =  explode('-',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
                     }
@@ -219,7 +223,11 @@ class Route {
             }
             // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
-                parse_str($route[1],$params);
+                if(is_array($route[1])){
+                    $params     =   $route[1];
+                }else{
+                    parse_str($route[1],$params);
+                }                
                 $var   =   array_merge($var,$params);
             }
             $_GET   =  array_merge($var,$_GET);
@@ -245,22 +253,27 @@ class Route {
         }else{
             // 解析路由地址
             $var  =  self::parseUrl($url);
+            // 处理函数
+            foreach($var as $key=>$val){
+                if(strpos($val,'|')){
+                    list($val,$fun) = explode('|',$val);
+                    $var[$key]    =   $fun($val);
+                }
+            }
             // 解析剩余的URL参数
             $regx =  substr_replace($regx,'',0,strlen($matches[0]));
             if($regx) {
                 preg_replace_callback('/(\w+)\/([^\/]+)/', function($match) use(&$var){
-                    if(strpos($match[2],'|')){
-                        list($val,$fun) = explode('|',$match[2]);
-                        $val    =   $fun($val);
-                    }else{
-                        $val    =   $match[2];
-                    }
-                    $var[strtolower($match[1])] = strip_tags($val);
+                    $var[strtolower($match[1])] = strip_tags($match[2]);
                 }, $regx);
             }
             // 解析路由自动传入参数
             if(is_array($route) && isset($route[1])) {
-                parse_str($route[1],$params);
+                if(is_array($route[1])){
+                    $params     =   $route[1];
+                }else{
+                    parse_str($route[1],$params);
+                }
                 $var   =   array_merge($var,$params);
             }
             $_GET   =  array_merge($var,$_GET);
@@ -281,7 +294,7 @@ class Route {
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
 
     // 执行规则匹配下的闭包方法 支持参数调用
@@ -297,6 +310,7 @@ class Route {
                 $args[] = $param->getDefaultValue();
             }
         }
-        $reflect->invokeArgs($args);
+        return $reflect->invokeArgs($args);
     }
+
 }

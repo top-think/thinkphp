@@ -2,30 +2,23 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
 use Think\Log;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：页面Trace显示输出
  */
-class ShowPageTraceBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'SHOW_PAGE_TRACE'   => false,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'   => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
-        'PAGE_TRACE_SAVE'   => false,
-    );
+class ShowPageTraceBehavior {
+    protected $tracePageTabs =  array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试');
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
-        if(!IS_AJAX && C('SHOW_PAGE_TRACE')) {
+        if(!IS_AJAX && !IS_CLI && C('SHOW_PAGE_TRACE')) {
             echo $this->showTrace();
         }
     }
@@ -50,7 +43,7 @@ class ShowPageTraceBehavior extends Behavior {
             '查询信息'  =>  N('db_query').' queries '.N('db_write').' writes ',
             '文件加载'  =>  count(get_included_files()),
             '缓存信息'  =>  N('cache_read').' gets '.N('cache_write').' writes ',
-            '配置加载'  =>  count(c()),
+            '配置加载'  =>  count(C()),
             '会话信息'  =>  'SESSION_ID='.session_id(),
             );
         // 读取应用定义的Trace文件
@@ -59,7 +52,7 @@ class ShowPageTraceBehavior extends Behavior {
             $base   =   array_merge($base,include $traceFile);
         }
         $debug  =   trace();
-        $tabs   =   C('TRACE_PAGE_TABS');
+        $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
         foreach ($tabs as $name=>$title){
             switch(strtoupper($name)) {
                 case 'BASE':// 基本信息
@@ -84,7 +77,7 @@ class ShowPageTraceBehavior extends Behavior {
         }
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志
             if(is_array($save)) {// 选择选项卡保存
-                $tabs   =   C('TRACE_PAGE_TABS');
+                $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
                 $array  =   array();
                 foreach ($save as $tab){
                     $array[] =   $tabs[$tab];
@@ -104,7 +97,7 @@ class ShowPageTraceBehavior extends Behavior {
                     $content .= "\r\n";
                 }
             }
-            error_log(str_replace('<br/>',"\r\n",$content), Log::FILE,LOG_PATH.date('y_m_d').'_trace.log');
+            error_log(str_replace('<br/>',"\r\n",$content), 3,C('LOG_PATH').date('y_m_d').'_trace.log');
         }
         unset($files,$info,$base);
         // 调用Trace页面模板

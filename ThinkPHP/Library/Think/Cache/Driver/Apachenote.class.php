@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -64,7 +64,7 @@ class Apachenote extends Cache {
      * @access public
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value) {
         N('cache_write',1);
@@ -90,7 +90,7 @@ class Apachenote extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
      public function rm($name) {
         $this->open();

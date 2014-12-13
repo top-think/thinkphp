@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -27,24 +27,18 @@
  *
  */
 namespace Behavior;
-use Think\Behavior;
 use Think\Log;
 
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展 页面Trace显示输出
  */
-class ChromeShowPageTraceBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'SHOW_PAGE_TRACE'=> false,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'   => array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试'), // 页面Trace可定制的选项卡 
-        'PAGE_TRACE_SAVE'   => false,
-    );
+class ChromeShowPageTraceBehavior {
+
+    protected $tracePageTabs =  array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试');
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
-            if(C('SHOW_PAGE_TRACE')) $this->showTrace();
+        if(C('SHOW_PAGE_TRACE')) $this->showTrace();
     }
 
    
@@ -78,7 +72,7 @@ class ChromeShowPageTraceBehavior extends Behavior {
         }
 
         $debug  =   trace();
-        $tabs   =   C('TRACE_PAGE_TABS');
+        $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
         foreach ($tabs as $name=>$title){
             switch(strtoupper($name)) {
                 case 'BASE':// 基本信息
@@ -113,7 +107,7 @@ class ChromeShowPageTraceBehavior extends Behavior {
        chrome_debug('','groupEnd');
         if($save = C('PAGE_TRACE_SAVE')) { // 保存页面Trace日志
             if(is_array($save)) {// 选择选项卡保存
-                $tabs   =   C('TRACE_PAGE_TABS');
+                $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePageTabs);
                 $array  =   array();
                 foreach ($save as $tab){
                     $array[] =   $tabs[$tab];

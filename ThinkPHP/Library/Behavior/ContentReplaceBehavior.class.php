@@ -2,23 +2,17 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：模板内容输出替换
  */
-class ContentReplaceBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'TMPL_PARSE_STRING' =>  array(),
-    );
+class ContentReplaceBehavior {
 
     // 行为扩展的执行入口必须是run
     public function run(&$content){

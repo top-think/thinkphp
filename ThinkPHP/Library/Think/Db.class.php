@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -126,8 +126,9 @@ class Db {
                   'hostname'  =>  $db_config['db_host'],
                   'hostport'  =>  $db_config['db_port'],
                   'database'  =>  $db_config['db_name'],
-                  'dsn'       =>  $db_config['db_dsn'],
-                  'params'    =>  $db_config['db_params'],
+                  'dsn'       =>  isset($db_config['db_dsn'])?$db_config['db_dsn']:'',
+                  'params'    =>  isset($db_config['db_params'])?$db_config['db_params']:array(),
+                  'charset'   =>  isset($db_config['db_charset'])?$db_config['db_charset']:'utf8',
              );
         }elseif(empty($db_config)) {
             // 如果配置为空，读取配置文件设置
@@ -143,6 +144,7 @@ class Db {
                     'database'  =>  C('DB_NAME'),
                     'dsn'       =>  C('DB_DSN'),
                     'params'    =>  C('DB_PARAMS'),
+                    'charset'   =>  C('DB_CHARSET'),
                 );
             }
         }
@@ -171,13 +173,9 @@ class Db {
      * @return void
      */
     protected function multiConnect($master=false) {
-        static $_config = array();
-        if(empty($_config)) {
-            // 缓存分布式数据库配置解析
-            foreach ($this->config as $key=>$val){
-                $_config[$key]      =   explode(',',$val);
-            }
-        }
+        foreach ($this->config as $key=>$val){
+            $_config[$key]      =   explode(',',$val);
+        }        
         // 数据库读写是否分离
         if(C('DB_RW_SEPARATE')){
             // 主从式采用读写分离
@@ -204,13 +202,14 @@ class Db {
             'database'  =>  isset($_config['database'][$r])?$_config['database'][$r]:$_config['database'][0],
             'dsn'       =>  isset($_config['dsn'][$r])?$_config['dsn'][$r]:$_config['dsn'][0],
             'params'    =>  isset($_config['params'][$r])?$_config['params'][$r]:$_config['params'][0],
+            'charset'   =>  isset($_config['charset'][$r])?$_config['charset'][$r]:$_config['charset'][0],            
         );
         return $this->connect($db_config,$r);
     }
 
     /**
      * DSN解析
-     * 格式： mysql://username:passwd@localhost:3306/DbName
+     * 格式： mysql://username:passwd@localhost:3306/DbName#charset
      * @static
      * @access public
      * @param string $dsnStr
@@ -226,7 +225,8 @@ class Db {
             'password'  =>  isset($info['pass']) ? $info['pass'] : '',
             'hostname'  =>  isset($info['host']) ? $info['host'] : '',
             'hostport'  =>  isset($info['port']) ? $info['port'] : '',
-            'database'  =>  isset($info['path']) ? substr($info['path'],1) : ''
+            'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
+            'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf8',
             );
         }else {
             preg_match('/^(.*?)\:\/\/(.*?)\:(.*?)\@(.*?)\:([0-9]{1, 6})\/(.*?)$/',trim($dsnStr),$matches);
@@ -397,8 +397,7 @@ class Db {
             $tables  =  explode(',',$tables);
             array_walk($tables, array(&$this, 'parseKey'));
         }
-        //将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀
-        $tables = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match){ return C('DB_PREFIX').strtolower($match[1]);}, implode(',',$tables));
+        $tables = implode(',',$tables);
         return $tables;
     }
 
@@ -424,7 +423,6 @@ class Db {
                 $operate    =   ' AND ';
             }
             foreach ($where as $key=>$val){
-                $whereStr .= '( ';
                 if(is_numeric($key)){
                     $key  = '_complex';
                 }                    
@@ -444,9 +442,9 @@ class Db {
                         $str   =  array();
                         foreach ($array as $m=>$k){
                             $v =  $multi?$val[$m]:$val;
-                            $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
+                            $str[]   = $this->parseWhereItem($this->parseKey($k),$v);
                         }
-                        $whereStr .= implode(' OR ',$str);
+                        $whereStr .= '( '.implode(' OR ',$str).' )';
                     }elseif(strpos($key,'&')){
                         $array =  explode('&',$key);
                         $str   =  array();
@@ -454,12 +452,12 @@ class Db {
                             $v =  $multi?$val[$m]:$val;
                             $str[]   = '('.$this->parseWhereItem($this->parseKey($k),$v).')';
                         }
-                        $whereStr .= implode(' AND ',$str);
+                        $whereStr .= '( '.implode(' AND ',$str).' )';
                     }else{
                         $whereStr .= $this->parseWhereItem($this->parseKey($key),$val);
                     }
                 }
-                $whereStr .= ' )'.$operate;
+                $whereStr .= $operate;
             }
             $whereStr = substr($whereStr,0,-strlen($operate));
         }
@@ -488,7 +486,7 @@ class Db {
                         $whereStr .= $key.' '.$this->comparison[strtolower($val[0])].' '.$this->parseValue($val[1]);
                     }
                 }elseif('exp'==strtolower($val[0])){ // 使用表达式
-                    $whereStr .= ' ('.$key.' '.$val[1].') ';
+                    $whereStr .= $key.' '.$val[1];
                 }elseif(preg_match('/IN/i',$val[0])){ // IN 运算
                     if(isset($val[2]) && 'exp'==$val[2]) {
                         $whereStr .= $key.' '.strtoupper($val[0]).' '.$val[1];
@@ -501,7 +499,7 @@ class Db {
                     }
                 }elseif(preg_match('/BETWEEN/i',$val[0])){ // BETWEEN运算
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
-                    $whereStr .=  ' ('.$key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]).' )';
+                    $whereStr .=  $key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
                     E(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
@@ -516,13 +514,12 @@ class Db {
                 for($i=0;$i<$count;$i++) {
                     $data = is_array($val[$i])?$val[$i][1]:$val[$i];
                     if('exp'==strtolower($val[$i][0])) {
-                        $whereStr .= '('.$key.' '.$data.') '.$rule.' ';
+                        $whereStr .= $key.' '.$data.' '.$rule.' ';
                     }else{
-                        $op = is_array($val[$i])?$this->comparison[strtolower($val[$i][0])]:'=';
-                        $whereStr .= '('.$this->parseWhereItem($key,$val[$i]).') '.$rule.' ';
+                        $whereStr .= $this->parseWhereItem($key,$val[$i]).' '.$rule.' ';
                     }
                 }
-                $whereStr = substr($whereStr,0,-4);
+                $whereStr = '( '.substr($whereStr,0,-4).' )';
             }
         }else {
             //对字符串类型字段采用模糊匹配
@@ -569,7 +566,7 @@ class Db {
                 $whereStr   = implode($op,$array);
                 break;
         }
-        return $whereStr;
+        return '( '.$whereStr.' )';
     }
 
     /**
@@ -585,17 +582,13 @@ class Db {
     /**
      * join分析
      * @access protected
-     * @param mixed $join
+     * @param array $join
      * @return string
      */
     protected function parseJoin($join) {
         $joinStr = '';
         if(!empty($join)) {
-            foreach ($join as $key=>$_join){
-                $joinStr .= false !== stripos($_join,'JOIN')? ' '.$_join : ' JOIN ' .$_join;
-            }
-            //将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀和后缀
-            $joinStr  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match){ return C('DB_PREFIX').strtolower($match[1]);}, $joinStr);
+            $joinStr    =   ' '.implode(' ',$join).' ';
         }
         return $joinStr;
     }
@@ -776,19 +769,8 @@ class Db {
      */
     public function select($options=array()) {
         $this->model  =   $options['model'];
-        $sql    = $this->buildSelectSql($options);
-        $cache  =  isset($options['cache'])?$options['cache']:false;
-        if($cache) { // 查询缓存检测
-            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
-            $value  =  S($key,'',$cache);
-            if(false !== $value) {
-                return $value;
-            }
-        }
-        $result   = $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
-        if($cache && false !== $result ) { // 查询缓存写入
-            S($key,$result,$cache);
-        }
+        $sql        =   $this->buildSelectSql($options);
+        $result     =   $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
         return $result;
     }
 
@@ -801,14 +783,10 @@ class Db {
     public function buildSelectSql($options=array()) {
         if(isset($options['page'])) {
             // 根据页数计算limit
-            if(strpos($options['page'],',')) {
-                list($page,$listRows) =  explode(',',$options['page']);
-            }else{
-                $page = $options['page'];
-            }
-            $page    =  $page?$page:1;
-            $listRows=  isset($listRows)?$listRows:(is_numeric($options['limit'])?$options['limit']:20);
-            $offset  =  $listRows*((int)$page-1);
+            list($page,$listRows)   =   $options['page'];
+            $page    =  $page>0 ? $page : 1;
+            $listRows=  $listRows>0 ? $listRows : (is_numeric($options['limit'])?$options['limit']:20);
+            $offset  =  $listRows*($page-1);
             $options['limit'] =  $offset.','.$listRows;
         }
         if(C('DB_SQL_BUILD_CACHE')) { // SQL创建缓存
@@ -818,8 +796,8 @@ class Db {
                 return $value;
             }
         }
-        $sql  =   $this->parseSql($this->selectSql,$options);
-        $sql .= $this->parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql  =     $this->parseSql($this->selectSql,$options);
+        $sql .=     $this->parseLock(isset($options['lock'])?$options['lock']:false);
         if(isset($key)) { // 写入SQL创建缓存
             S($key,$sql,array('expire'=>0,'length'=>C('DB_SQL_BUILD_LENGTH'),'queue'=>C('DB_SQL_BUILD_QUEUE')));
         }

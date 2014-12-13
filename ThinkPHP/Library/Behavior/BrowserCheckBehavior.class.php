@@ -9,27 +9,18 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 浏览器防刷新检测
- * @category   Extend
- * @package  Extend
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
-class BrowserCheckBehavior extends Behavior {
-    protected $options   =  array(
-            // 浏览器防刷新的时间间隔（秒）
-            'LIMIT_REFLESH_TIMES'   =>  10,
-        );
-    
+class BrowserCheckBehavior {
     public function run(&$params) {
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
             //	启用页面防刷新机制
             $guid	=	md5($_SERVER['PHP_SELF']);
+            // 浏览器防刷新的时间间隔（秒） 默认为10
+            $refleshTime    =   C('LIMIT_REFLESH_TIMES',null,10);
             // 检查页面刷新间隔
-            if(cookie('_last_visit_time_'.$guid) && cookie('_last_visit_time_'.$guid)>time()-C('LIMIT_REFLESH_TIMES')) {
+            if(cookie('_last_visit_time_'.$guid) && cookie('_last_visit_time_'.$guid)>time()-$refleshTime) {
                 // 页面刷新读取浏览器缓存
                 header('HTTP/1.1 304 Not Modified');
                 exit;

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -34,11 +34,7 @@ class Log {
     // 日志初始化
     static public function init($config=array()){
         $type   =   isset($config['type'])?$config['type']:'File';
-        if(strpos($type,'\\')){
-            $class  =   $type;
-        }else{
-            $class  =   'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
-        }        
+        $class  =   strpos($type,'\\')? $type: 'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
         unset($config['type']);
         self::$storage = new $class($config);
     }
@@ -72,7 +68,7 @@ class Log {
         if(empty($destination))
             $destination = C('LOG_PATH').date('y_m_d').'.log';
         if(!self::$storage){
-            $type = $type?$type:C('LOG_TYPE');
+            $type = $type?:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }
@@ -94,7 +90,7 @@ class Log {
      */
     static function write($message,$level=self::ERR,$type='',$destination='') {
         if(!self::$storage){
-            $type = $type?$type:C('LOG_TYPE');
+            $type = $type?:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }

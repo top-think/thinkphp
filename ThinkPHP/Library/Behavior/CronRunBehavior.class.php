@@ -8,25 +8,16 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 自动执行任务
- * @category   Extend
- * @package  Extend
- * @subpackage  Behavior
- * @author   liu21st <liu21st@gmail.com>
  */
-class CronRunBehavior extends Behavior {
-    protected $options   =  array(
-            'CRON_MAX_TIME' =>  60, // 单个任务最大执行时间
-        );
+class CronRunBehavior {
+
     public function run(&$params) {
         // 锁定自动执行
         $lockfile	 =	 RUNTIME_PATH.'cron.lock';
-        if(is_writable($lockfile) && filemtime($lockfile) > $_SERVER['REQUEST_TIME'] - C('CRON_MAX_TIME')) {
+        if(is_writable($lockfile) && filemtime($lockfile) > $_SERVER['REQUEST_TIME'] - C('CRON_MAX_TIME',null,60)) {
             return ;
         } else {
             touch($lockfile);
@@ -40,8 +31,8 @@ class CronRunBehavior extends Behavior {
         // );
         if(is_file(RUNTIME_PATH.'~crons.php')) {
             $crons	=	include RUNTIME_PATH.'~crons.php';
-        }elseif(is_file(CONF_PATH.'crons.php')){
-            $crons	=	include CONF_PATH.'crons.php';
+        }elseif(is_file(COMMON_PATH.'Conf/crons.php')){
+            $crons	=	include COMMON_PATH.'Conf/crons.php';
         }
         if(isset($crons) && is_array($crons)) {
             $update	 =	 false;
@@ -50,7 +41,8 @@ class CronRunBehavior extends Behavior {
                 if(empty($cron[2]) || $_SERVER['REQUEST_TIME']>=$cron[2]) {
                     // 到达时间 执行cron文件
                     G('cronStart');
-                    include LIB_PATH.'Cron/'.$cron[0].'.php';
+                    include COMMON_PATH.'Cron/'.$cron[0].'.php';
+                    G('cronEnd');
                     $_useTime	 =	 G('cronStart','cronEnd', 6);
                     // 更新cron记录
                     $cron[2]	=	$_SERVER['REQUEST_TIME']+$cron[1];
@@ -61,7 +53,7 @@ class CronRunBehavior extends Behavior {
             }
             if($update) {
                 // 记录Cron执行日志
-                Log::write(implode('',$log));
+                \Think\Log::write(implode('',$log));
                 // 更新cron文件
                 $content  = "<?php\nreturn ".var_export($crons,true).";\n?>";
                 file_put_contents(RUNTIME_PATH.'~crons.php',$content);

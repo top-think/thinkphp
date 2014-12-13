@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace Think\Upload\Driver;
 use Think\Upload\Driver\Bcs\BaiduBcs;
-class Bcs{
+class Bcs {
     /**
      * 上传文件根目录
      * @var string
@@ -36,25 +36,26 @@ class Bcs{
 
     /**
      * 构造函数，用于设置上传根路径
-     * @param string $root   根目录
      * @param array  $config FTP配置
      */
-	public function __construct($root, $config){
+    public function __construct($config){
         /* 默认FTP配置 */
         $this->config = array_merge($this->config, $config);
-        /* 设置根目录 */
-        $this->rootPath = str_replace('./', '/', $root);
+        
         $bcsClass = dirname(__FILE__). "/Bcs/bcs.class.php";
         if(is_file($bcsClass))
             require_once($bcsClass);
         $this->bcs = new BaiduBCS ( $this->config['AccessKey'], $this->config['SecretKey'], self:: DEFAULT_URL );
-	}
+    }
 
     /**
      * 检测上传根目录(百度云上传时支持自动创建目录，直接返回)
+     * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath(){
+    public function checkRootPath($rootpath){
+        /* 设置根目录 */
+        $this->rootPath = str_replace('./', '/', $rootpath);
     	return true;
     }
 
@@ -82,7 +83,7 @@ class Bcs{
      * @param  boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
      */
-    public function save(&$file) {
+    public function save(&$file,$replace=true) {
         $opt = array ();
         $opt ['acl'] = BaiduBCS::BCS_SDK_ACL_TYPE_PUBLIC_WRITE;
         $opt ['curlopts'] = array (
@@ -131,7 +132,7 @@ class Bcs{
         }
 
         $length = 0;
-		$date   = gmdate('D, d M Y H:i:s \G\M\T');
+        $date   = gmdate('D, d M Y H:i:s \G\M\T');
 
         if (!is_null($body)) {
             if(is_resource($body)){
@@ -159,12 +160,12 @@ class Bcs{
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         if ($method == 'PUT' || $method == 'POST') {
-			curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
         } else {
-			curl_setopt($ch, CURLOPT_POST, 0);
+            curl_setopt($ch, CURLOPT_POST, 0);
         }
 
         if ($method == 'HEAD') {
@@ -204,30 +205,30 @@ class Bcs{
      * @return string          请求签名
      */
     private function sign($method, $Bucket, $object='/', $size=''){
-    	if(!$size)
-    		$size = $this->config['size'];
-    	$param = array(
-    		'ak'=>$this->config['AccessKey'],
-    		'sk'=>$this->config['SecretKey'],
-    		'size'=>$size,
-    		'bucket'=>$Bucket,
-    		'host'=>self :: DEFAULT_URL,
-    		'date'=>time()+$this->config['timeout'],
-    		'ip'=>'',
-    		'object'=>$object
-		);
-    	$response = $this->request($this->apiurl.'?'.http_build_query($param), 'POST');
-    	if($response)
-    		$response = json_decode($response, true);
-		return $response['content'][$method];
-	}
+        if(!$size)
+            $size = $this->config['size'];
+        $param = array(
+            'ak'=>$this->config['AccessKey'],
+            'sk'=>$this->config['SecretKey'],
+            'size'=>$size,
+            'bucket'=>$Bucket,
+            'host'=>self :: DEFAULT_URL,
+            'date'=>time()+$this->config['timeout'],
+            'ip'=>'',
+            'object'=>$object
+        );
+        $response = $this->request($this->apiurl.'?'.http_build_query($param), 'POST');
+        if($response)
+            $response = json_decode($response, true);
+        return $response['content'][$method];
+    }
 
 
     /**
      * 获取请求错误信息
      * @param  string $header 请求返回头信息
      */
-	private function error($header) {
+    private function error($header) {
         list($status, $stash) = explode("\r\n", $header, 2);
         list($v, $code, $message) = explode(" ", $status, 3);
         $message = is_null($message) ? 'File Not Found' : "[{$status}]:{$message}";

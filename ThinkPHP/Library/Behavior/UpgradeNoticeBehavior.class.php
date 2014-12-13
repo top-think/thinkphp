@@ -7,8 +7,6 @@
 // | Author: luofei614<www.3g4k.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 升级短信通知， 如果有ThinkPHP新版升级，或者重要的更新，会发送短信通知你。
  * 需要使用SAE的短信服务。请先找一个SAE的应用开通短信服务。
@@ -34,18 +32,8 @@ defined('THINK_PATH') or exit();
  *
  */
 
-class UpgradeNoticeBehavior extends Behavior {
-    // 行为参数定义（默认值） 可在应用配置中覆盖
-    protected $options = array(
-        'UPGRADE_NOTICE_ON' => false, // 是否开启升级提醒
-        'UPGRADE_NOTICE_DEBUG'=>false,
-        'UPGRADE_NOTICE_QUEUE'=>'',//队列名称， 在SAE平台上设置
-        'UPGRADE_NOTICE_AKEY' => '', //SAE应用的AKEY
-        'UPGRADE_NOTICE_SKEY' => '', //SAE应用的SKEY
-        'UPGRADE_NOTICE_MOBILE' => '', //接受短信的手机号
-        'UPGRADE_CURRENT_VERSION'=>'0',
-        'UPGRADE_NOTICE_CHECK_INTERVAL' => 604800, //检测频率,单位秒,默认是一周
-    );
+class UpgradeNoticeBehavior {
+
     protected $header_ = '';
     protected $httpCode_;
     protected $httpDesc_;
@@ -61,17 +49,17 @@ class UpgradeNoticeBehavior extends Behavior {
                 }
                 return ;
             }
-            $akey = C('UPGRADE_NOTICE_AKEY');
-            $skey = C('UPGRADE_NOTICE_SKEY');
+            $akey = C('UPGRADE_NOTICE_AKEY',null,'');
+            $skey = C('UPGRADE_NOTICE_SKEY',null,'');
             $this->accesskey_ = $akey ? $akey : (defined('SAE_ACCESSKEY') ? SAE_ACCESSKEY : '');
             $this->secretkey_ = $skey ? $skey : (defined('SAE_SECRETKEY') ? SAE_SECRETKEY : '');
-            $current_version = C('UPGRADE_CURRENT_VERSION');
+            $current_version = C('UPGRADE_CURRENT_VERSION',null,0);
             //读取接口
             $info = $this->send('http://sinaclouds.sinaapp.com/thinkapi/upgrade.php?v=' . $current_version);
              if ($info['version'] != $current_version) {
                     if($this->send_sms($info['msg']))  trace($info['msg'], '升级通知成功', 'NOTIC', true); //发送升级短信
             }
-            S('think_upgrade_interval', true, C('UPGRADE_NOTICE_CHECK_INTERVAL'));
+            S('think_upgrade_interval', true, C('UPGRADE_NOTICE_CHECK_INTERVAL',null,604800));
         }
     }
     private function send_sms($msg) {
@@ -86,7 +74,7 @@ class UpgradeNoticeBehavior extends Behavior {
             "Signature: $signature"
         );
         $data = array(
-            'mobile' => C('UPGRADE_NOTICE_MOBILE') ,
+            'mobile' => C('UPGRADE_NOTICE_MOBILE',null,'') ,
             'msg' => $msg,
             'encoding' => 'UTF-8'
         );

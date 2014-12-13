@@ -11,9 +11,7 @@
 // $Id$
 
 /**
- +------------------------------------------------------------------------------
  * 将Trace信息输出到火狐的firebug，从而不影响ajax效果和页面的布局。
- +------------------------------------------------------------------------------
  * 使用前，你需要先在火狐浏览器上安装firebug和firePHP两个插件。
  * 定义应用的tags.php文件， 
  * <code>
@@ -30,31 +28,20 @@
  *
  */
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
- +------------------------------------------------------------------------------
  * 系统行为扩展 页面Trace显示输出
- +------------------------------------------------------------------------------
  */
-class FireShowPageTraceBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'FIRE_SHOW_PAGE_TRACE'=> true,   // 显示页面Trace信息
-        'TRACE_PAGE_TABS'=> array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试')
-    );
+class FireShowPageTraceBehavior {
+    protected $tracePagTabs =   array('BASE'=>'基本','FILE'=>'文件','INFO'=>'流程','ERR|NOTIC'=>'错误','SQL'=>'SQL','DEBUG'=>'调试');
 
     // 行为扩展的执行入口必须是run
     public function run(&$params){
-            if(C('FIRE_SHOW_PAGE_TRACE')) $this->showTrace();
+        if(C('FIRE_SHOW_PAGE_TRACE',null,true)) $this->showTrace();
     }
 
     /**
-     +----------------------------------------------------------
      * 显示页面Trace信息
-     +----------------------------------------------------------
      * @access private
-     +----------------------------------------------------------
      */
     private function showTrace() {
          // 系统默认显示信息
@@ -80,7 +67,7 @@ class FireShowPageTraceBehavior extends Behavior {
             $base    =   array_merge($base,include $traceFile);
         }
         $debug  =   trace();
-        $tabs   =   C('TRACE_PAGE_TABS');
+        $tabs   =   C('TRACE_PAGE_TABS',null,$this->tracePagTabs);
         foreach ($tabs as $name=>$title){
             switch(strtoupper($name)) {
                 case 'BASE':// 基本信息
@@ -121,9 +108,7 @@ class FireShowPageTraceBehavior extends Behavior {
     }
 
     /**
-     +----------------------------------------------------------
      * 获取运行时间
-     +----------------------------------------------------------
      */
     private function showTime() {
         // 显示运行时间

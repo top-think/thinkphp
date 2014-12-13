@@ -26,18 +26,13 @@ class Storage {
      * @param array $options  配置数组
      * @return void
      */
-    static public function connect($type,$options=array()) {
+    static public function connect($type='File',$options=array()) {
         $class  =   'Think\\Storage\\Driver\\'.ucwords($type);
         self::$handler = new $class($options);
     }
 
     static public function __callstatic($method,$args){
-        $type=end($args);
-        $method_type=$method.ucfirst($type);
-        if(method_exists(self::$handler, $method_type)){
-           return call_user_func_array(array(self::$handler,$method_type), $args);
-        }
-        //调用缓存类型自己的方法
+        //调用缓存驱动的方法
         if(method_exists(self::$handler, $method)){
            return call_user_func_array(array(self::$handler,$method), $args);
         }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -37,11 +37,7 @@ class Cache {
      */
     public function connect($type='',$options=array()) {
         if(empty($type))  $type = C('DATA_CACHE_TYPE');
-        if(strpos($type,'\\')){ // 驱动类支持使用独立的命名空间
-            $class  =   $type;
-        }else{
-            $class  =   'Think\\Cache\\Driver\\'.ucwords(strtolower($type));            
-        }
+        $class  =   strpos($type,'\\')? $type : 'Think\\Cache\\Driver\\'.ucwords(strtolower($type));            
         if(class_exists($class))
             $cache = new $class($options);
         else
@@ -97,12 +93,12 @@ class Cache {
             'xcache'=>  array('xcache_get','xcache_set'),
             'apc'   =>  array('apc_fetch','apc_store'),
         );
-        $queue  =  isset($this->options['queue'])?$this->options['queue']:'file';
-        $fun    =  isset($_handler[$queue])?$_handler[$queue]:$_handler['file'];
-        $queue_name=isset($this->options['queue_name'])?$this->options['queue_name']:'think_queue';
-        $value  =  $fun[0]($queue_name);
+        $queue      =   isset($this->options['queue'])?$this->options['queue']:'file';
+        $fun        =   isset($_handler[$queue])?$_handler[$queue]:$_handler['file'];
+        $queue_name =   isset($this->options['queue_name'])?$this->options['queue_name']:'think_queue';
+        $value      =   $fun[0]($queue_name);
         if(!$value) {
-            $value   =  array();
+            $value  =   array();
         }
         // 进列
         if(false===array_search($key, $value))  array_push($value,$key);
@@ -111,7 +107,7 @@ class Cache {
             $key =  array_shift($value);
             // 删除缓存
             $this->rm($key);
-             if(APP_DEUBG){
+             if(APP_DEBUG){
                 //调试模式下，记录出列次数
                 N($queue_name.'_out_times',1,true);
             }

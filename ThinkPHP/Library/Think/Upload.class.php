@@ -2,31 +2,33 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 namespace Think;
-class Upload{
-	/**
-	 * 默认上传配置
-	 * @var array
-	 */
+class Upload {
+    /**
+     * 默认上传配置
+     * @var array
+     */
     private $config = array(
-        'mimes'    => array(), //允许上传的文件MiMe类型
-        'maxSize'  => 0, //上传的文件大小限制 (0-不做限制)
-        'exts'     => array(), //允许上传的文件后缀
-        'autoSub'  => true, //自动子目录保存文件
-        'subName'  => array('date', 'Y-m-d'), //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
-    	'rootPath' => './Uploads/', //保存根路径
-        'savePath' => '', //保存路径
-        'saveName' => array('uniqid', ''), //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
-        'saveExt'  => '', //文件保存后缀，空则使用原后缀
-        'replace'  => false, //存在同名是否覆盖
-        'hash'     => true, //是否生成hash编码
-        'callback' => false, //检测文件是否存在回调，如果存在返回文件信息数组
+        'mimes'         =>  array(), //允许上传的文件MiMe类型
+        'maxSize'       =>  0, //上传的文件大小限制 (0-不做限制)
+        'exts'          =>  array(), //允许上传的文件后缀
+        'autoSub'       =>  true, //自动子目录保存文件
+        'subName'       =>  array('date', 'Y-m-d'), //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
+        'rootPath'      =>  './Uploads/', //保存根路径
+        'savePath'      =>  '', //保存路径
+        'saveName'      =>  array('uniqid', ''), //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
+        'saveExt'       =>  '', //文件保存后缀，空则使用原后缀
+        'replace'       =>  false, //存在同名是否覆盖
+        'hash'          =>  true, //是否生成hash编码
+        'callback'      =>  false, //检测文件是否存在回调，如果存在返回文件信息数组
+        'driver'        =>  '', // 文件上传驱动
+        'driverConfig'  =>  array(), // 上传驱动配置
     );
 
     /**
@@ -47,17 +49,11 @@ class Upload{
      * @param string $driver 要使用的上传驱动 LOCAL-本地上传驱动，FTP-FTP上传驱动
      */
     public function __construct($config = array(), $driver = '', $driverConfig = null){
-    	/* 获取配置 */
-        $this->config = array_merge($this->config, $config);
-        $driver     =   $driver? $driver : C('FILE_UPLOAD_TYPE');
+        /* 获取配置 */
+        $this->config   =   array_merge($this->config, $config);
 
         /* 设置上传驱动 */
-        if(!strpos($driver,'\\')){
-            $class  =   'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
-        }else{
-            $class  =   $driver;
-        }
-    	$this->setDriver($class, $driverConfig);
+        $this->setDriver($driver, $driverConfig);
 
         /* 调整配置，把字符串配置参数转换为数组 */
         if(!empty($this->config['mimes'])){
@@ -83,6 +79,21 @@ class Upload{
         return $this->config[$name];
     }
 
+    public function __set($name,$value){
+        if(isset($this->config[$name])) {
+            $this->config[$name] = $value;
+            if($name == 'driverConfig'){
+                //改变驱动配置后重置上传驱动
+                //注意：必须选改变驱动然后再改变驱动配置
+                $this->setDriver(); 
+            }
+        }
+    }
+
+    public function __isset($name){
+        return isset($this->config[$name]);
+    }
+
     /**
      * 获取最后一次上传错误信息
      * @return string 错误信息
@@ -105,14 +116,17 @@ class Upload{
      * 上传文件
      * @param 文件信息数组 $files ，通常是 $_FILES数组
      */
-    public function upload($files) {
+    public function upload($files='') {
+        if('' === $files){
+            $files  =   $_FILES;
+        }
         if(empty($files)){
             $this->error = '没有上传的文件！';
             return false;
         }
 
         /* 检测上传根目录 */
-        if(!$this->uploader->checkRootPath()){
+        if(!$this->uploader->checkRootPath($this->rootPath)){
             $this->error = $this->uploader->getError();
             return false;
         }
@@ -124,15 +138,22 @@ class Upload{
         }
 
         /* 逐个检测并上传文件 */
-        $info = array();
+        $info    =  array();
+        if(function_exists('finfo_open')){
+            $finfo   =  finfo_open ( FILEINFO_MIME_TYPE );
+        }
+        // 对上传文件数组信息处理
+        $files   =  $this->dealFiles($files);    
         foreach ($files as $key => $file) {
+            $file['name']  = strip_tags($file['name']);
+            if(!isset($file['key']))   $file['key']    =   $key;
             /* 通过扩展获取文件类型，可解决FLASH上传$FILES数组返回文件类型错误的问题 */
-            if(function_exists('mime_content_type')){
-                $file['type'] = mime_content_type($file['tmp_name']);
+            if(isset($finfo)){
+                $file['type']   =   finfo_file ( $finfo ,  $file['tmp_name'] );
             }
 
             /* 获取上传文件后缀，允许上传无后缀文件 */
-            $file['ext'] = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $file['ext']    =   pathinfo($file['name'], PATHINFO_EXTENSION);
 
             /* 文件上传检测 */
             if (!$this->check($file)){
@@ -146,15 +167,15 @@ class Upload{
             }
 
             /* 调用回调函数检测文件是否存在 */
-			$data = call_user_func($this->callback, $file);
-			if( $this->callback && $data ){
-				if ( file_exists('.'.$data['path'])  ) {
-					$info[$key] = $data;
-					continue;
-				}elseif($this->removeTrash){
-					call_user_func($this->removeTrash,$data);//删除垃圾据
-				}
-			}
+            $data = call_user_func($this->callback, $file);
+            if( $this->callback && $data ){
+                if ( file_exists('.'.$data['path'])  ) {
+                    $info[$key] = $data;
+                    continue;
+                }elseif($this->removeTrash){
+                    call_user_func($this->removeTrash,$data);//删除垃圾据
+                }
+            }
 
             /* 生成保存文件名 */
             $savename = $this->getSaveName($file);
@@ -183,23 +204,57 @@ class Upload{
             }
 
             /* 保存文件 并记录保存成功的文件 */
-            if ($this->uploader->save($file)) {
+            if ($this->uploader->save($file,$this->replace)) {
                 unset($file['error'], $file['tmp_name']);
                 $info[$key] = $file;
             } else {
                 $this->error = $this->uploader->getError();
             }
         }
-
+        if(isset($finfo)){
+            finfo_close($finfo);
+        }
         return empty($info) ? false : $info;
     }
 
     /**
-     * 设置上传驱动
-     * @param string $class 驱动类名称
+     * 转换上传文件数组变量为正确的方式
+     * @access private
+     * @param array $files  上传的文件变量
+     * @return array
      */
-    private function setDriver($class, $config){
-        $this->uploader = new $class($this->rootPath, $config);
+    private function dealFiles($files) {
+        $fileArray  = array();
+        $n          = 0;
+        foreach ($files as $key=>$file){
+            if(is_array($file['name'])) {
+                $keys       =   array_keys($file);
+                $count      =   count($file['name']);
+                for ($i=0; $i<$count; $i++) {
+                    $fileArray[$n]['key'] = $key;
+                    foreach ($keys as $_key){
+                        $fileArray[$n][$_key] = $file[$_key][$i];
+                    }
+                    $n++;
+                }
+            }else{
+               $fileArray = $files;
+               break;
+            }
+        }
+       return $fileArray;
+    }
+
+    /**
+     * 设置上传驱动
+     * @param string $driver 驱动名称
+     * @param array $config 驱动配置     
+     */
+    private function setDriver($driver = null, $config = null){
+        $driver = $driver ? : ($this->driver       ? : C('FILE_UPLOAD_TYPE'));
+        $config = $config ? : ($this->driverConfig ? : C('UPLOAD_TYPE_CONFIG'));
+        $class = strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
+        $this->uploader = new $class($config);
         if(!$this->uploader){
             E("不存在上传驱动：{$name}");
         }

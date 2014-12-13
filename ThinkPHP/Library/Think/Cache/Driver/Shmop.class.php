@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Shmop extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('shmop') ) {
-            throw_exception(L('_NOT_SUPPERT_').':shmop');
+            E(L('_NOT_SUPPERT_').':shmop');
         }
         if(!empty($options)){
             $options = array(
@@ -76,7 +76,7 @@ class Shmop extends Cache {
      * @access public
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value) {
         N('cache_write',1);
@@ -104,7 +104,7 @@ class Shmop extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         $lh = $this->_lock();
@@ -139,7 +139,7 @@ class Shmop extends Cache {
      * 写入操作
      * @access private
      * @param string $name 缓存变量名
-     * @return integer|boolen
+     * @return integer|boolean
      */
     private function _write(&$val, &$lh) {
         $id  = shmop_open($this->handler, 'c', 0600, $this->options['size']);
@@ -157,7 +157,7 @@ class Shmop extends Cache {
      * 共享锁定
      * @access private
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     private function _lock() {
         if (function_exists('sem_get')) {
@@ -174,7 +174,7 @@ class Shmop extends Cache {
      * 解除共享锁定
      * @access private
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     private function _unlock(&$fp) {
         if (function_exists('sem_release')) {

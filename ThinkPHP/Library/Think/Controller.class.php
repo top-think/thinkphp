@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -35,7 +35,7 @@ abstract class Controller {
     public function __construct() {
         Hook::listen('action_begin',$this->config);
         //实例化视图类
-        $this->view     = Think::instance('Think\View');           
+        $this->view     = Think::instance('Think\View');
         //控制器初始化
         if(method_exists($this,'_initialize'))
             $this->_initialize();
@@ -169,6 +169,9 @@ abstract class Controller {
             }else{
                 E(L('_ERROR_ACTION_').':'.ACTION_NAME);
             }
+        }else{
+            E(__CLASS__.':'.$method.L('_METHOD_NOT_EXIST_'));
+            return;
         }
     }
 

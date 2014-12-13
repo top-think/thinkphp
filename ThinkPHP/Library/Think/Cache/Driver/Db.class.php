@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -38,7 +38,7 @@ class Db extends Cache {
         $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
         $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;        
         $this->options['expire']    =   isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
-        $this->handler   = Think\Db::getInstance();
+        $this->handler   = \Think\Db::getInstance();
     }
 
     /**
@@ -77,7 +77,7 @@ class Db extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value,$expire=null) {
         $data   =  serialize($value);
@@ -119,7 +119,7 @@ class Db extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         $name  =  $this->options['prefix'].addslashes($name);
@@ -129,7 +129,7 @@ class Db extends Cache {
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         return $this->handler->execute('TRUNCATE TABLE `'.$this->options['table'].'`');

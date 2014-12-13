@@ -24,7 +24,7 @@ class Image{
     const IMAGE_IMAGICK         =   2; //常量，标识imagick库类型
 
     /* 缩略图相关常量定义 */
-    const IMAGE_THUMB_SCALING   =   1 ; //常量，标识缩略图等比例缩放类型
+    const IMAGE_THUMB_SCALE     =   1 ; //常量，标识缩略图等比例缩放类型
     const IMAGE_THUMB_FILLED    =   2 ; //常量，标识缩略图缩放后填充类型
     const IMAGE_THUMB_CENTER    =   3 ; //常量，标识缩略图居中裁剪类型
     const IMAGE_THUMB_NORTHWEST =   4 ; //常量，标识缩略图左上角裁剪类型
@@ -56,13 +56,13 @@ class Image{
         /* 判断调用库的类型 */
         switch ($type) {
             case self::IMAGE_GD:
-                $class = 'ImageGd';
+                $class = 'Gd';
                 break;
             case self::IMAGE_IMAGICK:
-                $class = 'ImageImagick';
+                $class = 'Imagick';
                 break;
             default:
-                throw new Exception('不支持的图片处理库类型');
+                E('不支持的图片处理库类型');
         }
 
         /* 引入处理库，实例化图片处理对象 */
@@ -84,11 +84,12 @@ class Image{
      * 保存图片
      * @param  string  $imgname   图片保存名称
      * @param  string  $type      图片类型
+     * @param  integer $quality   图像质量      
      * @param  boolean $interlace 是否对JPEG类型图片设置隔行扫描
      * @return Object             当前图片处理库对象
      */
-    public function save($imgname, $type = null, $interlace = true){
-        $this->img->save($imgname, $type, $interlace);
+    public function save($imgname, $type = null, $quality=80,$interlace = true){
+        $this->img->save($imgname, $type, $quality,$interlace);
         return $this;
     }
 
@@ -166,8 +167,8 @@ class Image{
      * @param  integer $alpha  水印透明度
      * @return Object          当前图片处理库对象
      */
-    public function water($source, $locate = self::IMAGE_WATER_SOUTHEAST){
-        $this->img->water($source, $locate);
+    public function water($source, $locate = self::IMAGE_WATER_SOUTHEAST,$alpha=80){
+        $this->img->water($source, $locate,$alpha);
         return $this;
     }
 

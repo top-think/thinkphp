@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Xcache extends Cache {
      */
     public function __construct($options=array()) {
         if ( !function_exists('xcache_info') ) {
-            throw_exception(L('_NOT_SUPPERT_').':Xcache');
+            E(L('_NOT_SUPPERT_').':Xcache');
         }
         $this->options['expire']    =   isset($options['expire'])?$options['expire']:C('DATA_CACHE_TIME');
         $this->options['prefix']    =   isset($options['prefix'])?$options['prefix']:C('DATA_CACHE_PREFIX');
@@ -73,9 +73,18 @@ class Xcache extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         return xcache_unset($this->options['prefix'].$name);
+    }
+
+    /**
+     * 清除缓存
+     * @access public
+     * @return boolean
+     */
+    public function clear() {
+        return xcache_clear_cache(1, -1);
     }
 }

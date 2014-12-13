@@ -2,21 +2,16 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace Think\Model;
 use Think\Model;
 /**
  * 高级模型扩展 
- * @category   Extend
- * @package  Extend
- * @subpackage  Model
- * @author    liu21st <liu21st@gmail.com>
  */
 class AdvModel extends Model {
     protected $optimLock        =   'lock_version';
@@ -108,8 +103,12 @@ class AdvModel extends Model {
     // 更新前的回调方法
     protected function _before_update(&$data,$options='') {
         // 检查乐观锁
-        if(!$this->checkLockVersion($data,$options)) {
-            return false;
+        $pk     =   $this->getPK();
+        if(isset($options['where'][$pk])){
+            $id     =   $options['where'][$pk];   
+            if(!$this->checkLockVersion($id,$data)) {
+                return false;
+            }
         }
         // 检查文本字段
         $data = $this->checkBlobFields($data);
@@ -163,12 +162,11 @@ class AdvModel extends Model {
     /**
      * 检查乐观锁
      * @access protected
+     * @param inteter $id  当前主键     
      * @param array $data  当前数据
-     * @param array $options 查询表达式
      * @return mixed
      */
-    protected function checkLockVersion(&$data,$options) {
-        $id = $data[$this->getPk()];
+    protected function checkLockVersion($id,&$data) {
         // 检查乐观锁
         $identify   = $this->name.'_'.$id.'_lock_version';
         if($this->optimLock && isset($_SESSION[$identify])) {
@@ -262,7 +260,7 @@ class AdvModel extends Model {
                 if(class_exists($type))
                     return new $type($data);
                 else
-                    throw_exception(L('_CLASS_NOT_EXIST_').':'.$type);
+                    E(L('_CLASS_NOT_EXIST_').':'.$type);
         }
     }
 

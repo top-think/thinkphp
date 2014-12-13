@@ -36,8 +36,7 @@ class Sae extends Storage{
     /**
      * 获得SaeKv对象
      */
-
-    public function getKv(){
+    private function getKv(){
         static $kv;
         if(!$kv){
            $kv  =   new \SaeKV();
@@ -55,28 +54,17 @@ class Sae extends Storage{
      * @return string
      */
     public function read($filename,$type=''){
-        return $this->get($filename,'content',$type);
+        switch(strtolower($type)){
+            case 'f':       
+                $kv     =   $this->getKv();
+                if(!isset($this->kvs[$filename])){
+                    $this->kvs[$filename]=$kv->get($filename);
+                }
+                return $this->kvs[$filename];
+            default:
+                return $this->get($filename,'content',$type);
+        }        
     }
-
-    public function readHtml($filename,$type=''){
-        return $this->getHtml($filename,'content');
-    }
-
-    /**
-     * 读取F缓存
-     *
-     * @param mixed $filename
-     * @access public
-     * @return void
-     */
-    public function readF($filename){
-        $kv=$this->getKv();
-        if(!isset($this->kvs[$filename])){
-            $this->kvs[$filename]=$kv->get($filename);
-        }
-        return $this->kvs[$filename];
-    }
-
 
     /**
      * 文件写入
@@ -86,42 +74,25 @@ class Sae extends Storage{
      * @return boolean
      */
     public function put($filename,$content,$type=''){
-        $content    =   time().$content;
-        if(!$this->mc->set($filename,$content,MEMCACHE_COMPRESSED,0)){
-            E(L('_STORAGE_WRITE_ERROR_').':'.$filename);
-        }else{
-            $this->contents[$filename] = $content;
-            return true;
+        switch(strtolower($type)){
+            case 'f':       
+                $kv         =   $this->getKv();
+                $this->kvs[$filename] = $content;
+                return $kv->set($filename,$content);
+            case 'html':    
+                $kv         =   $this->getKv();
+                $content    =   time().$content;
+                $this->htmls[$filename] =   $content;
+                return $kv->set($filename,$content);
+            default:
+                $content    =   time().$content;
+                if(!$this->mc->set($filename,$content,MEMCACHE_COMPRESSED,0)){
+                    E(L('_STORAGE_WRITE_ERROR_').':'.$filename);
+                }else{
+                    $this->contents[$filename] = $content;
+                    return true;
+                }            
         }
-    }
-
-    /**
-     * 写入html静态缓存
-     *
-     * @param mixed $filename
-     * @param mixed $content
-     * @access public
-     * @return void
-     */
-    public function putHtml($filename,$content){
-        $kv         =   $this->getKv();
-        $content    =   time().$content;
-        $this->htmls[$filename] =   $content;
-        return $kv->set($filename,$content);
-    }
-
-    /**
-     * F函数写入缓存
-     *
-     * @param mixed $filename
-     * @param mixed $content
-     * @access public
-     * @return void
-     */
-    public function putF($filename,$content){
-        $kv     =   $this->getKv();
-        $this->kvs[$filename] = $content;
-        return $kv->set($filename,$content);
     }
 
     /**
@@ -141,14 +112,14 @@ class Sae extends Storage{
     /**
      * 加载文件
      * @access public
-     * @param string $filename  文件名
+     * @param string $_filename  文件名
      * @param array $vars  传入变量
      * @return void
      */
-    public function load($filename,$vars=null){
+    public function load($_filename,$vars=null){
         if(!is_null($vars))
             extract($vars, EXTR_OVERWRITE);
-        eval('?>'.$this->read($filename));
+        eval('?>'.$this->read($_filename));
     }
 
     /**
@@ -166,34 +137,25 @@ class Sae extends Storage{
     }
 
     /**
-     * F函数，判断是否存在key
-     *
-     * @param mixed $filename
-     * @access public
-     * @return void
-     */
-    public function hasF($filename){
-        if(false!==$this->readF($filename)){
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 文件删除
      * @access public
      * @param string $filename  文件名
      * @return boolean
      */
     public function unlink($filename,$type=''){
-        unset($this->contents[$filename]);
-        return $this->mc->delete($filename);
-    }
-
-    public function unlinkF($filename){
-        $kv=$this->getKv();
-        unset($this->kvs[$filename]);
-        return $kv->delete($filename);
+        switch(strtolower($type)){
+            case 'f':       
+                $kv     =   $this->getKv();
+                unset($this->kvs[$filename]);
+                return $kv->delete($filename);
+            case 'html':    
+                $kv     =   $this->getKv();
+                unset($this->htmls[$filename]);
+                return $kv->delete($filename);
+            default:
+                unset($this->contents[$filename]);
+                return $this->mc->delete($filename);            
+        }        
     }
 
     /**
@@ -204,10 +166,20 @@ class Sae extends Storage{
      * @return boolean
      */
     public function get($filename,$name,$type=''){
-        if(!isset($this->contents[$filename])){
-            $this->contents[$filename] = $this->mc->get($filename);
+        switch(strtolower($type)){
+            case 'html':
+                if(!isset($this->htmls[$filename])){
+                    $kv = $this->getKv();
+                    $this->htmls[$filename] = $kv->get($filename);
+                }
+                $content = $this->htmls[$filename];
+                break;
+            default:
+                if(!isset($this->contents[$filename])){
+                    $this->contents[$filename] = $this->mc->get($filename);
+                }
+                $content =  $this->contents[$filename];
         }
-        $content =  $this->contents[$filename];
         if(false===$content){
             return false;
         }
@@ -215,32 +187,7 @@ class Sae extends Storage{
             'mtime'     =>  substr($content,0,10),
             'content'   =>  substr($content,10)
         );
-        return $info[$name];
-    }
-
-
-    /**
-     * 读取html静态缓存
-     *
-     * @param string $filename
-     * @param string $name
-     * @access public
-     * @return void
-     */
-    public function getHtml($filename,$name){
-        if(!isset($this->htmls[$filename])){
-            $kv = $this->getKv();
-            $this->htmls[$filename] = $kv->get($filename);
-        }
-        $content = $this->htmls[$filename];
-        if(false===$content){
-            return false;
-        }
-        $info   =   array(
-            'mtime'     =>  substr($content,0,10),
-            'content'   =>  substr($content,10)
-        );
-        return $info[$name];
+        return $info[$name];        
     }
 
 }

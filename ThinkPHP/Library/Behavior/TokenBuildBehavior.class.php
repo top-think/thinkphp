@@ -9,38 +9,33 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Behavior;
-use Think\Behavior;
-defined('THINK_PATH') or exit();
 /**
  * 系统行为扩展：表单令牌生成
  */
-class TokenBuildBehavior extends Behavior {
-    // 行为参数定义
-    protected $options   =  array(
-        'TOKEN_ON'       => false,     // 开启令牌验证
-        'TOKEN_NAME'     => '__hash__',    // 令牌验证的表单隐藏字段名称
-        'TOKEN_TYPE'     => 'md5',   // 令牌验证哈希规则
-        'TOKEN_RESET'    => true, // 令牌错误后是否重置
-    );
+class TokenBuildBehavior {
 
     public function run(&$content){
         if(C('TOKEN_ON')) {
+            list($tokenName,$tokenKey,$tokenValue)=$this->getToken();
+            $input_token = '<input type="hidden" name="'.$tokenName.'" value="'.$tokenKey.'_'.$tokenValue.'" />';
+            $meta_token = '<meta name="'.$tokenName.'" content="'.$tokenKey.'_'.$tokenValue.'" />';
             if(strpos($content,'{__TOKEN__}')) {
                 // 指定表单令牌隐藏域位置
-                $content = str_replace('{__TOKEN__}',$this->buildToken(),$content);
+                $content = str_replace('{__TOKEN__}',$input_token,$content);
             }elseif(preg_match('/<\/form(\s*)>/is',$content,$match)) {
                 // 智能生成表单令牌隐藏域
-                $content = str_replace($match[0],$this->buildToken().$match[0],$content);
+                $content = str_replace($match[0],$input_token.$match[0],$content);
             }
+            $content = str_ireplace('</head>',$meta_token.'</head>',$content);
         }else{
             $content = str_replace('{__TOKEN__}','',$content);
         }
     }
 
-    // 创建表单令牌
-    private function buildToken() {
-        $tokenName  = C('TOKEN_NAME');
-        $tokenType  = C('TOKEN_TYPE');
+    //获得token
+    private function getToken(){
+        $tokenName  = C('TOKEN_NAME',null,'__hash__');
+        $tokenType  = C('TOKEN_TYPE',null,'md5');
         if(!isset($_SESSION[$tokenName])) {
             $_SESSION[$tokenName]  = array();
         }
@@ -51,8 +46,9 @@ class TokenBuildBehavior extends Behavior {
         }else{
             $tokenValue = $tokenType(microtime(TRUE));
             $_SESSION[$tokenName][$tokenKey]   =  $tokenValue;
+            if(IS_AJAX && C('TOKEN_RESET',null,true))
+                header($tokenName.': '.$tokenKey.'_'.$tokenValue); //ajax需要获得这个header并替换页面中meta中的token值
         }
-        $token      =  '<input type="hidden" name="'.$tokenName.'" value="'.$tokenKey.'_'.$tokenValue.'" />';
-        return $token;
+        return array($tokenName,$tokenKey,$tokenValue); 
     }
 }

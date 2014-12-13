@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Memcache extends Cache {
      */
     function __construct($options=array()) {
         if ( !extension_loaded('memcache') ) {
-            throw_exception(L('_NOT_SUPPERT_').':memcache');
+            E(L('_NOT_SUPPERT_').':memcache');
         }
 
         $options = array_merge(array (
@@ -61,7 +61,7 @@ class Memcache extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param integer $expire  有效时间（秒）
-     * @return boolen
+     * @return boolean
      */
     public function set($name, $value, $expire = null) {
         N('cache_write',1);
@@ -83,7 +83,7 @@ class Memcache extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name, $ttl = false) {
         $name   =   $this->options['prefix'].$name;
@@ -95,7 +95,7 @@ class Memcache extends Cache {
     /**
      * 清除缓存
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         return $this->handler->flush();

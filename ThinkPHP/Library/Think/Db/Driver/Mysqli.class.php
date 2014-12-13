@@ -46,7 +46,7 @@ class Mysqli extends Db{
             $dbVersion = $this->linkID[$linkNum]->server_version;
             
             // 设置数据库编码
-            $this->linkID[$linkNum]->query("SET NAMES '".C('DB_CHARSET')."'");
+            $this->linkID[$linkNum]->query("SET NAMES '".$config['charset']."'");
             //设置 sql_model
             if($dbVersion >'5.0.1'){
                 $this->linkID[$linkNum]->query("SET sql_mode=''");
@@ -64,7 +64,9 @@ class Mysqli extends Db{
      * @access public
      */
     public function free() {
-        $this->queryID->free_result();
+        if(is_object($this->queryID)){
+            $this->queryID->free_result();
+        }
         $this->queryID = null;
     }
 
@@ -169,6 +171,7 @@ class Mysqli extends Db{
     public function rollback() {
         if ($this->transTimes > 0) {
             $result = $this->_linkID->rollback();
+            $this->_linkID->autocommit( true);
             $this->transTimes = 0;
             if(!$result){
                 $this->error();
@@ -334,7 +337,7 @@ class Mysqli extends Db{
      */
     protected function parseKey(&$key) {
         $key   =  trim($key);
-        if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
+        if(!is_numeric($key) && !preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
            $key = '`'.$key.'`';
         }
         return $key;

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -11,9 +11,6 @@
 
 /**
  * ThinkPHP 简体中文语言包
- * @category   Think
- * @package  Lang
- * @author   liu21st <liu21st@gmail.com>
  */
 return array(
     /* 核心语言变量 */  
@@ -36,7 +33,7 @@ return array(
     '_NOT_SUPPERT_'          => '系统不支持',
     '_CACHE_TYPE_INVALID_'   => '无法加载缓存类型',
     '_FILE_NOT_WRITEABLE_'   => '目录（文件）不可写',
-	'_METHOD_NOT_EXIST_'     => '您所请求的方法不存在！',
+	'_METHOD_NOT_EXIST_'     => '方法不存在！',
     '_CLASS_NOT_EXIST_'      => '实例化一个不存在的类！',
     '_CLASS_CONFLICT_'       => '类名冲突',
     '_TEMPLATE_ERROR_'       => '模板引擎错误',
@@ -50,4 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => '记录已经更新',
     '_NOT_ALLOW_PHP_'        => '模板禁用PHP代码',
     '_PARAM_ERROR_'          => '参数错误或者未定义',
+    '_ERROR_QUERY_EXPRESS_'  => '错误的查询条件',
 );

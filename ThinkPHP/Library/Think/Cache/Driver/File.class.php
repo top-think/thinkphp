@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2013 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -35,7 +35,7 @@ class File extends Cache {
     /**
      * 初始化检查
      * @access private
-     * @return boolen
+     * @return boolean
      */
     private function init() {
         // 创建应用缓存目录
@@ -115,7 +115,7 @@ class File extends Cache {
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
      * @param int $expire  有效时间 0为永久
-     * @return boolen
+     * @return boolean
      */
     public function set($name,$value,$expire=null) {
         N('cache_write',1);
@@ -151,7 +151,7 @@ class File extends Cache {
      * 删除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function rm($name) {
         return unlink($this->filename($name));
@@ -161,7 +161,7 @@ class File extends Cache {
      * 清除缓存
      * @access public
      * @param string $name 缓存变量名
-     * @return boolen
+     * @return boolean
      */
     public function clear() {
         $path   =  $this->options['temp'];
