@@ -51,6 +51,14 @@ class App {
                 include COMMON_PATH.GROUP_NAME.'/function.php';
         }
 
+        // 系统变量安全过滤
+        if(C('REQUEST_VARS_FILTER')){
+            // 全局安全过滤
+            array_walk_recursive($_GET,     'think_filter');
+            array_walk_recursive($_POST,    'think_filter');
+            array_walk_recursive($_REQUEST, 'think_filter');
+        }
+
         /* 获取模板主题名称 */
         $templateSet =  C('DEFAULT_THEME');
         if(C('TMPL_DETECT_THEME')) {// 自动侦测模板主题

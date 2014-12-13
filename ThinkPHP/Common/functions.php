@@ -570,3 +570,13 @@ function send_http_status($code) {
         header('Status:'.$code.' '.$_status[$code]);
     }
 }
+
+// 过滤表单中的表达式
+function think_filter(&$value){
+    // TODO 其他安全过滤
+
+    // 过滤查询特殊字符
+    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|LIKE|NOTLIKE|BETWEEN|IN)$/i',$value)){
+        $value .= ' ';
+    }
+}

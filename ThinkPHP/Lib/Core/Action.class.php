@@ -235,6 +235,7 @@ abstract class Action {
             }else{ // 变量默认值
                 $data	 =	 isset($args[2])?$args[2]:NULL;
             }
+			is_array($data) && array_walk_recursive($data,'think_filter');
             return $data;
         }
     }
