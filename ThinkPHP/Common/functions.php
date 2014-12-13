@@ -341,7 +341,7 @@ function I($name,$default='',$filter=null,$datas=null) {
     }else{ // 变量默认值
         $data       =    isset($default)?$default:NULL;
     }
-    is_array($data) && array_walk_recursive($data,'filter_exp');
+    is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
 }
 
@@ -1468,8 +1468,11 @@ function send_http_status($code) {
     }
 }
 
-function filter_exp(&$value){
-    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR)$/i',$value)){
+function think_filter(&$value){
+	// TODO 其他安全过滤
+
+	// 过滤查询特殊字符
+    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|LIKE|NOTLIKE|BETWEEN|IN)$/i',$value)){
         $value .= ' ';
     }
 }

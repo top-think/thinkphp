@@ -22,7 +22,7 @@ class App {
     static public function init() {
         // 加载动态应用公共文件和配置
         load_ext_file(COMMON_PATH);
-        
+
         // 定义当前请求的系统常量
         define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
         define('REQUEST_METHOD',$_SERVER['REQUEST_METHOD']);
@@ -33,6 +33,13 @@ class App {
 
         // URL调度
         Dispatcher::dispatch();
+
+        if(C('REQUEST_VARS_FILTER')){
+			// 全局安全过滤
+			array_walk_recursive($_GET,		'think_filter');
+			array_walk_recursive($_POST,	'think_filter');
+			array_walk_recursive($_REQUEST,	'think_filter');
+		}
 
         // URL调度结束标签
         Hook::listen('url_dispatch');         
@@ -150,6 +157,7 @@ class App {
                             }
                         }                        
                     }
+					array_walk_recursive($args,'think_filter');
                     $method->invokeArgs($module,$args);
                 }else{
                     $method->invoke($module);
