@@ -65,6 +65,11 @@ class App
         // URL调度
         Dispatcher::dispatch();
 
+		// 全局安全过滤
+		array_walk_recursive($_GET,     'think_filter');
+		array_walk_recursive($_POST,    'think_filter');
+		array_walk_recursive($_REQUEST, 'think_filter');
+
         // 加载模块配置文件
         if(is_file(CONFIG_PATH.strtolower(MODULE_NAME).'_config.php'))
             C(include CONFIG_PATH.strtolower(MODULE_NAME).'_config.php');
