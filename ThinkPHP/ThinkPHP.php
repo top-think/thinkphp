@@ -2,96 +2,59 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2010 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: ThinkPHP.php 1829 2010-10-18 08:15:58Z liu21st $
 
-//----------------------------------
-// ThinkPHP公共入口文件
-//----------------------------------
-
-// 记录开始运行时间
-$GLOBALS['_beginTime'] = microtime(TRUE);
-// 记录内存初始使用
-define('MEMORY_LIMIT_ON',function_exists('memory_get_usage'));
-if(MEMORY_LIMIT_ON) $GLOBALS['_startUseMems'] = memory_get_usage();
-
-// 版本信息
-const THINK_VERSION     =   '3.2.3beta';
-
-// URL 模式定义
-const URL_COMMON        =   0;  //普通模式
-const URL_PATHINFO      =   1;  //PATHINFO模式
-const URL_REWRITE       =   2;  //REWRITE模式
-const URL_COMPAT        =   3;  // 兼容模式
-
-// 类文件后缀
-const EXT               =   '.class.php'; 
-
-// 系统常量定义
-defined('THINK_PATH')   or define('THINK_PATH',     __DIR__.'/');
-defined('APP_PATH')     or define('APP_PATH',       dirname($_SERVER['SCRIPT_FILENAME']).'/');
-defined('APP_STATUS')   or define('APP_STATUS',     ''); // 应用状态 加载对应的配置文件
-defined('APP_DEBUG')    or define('APP_DEBUG',      false); // 是否调试模式
-
-if(function_exists('saeAutoLoader')){// 自动识别SAE环境
-    defined('APP_MODE')     or define('APP_MODE',      'sae');
-    defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
-}else{
-    defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式    
-    defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File    
-}
-
-defined('RUNTIME_PATH') or define('RUNTIME_PATH',   APP_PATH.'Runtime/');   // 系统运行时目录
-defined('LIB_PATH')     or define('LIB_PATH',       realpath(THINK_PATH.'Library').'/'); // 系统核心类库目录
-defined('CORE_PATH')    or define('CORE_PATH',      LIB_PATH.'Think/'); // Think类库目录
-defined('BEHAVIOR_PATH')or define('BEHAVIOR_PATH',  LIB_PATH.'Behavior/'); // 行为类库目录
-defined('MODE_PATH')    or define('MODE_PATH',      THINK_PATH.'Mode/'); // 系统应用模式目录
-defined('VENDOR_PATH')  or define('VENDOR_PATH',    LIB_PATH.'Vendor/'); // 第三方类库目录
-defined('COMMON_PATH')  or define('COMMON_PATH',    APP_PATH.'Common/'); // 应用公共目录
-defined('CONF_PATH')    or define('CONF_PATH',      COMMON_PATH.'Conf/'); // 应用配置目录
-defined('LANG_PATH')    or define('LANG_PATH',      COMMON_PATH.'Lang/'); // 应用语言目录
-defined('HTML_PATH')    or define('HTML_PATH',      APP_PATH.'Html/'); // 应用静态目录
-defined('LOG_PATH')     or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 应用日志目录
-defined('TEMP_PATH')    or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 应用缓存目录
-defined('DATA_PATH')    or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 应用数据目录
-defined('CACHE_PATH')   or define('CACHE_PATH',     RUNTIME_PATH.'Cache/'); // 应用模板缓存目录
-defined('CONF_EXT')     or define('CONF_EXT',       '.php'); // 配置文件后缀
-defined('CONF_PARSE')   or define('CONF_PARSE',     '');    // 配置文件解析方法
-defined('ADDON_PATH')   or define('ADDON_PATH',     APP_PATH.'Addon');
-
-// 系统信息
-if(version_compare(PHP_VERSION,'5.4.0','<')) {
-    ini_set('magic_quotes_runtime',0);
-    define('MAGIC_QUOTES_GPC',get_magic_quotes_gpc()?True:False);
-}else{
-    define('MAGIC_QUOTES_GPC',false);
-}
-define('IS_CGI',(0 === strpos(PHP_SAPI,'cgi') || false !== strpos(PHP_SAPI,'fcgi')) ? 1 : 0 );
-define('IS_WIN',strstr(PHP_OS, 'WIN') ? 1 : 0 );
-define('IS_CLI',PHP_SAPI=='cli'? 1   :   0);
-
-if(!IS_CLI) {
-    // 当前文件名
-    if(!defined('_PHP_FILE_')) {
-        if(IS_CGI) {
-            //CGI/FASTCGI模式下
-            $_temp  = explode('.php',$_SERVER['PHP_SELF']);
-            define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
-        }else {
-            define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
+/**
+ +------------------------------------------------------------------------------
+ * ThinkPHP公共文件
+ +------------------------------------------------------------------------------
+ */
+// 记录和统计时间（微秒）
+function G($start,$end='',$dec=3) {
+    static $_info = array();
+    if(!empty($end)) { // 统计时间
+        if(!isset($_info[$end])) {
+            $_info[$end]   =  microtime(TRUE);
         }
-    }
-    if(!defined('__ROOT__')) {
-        $_root  =   rtrim(dirname(_PHP_FILE_),'/');
-        define('__ROOT__',  (($_root=='/' || $_root=='\\')?'':$_root));
+        return number_format(($_info[$end]-$_info[$start]),$dec);
+    }else{ // 记录时间
+        $_info[$start]  =  microtime(TRUE);
     }
 }
 
-// 加载核心Think类
-require CORE_PATH.'Think'.EXT;
-// 应用初始化 
-Think\Think::start();
+//记录开始运行时间
+G('beginTime');
+if(!defined('APP_PATH')) define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']));
+if(!defined('RUNTIME_PATH')) define('RUNTIME_PATH',APP_PATH.'/Runtime/');
+if(!defined('APP_CACHE_NAME')) define('APP_CACHE_NAME','app');// 指定缓存名称
+if(defined('RUNTIME_ALLINONE') && is_file(RUNTIME_PATH.'~allinone.php')) {
+    // ALLINONE 模式直接载入allinone缓存
+    $result   =  require RUNTIME_PATH.'~allinone.php';
+    C($result);
+    // 自动设置为运行模式
+    define('RUNTIME_MODEL',true);
+}else{
+    if(version_compare(PHP_VERSION,'5.0.0','<'))  die('require PHP > 5.0 !');
+    // ThinkPHP系统目录定义
+    if(!defined('THINK_PATH')) define('THINK_PATH', dirname(__FILE__));
+    if(!defined('APP_NAME')) define('APP_NAME', basename(dirname($_SERVER['SCRIPT_FILENAME'])));
+    $runtime = defined('THINK_MODE')?'~'.strtolower(THINK_MODE).'_runtime.php':'~runtime.php';
+    if(is_file(RUNTIME_PATH.$runtime)) {
+        // 加载框架核心编译缓存
+        require RUNTIME_PATH.$runtime;
+    }else{
+        // 加载编译函数文件
+        require THINK_PATH."/Common/runtime.php";
+        // 生成核心编译~runtime缓存
+        build_runtime();
+    }
+}
+// 记录加载文件时间
+G('loadTime');
+?>
