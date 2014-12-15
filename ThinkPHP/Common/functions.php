@@ -332,7 +332,7 @@ function I($name,$default='',$filter=null,$datas=null) {
             
             foreach($filters as $filter){
                 if(function_exists($filter)) {
-                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : filter($data); // 参数过滤
+                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
                 }elseif(0===strpos($filter,'/')){
                 	// 支持正则验证
                 	if(1 !== preg_match($filter,(string)$data)){
