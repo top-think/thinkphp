@@ -25,12 +25,12 @@ class Page{
 
 	// 分页显示定制
     private $config  = array(
-        'header' => '<span class="rows">共 %TOTAL_ROW% 条记录</span>',
+        'header' => '条记录',
         'prev'   => '<<',
         'next'   => '>>',
         'first'  => '1...',
         'last'   => '...%TOTAL_PAGE%',
-        'theme'  => '%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END%',
+        'theme'  => '%HEADER% %FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END%',
     );
 
     /**
@@ -90,6 +90,8 @@ class Page{
         $now_cool_page      = $this->rollPage/2;
 		$now_cool_page_ceil = ceil($now_cool_page);
 		$this->lastSuffix && $this->config['last'] = $this->totalPages;
+	//总记录
+	$headCount='<span class="rows">共 %TOTAL_ROW% '.$this->config['header'].'</span>';
 
         //上一页
         $up_row  = $this->nowPage - 1;
@@ -138,7 +140,7 @@ class Page{
         //替换分页内容
         $page_str = str_replace(
             array('%HEADER%', '%NOW_PAGE%', '%UP_PAGE%', '%DOWN_PAGE%', '%FIRST%', '%LINK_PAGE%', '%END%', '%TOTAL_ROW%', '%TOTAL_PAGE%'),
-            array($this->config['header'], $this->nowPage, $up_page, $down_page, $the_first, $link_page, $the_end, $this->totalRows, $this->totalPages),
+            array($headCount, $this->nowPage, $up_page, $down_page, $the_first, $link_page, $the_end, $this->totalRows, $this->totalPages),
             $this->config['theme']);
         return "<div>{$page_str}</div>";
     }
