@@ -524,7 +524,7 @@ class Db {
             }
         }else {
             //对字符串类型字段采用模糊匹配
-            if(C('DB_LIKE_FIELDS') && preg_match('/('.C('DB_LIKE_FIELDS').')/i',$key)) {
+            if(C('DB_LIKE_FIELDS') && preg_match('/^('.C('DB_LIKE_FIELDS').')$/i',$key)) {
                 $val  =  '%'.$val.'%';
                 $whereStr .= $key.' LIKE '.$this->parseValue($val);
             }else {
