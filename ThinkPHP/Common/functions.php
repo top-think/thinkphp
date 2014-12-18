@@ -1288,14 +1288,20 @@ function session($name='',$value='') {
             }
         }
     }else{ // 设置session
-        if($prefix){
-            if (!isset($_SESSION[$prefix])) {
-                $_SESSION[$prefix] = array();
-            }
-            $_SESSION[$prefix][$name]   =  $value;
-        }else{
-            $_SESSION[$name]  =  $value;
-        }
+		if(strpos($name,'.')){
+			list($name1,$name2) =   explode('.',$name);
+			if($prefix){
+				$_SESSION[$prefix][$name1][$name2]   =  $value;
+			}else{
+				$_SESSION[$name1][$name2]  =  $value;
+			}
+		}else{
+			if($prefix){
+				$_SESSION[$prefix][$name]   =  $value;
+			}else{
+				$_SESSION[$name]  =  $value;
+			}
+		}
     }
     return null;
 }
