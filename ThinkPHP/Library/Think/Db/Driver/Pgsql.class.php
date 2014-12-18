@@ -48,12 +48,7 @@ class Pgsql extends Db{
             }
             //设置编码
             pg_set_client_encoding($this->linkID[$linkNum], $config['charset']);
-            //$pgInfo = pg_version($this->linkID[$linkNum]);
-            //$dbVersion = $pgInfo['server'];
-            // 标记连接成功
-            $this->connected    =   true;
-            //注销数据库安全信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
+
         }
         return $this->linkID[$linkNum];
     }

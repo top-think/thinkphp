@@ -49,10 +49,6 @@ class Sqlite extends Db {
             if ( !$this->linkID[$linkNum]) {
                 E(sqlite_error_string());
             }
-            // 标记连接成功
-            $this->connected	=	true;
-            //注销数据库安全信息
-            if(1 != C('DB_DEPLOY_TYPE')) unset($this->config);
         }
         return $this->linkID[$linkNum];
     }

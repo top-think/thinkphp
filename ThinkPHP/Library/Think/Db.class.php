@@ -40,8 +40,6 @@ class Db {
     protected $_linkID    = null;
     // 当前查询ID
     protected $queryID    = null;
-    // 是否已经连接数据库
-    protected $connected  = false;
     // 数据库连接参数配置
     protected $config     = '';
     // 数据库表达式
@@ -163,7 +161,7 @@ class Db {
             $this->_linkID = $this->multiConnect($master);
         else
             // 默认单数据库
-            if ( !$this->connected ) $this->_linkID = $this->connect();
+            if ( !$this->_linkID ) $this->_linkID = $this->connect();
     }
 
     /**
