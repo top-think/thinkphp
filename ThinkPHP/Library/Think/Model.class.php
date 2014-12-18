@@ -107,7 +107,7 @@ class Model {
             // 如果数据表字段没有定义则自动获取
             if(C('DB_FIELDS_CACHE')) {
                 $db   =  $this->dbName?:C('DB_NAME');
-                $fields = F('_fields/'.strtolower($db.'.'.$this->name));
+                $fields = F('_fields/'.strtolower($db.'.'.$this->tablePrefix.$this->name));
                 if($fields) {
                     $this->fields   =   $fields;
                     $this->pk       =   $fields['_pk'];
@@ -148,7 +148,7 @@ class Model {
         if(C('DB_FIELDS_CACHE')){
             // 永久缓存数据表信息
             $db   =  $this->dbName?:C('DB_NAME');
-            F('_fields/'.strtolower($db.'.'.$this->name),$this->fields);
+            F('_fields/'.strtolower($db.'.'.$this->tablePrefix.$this->name),$this->fields);
         }
     }
 
