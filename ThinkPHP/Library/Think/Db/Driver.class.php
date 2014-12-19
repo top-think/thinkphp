@@ -532,39 +532,39 @@ abstract class Driver {
         $whereStr = '';
         if(is_array($val)) {
             if(is_string($val[0])) {
-				$exp	=	$this->exp[strtolower($val[0])];
-                if(preg_match('/^(EQ|NEQ|GT|EGT|LT|ELT)$/i',$val[0])) { // 比较运算
-                    $whereStr .= $key.' '.$exp.' '.$this->parseValue($val[1]);
-                }elseif(preg_match('/^(NOTLIKE|LIKE)$/i',$val[0])){// 模糊查找
+				$exp	=	strtolower($val[0]);
+                if(preg_match('/^(eq|neq|gt|egt|lt|elt)$/',$exp)) { // 比较运算
+                    $whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
+                }elseif(preg_match('/^(notlike|like)$/',$exp)){// 模糊查找
                     if(is_array($val[1])) {
                         $likeLogic  =   isset($val[2])?strtoupper($val[2]):'OR';
                         if(in_array($likeLogic,array('AND','OR','XOR'))){
                             $like       =   array();
                             foreach ($val[1] as $item){
-                                $like[] = $key.' '.$exp.' '.$this->parseValue($item);
+                                $like[] = $key.' '.$this->exp[$exp].' '.$this->parseValue($item);
                             }
                             $whereStr .= '('.implode(' '.$likeLogic.' ',$like).')';                          
                         }
                     }else{
-                        $whereStr .= $key.' '.$exp.' '.$this->parseValue($val[1]);
+                        $whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
                     }
-                }elseif('bind'==strtolower($val[0])){ // 使用表达式
+                }elseif('bind' == $exp ){ // 使用表达式
                     $whereStr .= $key.' = :'.$val[1];
-                }elseif('exp'==strtolower($val[0])){ // 使用表达式
+                }elseif('exp' == $exp ){ // 使用表达式
                     $whereStr .= $key.' '.$val[1];
-                }elseif(preg_match('/^(NOTIN|IN)$/i',$val[0])){ // IN 运算
+                }elseif(preg_match('/^(notin|in)$/',$exp)){ // IN 运算
                     if(isset($val[2]) && 'exp'==$val[2]) {
-                        $whereStr .= $key.' '.$exp.' '.$val[1];
+                        $whereStr .= $key.' '.$this->exp[$exp].' '.$val[1];
                     }else{
                         if(is_string($val[1])) {
                              $val[1] =  explode(',',$val[1]);
                         }
                         $zone      =   implode(',',$this->parseValue($val[1]));
-                        $whereStr .= $key.' '.$exp.' ('.$zone.')';
+                        $whereStr .= $key.' '.$this->exp[$exp].' ('.$zone.')';
                     }
-                }elseif(preg_match('/^(NOTBETWEEN|BETWEEN)$/i',$val[0])){ // BETWEEN运算
+                }elseif(preg_match('/^(notbetween|between)$/',$exp)){ // BETWEEN运算
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
-                    $whereStr .=  $key.' '.$exp.' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
+                    $whereStr .=  $key.' '.$this->exp[$exp].' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
                     E(L('_EXPRESS_ERROR_').':'.$val[0]);
                 }
