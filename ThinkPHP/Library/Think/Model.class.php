@@ -1694,6 +1694,11 @@ class Model {
      * @return Model
      */
     public function cache($key=true,$expire=null,$type=''){
+        // 增加快捷调用方式 cache(10) 等同于 cache(true, 10)
+        if(is_numeric($key) && is_null($expire)){
+            $expire = $key;
+            $key    = true;
+        }
         if(false !== $key)
             $this->options['cache']  =  array('key'=>$key,'expire'=>$expire,'type'=>$type);
         return $this;
