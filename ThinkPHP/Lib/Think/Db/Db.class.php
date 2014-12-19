@@ -55,7 +55,7 @@ class Db extends Think
     // 数据库连接参数配置
     protected $config             = '';
     // 数据库表达式
-    protected $comparison      = array('eq'=>'=','neq'=>'!=','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE');
+    protected $exp      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','between'=>'BETWEEN','notbetween'=>'NOT BETWEEN','in'=>'IN','notin'=>'NOT IN');
     // 查询表达式
     protected $selectSql  =     'SELECT%DISTINCT% %FIELDS% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT%';
 
@@ -486,19 +486,20 @@ class Db extends Think
                     $key = $this->addSpecialChar($key);
                     if(is_array($val)) {
                         if(is_string($val[0])) {
+							$exp	=	strtolower($val[0]);
                             if(preg_match('/^(EQ|NEQ|GT|EGT|LT|ELT|NOTLIKE|LIKE)$/i',$val[0])) { // 比较运算
-                                $whereStr .= $key.' '.$this->comparison[strtolower($val[0])].' '.$this->parseValue($val[1]);
-                            }elseif('exp'==strtolower($val[0])){ // 使用表达式
+                                $whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
+                            }elseif('exp'==$exp){ // 使用表达式
                                 $whereStr .= ' ('.$key.' '.$val[1].') ';
-                            }elseif(preg_match('/IN/i',$val[0])){ // IN 运算
+                            }elseif(preg_match('/^(NOTIN|IN)$/i',$val[0])){ // IN 运算
                                 if(is_string($val[1])) {
                                      $val[1] =  explode(',',$val[1]);
                                 }
                                 $zone   =   implode(',',$this->parseValue($val[1]));
-                                $whereStr .= $key.' '.strtoupper($val[0]).' ('.$zone.')';
-                            }elseif(preg_match('/BETWEEN/i',$val[0])){ // BETWEEN运算
+                                $whereStr .= $key.' '.$this->exp[$exp].' ('.$zone.')';
+                            }elseif(preg_match('/^(NOTBETWEEN|BETWEEN)$/i',$val[0])){ // BETWEEN运算
                                 $data = is_string($val[1])? explode(',',$val[1]):$val[1];
-                                $whereStr .=  ' ('.$key.' BETWEEN '.$data[0].' AND '.$data[1].' )';
+                                $whereStr .=  ' ('.$key.' '.$this->exp[$exp].' '.$data[0].' AND '.$data[1].' )';
                             }else{
                                 throw_exception(L('_EXPRESS_ERROR_').':'.$val[0]);
                             }
@@ -515,7 +516,7 @@ class Db extends Think
                                 if('exp'==strtolower($val[$i][0])) {
                                     $whereStr .= '('.$key.' '.$data.') '.$rule.' ';
                                 }else{
-                                    $op = is_array($val[$i])?$this->comparison[strtolower($val[$i][0])]:'=';
+                                    $op = is_array($val[$i])?$this->exp[strtolower($val[$i][0])]:'=';
                                     $whereStr .= '('.$key.' '.$op.' '.$this->parseValue($data).') '.$rule.' ';
                                 }
                             }
@@ -523,7 +524,7 @@ class Db extends Think
                         }
                     }else {
                         //对字符串类型字段采用模糊匹配
-                        if(C('DB_LIKE_FIELDS') && preg_match('/('.C('DB_LIKE_FIELDS').')/i',$key)) {
+                        if(C('DB_LIKE_FIELDS') && preg_match('/^('.C('DB_LIKE_FIELDS').')$/i',$key)) {
                             $val  =  '%'.$val.'%';
                             $whereStr .= $key." LIKE ".$this->parseValue($val);
                         }else {
