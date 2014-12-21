@@ -54,7 +54,7 @@ class Db extends Think
     // 数据库连接参数配置
     protected $config             = '';
     // 数据库表达式
-    protected $exp      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','between'=>'BETWEEN','notbetween'=>'NOT BETWEEN','in'=>'IN','notin'=>'NOT IN');
+    protected $exp      = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','between'=>'BETWEEN','notbetween'=>'NOT BETWEEN','not between'=>'NOT BETWEEN','in'=>'IN','notin'=>'NOT IN','not in'=>'NOT IN');
     // 查询表达式
     protected $selectSql  =     'SELECT%DISTINCT% %FIELDS% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT%';
 
@@ -488,7 +488,7 @@ class Db extends Think
                     $whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
                 }elseif('exp'==$exp){ // 使用表达式
                     $whereStr .= ' ('.$key.' '.$val[1].') ';
-                }elseif(preg_match('/^(NOTIN|IN)$/i',$val[0])){ // IN 运算
+                }elseif(preg_match('/^(NOTIN|NOT IN|IN)$/i',$val[0])){ // IN 运算
                     if(isset($val[2]) && 'exp'==$val[2]) {
                         $whereStr .= $key.' '.$this->exp[$exp].' '.$val[1];
                     }else{
@@ -498,7 +498,7 @@ class Db extends Think
                         $zone   =   implode(',',$this->parseValue($val[1]));
                         $whereStr .= $key.' '.$this->exp[$exp].' ('.$zone.')';
                     }
-                }elseif(preg_match('/^(NOTBETWEEN|BETWEEN)$/i',$val[0])){ // BETWEEN运算
+                }elseif(preg_match('/^(NOTBETWEEN|NOT BETWEEN|BETWEEN)$/i',$val[0])){ // BETWEEN运算
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  ' ('.$key.' '.$this->exp[$exp].' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]).' )';
                 }else{
