@@ -810,7 +810,7 @@ function think_filter(&$value){
     // TODO 其他安全过滤
 
     // 过滤查询特殊字符
-    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|LIKE|NOTLIKE|NOTBETWEEN|BETWEEN|NOTIN|IN)$/i',$value)){
+    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|LIKE|NOTLIKE|NOTBETWEEN|NOT BETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i',$value)){
         $value .= ' ';
     }
 }
