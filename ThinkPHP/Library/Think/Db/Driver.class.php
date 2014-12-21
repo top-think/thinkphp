@@ -55,7 +55,7 @@ abstract class Driver {
         'db_like_fields'    =>  '', 
     );
     // 数据库表达式
-    protected $exp = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN','between'=>'BETWEEN','notbetween'=>'NOT BETWEEN');
+    protected $exp = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN','not in'=>'NOT IN','between'=>'BETWEEN','not between'=>'NOT BETWEEN','notbetween'=>'NOT BETWEEN');
     // 查询表达式
     protected $selectSql  = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%';
     // 查询次数
@@ -552,7 +552,7 @@ abstract class Driver {
                     $whereStr .= $key.' = :'.$val[1];
                 }elseif('exp' == $exp ){ // 使用表达式
                     $whereStr .= $key.' '.$val[1];
-                }elseif(preg_match('/^(notin|in)$/',$exp)){ // IN 运算
+                }elseif(preg_match('/^(notin|not in|in)$/',$exp)){ // IN 运算
                     if(isset($val[2]) && 'exp'==$val[2]) {
                         $whereStr .= $key.' '.$this->exp[$exp].' '.$val[1];
                     }else{
@@ -562,7 +562,7 @@ abstract class Driver {
                         $zone      =   implode(',',$this->parseValue($val[1]));
                         $whereStr .= $key.' '.$this->exp[$exp].' ('.$zone.')';
                     }
-                }elseif(preg_match('/^(notbetween|between)$/',$exp)){ // BETWEEN运算
+                }elseif(preg_match('/^(notbetween|not between|between)$/',$exp)){ // BETWEEN运算
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  $key.' '.$this->exp[$exp].' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
