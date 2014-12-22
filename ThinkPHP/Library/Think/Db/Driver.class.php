@@ -762,6 +762,46 @@ abstract class Driver {
     }
 
     /**
+     * ON DUPLICATE KEY UPDATE 分析
+     * @access protected
+     * @param mixed $duplicate 
+     * @return string
+     */
+    protected function parseDuplicate($duplicate){
+        // 只支持mysql
+        if($this->config['type']!='mysql') return '';
+        // 布尔值或空则返回空字符串
+        if(is_bool($duplicate) || empty($duplicate)) return '';
+        // field1,field2 转数组
+        if(is_string($duplicate)) $duplicate = explode(',', $duplicate);
+        // 对象转数组
+        if(is_object($duplicate)) $duplicate = get_class_vars($duplicate);
+        $updates                    = array();
+        foreach((array) $duplicate as $key=>$val){
+            if(is_numeric($key)){ // array('field1', 'field2', 'field3') 解析为 ON DUPLICATE KEY UPDATE field1=VALUES(field1), field2=VALUES(field2), field3=VALUES(field3)
+                $updates[]          = $this->parseKey($val)."=VALUES(".$this->parseKey($val).")";
+            }else{
+                if(is_scalar($val)) // 兼容标量传值方式
+                    $val            = array('value', $val);
+                if(!isset($val[1])) continue;
+                switch($val[0]){
+                    case 'exp': // 表达式
+                        $updates[]  = $this->parseKey($key)."=($val[1])";
+                        break;
+                    case 'value': // 值
+                    default:
+                        $name       = count($this->bind);
+                        $updates[]  = $this->parseKey($key)."=:".$name;
+                        $this->bindParam($name, $val[1]);
+                        break;
+                }
+            }
+        }
+        if(empty($updates)) return '';
+        return " ON DUPLICATE KEY UPDATE ".join(', ', $updates);
+    }
+
+    /**
      * 插入记录
      * @access public
      * @param mixed $data 数据
@@ -788,8 +828,10 @@ abstract class Driver {
                 }
             }
         }
-        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
-        $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        // 兼容数字传入方式
+        $replace= (is_numeric($replace) && $replace>0)?true:$replace;
+        $sql    = (true===$replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')'.$this->parseDuplicate($replace);
+        $sql    .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
