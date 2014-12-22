@@ -737,7 +737,13 @@ function array_define($array,$check=true) {
  * @return void
  */
 function trace($value='[think]',$label='',$level='DEBUG',$record=false) {
-    static $_trace =  array();
+    static $_trace =  array(); // 没有限制长度的话这个会溢出的
+
+    // 限制记录长度为1000条
+    if(count($_trace, COUNT_RECURSIVE) > 1000){
+        $_trace = array();
+    }
+
     if('[think]' === $value){ // 获取trace信息
         return $_trace;
     }else{
