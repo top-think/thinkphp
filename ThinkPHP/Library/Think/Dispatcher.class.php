@@ -145,6 +145,8 @@ class Dispatcher {
             define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
             // 定义当前模块的模版缓存路径
             C('CACHE_PATH',CACHE_PATH.MODULE_NAME.'/');
+            // 定义当前模块的日志目录
+	        C('LOG_PATH',  realpath(LOG_PATH).'/'.MODULE_NAME.'/');
 
             // 模块检测
             Hook::listen('module_check');

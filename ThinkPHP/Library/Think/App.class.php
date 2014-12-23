@@ -23,6 +23,9 @@ class App {
         // 加载动态应用公共文件和配置
         load_ext_file(COMMON_PATH);
 
+        // 日志目录转换为绝对路径 默认情况下存储到公共模块下面
+        C('LOG_PATH',   realpath(LOG_PATH).'/Common/');
+
         // 定义当前请求的系统常量
         define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
         define('REQUEST_METHOD',$_SERVER['REQUEST_METHOD']);
@@ -46,8 +49,6 @@ class App {
 
         define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[C('VAR_AJAX_SUBMIT')]) || !empty($_GET[C('VAR_AJAX_SUBMIT')])) ? true : false);
 
-        // 日志目录转换为绝对路径
-        C('LOG_PATH',   realpath(LOG_PATH).'/'.MODULE_NAME.'/');
         // TMPL_EXCEPTION_FILE 改为绝对地址
         C('TMPL_EXCEPTION_FILE',realpath(C('TMPL_EXCEPTION_FILE')));
         return ;
