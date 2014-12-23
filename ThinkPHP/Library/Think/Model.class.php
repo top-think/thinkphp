@@ -1394,7 +1394,7 @@ class Model {
         }else{
             $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix));
             $prefix =   $this->tablePrefix;
-            $sql    =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
+            $sql    =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
         }
         $this->db->setModel($this->name);
         return $sql;
@@ -1604,7 +1604,7 @@ class Model {
             $this->options['table'] =   $table;
         }elseif(!empty($table)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $table  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $table);
+            $table  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $table);
             $this->options['table'] =   $table;
         }
         return $this;
@@ -1622,7 +1622,7 @@ class Model {
             $this->options['using'] =   $using;
         }elseif(!empty($using)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $using  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $using);
+            $using  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $using);
             $this->options['using'] =   $using;
         }
         return $this;
@@ -1639,13 +1639,13 @@ class Model {
         $prefix =   $this->tablePrefix;
         if(is_array($join)) {
             foreach ($join as $key=>&$_join){
-                $_join  =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $_join);
+                $_join  =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $_join);
                 $_join  =   false !== stripos($_join,'JOIN')? $_join : $type.' JOIN ' .$_join;
             }
             $this->options['join']      =   $join;
         }elseif(!empty($join)) {
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $join  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $join);
+            $join  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $join);
             $this->options['join'][]    =   false !== stripos($join,'JOIN')? $join : $type.' JOIN '.$join;
         }
         return $this;
@@ -1670,7 +1670,7 @@ class Model {
         if(is_string($union) ) {
             $prefix =   $this->tablePrefix;
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $options  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $union);
+            $options  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $union);
         }elseif(is_array($union)){
             if(isset($union[0])) {
                 $this->options['union']  =  array_merge($this->options['union'],$union);
