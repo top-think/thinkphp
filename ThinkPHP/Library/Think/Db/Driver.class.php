@@ -80,7 +80,7 @@ abstract class Driver {
         if(!empty($config)) {
             $this->config   =   array_merge($this->config,$config);
             if(is_array($this->config['params'])){
-                $this->options  +=   $this->config['params'];
+                $this->options  =   $this->config['params'] + $this->options;
             }
         }
     }
