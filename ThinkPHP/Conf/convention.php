@@ -157,6 +157,7 @@ return  array(
     'VAR_JSONP_HANDLER'     =>  'callback',
     'VAR_PATHINFO'          =>  's',    // 兼容模式PATHINFO获取变量例如 ?s=/module/action/id/1 后面的参数取决于URL_PATHINFO_DEPR
     'VAR_TEMPLATE'          =>  't',    // 默认模板切换变量
+    'VAR_AUTO_STRING'		=>	false,	// 输入变量是否自动强制转换为字符串 如果开启则数组变量需要手动传入变量修饰符获取变量
 
     'HTTP_CACHE_CONTROL'    =>  'private',  // 网页缓存控制
     'CHECK_APP_DIR'         =>  true,       // 是否检查应用目录是否创建

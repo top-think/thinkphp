@@ -271,7 +271,9 @@ function T($template='',$layer=''){
 function I($name,$default='',$filter=null,$datas=null) {
 	if(strpos($name,'/')){ // 指定修饰符
 		list($name,$type) 	=	explode('/',$name,2);
-	}
+	}elseif(C('VAR_AUTO_STRING')){ // 默认强制转换为字符串
+        $type   =   's';
+    }
     if(strpos($name,'.')) { // 指定参数来源
         list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
@@ -348,9 +350,6 @@ function I($name,$default='',$filter=null,$datas=null) {
         }
         if(!empty($type)){
         	switch(strtolower($type)){
-        		case 's':   // 字符串
-        			$data 	=	(string)$data;
-        			break;
         		case 'a':	// 数组
         			$data 	=	(array)$data;
         			break;
@@ -363,6 +362,9 @@ function I($name,$default='',$filter=null,$datas=null) {
         		case 'b':	// 布尔
         			$data 	=	(boolean)$data;
         			break;
+                case 's':   // 字符串
+                default:
+                    $data   =   (string)$data;
         	}
         }
     }else{ // 变量默认值
