@@ -54,6 +54,9 @@ class Mysql extends Driver{
         $info   =   array();
         if($result) {
             foreach ($result as $key => $val) {
+				if(\PDO::CASE_LOWER != $this->_linkID->getAttribute(\PDO::ATTR_CASE)){
+					$val = array_change_key_case ( $val ,  CASE_LOWER );
+				}
                 $info[$val['field']] = array(
                     'name'    => $val['field'],
                     'type'    => $val['type'],
