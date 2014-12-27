@@ -116,6 +116,7 @@ class Mongo extends Driver {
             }
         }
         N('db_write',1); // 兼容代码
+        $this->model  =   $options['model'];
         $this->executeTimes++;
         try{
             if($this->config['debug']) {
@@ -275,9 +276,10 @@ class Mongo extends Driver {
         if(isset($options['table'])) {
             $this->switchCollection($options['table']);
         }
+        
+        $this->model  =   $options['model'];
         $this->executeTimes++;
         N('db_write',1); // 兼容代码        
-        $this->model  =   $options['model'];
         $query   = $this->parseWhere(isset($options['where'])?$options['where']:array());
         $set  =  $this->parseSet($data);
         if($this->config['debug']) {
