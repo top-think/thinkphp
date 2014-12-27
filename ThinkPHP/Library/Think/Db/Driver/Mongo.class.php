@@ -278,7 +278,7 @@ class Mongo extends Driver {
         $this->executeTimes++;
         N('db_write',1); // 兼容代码        
         $this->model  =   $options['model'];
-        $query   = $this->parseWhere($options['where']);
+        $query   = $this->parseWhere(isset($options['where'])?$options['where']:array());
         $set  =  $this->parseSet($data);
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.update(';
@@ -310,7 +310,7 @@ class Mongo extends Driver {
         if(isset($options['table'])) {
             $this->switchCollection($options['table']);
         }
-        $query   = $this->parseWhere($options['where']);
+        $query   = $this->parseWhere(isset($options['where'])?$options['where']:array());
         $this->model  =   $options['model'];
         $this->executeTimes++;
         N('db_write',1); // 兼容代码        
@@ -366,8 +366,8 @@ class Mongo extends Driver {
         $this->model  =   $options['model'];
         $this->queryTimes++;
         N('db_query',1); // 兼容代码        
-        $query  =  $this->parseWhere($options['where']);
-        $field =  $this->parseField($options['field']);
+        $query  =  $this->parseWhere(isset($options['where'])?$options['where']:array());
+        $field  =  $this->parseField(isset($options['field'])?$options['field']:array());
         try{
             if($this->config['debug']) {
                 $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.find(';
@@ -382,7 +382,7 @@ class Mongo extends Driver {
             }
             $this->debug(true);
             $_cursor   = $this->_collection->find($query,$field);
-            if($options['order']) {
+            if(!empty($options['order'])) {
                 $order   =  $this->parseOrder($options['order']);
                 if($this->config['debug']) {
                     $this->queryStr .= '.sort('.json_encode($order).')';
@@ -443,7 +443,7 @@ class Mongo extends Driver {
         $this->model  =   $options['model'];
         $this->queryTimes++;
         N('db_query',1); // 兼容代码        
-        $query  =  $this->parseWhere($options['where']);
+        $query  =  $this->parseWhere(isset($options['where'])?$options['where']:array());
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName;
             $this->queryStr   .= $query?'.find('.json_encode($query).')':'';
@@ -476,7 +476,7 @@ class Mongo extends Driver {
         $this->model  =   $options['model'];
         $this->queryTimes++;
         N('db_query',1); // 兼容代码        
-        $query  =  $this->parseWhere($options['where']);
+        $query  =  $this->parseWhere(isset($options['where'])?$options['where']:array());
         
         if($this->config['debug']) {
             $this->queryStr   =  $this->_dbName.'.'.$this->_collectionName.'.group({key:'.json_encode($keys).',cond:'.

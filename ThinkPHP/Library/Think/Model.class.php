@@ -24,6 +24,8 @@ class Model {
 
     // 当前数据库操作对象
     protected $db               =   null;
+	// 数据库对象池
+	private   $_db				=	array();
     // 主键名称
     protected $pk               =   'id';
     // 主键是否自动增长
@@ -421,14 +423,14 @@ class Model {
             } elseif (is_array($pk)) {
                 // 增加复合主键支持
                 foreach ($pk as $field) {
-                    if(isset($data[$pk])) {
+                    if(isset($data[$field])) {
                         $where[$field]      =   $data[$field];
                     } else {
                            // 如果缺少复合主键数据则不执行
                         $this->error        =   L('_OPERATION_WRONG_');
                         return false;
                     }
-                    unset($data[$pk]);
+                    unset($data[$field]);
                 }
             }
             if(!isset($where)){
@@ -1392,7 +1394,7 @@ class Model {
         }else{
             $sql    =   strtr($sql,array('__TABLE__'=>$this->getTableName(),'__PREFIX__'=>$this->tablePrefix));
             $prefix =   $this->tablePrefix;
-            $sql    =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
+            $sql    =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $sql);
         }
         $this->db->setModel($this->name);
         return $sql;
@@ -1411,21 +1413,20 @@ class Model {
             return $this->db;
         }
 
-        static $_db = array();
-        if(!isset($_db[$linkNum]) || $force ) {
+        if(!isset($this->_db[$linkNum]) || $force ) {
             // 创建一个新的实例
             if(!empty($config) && is_string($config) && false === strpos($config,'/')) { // 支持读取配置参数
                 $config  =  C($config);
             }
-            $_db[$linkNum]            =    Db::getInstance($config);
+            $this->_db[$linkNum]            =    Db::getInstance($config);
         }elseif(NULL === $config){
-            $_db[$linkNum]->close(); // 关闭数据库连接
-            unset($_db[$linkNum]);
+            $this->_db[$linkNum]->close(); // 关闭数据库连接
+            unset($this->_db[$linkNum]);
             return ;
         }
 
         // 切换数据库连接
-        $this->db   =    $_db[$linkNum];
+        $this->db   =    $this->_db[$linkNum];
         $this->_after_db();
         // 字段检测
         if(!empty($this->name) && $this->autoCheckFields)    $this->_checkTableInfo();
@@ -1558,6 +1559,10 @@ class Model {
                 $table  =   key($this->options['table']);
             }else{
                 $table  =   $this->options['table'];
+                if(strpos($table,')')){
+                    // 子查询
+                    return false;
+                }
             }
             $fields     =   $this->db->getFields($table);
             return  $fields ? array_keys($fields) : false;
@@ -1603,7 +1608,7 @@ class Model {
             $this->options['table'] =   $table;
         }elseif(!empty($table)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $table  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $table);
+            $table  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $table);
             $this->options['table'] =   $table;
         }
         return $this;
@@ -1621,7 +1626,7 @@ class Model {
             $this->options['using'] =   $using;
         }elseif(!empty($using)) {
             //将__TABLE_NAME__替换成带前缀的表名
-            $using  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $using);
+            $using  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $using);
             $this->options['using'] =   $using;
         }
         return $this;
@@ -1638,13 +1643,13 @@ class Model {
         $prefix =   $this->tablePrefix;
         if(is_array($join)) {
             foreach ($join as $key=>&$_join){
-                $_join  =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $_join);
+                $_join  =   preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $_join);
                 $_join  =   false !== stripos($_join,'JOIN')? $_join : $type.' JOIN ' .$_join;
             }
             $this->options['join']      =   $join;
         }elseif(!empty($join)) {
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $join  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $join);
+            $join  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $join);
             $this->options['join'][]    =   false !== stripos($join,'JOIN')? $join : $type.' JOIN '.$join;
         }
         return $this;
@@ -1669,7 +1674,7 @@ class Model {
         if(is_string($union) ) {
             $prefix =   $this->tablePrefix;
             //将__TABLE_NAME__字符串替换成带前缀的表名
-            $options  = preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $union);
+            $options  = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $union);
         }elseif(is_array($union)){
             if(isset($union[0])) {
                 $this->options['union']  =  array_merge($this->options['union'],$union);
@@ -1693,6 +1698,11 @@ class Model {
      * @return Model
      */
     public function cache($key=true,$expire=null,$type=''){
+        // 增加快捷调用方式 cache(10) 等同于 cache(true, 10)
+        if(is_numeric($key) && is_null($expire)){
+            $expire = $key;
+            $key    = true;
+        }
         if(false !== $key)
             $this->options['cache']  =  array('key'=>$key,'expire'=>$expire,'type'=>$type);
         return $this;

@@ -269,6 +269,11 @@ function T($template='',$layer=''){
  * @return mixed
  */
 function I($name,$default='',$filter=null,$datas=null) {
+	if(strpos($name,'/')){ // 指定修饰符
+		list($name,$type) 	=	explode('/',$name,2);
+	}elseif(C('VAR_AUTO_STRING')){ // 默认强制转换为字符串
+        $type   =   's';
+    }
     if(strpos($name,'.')) { // 指定参数来源
         list($method,$name) =   explode('.',$name,2);
     }else{ // 默认为自动判断
@@ -308,7 +313,6 @@ function I($name,$default='',$filter=null,$datas=null) {
     }
     if(''==$name) { // 获取全部变量
         $data       =   $input;
-        array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             if(is_string($filters)){
@@ -320,7 +324,6 @@ function I($name,$default='',$filter=null,$datas=null) {
         }
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
-        is_array($data) && array_walk_recursive($data,'filter_exp');
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             if(is_string($filters)){
@@ -331,18 +334,43 @@ function I($name,$default='',$filter=null,$datas=null) {
             
             foreach($filters as $filter){
                 if(function_exists($filter)) {
-                    $data   =   is_array($data)?array_map_recursive($filter,$data):$filter($data); // 参数过滤
+                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
+                }elseif(0===strpos($filter,'/')){
+                	// 支持正则验证
+                	if(1 !== preg_match($filter,(string)$data)){
+                		return   isset($default) ? $default : NULL;
+                	}
                 }else{
-                    $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
+                    $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
                     if(false === $data) {
-                        return   isset($default)?$default:NULL;
+                        return   isset($default) ? $default : NULL;
                     }
                 }
             }
         }
+        if(!empty($type)){
+        	switch(strtolower($type)){
+        		case 'a':	// 数组
+        			$data 	=	(array)$data;
+        			break;
+        		case 'd':	// 数字
+        			$data 	=	(int)$data;
+        			break;
+        		case 'f':	// 浮点
+        			$data 	=	(float)$data;
+        			break;
+        		case 'b':	// 布尔
+        			$data 	=	(boolean)$data;
+        			break;
+                case 's':   // 字符串
+                default:
+                    $data   =   (string)$data;
+        	}
+        }
     }else{ // 变量默认值
         $data       =    isset($default)?$default:NULL;
     }
+    is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
 }
 
@@ -1262,14 +1290,20 @@ function session($name='',$value='') {
             }
         }
     }else{ // 设置session
-        if($prefix){
-            if (!isset($_SESSION[$prefix])) {
-                $_SESSION[$prefix] = array();
-            }
-            $_SESSION[$prefix][$name]   =  $value;
-        }else{
-            $_SESSION[$name]  =  $value;
-        }
+		if(strpos($name,'.')){
+			list($name1,$name2) =   explode('.',$name);
+			if($prefix){
+				$_SESSION[$prefix][$name1][$name2]   =  $value;
+			}else{
+				$_SESSION[$name1][$name2]  =  $value;
+			}
+		}else{
+			if($prefix){
+				$_SESSION[$prefix][$name]   =  $value;
+			}else{
+				$_SESSION[$name]  =  $value;
+			}
+		}
     }
     return null;
 }
@@ -1369,7 +1403,7 @@ function load_ext_file($path) {
     if($configs = C('LOAD_EXT_CONFIG')) {
         if(is_string($configs)) $configs =  explode(',',$configs);
         foreach ($configs as $key=>$config){
-            $file   = $path.'Conf/'.$config.CONF_EXT;
+            $file   = is_file($config)? $config : $path.'Conf/'.$config.CONF_EXT;
             if(is_file($file)) {
                 is_numeric($key)?C(load_config($file)):C($key,load_config($file));
             }elseif(is_file($file = CONF_PATH.$config.CONF_EXT)) {
@@ -1471,9 +1505,11 @@ function send_http_status($code) {
     }
 }
 
-// 过滤表单中的表达式
-function filter_exp(&$value){
-    if (in_array(strtolower($value),array('exp','or'))){
+function think_filter(&$value){
+	// TODO 其他安全过滤
+
+	// 过滤查询特殊字符
+    if(preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i',$value)){
         $value .= ' ';
     }
 }
