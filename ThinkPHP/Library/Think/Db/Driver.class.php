@@ -105,7 +105,7 @@ abstract class Driver {
                 if($autoConnection){
                     trace($e->getMessage(),'','ERR');
                     return $this->connect($autoConnection,$linkNum);
-                }elseif($this->config['debug']){
+                }elseif($config['debug']){
                     E($e->getMessage());
                 }
             }
