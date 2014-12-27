@@ -1559,6 +1559,10 @@ class Model {
                 $table  =   key($this->options['table']);
             }else{
                 $table  =   $this->options['table'];
+                if(strpos($table,')')){
+                    // 子查询
+                    return false;
+                }
             }
             $fields     =   $this->db->getFields($table);
             return  $fields ? array_keys($fields) : false;
