@@ -129,8 +129,10 @@ class Mysql extends Driver{
             }
             $values[]    = '('.implode(',', $value).')';
         }
-        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES '.implode(',',$values);
-        $sql   .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
+        // 兼容数字传入方式
+        $replace= (is_numeric($replace) && $replace>0)?true:$replace;
+        $sql    =  (true===$replace?'REPLACE':'INSERT').' INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') VALUES '.implode(',',$values).$this->parseDuplicate($replace);
+        $sql    .= $this->parseComment(!empty($options['comment'])?$options['comment']:'');
         return $this->execute($sql,!empty($options['fetch_sql']) ? true : false);
     }
 
