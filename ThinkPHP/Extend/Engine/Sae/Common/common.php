@@ -80,7 +80,7 @@ function I($name,$default='',$filter=null) {
             $filters    =   explode(',',$filters);
             foreach($filters as $filter){
                 if(function_exists($filter)) {
-                    $data   =   is_array($data)?array_map($filter,$data):$filter($data); // 参数过滤
+                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
                 }else{
                     $data   =   filter_var($data,is_int($filter)?$filter:filter_id($filter));
                     if(false === $data) {
@@ -92,8 +92,19 @@ function I($name,$default='',$filter=null) {
     }else{ // 变量默认值
         $data       =	 isset($default)?$default:NULL;
     }
+    is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
 }
+
+function array_map_recursive($filter, $data) {
+    $result = array();
+    foreach ($data as $key => $val) {
+        $result[$key] = is_array($val)
+         ? array_map_recursive($filter, $val)
+         : call_user_func($filter, $val);
+    }
+    return $result;
+ }
 
 /**
  * 记录和统计时间（微秒）和内存使用情况
