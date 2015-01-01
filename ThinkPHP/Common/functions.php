@@ -1061,7 +1061,7 @@ function redirect($url, $time=0, $msg='') {
  */
 function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($options) && empty($cache)){
+    if(is_array($options)){
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
         $cache      =   Think\Cache::getInstance($type,$options);
@@ -1209,7 +1209,10 @@ function session($name='',$value='') {
         if(isset($name['name']))            session_name($name['name']);
         if(isset($name['path']))            session_save_path($name['path']);
         if(isset($name['domain']))          ini_set('session.cookie_domain', $name['domain']);
-        if(isset($name['expire']))          ini_set('session.gc_maxlifetime', $name['expire']);
+        if(isset($name['expire']))          {
+            ini_set('session.gc_maxlifetime',   $name['expire']);
+            ini_set('session.cookie_lifetime',  $name['expire']);
+        }
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
         if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);
