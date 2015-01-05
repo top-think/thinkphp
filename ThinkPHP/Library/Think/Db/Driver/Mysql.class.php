@@ -49,7 +49,13 @@ class Mysql extends Driver{
     public function getFields($tableName) {
         $this->initConnect(true);
         list($tableName) = explode(' ', $tableName);
-        $sql   = 'SHOW COLUMNS FROM `'.$tableName.'`';
+        if(strpos($tableName,'.')){
+        	list($dbName,$tableName) = explode('.',$tableName);
+			$sql   = 'SHOW COLUMNS FROM `'.$dbName.'`.`'.$tableName.'`';
+        }else{
+        	$sql   = 'SHOW COLUMNS FROM `'.$tableName.'`';
+        }
+        
         $result = $this->query($sql);
         $info   =   array();
         if($result) {
