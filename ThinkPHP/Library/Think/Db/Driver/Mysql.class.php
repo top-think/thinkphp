@@ -151,10 +151,14 @@ class Mysql extends Driver{
     protected function parseDuplicate($duplicate){
         // 布尔值或空则返回空字符串
         if(is_bool($duplicate) || empty($duplicate)) return '';
-        // field1,field2 转数组
-        if(is_string($duplicate)) $duplicate = explode(',', $duplicate);
-        // 对象转数组
-        if(is_object($duplicate)) $duplicate = get_class_vars($duplicate);
+        
+        if(is_string($duplicate)){
+        	// field1,field2 转数组
+        	$duplicate = explode(',', $duplicate);
+        }elseif(is_object($duplicate)){
+        	// 对象转数组
+        	$duplicate = get_class_vars($duplicate);
+        }
         $updates                    = array();
         foreach((array) $duplicate as $key=>$val){
             if(is_numeric($key)){ // array('field1', 'field2', 'field3') 解析为 ON DUPLICATE KEY UPDATE field1=VALUES(field1), field2=VALUES(field2), field3=VALUES(field3)
