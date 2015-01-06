@@ -602,7 +602,7 @@ class Db {
             }
         }
 		//将__TABLE_NAME__这样的字符串替换成正规的表名,并且带上前缀和后缀
-        $joinStr = preg_replace("/__([A-Z_-]+)__/esU",C("DB_PREFIX")."strtolower('$1')",$joinStr);
+        $joinStr = preg_replace("/__([A-Z_-]+)__/esU",C("DB_PREFIX").".strtolower('$1')",$joinStr);
         return $joinStr;
     }
 
