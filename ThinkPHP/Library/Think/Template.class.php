@@ -66,7 +66,7 @@ class  Template {
     /**
      * 加载模板
      * @access public
-     * @param string $tmplTemplateFile 模板文件
+     * @param string $templateFile 模板文件
      * @param array  $templateVar 模板变量
      * @param string $prefix 模板标识前缀
      * @return void
@@ -80,21 +80,21 @@ class  Template {
     /**
      * 加载主模板并缓存
      * @access public
-     * @param string $tmplTemplateFile 模板文件
+     * @param string $templateFile 模板文件
      * @param string $prefix 模板标识前缀
      * @return string
      * @throws ThinkExecption
      */
-    public function loadTemplate ($tmplTemplateFile,$prefix='') {
-        if(is_file($tmplTemplateFile)) {
-            $this->templateFile    =  $tmplTemplateFile;
+    public function loadTemplate ($templateFile,$prefix='') {
+        if(is_file($templateFile)) {
+            $this->templateFile    =  $templateFile;
             // 读取模板文件内容
-            $tmplContent =  file_get_contents($tmplTemplateFile);
+            $tmplContent =  file_get_contents($templateFile);
         }else{
-            $tmplContent =  $tmplTemplateFile;
+            $tmplContent =  $templateFile;
         }
          // 根据模版文件名定位缓存文件
-        $tmplCacheFile = $this->config['cache_path'].$prefix.md5($tmplTemplateFile).$this->config['cache_suffix'];
+        $tmplCacheFile = $this->config['cache_path'].$prefix.md5($templateFile).$this->config['cache_suffix'];
 
         // 判断是否启用布局
         if(C('LAYOUT_ON')) {
