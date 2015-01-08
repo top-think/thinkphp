@@ -17,23 +17,21 @@ use Think\Cache;
 /**
  * Memcached缓存驱动
  */
-class Memcached extends Cache
-{
+class Memcached extends Cache {
 
     /**
      *
      * @param array $options
      */
-    public function __construct($options = array())
-    {
+    public function __construct($options = array()) {
         if ( !extension_loaded('memcached') ) {
             E(L('_NOT_SUPPORT_').':memcached');
         }
 
         $options = array_merge(array(
-            'servers' => C('MEMCACHED_SERVER') ? C('MEMCACHED_SERVER') : null,
-            'lib_options' => C('MEMCACHED_LIB') ? C('MEMCACHED_LIB') : null
-       ), $options);
+            'servers'       =>  C('MEMCACHED_SERVER') ? C('MEMCACHED_SERVER') : null,
+            'lib_options'   =>  C('MEMCACHED_LIB') ? C('MEMCACHED_LIB') : null
+        ), $options);
 
         $this->options      =   $options;
         $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
@@ -51,10 +49,8 @@ class Memcached extends Cache
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public function get($name)
-    {
+    public function get($name) {
         N('cache_read',1);
-        $this->handler->get($this->options['prefix'].$name);
         return $this->handler->get($this->options['prefix'].$name);
     }
 
@@ -66,8 +62,7 @@ class Memcached extends Cache
      * @param integer $expire  有效时间（秒）
      * @return boolean
      */
-    public function set($name, $value, $expire = null)
-    {
+    public function set($name, $value, $expire = null) {
         N('cache_write',1);
         if(is_null($expire)) {
             $expire  =  $this->options['expire'];
