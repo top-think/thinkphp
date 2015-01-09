@@ -131,7 +131,7 @@ class  Template {
         // 优化生成的php代码
         $tmplContent = str_replace('?><?php','',$tmplContent);
         // 人为添加一个换行
-        $tmplContent = str_replace("\r\n","\n",$tmplContent);
+        $tmplContent = str_replace("?>\r\n","?>\r\n\r\n",$tmplContent);
         $tmplContent = str_replace("?>\n","?>\n\n",$tmplContent);
         // 模版编译过滤标签
         Hook::listen('template_filter',$tmplContent);
