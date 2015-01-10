@@ -314,7 +314,7 @@ function I($name,$default='',$filter=null,$datas=null) {
     if(''==$name) { // 获取全部变量
         $data       =   $input;
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
-        if($filters) {
+        if(!(0===strpos($filters,'/')&&strrchr($filters,'/')=='/')) {//正则表达式不能拆分
             if(is_string($filters)){
                 $filters    =   explode(',',$filters);
             }
@@ -325,7 +325,7 @@ function I($name,$default='',$filter=null,$datas=null) {
     }elseif(isset($input[$name])) { // 取值操作
         $data       =   $input[$name];
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
-        if($filters) {
+        if(!(0===strpos($filters,'/')&&strrchr($filters,'/')=='/')) {//正则表达式直接使用
             if(is_string($filters)){
                 $filters    =   explode(',',$filters);
             }elseif(is_int($filters)){
