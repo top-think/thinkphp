@@ -353,23 +353,25 @@ function I($name,$default='',$filter=null,$datas=null) {
         $filters    =   isset($filter)? $filter : C('DEFAULT_FILTER');
         if($filters) {
             if(is_string($filters)){
-                $filters    =   explode(',',$filters);
+                if(0 === strpos($filters,'/') && 1 !== preg_match($filters,(string)$data)){
+                    // 支持正则验证
+                    return   isset($default) ? $default : NULL;
+                }else{
+                    $filters    =   explode(',',$filters);                    
+                }
             }elseif(is_int($filters)){
                 $filters    =   array($filters);
             }
             
-            foreach($filters as $filter){
-                if(function_exists($filter)) {
-                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
-                }elseif(0===strpos($filter,'/')){
-                	// 支持正则验证
-                	if(1 !== preg_match($filter,(string)$data)){
-                		return   isset($default) ? $default : NULL;
-                	}
-                }else{
-                    $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
-                    if(false === $data) {
-                        return   isset($default) ? $default : NULL;
+            if(is_array($filters)){
+                foreach($filters as $filter){
+                    if(function_exists($filter)) {
+                        $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
+                    }else{
+                        $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
+                        if(false === $data) {
+                            return   isset($default) ? $default : NULL;
+                        }
                     }
                 }
             }
