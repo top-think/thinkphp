@@ -696,7 +696,7 @@ class  Template {
     /**
      * 分析加载的模板文件并读取内容 支持多个模板文件读取
      * @access private
-     * @param string $tmplPublicName  模板文件名
+     * @param string $templateName  模板文件名
      * @return string
      */    
     private function parseTemplateName($templateName){
