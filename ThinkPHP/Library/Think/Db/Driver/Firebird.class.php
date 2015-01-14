@@ -10,12 +10,31 @@
 // +----------------------------------------------------------------------
 namespace Think\Db\Driver;
 use Think\Db\Driver;
-
+use PDO;
 /**
  * Firebird数据库驱动 
  */
 class Firebird extends Driver{
     protected $selectSql  =     'SELECT %LIMIT% %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%';
+    
+    /**
+     * 连接数据库方法
+     * @access public
+     */
+    public function connect($config='',$linkNum=0) {
+        if ( !isset($this->linkID[$linkNum]) ) {
+            if(empty($config))  $config =   $this->config;
+            try{
+                if(empty($config['dsn'])) {
+                    $config['dsn']  =   $this->parseDsn($config);
+                }
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password']);
+            }catch (\PDOException $e) {
+                E($e->getMessage());
+            }
+        }
+        return $this->linkID[$linkNum];
+    }
 
     /**
      * 解析pdo连接的dsn信息
@@ -87,11 +106,11 @@ class Firebird extends Driver{
         $info   =   array();
         if($result){
             foreach($result as $key => $val){
-                $info[trim($val['field'])] = array(
-                    'name'    => trim($val['field']),
-                    'type'    => $val['type'],
-                    'notnull' => (bool) ($val['null1'] ==1), // 1表示不为Null
-                    'default' => $val['default1'],
+                $info[trim($val['FIELD'])] = array(
+                    'name'    => trim($val['FIELD']),
+                    'type'    => $val['TYPE'],
+                    'notnull' => (bool) ($val['NULL1'] ==1), // 1表示不为Null
+                    'default' => $val['DEFAULT1'],
                     'primary' => false,
                     'autoinc' => false,
                 );
@@ -101,7 +120,7 @@ class Firebird extends Driver{
         $sql='select b.rdb$field_name as field_name from rdb$relation_constraints a join rdb$index_segments b on a.rdb$index_name=b.rdb$index_name where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$tableName.'\')';
         $rs_temp = $this->query($sql);
         foreach($rs_temp as $row) {
-            $info[trim($row['field_name'])]['primary']=True;
+            $info[trim($row['FIELD_NAME'])]['primary']=True;
         }
         return $info;
     }
