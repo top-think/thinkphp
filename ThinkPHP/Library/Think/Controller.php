@@ -33,7 +33,6 @@ abstract class Controller {
      * @access public
      */
     public function __construct() {
-        Hook::listen('action_begin',$this->config);
         //实例化视图类
         $this->view     = Think::instance('Think\View');
         //控制器初始化
@@ -216,11 +215,6 @@ abstract class Controller {
                 header('Content-Type:application/json; charset=utf-8');
                 $data   =   json_encode($data,$json_option);
                 break;
-            case 'XML'  :
-                // 返回xml格式数据
-                header('Content-Type:text/xml; charset=utf-8');
-                $data   =   xml_encode($data);
-                break;
             case 'JSONP':
                 // 返回JSON数据格式到客户端 包含状态信息
                 header('Content-Type:application/json; charset=utf-8');
@@ -313,14 +307,4 @@ abstract class Controller {
         }
     }
 
-   /**
-     * 析构方法
-     * @access public
-     */
-    public function __destruct() {
-        // 执行后续操作
-        Hook::listen('action_end');
-    }
 }
-// 设置控制器别名 便于升级
-class_alias('Think\Controller','Think\Action');
