@@ -725,7 +725,7 @@ function B($name, $tag='',&$params=NULL) {
     if(''==$tag){
         $name   .=  'Behavior';
     }
-    \Think\Hook::exec($name,$tag,$params);
+    return \Think\Hook::exec($name,$tag,$params);
 }
 
 /**
@@ -1009,7 +1009,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
  * @return void
  */
 function W($name, $data=array()) {
-    R($name,$data,'Widget');
+    return R($name,$data,'Widget');
 }
 
 /**
