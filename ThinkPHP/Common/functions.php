@@ -269,6 +269,7 @@ function T($template='',$layer=''){
  * @return mixed
  */
 function I($name,$default='',$filter=null,$datas=null) {
+	static $_PUT	=	null;
 	if(strpos($name,'/')){ // 指定修饰符
 		list($name,$type) 	=	explode('/',$name,2);
 	}elseif(C('VAR_AUTO_STRING')){ // 默认强制转换为字符串
@@ -280,16 +281,28 @@ function I($name,$default='',$filter=null,$datas=null) {
         $method =   'param';
     }
     switch(strtolower($method)) {
-        case 'get'     :   $input =& $_GET;break;
-        case 'post'    :   $input =& $_POST;break;
-        case 'put'     :   parse_str(file_get_contents('php://input'), $input);break;
+        case 'get'     :   
+        	$input =& $_GET;
+        	break;
+        case 'post'    :   
+        	$input =& $_POST;
+        	break;
+        case 'put'     :   
+        	if(is_null($_PUT)){
+            	parse_str(file_get_contents('php://input'), $_PUT);
+        	}
+        	$input 	=	$_PUT;        
+        	break;
         case 'param'   :
             switch($_SERVER['REQUEST_METHOD']) {
                 case 'POST':
                     $input  =  $_POST;
                     break;
                 case 'PUT':
-                    parse_str(file_get_contents('php://input'), $input);
+                	if(is_null($_PUT)){
+                    	parse_str(file_get_contents('php://input'), $_PUT);
+                	}
+                	$input 	=	$_PUT;
                     break;
                 default:
                     $input  =  $_GET;
@@ -302,14 +315,26 @@ function I($name,$default='',$filter=null,$datas=null) {
                 $input  =   explode($depr,trim($_SERVER['PATH_INFO'],$depr));            
             }
             break;
-        case 'request' :   $input =& $_REQUEST;   break;
-        case 'session' :   $input =& $_SESSION;   break;
-        case 'cookie'  :   $input =& $_COOKIE;    break;
-        case 'server'  :   $input =& $_SERVER;    break;
-        case 'globals' :   $input =& $GLOBALS;    break;
-        case 'data'    :   $input =& $datas;      break;
+        case 'request' :   
+        	$input =& $_REQUEST;   
+        	break;
+        case 'session' :   
+        	$input =& $_SESSION;   
+        	break;
+        case 'cookie'  :   
+        	$input =& $_COOKIE;    
+        	break;
+        case 'server'  :   
+        	$input =& $_SERVER;    
+        	break;
+        case 'globals' :   
+        	$input =& $GLOBALS;    
+        	break;
+        case 'data'    :   
+        	$input =& $datas;      
+        	break;
         default:
-            return NULL;
+            return null;
     }
     if(''==$name) { // 获取全部变量
         $data       =   $input;
@@ -329,7 +354,7 @@ function I($name,$default='',$filter=null,$datas=null) {
             if(is_string($filters)){
                 if(0 === strpos($filters,'/') && 1 !== preg_match($filters,(string)$data)){
                     // 支持正则验证
-                    return   isset($default) ? $default : NULL;
+                    return   isset($default) ? $default : null;
                 }else{
                     $filters    =   explode(',',$filters);                    
                 }
@@ -344,7 +369,7 @@ function I($name,$default='',$filter=null,$datas=null) {
                     }else{
                         $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
                         if(false === $data) {
-                            return   isset($default) ? $default : NULL;
+                            return   isset($default) ? $default : null;
                         }
                     }
                 }
@@ -370,7 +395,7 @@ function I($name,$default='',$filter=null,$datas=null) {
         	}
         }
     }else{ // 变量默认值
-        $data       =    isset($default)?$default:NULL;
+        $data       =    isset($default)?$default:null;
     }
     is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
