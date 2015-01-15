@@ -65,20 +65,14 @@ class Dispatcher {
             }
 
             if(!empty($rule)) {
-                // 子域名部署规则 '子域名'=>array('模块名[/控制器名]','var1=a&var2=b');
+                // 子域名部署规则 '子域名'=>array('模块名','var1=a&var2=b');
                 if(is_array($rule)){
                     list($rule,$vars) = $rule;
                 }
                 $array      =   explode('/',$rule);
                 // 模块绑定
                 define('BIND_MODULE',array_shift($array));
-                // 控制器绑定         
-                if(!empty($array)) {
-                    $controller  =   array_shift($array);
-                    if($controller){
-                        define('BIND_CONTROLLER',$controller);
-                    }
-                }
+
                 if(isset($vars)) { // 传入参数
                     parse_str($vars,$parms);
                     if(isset($panDomain)){
@@ -120,7 +114,7 @@ class Dispatcher {
             define('__EXT__', strtolower(pathinfo($_SERVER['PATH_INFO'],PATHINFO_EXTENSION)));
             $_SERVER['PATH_INFO'] = __INFO__;     
             if(!defined('BIND_MODULE') && (!C('URL_ROUTER_ON') || !Route::check())){
-                if (__INFO__ && C('MULTI_MODULE')){ // 获取模块名
+                if (__INFO__ ){ // 获取模块名
                     $paths      =   explode($depr,__INFO__,2);
                     $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
                     $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
@@ -179,7 +173,7 @@ class Dispatcher {
 	    }
         // 模块URL地址
         $moduleName    =   defined('MODULE_ALIAS')? MODULE_ALIAS : MODULE_NAME;
-        define('__MODULE__',(defined('BIND_MODULE') || !C('MULTI_MODULE'))? __APP__ : __APP__.'/'.($urlCase ? strtolower($moduleName) : $moduleName));
+        define('__MODULE__',defined('BIND_MODULE') ? __APP__ : __APP__.'/'.($urlCase ? strtolower($moduleName) : $moduleName));
 
         if('' != $_SERVER['PATH_INFO'] && (!C('URL_ROUTER_ON') ||  !Route::check()) ){   // 检测路由规则 如果没有则按默认规则调度URL
             // 检查禁止访问的URL后缀

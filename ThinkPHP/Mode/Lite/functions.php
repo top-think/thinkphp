@@ -125,8 +125,10 @@ function G($start,$end='',$dec=4) {
     if(is_float($end)) { // 记录时间
         $_info[$start]  =   $end;
     }elseif(!empty($end)){ // 统计时间和内存使用
-        if(!isset($_info[$end])) $_info[$end]       =  microtime(TRUE);
-        if(MEMORY_LIMIT_ON && $dec=='m'){
+        if(!isset($_info[$end])) {
+            $_info[$end]       =  microtime(true);
+        }
+        if($dec=='m'){
             if(!isset($_mem[$end])) $_mem[$end]     =  memory_get_usage();
             return number_format(($_mem[$end]-$_mem[$start])/1024);
         }else{
@@ -134,8 +136,8 @@ function G($start,$end='',$dec=4) {
         }
 
     }else{ // 记录时间和内存使用
-        $_info[$start]  =  microtime(TRUE);
-        if(MEMORY_LIMIT_ON) $_mem[$start]           =  memory_get_usage();
+        $_info[$start]  =  microtime(true);
+        $_mem[$start]   =  memory_get_usage();
     }
     return null;
 }
@@ -149,8 +151,9 @@ function G($start,$end='',$dec=4) {
 function L($name=null, $value=null) {
     static $_lang = array();
     // 空参数返回所有定义
-    if (empty($name))
+    if (empty($name)){
         return $_lang;
+    }
     // 判断语言获取(或设置)
     // 若不存在,直接返回全大写$name
     if (is_string($name)) {
@@ -169,8 +172,9 @@ function L($name=null, $value=null) {
         return null;
     }
     // 批量定义
-    if (is_array($name))
+    if (is_array($name)){
         $_lang = array_merge($_lang, array_change_key_case($name, CASE_UPPER));
+    }
     return null;
 }
 
@@ -201,8 +205,9 @@ function compile($filename) {
     }else{
         $content    =   'namespace {'.$content;
     }
-    if ('?>' == substr($content, -2))
+    if ('?>' == substr($content, -2)){
         $content    = substr($content, 0, -2);
+    }
     return $content.'}';
 }
 
@@ -524,8 +529,9 @@ function load($name, $baseUrl='', $ext='.php') {
             $name       =   implode('/',$array);
         }
     }
-    if (substr($baseUrl, -1) != '/')
+    if (substr($baseUrl, -1) != '/'){
         $baseUrl       .= '/';
+    }
     require_cache($baseUrl . $name . $ext);
 }
 
@@ -537,8 +543,9 @@ function load($name, $baseUrl='', $ext='.php') {
  * @return boolean
  */
 function vendor($class, $baseUrl = '', $ext='.php') {
-    if (empty($baseUrl))
+    if (empty($baseUrl)){
         $baseUrl = VENDOR_PATH;
+    }
     return import($class, $baseUrl, $ext);
 }
 
@@ -551,9 +558,10 @@ function vendor($class, $baseUrl = '', $ext='.php') {
 function D($name='',$layer='') {
     if(empty($name)) return new Think\Model;
     static $_model  =   array();
-    $layer          =   $layer? : 'Controller';
-    if(isset($_model[$name.$layer]))
+    $layer          =   $layer? : 'Model';
+    if(isset($_model[$name.$layer])){
         return $_model[$name.$layer];
+    }
     $class          =   parse_res_name($name,$layer);
     if(class_exists($class)) {
         $model      =   new $class(basename($name));
@@ -583,8 +591,9 @@ function M($name='', $tablePrefix='',$connection='') {
         $class      =   'Think\\Model';
     }
     $guid           =   (is_array($connection)?implode('',$connection):$connection).$tablePrefix . $name . '_' . $class;
-    if (!isset($_model[$guid]))
+    if (!isset($_model[$guid])){
         $_model[$guid] = new $class($name,$tablePrefix,$connection);
+    }
     return $_model[$guid];
 }
 
@@ -622,7 +631,6 @@ function parse_res_name($name,$layer){
 /**
  * 用于实例化访问控制器
  * @param string $name 控制器名
- * @param string $path 控制器命名空间（路径）
  * @return Think\Controller|false
  */
 function controller($name){
@@ -646,11 +654,12 @@ function controller($name){
  * @param string $layer 控制层名称
  * @return Think\Controller|false
  */
-function A($name,$layer='',$level=0) {
+function A($name,$layer='') {
     static $_action = array();
     $layer  =   $layer? : 'Controller';
-    if(isset($_action[$name.$layer]))
+    if(isset($_action[$name.$layer])){
         return $_action[$name.$layer];
+    }
     
     $class  =   parse_res_name($name,$layer);
     if(class_exists($class)) {
@@ -706,7 +715,7 @@ function B($name, $tag='',&$params=NULL) {
     if(''==$tag){
         $name   .=  'Behavior';
     }
-    \Think\Hook::exec($name,$tag,$params);
+    return \Think\Hook::exec($name,$tag,$params);
 }
 
 /**
@@ -962,7 +971,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
  * @return void
  */
 function W($name, $data=array()) {
-    R($name,$data,'Widget');
+    return R($name,$data,'Widget');
 }
 
 /**
@@ -1093,54 +1102,6 @@ function to_guid_string($mix) {
         $mix = serialize($mix);
     }
     return md5($mix);
-}
-
-/**
- * XML编码
- * @param mixed $data 数据
- * @param string $root 根节点名
- * @param string $item 数字索引的子节点名
- * @param string $attr 根节点属性
- * @param string $id   数字索引子节点key转换的属性名
- * @param string $encoding 数据编码
- * @return string
- */
-function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $encoding='utf-8') {
-    if(is_array($attr)){
-        $_attr = array();
-        foreach ($attr as $key => $value) {
-            $_attr[] = "{$key}=\"{$value}\"";
-        }
-        $attr = implode(' ', $_attr);
-    }
-    $attr   = trim($attr);
-    $attr   = empty($attr) ? '' : " {$attr}";
-    $xml    = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
-    $xml   .= "<{$root}{$attr}>";
-    $xml   .= data_to_xml($data, $item, $id);
-    $xml   .= "</{$root}>";
-    return $xml;
-}
-
-/**
- * 数据XML编码
- * @param mixed  $data 数据
- * @param string $item 数字索引时的节点名称
- * @param string $id   数字索引key转换为的属性名
- * @return string
- */
-function data_to_xml($data, $item='item', $id='id') {
-    $xml = $attr = '';
-    foreach ($data as $key => $val) {
-        if(is_numeric($key)){
-            $id && $attr = " {$id}=\"{$key}\"";
-            $key  = $item;
-        }
-        $xml    .=  "<{$key}{$attr}>";
-        $xml    .=  (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
-        $xml    .=  "</{$key}>";
-    }
-    return $xml;
 }
 
 /**
