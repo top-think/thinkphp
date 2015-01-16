@@ -44,7 +44,7 @@ class TokenBuildBehavior {
         if(isset($_SESSION[$tokenName][$tokenKey])) {// 相同页面不重复生成session
             $tokenValue = $_SESSION[$tokenName][$tokenKey];
         }else{
-            $tokenValue = $tokenType(microtime(true));
+            $tokenValue = is_callable($tokenType) ? $tokenType(microtime(true)) : md5(microtime(true)); 
             $_SESSION[$tokenName][$tokenKey]   =  $tokenValue;
             if(IS_AJAX && C('TOKEN_RESET',null,true))
                 header($tokenName.': '.$tokenKey.'_'.$tokenValue); //ajax需要获得这个header并替换页面中meta中的token值

@@ -55,7 +55,7 @@ class Redis extends Cache {
         N('cache_read',1);
         $value = $this->handler->get($this->options['prefix'].$name);
         $jsonData  = json_decode( $value, true );
-        return ($jsonData === NULL) ? $value : $jsonData;	//检测是否为JSON数据 true 返回JSON解析数组, false返回源数据
+        return ($jsonData === null) ? $value : $jsonData;	//检测是否为JSON数据 true 返回JSON解析数组, false返回源数据
     }
 
     /**

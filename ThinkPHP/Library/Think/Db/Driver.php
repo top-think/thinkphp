@@ -368,7 +368,7 @@ abstract class Driver {
             if(is_array($val) && 'exp' == $val[0]){
                 $set[]  =   $this->parseKey($key).'='.$val[1];
             }elseif(is_null($val)){
-                $set[]  =   $this->parseKey($key).'=NULL';
+                $set[]  =   $this->parseKey($key).'=null';
             }elseif(is_scalar($val)) {// 过滤非标量数据
                 if(0===strpos($val,':') && in_array($val,array_keys($this->bind)) ){
                     $set[]  =   $this->parseKey($key).'='.$this->escapeString($val);

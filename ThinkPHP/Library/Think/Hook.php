@@ -78,7 +78,7 @@ class Hook {
      * @param mixed $params 传入参数
      * @return void
      */
-    static public function listen($tag, &$params=NULL) {
+    static public function listen($tag, &$params=null) {
         if(isset(self::$tags[$tag])) {
             if(APP_DEBUG) {
                 G($tag.'Start');
@@ -110,7 +110,7 @@ class Hook {
      * @param Mixed $params 传入的参数
      * @return void
      */
-    static public function exec($name, $tag,&$params=NULL) {
+    static public function exec($name, $tag,&$params=null) {
         if('Behavior' == substr($name,-8) ){
             // 行为扩展必须用run入口方法
             $tag    =   'run';

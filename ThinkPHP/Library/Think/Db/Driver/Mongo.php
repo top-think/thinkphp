@@ -811,7 +811,7 @@ class Mongo extends Driver {
                     $query[$key]  = array('$exists'=>(bool)$val[1]);
                 }elseif('size'==$con){ // 限制属性大小
                     $query[$key]  = array('$size'=>intval($val[1]));
-                }elseif('type'==$con){ // 限制字段类型 1 浮点型 2 字符型 3 对象或者MongoDBRef 5 MongoBinData 7 MongoId 8 布尔型 9 MongoDate 10 NULL 15 MongoCode 16 32位整型 17 MongoTimestamp 18 MongoInt64 如果是数组的话判断元素的类型
+                }elseif('type'==$con){ // 限制字段类型 1 浮点型 2 字符型 3 对象或者MongoDBRef 5 MongoBinData 7 MongoId 8 布尔型 9 MongoDate 10 null 15 MongoCode 16 32位整型 17 MongoTimestamp 18 MongoInt64 如果是数组的话判断元素的类型
                     $query[$key]  = array('$type'=>intval($val[1]));
                 }else{
                     $query[$key]  =  $val;

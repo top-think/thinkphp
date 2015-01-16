@@ -898,8 +898,8 @@ class Model {
         if(false !== ($value = S($guid))) { // 存在缓存写入数据
             if(NOW_TIME > S($guid.'_time')+$lazyTime) {
                 // 延时更新时间到了，删除缓存数据 并实际写入数据库
-                S($guid,NULL);
-                S($guid.'_time',NULL);
+                S($guid,null);
+                S($guid.'_time',null);
                 return $value+$step;
             }else{
                 // 追加数据到缓存
@@ -1441,7 +1441,7 @@ class Model {
                 $config  =  C($config);
             }
             $this->_db[$linkNum]            =    Db::getInstance($config);
-        }elseif(NULL === $config){
+        }elseif(null === $config){
             $this->_db[$linkNum]->close(); // 关闭数据库连接
             unset($this->_db[$linkNum]);
             return ;
@@ -1762,7 +1762,7 @@ class Model {
      * @param array $args 参数
      * @return Model
      */
-    public function scope($scope='',$args=NULL){
+    public function scope($scope='',$args=null){
         if('' === $scope) {
             if(isset($this->_scope['default'])) {
                 // 默认的命名范围

@@ -277,6 +277,7 @@ function T($template='',$layer=''){
  * @return mixed
  */
 function I($name,$default='',$filter=null,$datas=null) {
+	static $_PUT 	=	null;
 	if(strpos($name,'/')){ // 指定修饰符
 		list($name,$type) 	=	explode('/',$name,2);
 	}elseif(C('VAR_AUTO_STRING')){ // 默认强制转换为字符串
@@ -295,7 +296,10 @@ function I($name,$default='',$filter=null,$datas=null) {
         	$input =& $_POST;
         	break;
         case 'put'     :   
-        	parse_str(file_get_contents('php://input'), $input);
+        	if(is_null($_PUT)){
+        		parse_str(file_get_contents('php://input'), $_PUT);
+        	}
+        	$input 	=	$_PUT;
         	break;
         case 'param'   :
             switch($_SERVER['REQUEST_METHOD']) {
@@ -303,7 +307,10 @@ function I($name,$default='',$filter=null,$datas=null) {
                     $input  =  $_POST;
                     break;
                 case 'PUT':
-                    parse_str(file_get_contents('php://input'), $input);
+		        	if(is_null($_PUT)){
+		        		parse_str(file_get_contents('php://input'), $_PUT);
+		        	}
+		        	$input 	=	$_PUT;
                     break;
                 default:
                     $input  =  $_GET;
@@ -335,7 +342,7 @@ function I($name,$default='',$filter=null,$datas=null) {
         	$input =& $datas;      
         	break;
         default:
-            return NULL;
+            return null;
     }
     if(''==$name) { // 获取全部变量
         $data       =   $input;
@@ -355,7 +362,7 @@ function I($name,$default='',$filter=null,$datas=null) {
             if(is_string($filters)){
                 if(0 === strpos($filters,'/') && 1 !== preg_match($filters,(string)$data)){
                     // 支持正则验证
-                    return   isset($default) ? $default : NULL;
+                    return   isset($default) ? $default : null;
                 }else{
                     $filters    =   explode(',',$filters);                    
                 }
@@ -370,7 +377,7 @@ function I($name,$default='',$filter=null,$datas=null) {
                     }else{
                         $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
                         if(false === $data) {
-                            return   isset($default) ? $default : NULL;
+                            return   isset($default) ? $default : null;
                         }
                     }
                 }
@@ -396,7 +403,7 @@ function I($name,$default='',$filter=null,$datas=null) {
         	}
         }
     }else{ // 变量默认值
-        $data       =    isset($default)? $default : NULL;
+        $data       =    isset($default)? $default : null;
     }
     is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
@@ -729,7 +736,7 @@ function R($url,$vars=array(),$layer='') {
  * @param mixed $params 传入参数
  * @return void
  */
-function tag($tag, &$params=NULL) {
+function tag($tag, &$params=null) {
     \Think\Hook::listen($tag,$params);
 }
 
@@ -740,7 +747,7 @@ function tag($tag, &$params=NULL) {
  * @param Mixed $params 传入的参数
  * @return void
  */
-function B($name, $tag='',&$params=NULL) {
+function B($name, $tag='',&$params=null) {
     if(''==$tag){
         $name   .=  'Behavior';
     }
@@ -1071,9 +1078,9 @@ function S($name,$value='',$options=null) {
         return $cache->rm($name);
     }else { // 缓存数据
         if(is_array($options)) {
-            $expire     =   isset($options['expire'])? $options['expire'] : NULL;
+            $expire     =   isset($options['expire'])? $options['expire'] : null;
         }else{
-            $expire     =   is_numeric($options) ? $options : NULL;
+            $expire     =   is_numeric($options) ? $options : null;
         }
         return $cache->set($name, $value, $expire);
     }
@@ -1370,8 +1377,8 @@ function load_ext_file($path) {
  */
 function get_client_ip($type = 0,$adv=false) {
     $type       =  $type ? 1 : 0;
-    static $ip  =   NULL;
-    if ($ip !== NULL) return $ip[$type];
+    static $ip  =   null;
+    if ($ip !== null) return $ip[$type];
     if($adv){
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $arr    =   explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
