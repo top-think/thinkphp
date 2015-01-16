@@ -29,8 +29,8 @@ class Memcached extends Cache {
         }
 
         $options = array_merge(array(
-            'servers'       =>  C('MEMCACHED_SERVER') ? C('MEMCACHED_SERVER') : null,
-            'lib_options'   =>  C('MEMCACHED_LIB') ? C('MEMCACHED_LIB') : null
+            'servers'       =>  C('MEMCACHED_SERVER') ? : null,
+            'lib_options'   =>  C('MEMCACHED_LIB') ? : null
         ), $options);
 
         $this->options      =   $options;

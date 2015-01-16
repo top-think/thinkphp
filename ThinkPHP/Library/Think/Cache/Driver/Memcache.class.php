@@ -27,9 +27,9 @@ class Memcache extends Cache {
         }
 
         $options = array_merge(array (
-            'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
-            'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
-            'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+            'host'        =>  C('MEMCACHE_HOST') ? : '127.0.0.1',
+            'port'        =>  C('MEMCACHE_PORT') ? : 11211,
+            'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? : false,
             'persistent'  =>  false,
         ),$options);
 
