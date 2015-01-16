@@ -26,14 +26,13 @@ class Redis extends Cache {
         if ( !extension_loaded('redis') ) {
             E(L('_NOT_SUPPORT_').':redis');
         }
-        if(empty($options)) {
-            $options = array (
-                'host'          => C('REDIS_HOST') ? C('REDIS_HOST') : '127.0.0.1',
-                'port'          => C('REDIS_PORT') ? C('REDIS_PORT') : 6379,
-                'timeout'       => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+        $options = array_merge(array (
+                'host'          => C('REDIS_HOST') ? : '127.0.0.1',
+                'port'          => C('REDIS_PORT') ? : 6379,
+                'timeout'       => C('DATA_CACHE_TIMEOUT') ? : false,
                 'persistent'    => false,
-            );
-        }
+            ),$options);
+
         $this->options =  $options;
         $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        

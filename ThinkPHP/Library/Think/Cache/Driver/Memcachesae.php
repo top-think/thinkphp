@@ -27,25 +27,21 @@ class Memcachesae extends Cache {
      * @access public
      */
     function __construct($options=array()) {
-        if(empty($options)) {
-            $options = array (
-                'host'        =>  C('MEMCACHE_HOST') ? C('MEMCACHE_HOST') : '127.0.0.1',
-                'port'        =>  C('MEMCACHE_PORT') ? C('MEMCACHE_PORT') : 11211,
-                'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
+
+        $options = array_merge(array (
+                'host'        =>  C('MEMCACHE_HOST') ? : '127.0.0.1',
+                'port'        =>  C('MEMCACHE_PORT') ? : 11211,
+                'timeout'     =>  C('DATA_CACHE_TIMEOUT') ? : false,
                 'persistent'  =>  false,
-            );
-        }
+            ),$options);
+
         $this->options      =   $options;
         $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
         $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;
-      //  $func               =   isset($options['persistent']) ? 'pconnect' : 'connect';
         $this->handler      =  memcache_init();//[sae] 下实例化
         //[sae] 下不用链接
         $this->connected=true;
-        // $this->connected    =   $options['timeout'] === false ?
-        //     $this->handler->$func($options['host'], $options['port']) :
-        //     $this->handler->$func($options['host'], $options['port'], $options['timeout']);
     }
 
     /**
