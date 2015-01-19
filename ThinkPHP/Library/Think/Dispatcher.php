@@ -136,43 +136,7 @@ class Dispatcher {
         
         // 检测模块是否存在
         if( MODULE_NAME && (defined('BIND_MODULE') || !in_array_case(MODULE_NAME,C('MODULE_DENY_LIST')) ) && is_dir(APP_PATH.MODULE_NAME)){
-            // 定义当前模块路径
-            define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
-            // 定义当前模块的模版缓存路径
-            C('CACHE_PATH',CACHE_PATH.MODULE_NAME.'/');
-            // 定义当前模块的日志目录
-	        C('LOG_PATH',  realpath(LOG_PATH).'/'.MODULE_NAME.'/');
-
-            // 模块检测
-            Hook::listen('module_check');
-
-            // 加载模块配置文件
-            if(is_file(MODULE_PATH.'Conf/config'.CONF_EXT)){
-                C(load_config(MODULE_PATH.'Conf/config'.CONF_EXT));
-            }
-            // 加载应用模式对应的配置文件
-            if('common' != APP_MODE && is_file(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT)){
-                C(load_config(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT));
-            }
-            // 当前应用状态对应的配置文件
-            if(APP_STATUS && is_file(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT)){
-                C(load_config(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT));
-            }
-
-            // 加载模块别名定义
-            if(is_file(MODULE_PATH.'Conf/alias.php')){
-                Think::addMap(include MODULE_PATH.'Conf/alias.php');
-            }
-            // 加载模块tags文件定义
-            if(is_file(MODULE_PATH.'Conf/tags.php')){
-                Hook::import(include MODULE_PATH.'Conf/tags.php');
-            }
-            // 加载模块函数文件
-            if(is_file(MODULE_PATH.'Common/function.php')){
-                include MODULE_PATH.'Common/function.php';
-            }
-            // 加载模块的扩展配置文件
-            load_ext_file(MODULE_PATH);
+            self::loadModule();
         }else{
             E(L('_MODULE_NOT_EXIST_').':'.MODULE_NAME);
         }
@@ -212,7 +176,6 @@ class Dispatcher {
 
             if(!defined('BIND_CONTROLLER')) {// 获取控制器
 				$_GET[VAR_CONTROLLER]   =   array_shift($paths);
-
             }
             // 获取操作
             if(!defined('BIND_ACTION')){
@@ -243,6 +206,49 @@ class Dispatcher {
 
         //保证$_REQUEST正常取值
         $_REQUEST = array_merge($_POST,$_GET);
+    }
+
+    /**
+     * 获得控制器的命名空间路径 便于插件机制访问
+     */
+    static private function loadModule(){
+        // 定义当前模块路径
+        define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
+        // 定义当前模块的模版缓存路径
+        C('CACHE_PATH',CACHE_PATH.MODULE_NAME.'/');
+        // 定义当前模块的日志目录
+        C('LOG_PATH',  realpath(LOG_PATH).'/'.MODULE_NAME.'/');
+
+        // 模块检测
+        Hook::listen('module_check');
+
+        // 加载模块配置文件
+        if(is_file(MODULE_PATH.'Conf/config'.CONF_EXT)){
+            C(load_config(MODULE_PATH.'Conf/config'.CONF_EXT));
+        }
+        // 加载应用模式对应的配置文件
+        if('common' != APP_MODE && is_file(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT)){
+            C(load_config(MODULE_PATH.'Conf/config_'.APP_MODE.CONF_EXT));
+        }
+        // 当前应用状态对应的配置文件
+        if(APP_STATUS && is_file(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT)){
+            C(load_config(MODULE_PATH.'Conf/'.APP_STATUS.CONF_EXT));
+        }
+
+        // 加载模块别名定义
+        if(is_file(MODULE_PATH.'Conf/alias.php')){
+            Think::addMap(include MODULE_PATH.'Conf/alias.php');
+        }
+        // 加载模块tags文件定义
+        if(is_file(MODULE_PATH.'Conf/tags.php')){
+            Hook::import(include MODULE_PATH.'Conf/tags.php');
+        }
+        // 加载模块函数文件
+        if(is_file(MODULE_PATH.'Common/function.php')){
+            include MODULE_PATH.'Common/function.php';
+        }
+        // 加载模块的扩展配置文件
+        load_ext_file(MODULE_PATH);        
     }
 
     /**
