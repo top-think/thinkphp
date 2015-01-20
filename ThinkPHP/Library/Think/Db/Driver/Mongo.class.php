@@ -736,6 +736,8 @@ class Mongo extends Driver {
      */
     protected function parseThinkWhere($key,$val) {
         $query   = array();
+        $_logic = array('or','xor','nor', 'and');
+        
         switch($key) {
             case '_query': // 字符串模式查询条件
                 parse_str($val,$query);
