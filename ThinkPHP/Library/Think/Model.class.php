@@ -508,8 +508,16 @@ class Model {
             // 如果条件为空 不进行删除操作 除非设置 1=1
             return false;
         }        
-        if(is_array($options['where']) && isset($options['where'][$pk])){
-            $pkValue            =  $options['where'][$pk];
+        if(is_array($pk)) {
+            $pkValue = array();
+            foreach ($pk as $field) {
+                if(!isset($options['where'][$field])) return false;
+                $pkValue[$field]    =  $options['where'][$field];
+            }
+        } else {     
+            if(is_array($options['where']) && isset($options['where'][$pk])){
+                $pkValue            =  $options['where'][$pk];
+            }
         }
 
         if(false === $this->_before_delete($options)) {
@@ -518,7 +526,13 @@ class Model {
         $result  =    $this->db->delete($options);
         if(false !== $result && is_numeric($result)) {
             $data = array();
-            if(isset($pkValue)) $data[$pk]   =  $pkValue;
+            if(isset($pkValue)) {
+                if(is_array($pkValue)) {
+                    $data = array_merge($data, $pkValue);
+                } else {
+                    $data[$pk]   =  $pkValue;
+                }
+            }
             $this->_after_delete($data,$options);
         }
         // 返回删除记录个数
