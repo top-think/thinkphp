@@ -933,6 +933,9 @@ class Model {
             }
             $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
+		        if(is_string($resultSet)){
+		            return $resultSet;
+		        }            	
                 $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
                 $key1           =   array_shift($field);
@@ -959,6 +962,9 @@ class Model {
             }
             $result = $this->db->select($options);
             if(!empty($result)) {
+		        if(is_string($result)){
+		            return $result;
+		        }            	
                 if(true !== $sepa && 1==$options['limit']) {
                     $data   =   reset($result[0]);
                     if(isset($cache)){
