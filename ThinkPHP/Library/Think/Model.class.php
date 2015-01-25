@@ -1139,6 +1139,7 @@ class Model {
                 if(empty($auto[2])) $auto[2] =  self::MODEL_INSERT; // 默认为新增的时候自动填充
                 if( $type == $auto[2] || $auto[2] == self::MODEL_BOTH) {
                     if(empty($auto[3])) $auto[3] =  'string';
+                    if(in_array($auto[0], $ignore)) continue;//判断字段是否已被忽略
                     switch(trim($auto[3])) {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
                         case 'callback': // 使用回调方法
@@ -1156,8 +1157,10 @@ class Model {
                             $data[$auto[0]] = $data[$auto[1]];
                             break;
                         case 'ignore': // 为空忽略
-                            if($auto[1]===$data[$auto[0]])
+                            if($auto[1]===$data[$auto[0]]){
+                            	$ignore[] = $auto[0];
                                 unset($data[$auto[0]]);
+                            }
                             break;
                         case 'string':
                         default: // 默认作为字符串填充
