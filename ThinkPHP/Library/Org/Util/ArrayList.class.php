@@ -16,7 +16,7 @@ namespace Org\Util;
  * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
  */
-class ArrayList implements IteratorAggregate {
+class ArrayList implements \IteratorAggregate {
 
     /**
      * 集合元素
