@@ -829,7 +829,7 @@ abstract class Driver {
             $value   =  array();
             foreach ($data as $key=>$val){
                 if(is_null($val)){
-                    $set[]  =   $this->parseKey($key).'=NULL';
+                    $value[] = 'NULL';
                 }elseif(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
