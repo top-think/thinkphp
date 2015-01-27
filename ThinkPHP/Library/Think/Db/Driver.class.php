@@ -828,7 +828,9 @@ abstract class Driver {
         foreach ($dataSet as $data){
             $value   =  array();
             foreach ($data as $key=>$val){
-                if(is_array($val) && 'exp' == $val[0]){
+                if(is_null($val)){
+                    $value[] = 'NULL';
+                }elseif(is_array($val) && 'exp' == $val[0]){
                     $value[]   =  $val[1];
                 }elseif(is_scalar($val)){
                     if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
