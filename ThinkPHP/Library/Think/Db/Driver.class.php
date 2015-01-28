@@ -142,7 +142,7 @@ abstract class Driver {
         $this->queryStr     =   $str;
         if(!empty($this->bind)){
             $that   =   $this;
-            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return is_null($val)? 'NULL' : '\''.$that->escapeString($val).'\''; },$this->bind));
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$this->bind));
         }
         if($fetchSql){
             return $this->queryStr;
@@ -190,7 +190,7 @@ abstract class Driver {
         $this->queryStr = $str;
         if(!empty($this->bind)){
             $that   =   $this;
-            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return is_null($val)? 'NULL' : '\''.$that->escapeString($val).'\''; },$this->bind));
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$this->bind));
         }
         if($fetchSql){
             return $this->queryStr;
@@ -792,7 +792,10 @@ abstract class Driver {
             if(is_array($val) && 'exp' == $val[0]){
                 $fields[]   =  $this->parseKey($key);
                 $values[]   =  $val[1];
-            }elseif(is_null($val) || is_scalar($val)) { // 过滤非标量数据
+            }elseif(is_null($val)){
+                $fields[]   =   $this->parseKey($key);
+                $values[]   =   'NULL';
+            }elseif(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
                 if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                     $values[]   =   $this->parseValue($val);
@@ -829,8 +832,10 @@ abstract class Driver {
             $value   =  array();
             foreach ($data as $key=>$val){
                 if(is_array($val) && 'exp' == $val[0]){
-                    $value[]   =  $val[1];
-                }elseif(is_null($val) || is_scalar($val)){
+                    $value[]   =    $val[1];
+                }elseif(is_null($val)){
+                    $value[]   =   'NULL';
+                }elseif(is_scalar($val)){
                     if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);
                     }else{
