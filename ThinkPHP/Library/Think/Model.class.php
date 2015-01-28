@@ -580,28 +580,27 @@ class Model {
         if(false === $resultSet) {
             return false;
         }
-        if(empty($resultSet)) { // 查询结果为空
-            return null;
-        }
-
-        if(is_string($resultSet)){
-            return $resultSet;
-        }
-
-        $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
-        $this->_after_select($resultSet,$options);
-        if(isset($options['index'])){ // 对数据集进行索引
-            $index  =   explode(',',$options['index']);
-            foreach ($resultSet as $result){
-                $_key   =  $result[$index[0]];
-                if(isset($index[1]) && isset($result[$index[1]])){
-                    $cols[$_key] =  $result[$index[1]];
-                }else{
-                    $cols[$_key] =  $result;
-                }
+        if(!empty($resultSet)) { // 有查询结果
+            if(is_string($resultSet)){
+                return $resultSet;
             }
-            $resultSet  =   $cols;
+
+            $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
+            $this->_after_select($resultSet,$options);
+            if(isset($options['index'])){ // 对数据集进行索引
+                $index  =   explode(',',$options['index']);
+                foreach ($resultSet as $result){
+                    $_key   =  $result[$index[0]];
+                    if(isset($index[1]) && isset($result[$index[1]])){
+                        $cols[$_key] =  $result[$index[1]];
+                    }else{
+                        $cols[$_key] =  $result;
+                    }
+                }
+                $resultSet  =   $cols;
+            }
         }
+
         if(isset($cache)){
             S($key,$resultSet,$cache);
         }
