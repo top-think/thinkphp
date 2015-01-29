@@ -269,6 +269,7 @@ function T($template='',$layer=''){
  * @return mixed
  */
 function I($name,$default='',$filter=null,$datas=null) {
+	static $_PUT	=	null;
 	if(strpos($name,'/')){ // 指定修饰符
 		list($name,$type) 	=	explode('/',$name,2);
 	}elseif(C('VAR_AUTO_STRING')){ // 默认强制转换为字符串
@@ -280,16 +281,28 @@ function I($name,$default='',$filter=null,$datas=null) {
         $method =   'param';
     }
     switch(strtolower($method)) {
-        case 'get'     :   $input =& $_GET;break;
-        case 'post'    :   $input =& $_POST;break;
-        case 'put'     :   parse_str(file_get_contents('php://input'), $input);break;
+        case 'get'     :   
+        	$input =& $_GET;
+        	break;
+        case 'post'    :   
+        	$input =& $_POST;
+        	break;
+        case 'put'     :   
+        	if(is_null($_PUT)){
+            	parse_str(file_get_contents('php://input'), $_PUT);
+        	}
+        	$input 	=	$_PUT;        
+        	break;
         case 'param'   :
             switch($_SERVER['REQUEST_METHOD']) {
                 case 'POST':
                     $input  =  $_POST;
                     break;
                 case 'PUT':
-                    parse_str(file_get_contents('php://input'), $input);
+                	if(is_null($_PUT)){
+                    	parse_str(file_get_contents('php://input'), $_PUT);
+                	}
+                	$input 	=	$_PUT;
                     break;
                 default:
                     $input  =  $_GET;
@@ -302,14 +315,26 @@ function I($name,$default='',$filter=null,$datas=null) {
                 $input  =   explode($depr,trim($_SERVER['PATH_INFO'],$depr));            
             }
             break;
-        case 'request' :   $input =& $_REQUEST;   break;
-        case 'session' :   $input =& $_SESSION;   break;
-        case 'cookie'  :   $input =& $_COOKIE;    break;
-        case 'server'  :   $input =& $_SERVER;    break;
-        case 'globals' :   $input =& $GLOBALS;    break;
-        case 'data'    :   $input =& $datas;      break;
+        case 'request' :   
+        	$input =& $_REQUEST;   
+        	break;
+        case 'session' :   
+        	$input =& $_SESSION;   
+        	break;
+        case 'cookie'  :   
+        	$input =& $_COOKIE;    
+        	break;
+        case 'server'  :   
+        	$input =& $_SERVER;    
+        	break;
+        case 'globals' :   
+        	$input =& $GLOBALS;    
+        	break;
+        case 'data'    :   
+        	$input =& $datas;      
+        	break;
         default:
-            return NULL;
+            return null;
     }
     if(''==$name) { // 获取全部变量
         $data       =   $input;
@@ -327,23 +352,27 @@ function I($name,$default='',$filter=null,$datas=null) {
         $filters    =   isset($filter)?$filter:C('DEFAULT_FILTER');
         if($filters) {
             if(is_string($filters)){
-                $filters    =   explode(',',$filters);
+                if(0 === strpos($filters,'/')){
+                    if(1 !== preg_match($filters,(string)$data)){
+                        // 支持正则验证
+                        return   isset($default) ? $default : null;
+                    }
+                }else{
+                    $filters    =   explode(',',$filters);                    
+                }
             }elseif(is_int($filters)){
                 $filters    =   array($filters);
             }
             
-            foreach($filters as $filter){
-                if(function_exists($filter)) {
-                    $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
-                }elseif(0===strpos($filter,'/')){
-                	// 支持正则验证
-                	if(1 !== preg_match($filter,(string)$data)){
-                		return   isset($default) ? $default : NULL;
-                	}
-                }else{
-                    $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
-                    if(false === $data) {
-                        return   isset($default) ? $default : NULL;
+            if(is_array($filters)){
+                foreach($filters as $filter){
+                    if(function_exists($filter)) {
+                        $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
+                    }else{
+                        $data   =   filter_var($data,is_int($filter) ? $filter : filter_id($filter));
+                        if(false === $data) {
+                            return   isset($default) ? $default : null;
+                        }
                     }
                 }
             }
@@ -368,7 +397,7 @@ function I($name,$default='',$filter=null,$datas=null) {
         	}
         }
     }else{ // 变量默认值
-        $data       =    isset($default)?$default:NULL;
+        $data       =    isset($default)?$default:null;
     }
     is_array($data) && array_walk_recursive($data,'think_filter');
     return $data;
@@ -723,7 +752,7 @@ function B($name, $tag='',&$params=NULL) {
     if(''==$tag){
         $name   .=  'Behavior';
     }
-    \Think\Hook::exec($name,$tag,$params);
+    return \Think\Hook::exec($name,$tag,$params);
 }
 
 /**
@@ -1007,7 +1036,7 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
  * @return void
  */
 function W($name, $data=array()) {
-    R($name,$data,'Widget');
+    return R($name,$data,'Widget');
 }
 
 /**
@@ -1061,7 +1090,7 @@ function redirect($url, $time=0, $msg='') {
  */
 function S($name,$value='',$options=null) {
     static $cache   =   '';
-    if(is_array($options) && empty($cache)){
+    if(is_array($options)){
         // 缓存操作的同时初始化
         $type       =   isset($options['type'])?$options['type']:'';
         $cache      =   Think\Cache::getInstance($type,$options);
@@ -1209,7 +1238,10 @@ function session($name='',$value='') {
         if(isset($name['name']))            session_name($name['name']);
         if(isset($name['path']))            session_save_path($name['path']);
         if(isset($name['domain']))          ini_set('session.cookie_domain', $name['domain']);
-        if(isset($name['expire']))          ini_set('session.gc_maxlifetime', $name['expire']);
+        if(isset($name['expire']))          {
+            ini_set('session.gc_maxlifetime',   $name['expire']);
+            ini_set('session.cookie_lifetime',  $name['expire']);
+        }
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
         if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);

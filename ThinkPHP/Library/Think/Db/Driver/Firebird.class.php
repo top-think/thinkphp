@@ -101,7 +101,7 @@ class Firebird extends Driver{
         $sql='select b.rdb$field_name as field_name from rdb$relation_constraints a join rdb$index_segments b on a.rdb$index_name=b.rdb$index_name where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$tableName.'\')';
         $rs_temp = $this->query($sql);
         foreach($rs_temp as $row) {
-            $info[trim($row['field_name'])]['primary']=True;
+            $info[trim($row['field_name'])]['primary']= true;
         }
         return $info;
     }

@@ -361,6 +361,8 @@ abstract class Driver {
         foreach ($data as $key=>$val){
             if(is_array($val) && 'exp' == $val[0]){
                 $set[]  =   $this->parseKey($key).'='.$val[1];
+            }elseif(is_null($val)){
+                $set[]  =   $this->parseKey($key).'=NULL';
             }elseif(is_scalar($val)) {// 过滤非标量数据
                 if(0===strpos($val,':') && in_array($val,array_keys($this->bind)) ){
                     $set[]  =   $this->parseKey($key).'='.$this->escapeString($val);
@@ -790,6 +792,9 @@ abstract class Driver {
             if(is_array($val) && 'exp' == $val[0]){
                 $fields[]   =  $this->parseKey($key);
                 $values[]   =  $val[1];
+            }elseif(is_null($val)){
+                $fields[]   =   $this->parseKey($key);
+                $values[]   =   'NULL';
             }elseif(is_scalar($val)) { // 过滤非标量数据
                 $fields[]   =   $this->parseKey($key);
                 if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
@@ -827,7 +832,9 @@ abstract class Driver {
             $value   =  array();
             foreach ($data as $key=>$val){
                 if(is_array($val) && 'exp' == $val[0]){
-                    $value[]   =  $val[1];
+                    $value[]   =    $val[1];
+                }elseif(is_null($val)){
+                    $value[]   =   'NULL';
                 }elseif(is_scalar($val)){
                     if(0===strpos($val,':') && in_array($val,array_keys($this->bind))){
                         $value[]   =   $this->parseValue($val);

@@ -38,15 +38,20 @@ class Oracle extends Driver{
      * 执行语句
      * @access public
      * @param string $str  sql指令
+     * @param boolean $fetchSql  不执行只是获取SQL     
      * @return integer
      */
-    public function execute($str,$bind=[]) {
+    public function execute($str,$fetchSql=false) {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
         $this->queryStr = $str;
-        if(!empty($bind)){
-            $this->queryStr     .=   '[ '.print_r($bind,true).' ]';
-        }        
+        if(!empty($this->bind)){
+            $that   =   $this;
+            $this->queryStr =   strtr($this->queryStr,array_map(function($val) use($that){ return '\''.$that->escapeString($val).'\''; },$this->bind));
+        }
+        if($fetchSql){
+            return $this->queryStr;
+        }
         $flag = false;
         if(preg_match("/^\s*(INSERT\s+INTO)\s+(\w+)\s+/i", $str, $match)) {
             $this->table = C("DB_SEQUENCE_PREFIX").str_ireplace(C("DB_PREFIX"), "", $match[2]);
@@ -55,13 +60,23 @@ class Oracle extends Driver{
         //释放前次的查询结果
         if ( !empty($this->PDOStatement) ) $this->free();
         $this->executeTimes++;
+        N('db_write',1); // 兼容代码        
         // 记录开始执行时间
         $this->debug(true);
         $this->PDOStatement	=	$this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            E($this->error());
+            $this->error();
+            return false;
         }
-        $result	=	$this->PDOStatement->execute($bind);
+        foreach ($this->bind as $key => $val) {
+            if(is_array($val)){
+                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
+            }else{
+                $this->PDOStatement->bindValue($key, $val);
+            }
+        }
+        $this->bind =   array();        
+        $result	=	$this->PDOStatement->execute();
         $this->debug(false);
         if ( false === $result) {
             $this->error();
