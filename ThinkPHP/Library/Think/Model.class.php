@@ -1080,7 +1080,7 @@ class Model {
 
             // 令牌验证
             list($key,$value)  =  explode('_',$data[$name]);
-            if($value && $_SESSION[$name][$key] === $value) { // 防止重复提交
+            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
                 unset($_SESSION[$name][$key]); // 验证完成销毁session
                 return true;
             }
