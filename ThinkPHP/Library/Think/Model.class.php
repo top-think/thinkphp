@@ -563,7 +563,7 @@ class Model {
                 return false;
             }
         } elseif(false === $options){ // 用于子查询 不查询只返回SQL
-            return  $this->buildSql();
+        	$options['fetch_sql'] = true;
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
