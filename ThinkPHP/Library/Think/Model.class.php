@@ -594,28 +594,27 @@ class Model {
         if(false === $resultSet) {
             return false;
         }
-        if(empty($resultSet)) { // 查询结果为空
-            return null;
-        }
-
-        if(is_string($resultSet)){
-            return $resultSet;
-        }
-
-        $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
-        $this->_after_select($resultSet,$options);
-        if(isset($options['index'])){ // 对数据集进行索引
-            $index  =   explode(',',$options['index']);
-            foreach ($resultSet as $result){
-                $_key   =  $result[$index[0]];
-                if(isset($index[1]) && isset($result[$index[1]])){
-                    $cols[$_key] =  $result[$index[1]];
-                }else{
-                    $cols[$_key] =  $result;
-                }
+        if(!empty($resultSet)) { // 有查询结果
+            if(is_string($resultSet)){
+                return $resultSet;
             }
-            $resultSet  =   $cols;
+
+            $resultSet  =   array_map(array($this,'_read_data'),$resultSet);
+            $this->_after_select($resultSet,$options);
+            if(isset($options['index'])){ // 对数据集进行索引
+                $index  =   explode(',',$options['index']);
+                foreach ($resultSet as $result){
+                    $_key   =  $result[$index[0]];
+                    if(isset($index[1]) && isset($result[$index[1]])){
+                        $cols[$_key] =  $result[$index[1]];
+                    }else{
+                        $cols[$_key] =  $result;
+                    }
+                }
+                $resultSet  =   $cols;
+            }
         }
+
         if(isset($cache)){
             S($key,$resultSet,$cache);
         }
@@ -947,6 +946,9 @@ class Model {
             }
             $resultSet          =   $this->db->select($options);
             if(!empty($resultSet)) {
+		        if(is_string($resultSet)){
+		            return $resultSet;
+		        }            	
                 $_field         =   explode(',', $field);
                 $field          =   array_keys($resultSet[0]);
                 $key1           =   array_shift($field);
@@ -973,6 +975,9 @@ class Model {
             }
             $result = $this->db->select($options);
             if(!empty($result)) {
+		        if(is_string($result)){
+		            return $result;
+		        }            	
                 if(true !== $sepa && 1==$options['limit']) {
                     $data   =   reset($result[0]);
                     if(isset($cache)){
@@ -1089,7 +1094,7 @@ class Model {
 
             // 令牌验证
             list($key,$value)  =  explode('_',$data[$name]);
-            if($value && $_SESSION[$name][$key] === $value) { // 防止重复提交
+            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
                 unset($_SESSION[$name][$key]); // 验证完成销毁session
                 return true;
             }
@@ -1855,7 +1860,7 @@ class Model {
      * @param boolean $fetch 是否返回sql
      * @return Model
      */
-    public function fetchSql($fetch){
+    public function fetchSql($fetch=true){
         $this->options['fetch_sql'] =   $fetch;
         return $this;
     }
