@@ -245,7 +245,7 @@ class Dispatcher {
         define('__ACTION__',__CONTROLLER__.$depr.(defined('ACTION_ALIAS')?ACTION_ALIAS:ACTION_NAME));
 
         //保证$_REQUEST正常取值
-        $_REQUEST = array_merge($_POST,$_GET);
+        $_REQUEST = array_merge($_POST,$_GET,$_COOKIE);	// -- 加了$_COOKIE.  保证哦..
     }
 
     /**
