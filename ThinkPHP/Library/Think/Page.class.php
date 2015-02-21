@@ -86,7 +86,7 @@ class Page{
             $this->nowPage = $this->totalPages;
         }
 
-        /* 计算分页零时变量 */
+        /* 计算分页临时变量 */
         $now_cool_page      = $this->rollPage/2;
 		$now_cool_page_ceil = ceil($now_cool_page);
 		$this->lastSuffix && $this->config['last'] = $this->totalPages;
