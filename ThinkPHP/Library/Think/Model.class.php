@@ -971,6 +971,10 @@ class Model {
                     }            
                     return $data;
                 }
+                if(false!==strpos($field,'.')){
+                    $arr=explode('.',$field);
+                    $field=$arr[1];
+                }
                 foreach ($result as $val){
                     $array[]    =   $val[$field];
                 }
