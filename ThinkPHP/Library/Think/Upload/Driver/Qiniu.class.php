@@ -26,7 +26,7 @@ class Qiniu{
     private $error = '';
 
     private $config = array(
-        'secrectKey'     => '', //七牛服务器
+        'secretKey'      => '', //七牛服务器
         'accessKey'      => '', //七牛用户
         'domain'         => '', //七牛密码
         'bucket'         => '', //空间名称

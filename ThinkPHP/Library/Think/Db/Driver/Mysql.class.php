@@ -32,12 +32,9 @@ class Mysql extends Driver{
         }
 
         if(!empty($config['charset'])){
-            if(version_compare(PHP_VERSION,'5.3.6','<')){ 
-                // PHP5.3.6以下不支持charset设置
-                $this->options[\PDO::MYSQL_ATTR_INIT_COMMAND]    =   'SET NAMES '.$config['charset'];
-            }else{
-                $dsn  .= ';charset='.$config['charset'];
-            }
+            //为兼容各版本PHP,用两种方式设置编码
+            $this->options[\PDO::MYSQL_ATTR_INIT_COMMAND]    =   'SET NAMES '.$config['charset'];
+            $dsn  .= ';charset='.$config['charset'];
         }
         return $dsn;
     }

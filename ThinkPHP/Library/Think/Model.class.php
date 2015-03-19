@@ -563,7 +563,7 @@ class Model {
                 return false;
             }
         } elseif(false === $options){ // 用于子查询 不查询只返回SQL
-            return  $this->buildSql();
+        	$options['fetch_sql'] = true;
         }
         // 分析表达式
         $options    =  $this->_parseOptions($options);
@@ -1080,7 +1080,7 @@ class Model {
 
             // 令牌验证
             list($key,$value)  =  explode('_',$data[$name]);
-            if($value && $_SESSION[$name][$key] === $value) { // 防止重复提交
+            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
                 unset($_SESSION[$name][$key]); // 验证完成销毁session
                 return true;
             }
@@ -1846,7 +1846,7 @@ class Model {
      * @param boolean $fetch 是否返回sql
      * @return Model
      */
-    public function fetchSql($fetch){
+    public function fetchSql($fetch=true){
         $this->options['fetch_sql'] =   $fetch;
         return $this;
     }

@@ -33,7 +33,7 @@ class Log {
 
     // 日志初始化
     static public function init($config=array()){
-        $type   =   isset($config['type'])?$config['type']:'File';
+        $type   =   isset($config['type']) ? $config['type'] : 'File';
         $class  =   strpos($type,'\\')? $type: 'Think\\Log\\Driver\\'. ucwords(strtolower($type));           
         unset($config['type']);
         self::$storage = new $class($config);
@@ -65,10 +65,11 @@ class Log {
     static function save($type='',$destination='') {
         if(empty(self::$log)) return ;
 
-        if(empty($destination))
+        if(empty($destination)){
             $destination = C('LOG_PATH').date('y_m_d').'.log';
+        }
         if(!self::$storage){
-            $type = $type?:C('LOG_TYPE');
+            $type 	= 	$type ? : C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }
@@ -90,12 +91,14 @@ class Log {
      */
     static function write($message,$level=self::ERR,$type='',$destination='') {
         if(!self::$storage){
-            $type = $type?:C('LOG_TYPE');
+            $type 	= 	$type ? : C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
-            self::$storage = new $class();            
+            $config['log_path'] = C('LOG_PATH');
+            self::$storage = new $class($config);            
         }
-        if(empty($destination))
+        if(empty($destination)){
             $destination = C('LOG_PATH').date('y_m_d').'.log';        
+        }
         self::$storage->write("{$level}: {$message}", $destination);
     }
 }
