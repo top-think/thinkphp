@@ -45,11 +45,11 @@ class ShowRuntimeBehavior {
             // 显示详细运行时间
             $showTime .= '( Load:'.G('beginTime','loadTime').'s Init:'.G('loadTime','initTime').'s Exec:'.G('initTime','viewStartTime').'s Template:'.G('viewStartTime','viewEndTime').'s )';
         }
-        if(C('SHOW_DB_TIMES') && class_exists('Db',false) ) {
+        if(C('SHOW_DB_TIMES') ) {
             // 显示数据库操作次数
             $showTime .= ' | DB :'.N('db_query').' queries '.N('db_write').' writes ';
         }
-        if(C('SHOW_CACHE_TIMES') && class_exists('Cache',false)) {
+        if(C('SHOW_CACHE_TIMES') ) {
             // 显示缓存读写次数
             $showTime .= ' | Cache :'.N('cache_read').' gets '.N('cache_write').' writes ';
         }

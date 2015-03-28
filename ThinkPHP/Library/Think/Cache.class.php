@@ -107,9 +107,9 @@ class Cache {
             $key =  array_shift($value);
             // 删除缓存
             $this->rm($key);
-             if(APP_DEUBG){
+             if(APP_DEBUG){
                 //调试模式下，记录出列次数
-                N($queue_name.'_out_times',1,true);
+                N($queue_name.'_out_times',1);
             }
         }
         return $fun[1]($queue_name,$value);

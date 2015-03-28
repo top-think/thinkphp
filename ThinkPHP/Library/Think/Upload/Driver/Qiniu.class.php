@@ -26,7 +26,7 @@ class Qiniu{
     private $error = '';
 
     private $config = array(
-        'secrectKey'     => '', //七牛服务器
+        'secretKey'      => '', //七牛服务器
         'accessKey'      => '', //七牛用户
         'domain'         => '', //七牛密码
         'bucket'         => '', //空间名称
@@ -35,21 +35,21 @@ class Qiniu{
 
     /**
      * 构造函数，用于设置上传根路径
-     * @param string $root   根目录
      * @param array  $config FTP配置
      */
-    public function __construct($root, $config){
+    public function __construct($config){
         $this->config = array_merge($this->config, $config);
         /* 设置根目录 */
         $this->qiniu = new QiniuStorage($config);
-        $this->rootPath = trim($root, './') . '/';
     }
 
     /**
      * 检测上传根目录(七牛上传时支持自动创建目录，直接返回)
+     * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath(){
+    public function checkRootPath($rootpath){
+        $this->rootPath = trim($rootpath, './') . '/';
         return true;
     }
 

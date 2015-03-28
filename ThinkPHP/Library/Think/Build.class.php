@@ -19,7 +19,7 @@ namespace [MODULE]\Controller;
 use Think\Controller;
 class [CONTROLLER]Controller extends Controller {
     public function index(){
-        $this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px }</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>[ 您现在访问的是[MODULE]模块的[CONTROLLER]控制器 ]</div><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');
+        $this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');
     }
 }';
 
@@ -57,7 +57,9 @@ class [MODEL]Model extends Model {
                 APP_PATH.$module.'/View/',
                 RUNTIME_PATH,
                 CACHE_PATH,
+                CACHE_PATH.$module.'/',
                 LOG_PATH,
+                LOG_PATH.$module.'/',
                 TEMP_PATH,
                 DATA_PATH,
                 );
@@ -67,11 +69,11 @@ class [MODEL]Model extends Model {
             // 写入目录安全文件
             self::buildDirSecure($dirs);
             // 写入应用配置文件
-            if(!is_file(CONF_PATH.'config.php'))
-                file_put_contents(CONF_PATH.'config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
+            if(!is_file(CONF_PATH.'config'.CONF_EXT))
+                file_put_contents(CONF_PATH.'config'.CONF_EXT,'.php' == CONF_EXT ? "<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);":'');
             // 写入模块配置文件
-            if(!is_file(APP_PATH.$module.'/Conf/config.php'))
-                file_put_contents(APP_PATH.$module.'/Conf/config.php',"<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);");
+            if(!is_file(APP_PATH.$module.'/Conf/config'.CONF_EXT))
+                file_put_contents(APP_PATH.$module.'/Conf/config'.CONF_EXT,'.php' == CONF_EXT ? "<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);":'');
             // 生成模块的测试控制器
             if(defined('BUILD_CONTROLLER_LIST')){
                 // 自动生成的控制器列表（注意大小写）
@@ -120,6 +122,10 @@ class [MODEL]Model extends Model {
             if(!C('APP_USE_NAMESPACE')){
                 $content    =   preg_replace('/namespace\s(.*?);/','',$content,1);
             }
+            $dir = dirname($file);
+            if(!is_dir($dir)){
+                mkdir($dir, 0755, true);
+            }
             file_put_contents($file,$content);
         }
     }
@@ -131,6 +137,10 @@ class [MODEL]Model extends Model {
             $content = str_replace(array('[MODULE]','[MODEL]'),array($module,$model),self::$model);
             if(!C('APP_USE_NAMESPACE')){
                 $content    =   preg_replace('/namespace\s(.*?);/','',$content,1);
+            }
+            $dir = dirname($file);
+            if(!is_dir($dir)){
+                mkdir($dir, 0755, true);
             }
             file_put_contents($file,$content);
         }

@@ -180,12 +180,17 @@ class RelationModel extends Model {
                                 }
                                 break;
                             case self::MANY_TO_MANY:
-                                $pk   =  $result[$mappingKey];
+                                $pk     =   $result[$mappingKey];
+                                $prefix =   $this->tablePrefix;
                                 $mappingCondition = " {$mappingFk}='{$pk}'";
                                 $mappingOrder =  $val['mapping_order'];
                                 $mappingLimit =  $val['mapping_limit'];
                                 $mappingRelationFk = $val['relation_foreign_key']?$val['relation_foreign_key']:$model->getModelName().'_id';
-                                $mappingRelationTable  =  $val['relation_table']?$val['relation_table']:$this->getRelationTableName($model);
+                                if(isset($val['relation_table'])){
+                                    $mappingRelationTable   =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $val['relation_table']);
+                                }else{
+                                    $mappingRelationTable   =   $this->getRelationTableName($model);
+                                }
                                 $sql = "SELECT b.{$mappingFields} FROM {$mappingRelationTable} AS a, ".$model->getTableName()." AS b WHERE a.{$mappingRelationFk} = b.{$model->getPk()} AND a.{$mappingCondition}";
                                 if(!empty($val['condition'])) {
                                     $sql   .= ' AND '.$val['condition'];
@@ -323,7 +328,12 @@ class RelationModel extends Model {
                                     break;
                                 case self::MANY_TO_MANY:
                                     $mappingRelationFk = $val['relation_foreign_key']?$val['relation_foreign_key']:$model->getModelName().'_id';// 关联
-                                    $mappingRelationTable  =  $val['relation_table']?$val['relation_table']:$this->getRelationTableName($model);
+                                    $prefix =   $this->tablePrefix;
+                                    if(isset($val['relation_table'])){
+                                        $mappingRelationTable   =   preg_replace_callback("/__([A-Z_-]+)__/sU", function($match) use($prefix){ return $prefix.strtolower($match[1]);}, $val['relation_table']);
+                                    }else{
+                                        $mappingRelationTable   =   $this->getRelationTableName($model);
+                                    }                                    
                                     if(is_array($mappingData)) {
                                         $ids   = array();
                                         foreach ($mappingData as $vo)
@@ -332,25 +342,38 @@ class RelationModel extends Model {
                                     }
                                     switch (strtoupper($opType)){
                                         case 'ADD': // 增加关联数据
+                                            if(isset($relationId)) {
+                                                $this->startTrans();
+                                                // 插入关联表数据
+                                                $sql  = 'INSERT INTO '.$mappingRelationTable.' ('.$mappingFk.','.$mappingRelationFk.') SELECT a.'.$this->getPk().',b.'.$model->getPk().' FROM '.$this->getTableName().' AS a ,'.$model->getTableName()." AS b where a.".$this->getPk().' ='. $pk.' AND  b.'.$model->getPk().' IN ('.$relationId.") ";
+                                                $result =   $model->execute($sql);
+                                                if(false !== $result)
+                                                    // 提交事务
+                                                    $this->commit();
+                                                else
+                                                    // 事务回滚
+                                                    $this->rollback();
+                                            }
+                                            break;                                        
                                         case 'SAVE':    // 更新关联数据
-                                        if(isset($relationId)) {
-                                            $this->startTrans();
-                                            // 删除关联表数据
-                                            $this->table($mappingRelationTable)->where($mappingCondition)->delete();
-                                            // 插入关联表数据
-                                            $sql  = 'INSERT INTO '.$mappingRelationTable.' ('.$mappingFk.','.$mappingRelationFk.') SELECT a.'.$this->getPk().',b.'.$model->getPk().' FROM '.$this->getTableName().' AS a ,'.$model->getTableName()." AS b where a.".$this->getPk().' ='. $pk.' AND  b.'.$model->getPk().' IN ('.$relationId.") ";
-                                            $result =   $model->execute($sql);
-                                            if(false !== $result)
-                                                // 提交事务
-                                                $this->commit();
-                                            else
-                                                // 事务回滚
-                                                $this->rollback();
-                                        }
-                                        break;
+                                            if(isset($relationId)) {
+                                                $this->startTrans();
+                                                // 删除关联表数据
+                                                $this->table($mappingRelationTable)->where($mappingCondition)->delete();
+                                                // 插入关联表数据
+                                                $sql  = 'INSERT INTO '.$mappingRelationTable.' ('.$mappingFk.','.$mappingRelationFk.') SELECT a.'.$this->getPk().',b.'.$model->getPk().' FROM '.$this->getTableName().' AS a ,'.$model->getTableName()." AS b where a.".$this->getPk().' ='. $pk.' AND  b.'.$model->getPk().' IN ('.$relationId.") ";
+                                                $result =   $model->execute($sql);
+                                                if(false !== $result)
+                                                    // 提交事务
+                                                    $this->commit();
+                                                else
+                                                    // 事务回滚
+                                                    $this->rollback();
+                                            }
+                                            break;
                                         case 'DEL': // 根据外键删除中间表关联数据
-                                        $result =   $this->table($mappingRelationTable)->where($mappingCondition)->delete();
-                                        break;
+                                            $result =   $this->table($mappingRelationTable)->where($mappingCondition)->delete();
+                                            break;
                                     }
                                     break;
                             }

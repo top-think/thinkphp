@@ -1,8 +1,5 @@
 <?php
 namespace Think\Upload\Driver\Bcs;
-use Think\Upload\Driver\Bcs\BCS_RequestCore;
-use Think\Upload\Driver\Bcs\BCS_ResponseCore;
-use THink\Upload\Driver\Bcs\BCS_RequestCore_Exception;
 
 /**
  * Handles all HTTP requests using cURL and manages the responses.

@@ -27,18 +27,24 @@ class Verify {
         'length'    =>  5,               // 验证码位数
         'fontttf'   =>  '',              // 验证码字体，不设置随机获取
         'bg'        =>  array(243, 251, 254),  // 背景颜色
+        'reset'     =>  true,           // 验证成功后是否重置
         );
 
     private $_image   = NULL;     // 验证码图片实例
     private $_color   = NULL;     // 验证码字体颜色
 
-    // 架构方法 设置参数
+    /**
+     * 架构方法 设置参数
+     * @access public     
+     * @param  array $config 配置参数
+     */    
     public function __construct($config=array()){
         $this->config   =   array_merge($this->config, $config);
     }
 
     /**
      * 使用 $this->name 获取配置
+     * @access public     
      * @param  string $name 配置名称
      * @return multitype    配置值
      */
@@ -46,20 +52,34 @@ class Verify {
         return $this->config[$name];
     }
 
+    /**
+     * 设置验证码配置
+     * @access public     
+     * @param  string $name 配置名称
+     * @param  string $value 配置值     
+     * @return void
+     */
     public function __set($name,$value){
         if(isset($this->config[$name])) {
             $this->config[$name]    =   $value;
         }
     }
 
+    /**
+     * 检查配置
+     * @access public     
+     * @param  string $name 配置名称
+     * @return bool
+     */
     public function __isset($name){
         return isset($this->config[$name]);
     }
 
     /**
      * 验证验证码是否正确
-     *
+     * @access public
      * @param string $code 用户验证码
+     * @param string $id 验证码标识     
      * @return bool 用户验证码是否正确
      */
     public function check($code, $id = '') {
@@ -76,7 +96,7 @@ class Verify {
         }
 
         if($this->authcode(strtoupper($code)) == $secode['verify_code']) {
-            session($key, null);
+            $this->reset && session($key, null);
             return true;
         }
 
@@ -85,7 +105,10 @@ class Verify {
 
     /**
      * 输出验证码并把验证码的值保存的session中
-     * 验证码保存到session的格式为： array('code' => '验证码值', 'time' => '验证码创建时间');
+     * 验证码保存到session的格式为： array('verify_code' => '验证码值', 'verify_time' => '验证码创建时间');
+     * @access public     
+     * @param string $id 要生成验证码的标识   
+     * @return void
      */
     public function entry($id = '') {
         // 图片宽(px)

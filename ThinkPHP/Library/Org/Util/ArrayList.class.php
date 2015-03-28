@@ -16,7 +16,7 @@ namespace Org\Util;
  * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
  */
-class ArrayList implements IteratorAggregate {
+class ArrayList implements \IteratorAggregate {
 
     /**
      * 集合元素
@@ -49,7 +49,7 @@ class ArrayList implements IteratorAggregate {
      * 增加元素
      * @access public
      * @param mixed $element  要添加的元素
-     * @return boolen
+     * @return boolean
      */
     public function add($element) {
         return (array_push($this->_elements, $element)) ? true : false;
@@ -69,7 +69,7 @@ class ArrayList implements IteratorAggregate {
      * 增加元素列表
      * @access public
      * @param ArrayList $list  元素列表
-     * @return boolen
+     * @return boolean
      */
     public function addAll($list) {
         $before = $this->size();
@@ -122,7 +122,7 @@ class ArrayList implements IteratorAggregate {
     /**
      * 判断元素是否为空
      * @access public
-     * @return boolen
+     * @return boolean
      */
     public function isEmpty() {
         return empty($this->_elements);

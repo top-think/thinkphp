@@ -39,27 +39,27 @@ class Ftp {
 
     /**
      * 构造函数，用于设置上传根路径
-     * @param string $root   根目录
      * @param array  $config FTP配置
      */
-    public function __construct($root, $config){
+    public function __construct($config){
         /* 默认FTP配置 */
         $this->config = array_merge($this->config, $config);
 
         /* 登录FTP服务器 */
         if(!$this->login()){
-            throw new \Exception($this->error);
+            E($this->error);
         }
-        
-        /* 设置根目录 */
-        $this->rootPath = ftp_pwd($this->link) . '/' . ltrim($root, '/');
     }
 
     /**
      * 检测上传根目录
+     * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath(){
+    public function checkRootPath($rootpath){
+        /* 设置根目录 */
+        $this->rootPath = ftp_pwd($this->link) . '/' . ltrim($rootpath, '/');
+
         if(!@ftp_chdir($this->link, $this->rootPath)){
             $this->error = '上传根目录不存在！';
             return false;

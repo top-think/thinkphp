@@ -44,7 +44,7 @@ class Route {
                         // URL后缀检测
                         continue;
                     }
-                    if(isset($options['method']) && REQUEST_METHOD != $options['method']){
+                    if(isset($options['method']) && REQUEST_METHOD != strtoupper($options['method'])){
                         // 请求类型检测
                         continue;
                     }
@@ -116,7 +116,7 @@ class Route {
                     }
                     $name = substr($val, 1, -2);
                 }elseif($pos = strpos($val,'^')){
-                    $array   =  explode('|',substr(strstr($val,'^'),1));
+                    $array   =  explode('-',substr(strstr($val,'^'),1));
                     if(in_array($m1[$key],$array)) {
                         return false;
                     }

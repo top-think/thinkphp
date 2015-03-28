@@ -24,16 +24,15 @@ class Redis extends Cache {
      */
     public function __construct($options=array()) {
         if ( !extension_loaded('redis') ) {
-            E(L('_NOT_SUPPERT_').':redis');
+            E(L('_NOT_SUPPORT_').':redis');
         }
-        if(empty($options)) {
-            $options = array (
-                'host'          => C('REDIS_HOST') ? C('REDIS_HOST') : '127.0.0.1',
-                'port'          => C('REDIS_PORT') ? C('REDIS_PORT') : 6379,
-                'timeout'       => C('DATA_CACHE_TIMEOUT') ? C('DATA_CACHE_TIMEOUT') : false,
-                'persistent'    => false,
-            );
-        }
+        $options = array_merge(array (
+            'host'          => C('REDIS_HOST') ? : '127.0.0.1',
+            'port'          => C('REDIS_PORT') ? : 6379,
+            'timeout'       => C('DATA_CACHE_TIMEOUT') ? : false,
+            'persistent'    => false,
+        ),$options);
+
         $this->options =  $options;
         $this->options['expire'] =  isset($options['expire'])?  $options['expire']  :   C('DATA_CACHE_TIME');
         $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        
@@ -74,7 +73,7 @@ class Redis extends Cache {
         $name   =   $this->options['prefix'].$name;
         //对数组/对象数据进行缓存处理，保证数据完整性
         $value  =  (is_object($value) || is_array($value)) ? json_encode($value) : $value;
-        if(is_int($expire)) {
+        if(is_int($expire) && $expire) {
             $result = $this->handler->setex($name, $expire, $value);
         }else{
             $result = $this->handler->set($name, $value);

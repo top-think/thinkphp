@@ -32,6 +32,13 @@ class App {
         // URL调度
         Dispatcher::dispatch();
 
+        if(C('REQUEST_VARS_FILTER')){
+			// 全局安全过滤
+			array_walk_recursive($_GET,		'think_filter');
+			array_walk_recursive($_POST,	'think_filter');
+			array_walk_recursive($_REQUEST,	'think_filter');
+		}
+
         // 日志目录转换为绝对路径
         C('LOG_PATH',realpath(LOG_PATH).'/');
         // TMPL_EXCEPTION_FILE 改为绝对地址
@@ -99,6 +106,7 @@ class App {
                             E(L('_PARAM_ERROR_').':'.$name);
                         }   
                     }
+					array_walk_recursive($args,'think_filter');
                     $method->invokeArgs($module,$args);
                 }else{
                     $method->invoke($module);

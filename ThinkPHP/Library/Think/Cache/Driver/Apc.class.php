@@ -23,7 +23,7 @@ class Apc extends Cache {
      */
     public function __construct($options=array()) {
         if(!function_exists('apc_cache_info')) {
-            E(L('_NOT_SUPPERT_').':Apc');
+            E(L('_NOT_SUPPORT_').':Apc');
         }
         $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
         $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;        

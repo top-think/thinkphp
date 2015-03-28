@@ -46,6 +46,7 @@ class Page{
         $this->listRows   = $listRows;  //设置每页显示行数
         $this->parameter  = empty($parameter) ? $_GET : $parameter;
         $this->nowPage    = empty($_GET[$this->p]) ? 1 : intval($_GET[$this->p]);
+        $this->nowPage    = $this->nowPage>0 ? $this->nowPage : 1;
         $this->firstRow   = $this->listRows * ($this->nowPage - 1);
     }
 
@@ -85,7 +86,7 @@ class Page{
             $this->nowPage = $this->totalPages;
         }
 
-        /* 计算分页零时变量 */
+        /* 计算分页临时变量 */
         $now_cool_page      = $this->rollPage/2;
 		$now_cool_page_ceil = ceil($now_cool_page);
 		$this->lastSuffix && $this->config['last'] = $this->totalPages;

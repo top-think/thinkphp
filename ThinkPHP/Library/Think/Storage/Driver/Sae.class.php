@@ -112,14 +112,14 @@ class Sae extends Storage{
     /**
      * 加载文件
      * @access public
-     * @param string $filename  文件名
+     * @param string $_filename  文件名
      * @param array $vars  传入变量
      * @return void
      */
-    public function load($filename,$vars=null){
+    public function load($_filename,$vars=null){
         if(!is_null($vars))
             extract($vars, EXTR_OVERWRITE);
-        eval('?>'.$this->read($filename));
+        eval('?>'.$this->read($_filename));
     }
 
     /**

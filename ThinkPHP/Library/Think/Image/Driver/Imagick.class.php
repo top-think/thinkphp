@@ -60,9 +60,10 @@ class Imagick{
      * 保存图像
      * @param  string  $imgname   图像保存名称
      * @param  string  $type      图像类型
+     * @param  integer $quality   JPEG图像质量      
      * @param  boolean $interlace 是否对JPEG类型图像设置隔行扫描
      */
-    public function save($imgname, $type = null, $interlace = true){
+    public function save($imgname, $type = null, $quality=80,$interlace = true){
         if(empty($this->img)) E('没有可以被保存的图像资源');
 
         //设置图片类型
@@ -77,6 +78,9 @@ class Imagick{
         if('jpeg' == $type || 'jpg' == $type){
             $this->img->setImageInterlaceScheme(1);
         }
+
+        // 设置图像质量
+        $this->img->setImageCompressionQuality($quality); 
 
         //去除图像配置信息
         $this->img->stripImage();
@@ -270,13 +274,13 @@ class Imagick{
                 $posy = ($height - $h * $scale)/2;
 
                 //创建一张新图像
-                $newimg = new Imagick();
+                $newimg = new \Imagick();
                 $newimg->newImage($width, $height, 'white', $this->info['type']);
 
 
                 if('gif' == $this->info['type']){
                     $imgs = $this->img->coalesceImages();
-                    $img  = new Imagick();
+                    $img  = new \Imagick();
                     $this->img->destroy(); //销毁原图
 
                     //循环填充每一帧
@@ -329,7 +333,7 @@ class Imagick{
         is_null($img) && $img = $this->img;
 
         /* 将指定图片绘入空白图片 */
-        $draw  = new ImagickDraw();
+        $draw  = new \ImagickDraw();
         $draw->composite($img->getImageCompose(), $posx, $posy, $neww, $newh, $img);
         $image = $newimg->clone();
         $image->drawImage($draw);
@@ -350,7 +354,7 @@ class Imagick{
         if(!is_file($source)) E('水印图像不存在');
 
         //创建水印图像资源
-        $water = new Imagick(realpath($source));
+        $water = new \Imagick(realpath($source));
         $info  = array($water->getImageWidth(), $water->getImageHeight());
 
         /* 设定水印位置 */
@@ -418,7 +422,7 @@ class Imagick{
         }
 
         //创建绘图资源
-        $draw = new ImagickDraw();
+        $draw = new \ImagickDraw();
         $draw->composite($water->getImageCompose(), $x, $y, $info[0], $info[1], $water);
         
         if('gif' == $this->info['type']){
@@ -475,7 +479,7 @@ class Imagick{
         
 
         //获取文字信息
-        $draw = new ImagickDraw();
+        $draw = new \ImagickDraw();
         $draw->setFont(realpath($font));
         $draw->setFontSize($size);
         $draw->setFillColor($col);
