@@ -9,7 +9,7 @@
 		public $timeout = '';
 
 		public function __construct($config){
-			$this->sk = $config['secrectKey'];
+			$this->sk = $config['secretKey'];
 			$this->ak = $config['accessKey'];
 			$this->domain = $config['domain'];
 			$this->bucket = $config['bucket'];
