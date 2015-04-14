@@ -1134,7 +1134,7 @@ class Model {
     private function autoOperation(&$data,$type) {
     	if(false === $this->options['auto']){
     		// 关闭自动完成
-    		return true;
+    		return $data;
     	}
         if(!empty($this->options['auto'])) {
             $_auto   =   $this->options['auto'];
