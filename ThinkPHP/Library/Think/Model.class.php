@@ -851,13 +851,13 @@ class Model {
      */
     public function setInc($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition   =  $this->options['where'];
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
+            $condition 	=  	$this->options['where'];
+            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step 		= 	$this->lazyWrite($guid,$step,$lazyTime);
             if(empty($step)) {
             	return true; // 等待下次写入
             }elseif($step < 0) {
-            	$step =	'-'.$step;
+            	$step 	=	'-'.$step;
             }
         }
         return $this->setField($field,array('exp',$field.'+'.$step));
@@ -873,13 +873,13 @@ class Model {
      */
     public function setDec($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition   =  $this->options['where'];
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,-$step,$lazyTime);
+            $condition  =  	$this->options['where'];
+            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step 		= 	$this->lazyWrite($guid,-$step,$lazyTime);
             if(empty($step)) {
             	return true; // 等待下次写入
             }elseif($step > 0) {
-            	$step =	'-'.$step;
+            	$step 	=	'-'.$step;
             }
         }
         return $this->setField($field,array('exp',$field.'-'.$step));
