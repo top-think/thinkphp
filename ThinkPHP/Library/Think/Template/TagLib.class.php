@@ -76,7 +76,11 @@ class TagLib {
     public function parseXmlAttr($attr,$tag) {
         //XML解析安全过滤
         $attr   =   str_replace('&','___', $attr);
-        $xml    =   '<tpl><tag '.$attr.' /></tpl>';
+        if (substr($attr,0,1) == '<' && substr($attr,-1,1) == '>') { 
+            $xml   =   '<tpl>'.$attr.'</tpl>';
+        } else {
+            $xml   =   '<tpl><tag '.$attr.' /></tpl>';
+        }
         $xml    =   simplexml_load_string($xml);
         if(!$xml) {
             E(L('_XML_TAG_ERROR_').' : '.$attr);
@@ -118,6 +122,48 @@ class TagLib {
     }
 
     /**
+     * 分析标签属性 正则方式
+     * @access public
+     * @param string $str  标签属性字符串
+     * @param string $tag  标签名
+     * @return array
+     */
+    public function parseAttr($str, $tag) {
+        if(ini_get('magic_quotes_sybase'))
+            $str   =   str_replace('\"','\'',$str);
+        $reg = '/\s+(?>(?<name>\w+)\s*)=(?>\s*)([\"\'])(?<value>(?:(?!\\2).)*)\\2/is';
+        $array = array();
+        if (preg_match_all($reg, $str, $matches)){
+            foreach ($matches['name'] as $key => $val) {
+                $array[$val] = $matches['value'][$key];
+            }
+            $tag    =   strtolower($tag);
+            if(!isset($this->tags[$tag])){
+                // 检测是否存在别名定义
+                foreach($this->tags as $key=>$val){
+                    if(isset($val['alias']) && in_array($tag,explode(',',$val['alias']))){
+                        $item  =   $val;
+                        break;
+                    }
+                }
+            }else{
+                $item  =   $this->tags[$tag];
+            }            
+            if(!empty($item['must'])){
+                $must   =   explode(',',$item['must']);
+                foreach ($must as $name) {
+                    if (!isset($array[$name])) {
+                        E(L('_PARAM_ERROR_').':'.$name);
+                    }
+                }
+            }
+        } else {
+            //E(L('_XML_TAG_ERROR_'));
+        }
+        return $array;
+    }
+
+    /**
      * 解析条件表达式
      * @access public
      * @param string $condition 表达式标签内容
@@ -137,7 +183,7 @@ class TagLib {
                 $condition  =   preg_replace('/\$(\w+)\.(\w+)\s/is','(is_array($\\1)?$\\1["\\2"]:$\\1->\\2) ',$condition);
         }
         if(false !== strpos($condition, '$Think'))
-            $condition      =   preg_replace_callback('/(\$Think.*?)\s/is', array($this, 'parseThinkVar'), $condition);        
+            $condition      =   preg_replace_callback('/(\$Think[^\s]*)\s/is', array($this, 'parseThinkVar'), $condition);        
         return $condition;
     }
 
