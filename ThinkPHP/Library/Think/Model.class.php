@@ -1132,6 +1132,10 @@ class Model {
      * @return mixed
      */
     private function autoOperation(&$data,$type) {
+    	if(false === $this->options['auto']){
+    		// 关闭自动完成
+    		return true;
+    	}
         if(!empty($this->options['auto'])) {
             $_auto   =   $this->options['auto'];
             unset($this->options['auto']);
@@ -1185,6 +1189,10 @@ class Model {
      * @return boolean
      */
     protected function autoValidation($data,$type) {
+    	if(false === $this->options['validate'] ){
+    		// 关闭自动验证
+    		return true;
+    	}
         if(!empty($this->options['validate'])) {
             $_validate   =   $this->options['validate'];
             unset($this->options['validate']);
