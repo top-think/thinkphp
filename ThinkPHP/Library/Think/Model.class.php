@@ -854,7 +854,11 @@ class Model {
             $condition   =  $this->options['where'];
             $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
             $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            if(empty($step)) {
+            	return true; // 等待下次写入
+            }elseif($step < 0) {
+            	$step =	'-'.$step;
+            }
         }
         return $this->setField($field,array('exp',$field.'+'.$step));
     }
@@ -871,8 +875,12 @@ class Model {
         if($lazyTime>0) {// 延迟写入
             $condition   =  $this->options['where'];
             $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            $step = $this->lazyWrite($guid,-$step,$lazyTime);
+            if(empty($step)) {
+            	return true; // 等待下次写入
+            }elseif($step > 0) {
+            	$step =	'-'.$step;
+            }
         }
         return $this->setField($field,array('exp',$field.'-'.$step));
     }
