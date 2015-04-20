@@ -851,10 +851,14 @@ class Model {
      */
     public function setInc($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition   =  $this->options['where'];
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            $condition 	=  	$this->options['where'];
+            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step 		= 	$this->lazyWrite($guid,$step,$lazyTime);
+            if(empty($step)) {
+            	return true; // 等待下次写入
+            }elseif($step < 0) {
+            	$step 	=	'-'.$step;
+            }
         }
         return $this->setField($field,array('exp',$field.'+'.$step));
     }
@@ -869,10 +873,14 @@ class Model {
      */
     public function setDec($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition   =  $this->options['where'];
-            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step = $this->lazyWrite($guid,$step,$lazyTime);
-            if(false === $step ) return true; // 等待下次写入
+            $condition  =  	$this->options['where'];
+            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step 		= 	$this->lazyWrite($guid,-$step,$lazyTime);
+            if(empty($step)) {
+            	return true; // 等待下次写入
+            }elseif($step > 0) {
+            	$step 	=	'-'.$step;
+            }
         }
         return $this->setField($field,array('exp',$field.'-'.$step));
     }
@@ -1124,6 +1132,10 @@ class Model {
      * @return mixed
      */
     private function autoOperation(&$data,$type) {
+    	if(false === $this->options['auto']){
+    		// 关闭自动完成
+    		return $data;
+    	}
         if(!empty($this->options['auto'])) {
             $_auto   =   $this->options['auto'];
             unset($this->options['auto']);
@@ -1177,6 +1189,10 @@ class Model {
      * @return boolean
      */
     protected function autoValidation($data,$type) {
+    	if(false === $this->options['validate'] ){
+    		// 关闭自动验证
+    		return true;
+    	}
         if(!empty($this->options['validate'])) {
             $_validate   =   $this->options['validate'];
             unset($this->options['validate']);
