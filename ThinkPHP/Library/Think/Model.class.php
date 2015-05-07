@@ -1015,14 +1015,7 @@ class Model {
         $type = $type?:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
 
         // 检查字段映射
-        if(!empty($this->_map)) {
-            foreach ($this->_map as $key=>$val){
-                if(isset($data[$key])) {
-                    $data[$val] =   $data[$key];
-                    unset($data[$key]);
-                }
-            }
-        }
+		$data =	$this->parseFieldsMap($data,0);
 
         // 检测提交字段的合法性
         if(isset($this->options['field'])) { // $this->field('field1,field2...')->create()
