@@ -225,9 +225,11 @@ class Think {
         }
         $error['trace']     =   $e->getTraceAsString();
         Log::record($error['message'],Log::ERR);
-        // 发送404信息
-        header('HTTP/1.1 404 Not Found');
-        header('Status:404 Not Found');
+        
+        // 发送500信息
+        header('HTTP/1.1 500 Not Found');
+        header('Status:500 Not Found');
+        
         self::halt($error);
     }
 
