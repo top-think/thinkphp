@@ -112,6 +112,7 @@ class Auth{
             }
         }
         $list = array(); //保存验证通过的规则名
+        $REQUEST = array();
         if ($mode=='url') {
             $REQUEST = unserialize( strtolower(serialize($_REQUEST)) );
         }
