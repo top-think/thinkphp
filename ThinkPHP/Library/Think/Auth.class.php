@@ -91,12 +91,13 @@ class Auth{
     }
 
     /**
-      * 检查权限
-      * @param name string|array  需要验证的规则列表,支持逗号分隔的权限规则或索引数组
-      * @param uid  int           认证用户的id
-      * @param string mode        执行check的模式
-      * @param relation string    如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
-      * @return boolean           通过验证返回true;失败返回false
+     * 检查权限
+     * @param string|array $name 需要验证的规则列表,支持逗号分隔的权限规则或索引数组
+     * @param int $uid           认证用户的id
+     * @param int $type          执行check的模式
+     * @param string $mode       如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
+     * @param string $relation   通过验证返回true;失败返回false
+     * @return bool
      */
     public function check($name, $uid, $type=1, $mode='url', $relation='or') {
         if (!$this->_config['AUTH_ON'])
@@ -138,11 +139,19 @@ class Auth{
     }
 
     /**
-     * 根据用户id获取用户组,返回值为数组
+     *
      * @param  uid int     用户id
-     * @return array       用户所属的用户组 array(
-     *                                         array('uid'=>'用户id','group_id'=>'用户组id','title'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'),
+     * @return array        array(
+     *
      *                                         ...)   
+     */
+    /**
+     * 根据用户id获取用户组,返回值为数组
+     * @param int $uid 用户id
+     * @return mixed 用户所属的用户组
+     *               array(
+     *                  array('uid'=>'用户id','group_id'=>'用户组id','title'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'),...
+     *               )
      */
     public function getGroups($uid) {
         static $groups = array();
@@ -159,8 +168,9 @@ class Auth{
 
     /**
      * 获得权限列表
-     * @param integer $uid  用户id
-     * @param integer $type 
+     * @param int $uid 用户id
+     * @param int $type
+     * @return array
      */
     protected function getAuthList($uid,$type) {
         static $_authList = array(); //保存用户验证通过的权限列表
@@ -219,6 +229,8 @@ class Auth{
 
     /**
      * 获得用户资料,根据自己的情况读取数据库
+     * @param int $uid 用户id
+     * @return mixed
      */
     protected function getUserInfo($uid) {
         static $userinfo=array();
