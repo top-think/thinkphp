@@ -1356,6 +1356,17 @@ class Model {
     }
 
     /**
+     * 存储过程返回多数据集
+     * @access public
+     * @param string $sql  SQL指令
+     * @param mixed $parse  是否需要解析SQL
+     * @return array
+     */
+    public function procedure($sql, $parse = false) {
+        return $this->db->procedure($sql, $parse);
+    }
+
+    /**
      * SQL查询
      * @access public
      * @param string $sql  SQL指令
