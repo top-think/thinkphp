@@ -182,4 +182,54 @@ class Mysql extends Driver{
         if(empty($updates)) return '';
         return " ON DUPLICATE KEY UPDATE ".join(', ', $updates);
     }
+    
+	
+
+    /**
+     * 执行存储过程查询 返回多个数据集
+     * @access public
+     * @param string $str  sql指令
+     * @param boolean $fetchSql  不执行只是获取SQL
+     * @return mixed
+     */
+    public function procedure($str,$fetchSql=false) {
+        $this->initConnect(false);
+        $this->_linkID->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
+        if ( !$this->_linkID ) return false;
+        $this->queryStr     =   $str;
+        if($fetchSql){
+            return $this->queryStr;
+        }
+        //释放前次的查询结果
+        if ( !empty($this->PDOStatement) ) $this->free();
+        $this->queryTimes++;
+        N('db_query',1); // 兼容代码
+        // 调试开始
+        $this->debug(true);
+        $this->PDOStatement = $this->_linkID->prepare($str);
+        if(false === $this->PDOStatement){
+            $this->error();
+            return false;
+        }
+        try{
+            $result = $this->PDOStatement->execute();
+            // 调试结束
+            $this->debug(false);
+            do
+            {
+                $result = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
+                if ($result)
+                {
+                    $resultArr[] = $result;
+                }
+            }
+            while ($this->PDOStatement->nextRowset());
+            $this->_linkID->setAttribute(\PDO::ATTR_ERRMODE, $this->options[\PDO::ATTR_ERRMODE]);
+            return $resultArr;
+        }catch (\PDOException $e) {
+            $this->error();
+            $this->_linkID->setAttribute(\PDO::ATTR_ERRMODE, $this->options[\PDO::ATTR_ERRMODE]);
+            return false;
+        }
+    }
 }
