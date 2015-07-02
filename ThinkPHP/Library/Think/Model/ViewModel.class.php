@@ -214,28 +214,31 @@ class ViewModel extends Model {
             foreach ($fields as $key=>$field){
                 if(strpos($field,'(') || strpos(strtolower($field),' as ')){
                     // 使用了函数或者别名
-                    $array[] =  $field;
-                    unset($fields[$key]);
+                    $array[$key] =  $field;
+                    $fields[$key]=false;
                 }
             }
             foreach ($this->viewFields as $name=>$val){
                 $k = isset($val['_as'])?$val['_as']:$name;
                 $val  =  $this->_checkFields($name,$val);
                 foreach ($fields as $key=>$field){
+                    if($field===false){continue;}
                     if(false !== $_field = array_search($field,$val,true)) {
                         // 存在视图字段
                         if(is_numeric($_field)) {
-                            $array[]    =   $k.'.'.$field.' AS '.$field;
+                            $array[$key]    =   $k.'.'.$field.' AS '.$field;
                         }elseif('_' != substr($_field,0,1)){
                             if( false !== strpos($_field,'*') ||  false !== strpos($_field,'(') || false !== strpos($_field,'.'))
                                 //如果包含* 或者 使用了sql方法 则不再添加前面的表名
-                                $array[]    =   $_field.' AS '.$field;
+                                $array[$key]    =   $_field.' AS '.$field;
                             else
-                                $array[]    =   $k.'.'.$_field.' AS '.$field;
+                                $array[$key]    =   $k.'.'.$_field.' AS '.$field;
                         }
                     }
                 }
             }
+			//保持原有字段顺序
+            ksort($array);
             $fields = implode(',',$array);
         }
         return $fields;
