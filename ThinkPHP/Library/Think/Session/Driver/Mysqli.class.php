@@ -20,7 +20,7 @@ namespace Think\Session\Driver;
  *      UNIQUE KEY `session_id` (`session_id`)
  *    );
  */
-class Db
+class Mysqli
 {
 
     /**
