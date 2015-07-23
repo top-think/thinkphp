@@ -16,7 +16,8 @@ use Think\Db\Driver;
  */
 class Firebird extends Driver{
     protected $selectSql  =     'SELECT %LIMIT% %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%';
-
+    protected $options = array();
+    
     /**
      * 解析pdo连接的dsn信息
      * @access public
