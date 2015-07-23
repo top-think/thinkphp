@@ -451,7 +451,9 @@ class Model {
         $result     =   $this->db->update($data,$options);
         if(false !== $result && is_numeric($result)) {
             if(isset($pkValue)) $data[$pk]   =  $pkValue;
-            $this->_after_update($data,$options);
+            if(false === $this->_after_update($data,$options)) {
+                return false;
+            }
         }
         return $result;
     }
