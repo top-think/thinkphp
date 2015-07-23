@@ -10,12 +10,32 @@
 // +----------------------------------------------------------------------
 namespace Think\Db\Driver;
 use Think\Db\Driver;
+use PDO;
 
 /**
  * Firebird数据库驱动 
  */
 class Firebird extends Driver{
     protected $selectSql  =     'SELECT %LIMIT% %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%';
+    
+    /**
+     * 连接数据库方法
+     * @access public
+     */
+    public function connect($config='',$linkNum=0) {
+        if ( !isset($this->linkID[$linkNum]) ) {
+            if(empty($config))  $config =   $this->config;
+            try{
+                if(empty($config['dsn'])) {
+                    $config['dsn']  =   $this->parseDsn($config);
+                }
+                $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password']);
+            }catch (\PDOException $e) {
+                E($e->getMessage());
+            }
+        }
+        return $this->linkID[$linkNum];
+    }
 
     /**
      * 解析pdo连接的dsn信息
