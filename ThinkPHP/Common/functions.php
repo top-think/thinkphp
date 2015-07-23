@@ -1425,7 +1425,7 @@ function cookie($name='', $value='', $option=null) {
 function load_ext_file($path) {
     // 加载自定义外部文件
     if($files = C('LOAD_EXT_FILE')) {
-        $files      =  explode(',',$files);
+        $files      =  array_map('trim', explode(',',$files));
         foreach ($files as $file){
             $file   = $path.'Common/'.$file.'.php';
             if(is_file($file)) include $file;
@@ -1433,7 +1433,7 @@ function load_ext_file($path) {
     }
     // 加载自定义的动态配置文件
     if($configs = C('LOAD_EXT_CONFIG')) {
-        if(is_string($configs)) $configs =  explode(',',$configs);
+        if(is_string($configs)) $configs =  array_map('trim', explode(',',$configs));
         foreach ($configs as $key=>$config){
             $file   = is_file($config)? $config : $path.'Conf/'.$config.CONF_EXT;
             if(is_file($file)) {
