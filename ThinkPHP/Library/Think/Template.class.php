@@ -122,12 +122,18 @@ class  Template {
      * @return string
      */
     protected function compiler($tmplContent) {
-        //模板解析
+        // 模板解析
         $tmplContent =  $this->parse($tmplContent);
         // 还原被替换的Literal标签
         $tmplContent =  preg_replace_callback('/<!--###literal(\d+)###-->/is', array($this, 'restoreLiteral'), $tmplContent);
         // 添加安全代码
         $tmplContent =  '<?php if (!defined(\'THINK_PATH\')) exit();?>'.$tmplContent;
+        // 去除HTML中空格与换行
+        if(C('TMPL_STRIP_SPACE')) {
+            $find           = array('~>\s+<~','~>(\s+\n|\r)~');
+            $replace        = array('><','>');
+            $tmplContent    = preg_replace($find, $replace, $tmplContent);
+        }
         // 优化生成的php代码
         $tmplContent = str_replace('?><?php','',$tmplContent);
         // 模版编译过滤标签
