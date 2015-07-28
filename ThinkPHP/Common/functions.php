@@ -141,6 +141,19 @@ function G($start,$end='',$dec=4) {
 }
 
 /**
+ * 输出json格式的字符串（主要返回数据给前端）
+ * @param array|object $data 要输出的数据
+ * @return void
+ */
+function J($data) {
+    if (PHP_VERSION > '5.4') {
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode($data);
+    }
+}
+
+/**
  * 获取和设置语言定义(不区分大小写)
  * @param string|array $name 语言变量
  * @param mixed $value 语言值或者变量
