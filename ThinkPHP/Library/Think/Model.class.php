@@ -1075,18 +1075,18 @@ class Model {
         if(isset($this->options['token']) && !$this->options['token']) return true;
         if(C('TOKEN_ON')){
             $name   = C('TOKEN_NAME', null, '__hash__');
-            if(!isset($data[$name]) || !isset($_SESSION[$name])) { // 令牌数据无效
+            if(!isset($data[$name])) { // 令牌数据无效
                 return false;
             }
 
             // 令牌验证
             list($key,$value)  =  explode('_',$data[$name]);
-            if(isset($_SESSION[$name][$key]) && $value && $_SESSION[$name][$key] === $value) { // 防止重复提交
-                unset($_SESSION[$name][$key]); // 验证完成销毁session
+            if($value && S($name.'_'.$key) === $value) { // 防止重复提交
+                S($name.'_'.$key, null); // 验证完成销毁token
                 return true;
             }
             // 开启TOKEN重置
-            if(C('TOKEN_RESET')) unset($_SESSION[$name][$key]);
+            if(C('TOKEN_RESET')) S($name.'_'.$key, null);
             return false;
         }
         return true;
