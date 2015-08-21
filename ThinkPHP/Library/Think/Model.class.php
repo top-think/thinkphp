@@ -851,14 +851,10 @@ class Model {
      */
     public function setInc($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition 	=  	$this->options['where'];
-            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step 		= 	$this->lazyWrite($guid,$step,$lazyTime);
-            if(empty($step)) {
-            	return true; // 等待下次写入
-            }elseif($step < 0) {
-            	$step 	=	'-'.$step;
-            }
+            $condition   =  $this->options['where'];
+            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step = $this->lazyWrite($guid,$step,$lazyTime);
+            if(false === $step ) return true; // 等待下次写入
         }
         return $this->setField($field,array('exp',$field.'+'.$step));
     }
@@ -873,14 +869,10 @@ class Model {
      */
     public function setDec($field,$step=1,$lazyTime=0) {
         if($lazyTime>0) {// 延迟写入
-            $condition  =  	$this->options['where'];
-            $guid 		=  	md5($this->name.'_'.$field.'_'.serialize($condition));
-            $step 		= 	$this->lazyWrite($guid,-$step,$lazyTime);
-            if(empty($step)) {
-            	return true; // 等待下次写入
-            }elseif($step > 0) {
-            	$step 	=	'-'.$step;
-            }
+            $condition   =  $this->options['where'];
+            $guid =  md5($this->name.'_'.$field.'_'.serialize($condition));
+            $step = $this->lazyWrite($guid,$step,$lazyTime);
+            if(false === $step ) return true; // 等待下次写入
         }
         return $this->setField($field,array('exp',$field.'-'.$step));
     }
@@ -1015,7 +1007,14 @@ class Model {
         $type = $type?:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
 
         // 检查字段映射
-		$data =	$this->parseFieldsMap($data,0);
+        if(!empty($this->_map)) {
+            foreach ($this->_map as $key=>$val){
+                if(isset($data[$key])) {
+                    $data[$val] =   $data[$key];
+                    unset($data[$key]);
+                }
+            }
+        }
 
         // 检测提交字段的合法性
         if(isset($this->options['field'])) { // $this->field('field1,field2...')->create()
@@ -1125,10 +1124,6 @@ class Model {
      * @return mixed
      */
     private function autoOperation(&$data,$type) {
-    	if(false === $this->options['auto']){
-    		// 关闭自动完成
-    		return $data;
-    	}
         if(!empty($this->options['auto'])) {
             $_auto   =   $this->options['auto'];
             unset($this->options['auto']);
@@ -1182,10 +1177,6 @@ class Model {
      * @return boolean
      */
     protected function autoValidation($data,$type) {
-    	if(false === $this->options['validate'] ){
-    		// 关闭自动验证
-    		return true;
-    	}
         if(!empty($this->options['validate'])) {
             $_validate   =   $this->options['validate'];
             unset($this->options['validate']);
@@ -1353,17 +1344,6 @@ class Model {
                 // 检查附加规则
                 return $this->regex($value,$rule);
         }
-    }
-
-    /**
-     * 存储过程返回多数据集
-     * @access public
-     * @param string $sql  SQL指令
-     * @param mixed $parse  是否需要解析SQL
-     * @return array
-     */
-    public function procedure($sql, $parse = false) {
-        return $this->db->procedure($sql, $parse);
     }
 
     /**
