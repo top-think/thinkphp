@@ -444,7 +444,7 @@ class AdvModel extends Model {
         if(!empty($this->serializeField)) {
             // 定义方式  $this->serializeField = array('ser'=>array('name','email'));
             foreach ($this->serializeField as $key=>$val){
-                if(empty($data[$key])) {
+                if(!empty($data[$key])) {
                     $serialize  =   array();
                     foreach ($val as $name){
                         if(isset($data[$name])) {
@@ -468,9 +468,9 @@ class AdvModel extends Model {
             foreach ($this->serializeField as $key=>$val){
                 if(isset($result[$key])) {
                     $serialize   =   unserialize($result[$key]);
-                    foreach ($serialize as $name=>$value)
+                    foreach ($serialize as $name=>$value){
                         $result[$name]  =   $value;
-                    unset($serialize,$result[$key]);
+                    }
                 }
             }
         }
@@ -485,9 +485,9 @@ class AdvModel extends Model {
                 foreach ($resultSet as $k=>$result){
                     if(isset($result[$key])) {
                         $serialize   =   unserialize($result[$key]);
-                        foreach ($serialize as $name=>$value)
+                        foreach ($serialize as $name=>$value){
                             $result[$name]  =   $value;
-                        unset($serialize,$result[$key]);
+                        }
                         $resultSet[$k] =   $result;
                     }
                 }
