@@ -90,7 +90,7 @@ class Local{
 
     /**
      * 创建目录
-     * @param  string $savepath 要创建的穆里
+     * @param  string $savepath 要创建的目录
      * @return boolean          创建状态，true-成功，false-失败
      */
     public function mkdir($savepath){
