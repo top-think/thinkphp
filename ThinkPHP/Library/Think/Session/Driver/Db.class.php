@@ -125,7 +125,7 @@ class Db {
        $res 	= 	mysql_query('SELECT session_data AS data FROM '.$this->sessionTable." WHERE session_id = '$sessID'   AND session_expire >".time(),$hander); 
        if($res) {
            $row = 	mysql_fetch_assoc($res);
-           return $row['data']; 
+           return $row['session_data']; 
        }
        return ""; 
    } 
