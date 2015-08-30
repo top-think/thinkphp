@@ -72,8 +72,8 @@ class Cache {
     public function __unset($name) {
         $this->rm($name);
     }
-    public function setOptions($name,$value) {
-        $this->options[$name]   =   $value;
+    public function setOption($name,$value) {
+        $this->options[$name] = $value;
     }
 
     public function getOptions($name) {
