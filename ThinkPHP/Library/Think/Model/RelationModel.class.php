@@ -337,7 +337,7 @@ class RelationModel extends Model {
                                     if(is_array($mappingData)) {
                                         $ids   = array();
                                         foreach ($mappingData as $vo)
-                                            $ids[]   =   $vo[$mappingKey];
+                                            $ids[]   =   $vo[$mappingRelationFk];
                                         $relationId =   implode(',',$ids);
                                     }
                                     switch (strtoupper($opType)){
