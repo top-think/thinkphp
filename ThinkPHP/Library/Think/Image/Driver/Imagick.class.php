@@ -190,8 +190,8 @@ class Imagick{
         }
 
         //设置缓存尺寸
-        $this->info['width']  = $w;
-        $this->info['height'] = $h;
+        $this->info['width']  = $width;
+        $this->info['height'] = $height;
     }
 
     /**

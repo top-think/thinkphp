@@ -28,14 +28,14 @@ class Crypt {
     public static function encrypt($str,$key,$expire=0){
         $expire = sprintf('%010d', $expire ? $expire + time():0);
         $r = md5($key);
-        $c=0;
+        $c = 0;
         $v = "";
         $str    =   $expire.$str;
 		$len = strlen($str);
 		$l = strlen($r);
         for ($i=0;$i<$len;$i++){
          if ($c== $l) $c=0;
-         $v.= substr($r,$c,1) .
+         $v .= substr($r,$c,1) .
              (substr($str,$i,1) ^ substr($r,$c,1));
          $c++;
         }
@@ -55,7 +55,7 @@ class Crypt {
         for ($i=0;$i<$len;$i++){
          $md5 = substr($str,$i,1);
          $i++;
-         $v.= (substr($str,$i,1) ^ $md5);
+         $v .= (substr($str,$i,1) ^ $md5);
         }
         $data   =    $v;
         $expire = substr($data,0,10);
@@ -67,15 +67,15 @@ class Crypt {
     }
 
 
-   function ed($str,$key) {
+   static private function ed($str,$key) {
       $r = md5($key);
-      $c=0;
-      $v = "";
+      $c = 0;
+      $v = '';
 	  $len = strlen($str);
 	  $l = strlen($r);
       for ($i=0;$i<$len;$i++) {
          if ($c==$l) $c=0;
-         $v.= substr($str,$i,1) ^ substr($r,$c,1);
+         $v .= substr($str,$i,1) ^ substr($r,$c,1);
          $c++;
       }
       return $v;
