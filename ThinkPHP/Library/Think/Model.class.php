@@ -980,7 +980,7 @@ class Model {
                     return $data;
                 }
                 foreach ($result as $val){
-                    $array[]    =   $val[$field];
+                    $array[]    =   reset($val);
                 }
                 if(isset($cache)){
                     S($key,$array,$cache);
