@@ -582,22 +582,12 @@ class Mongo extends Driver {
         $result   =  array();
         foreach ($data as $key=>$val){
             if(is_array($val)) {
-                switch($val[0]) {
-                    case 'inc':
-                        $result['$inc'][$key]  =  (int)$val[1];
-                        break;
-                    case 'set':
-                    case 'unset':
-                    case 'push':
-                    case 'pushall':
-                    case 'addtoset':
-                    case 'pop':
-                    case 'pull':
-                    case 'pullall':
-                        $result['$'.$val[0]][$key] = $val[1];
-                        break;
-                    default:
-                        $result['$set'][$key] =  $val;
+                if ('inc' === $val[0]) {
+                    $result['$inc'][$key] = (int)$val[1];
+                } elseif (in_array($val[0], array('set', 'unset', 'push', 'pushall', 'addtoset', 'pop', 'pull', 'pullall'))) {
+                    $result['$'.$val[0]][$key] = $val[1];
+                } else {
+                    $result['$set'][$key] = $val;
                 }
             }else{
                 $result['$set'][$key]    = $val;
