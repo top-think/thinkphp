@@ -309,10 +309,7 @@ class MongoModel extends Model{
             }            // 查找符合的记录
             $result = $this->db->select($options);
             if(!empty($result)) {
-                if(1==$options['limit']) {
-                    $result     =   reset($result);
-                    return $result[$field];
-                }
+                if(1==$options['limit']) return reset($result)[$field];
                 foreach ($result as $val){
                     $array[]    =   $val[$field];
                 }
