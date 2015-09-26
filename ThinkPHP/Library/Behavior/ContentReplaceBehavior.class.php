@@ -32,7 +32,7 @@ class ContentReplaceBehavior {
             '__APP__'       =>  __APP__,        // 当前应用地址
             '__MODULE__'    =>  __MODULE__,
             '__ACTION__'    =>  __ACTION__,     // 当前操作地址
-            '__SELF__'      =>  __SELF__,       // 当前页面地址
+            '__SELF__'      =>  htmlentities(__SELF__),       // 当前页面地址
             '__CONTROLLER__'=>  __CONTROLLER__,
             '__URL__'       =>  __CONTROLLER__,
             '__PUBLIC__'    =>  __ROOT__.'/Public',// 站点公共目录
