@@ -589,9 +589,9 @@ function D($name='',$layer='') {
     }elseif(false === strpos($name,'/')){
         // 自动加载公共模块下面的模型
         if(!C('APP_USE_NAMESPACE')){
-            import('Common/'.$layer.'/'.$class);
+            import(COMMON_PATH.'/'.$layer.'/'.$class);
         }else{
-            $class      =   '\\Common\\'.$layer.'\\'.$name.$layer;
+            $class      =   '\\'.COMMON_PATH.'\\'.$layer.'\\'.$name.$layer;
         }
         $model      =   class_exists($class)? new $class($name) : new Think\Model($name);
     }else {
