@@ -1297,7 +1297,10 @@ class Model {
                 if(!empty($data[$pk]) && is_string($pk)) { // 完善编辑的时候验证唯一
                     $map[$pk] = array('neq',$data[$pk]);
                 }
-                if($this->where($map)->find())   return false;
+                $options = $this->options;
+                if($this->where($map)->find())   
+                	return false;
+                $this->options = $options;
                 return true;
             default:  // 检查附加规则
                 return $this->check($data[$val[0]],$val[1],$val[4]);
