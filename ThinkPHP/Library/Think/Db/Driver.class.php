@@ -550,7 +550,14 @@ abstract class Driver {
             if(is_string($val[0])) {
 				$exp	=	strtolower($val[0]);
                 if(preg_match('/^(eq|neq|gt|egt|lt|elt)$/',$exp)) { // 比较运算
-                    $whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
+                    	$v_count=count($val);
+			if('eq'==$exp && $v_count > 2){
+				$mut_eqstr=array();
+				for($i=1;$i<$v_count; $i++)
+					$mut_eqstr[]=$key.' '.$this->exp[$exp].' '.$this->parseValue($val[$i]);
+				$whereStr .= '('.implode(' OR ',$mut_eqstr).')';
+			}else
+				$whereStr .= $key.' '.$this->exp[$exp].' '.$this->parseValue($val[1]);
                 }elseif(preg_match('/^(notlike|like)$/',$exp)){// 模糊查找
                     if(is_array($val[1])) {
                         $likeLogic  =   isset($val[2])?strtoupper($val[2]):'OR';
