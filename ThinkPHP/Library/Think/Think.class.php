@@ -151,7 +151,7 @@ class Think {
             include self::$_map[$class];
         }elseif(false !== strpos($class,'\\')){
           $name           =   strstr($class, '\\', true);
-          if(in_array($name,array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PATH.$name)){ 
+          if(in_array($name,array('Think','Org','Behavior','Com','Vendor')) || is_dir(LIB_PLibarATH.$name)){ 
               // Library目录下面的命名空间自动定位
               $path       =   LIB_PATH;
           }else{
@@ -166,7 +166,11 @@ class Think {
                   return ;
               }
               include $filename;
-          }
+            }else{
+                $filename = str_replace('.class.php', '.php', $filename);
+                if(is_file($filename))
+                    include $filename;
+            }
         }elseif (!C('APP_USE_NAMESPACE')) {
             // 自动加载的类库层
             foreach(explode(',',C('APP_AUTOLOAD_LAYER')) as $layer){
