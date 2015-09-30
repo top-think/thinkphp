@@ -192,8 +192,8 @@ class Think {
      * @return object
      */
     static public function instance($class,$method='') {
-        $identify   =   $class.$method;
-        if(!isset(self::$_instance[$identify])) {
+        $identify   =   $class.'.'.$method;
+        if(!isset(self::$_instance[$identify]) || !empty($method)) {
             if(class_exists($class)){
                 $o = new $class();
                 if(!empty($method) && method_exists($o,$method))
