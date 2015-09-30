@@ -36,16 +36,15 @@ class TokenBuildBehavior {
     private function getToken(){
         $tokenName  = C('TOKEN_NAME',null,'__hash__');
         $tokenType  = C('TOKEN_TYPE',null,'md5');
-        if(!isset($_SESSION[$tokenName])) {
-            $_SESSION[$tokenName]  = array();
-        }
+
         // 标识当前页面唯一性
         $tokenKey   =  md5($_SERVER['REQUEST_URI']);
-        if(isset($_SESSION[$tokenName][$tokenKey])) {// 相同页面不重复生成session
-            $tokenValue = $_SESSION[$tokenName][$tokenKey];
+        $curTokenValue = S($tokenName.'_'.$tokenKey);
+        if(!empty($curTokenValue)) {
+            $tokenValue = S($tokenName.'_'.$tokenKey);
         }else{
             $tokenValue = is_callable($tokenType) ? $tokenType(microtime(true)) : md5(microtime(true));            
-            $_SESSION[$tokenName][$tokenKey]   =  $tokenValue;
+            S($tokenName.'_'.$tokenKey, $tokenValue);
             if(IS_AJAX && C('TOKEN_RESET',null,true))
                 header($tokenName.': '.$tokenKey.'_'.$tokenValue); //ajax需要获得这个header并替换页面中meta中的token值
         }
