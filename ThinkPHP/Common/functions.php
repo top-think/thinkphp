@@ -1006,8 +1006,12 @@ function U($url='',$vars='',$suffix=true,$domain=false) {
             $url    =   strtolower($url);
         }
         if(!empty($vars)) { // 添加参数
-            foreach ($vars as $var => $val){
-                if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
+            $params_bind = C('URL_PARAMS_BIND_TYPE');
+            foreach ($vars as $var => $val){ //change by XGHeaven
+                if('' !== trim($val)) {
+                    if (!$params_bind) $url .= $depr . $var;
+                    $url .= $depr . urlencode($val);
+                }
             }                
         }
         if($suffix) {
