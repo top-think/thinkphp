@@ -1194,9 +1194,7 @@ class Model {
         }
         // 属性验证
         if(isset($_validate)) { // 如果设置了数据自动验证则进行数据验证
-            if($this->patchValidate) { // 重置验证错误信息
-                $this->error = array();
-            }
+            $this->error = array(); // 重置验证错误信息
             foreach($_validate as $key=>$val) {
                 // 验证因子定义格式
                 // array(field,rule,message,condition,type,when,params)
