@@ -122,13 +122,9 @@ class Dispatcher {
             $_SERVER['PATH_INFO'] = __INFO__;     
             if(!defined('BIND_MODULE') && (!C('URL_ROUTER_ON') || !Route::check())){
                 if (__INFO__ && C('MULTI_MODULE')){ // 获取模块名
-                    $paths      =   explode($depr,__INFO__,2);
-                    $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
-                    $module     =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
-                    if( empty($allowList) || (is_array($allowList) && in_array_case($module, $allowList))){
-                        $_GET[$varModule]       =   $module;
-                        $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
-                    }
+                    $paths                  =   explode($depr,__INFO__,2);
+                    $_GET[$varModule]       =   preg_replace('/\.' . __EXT__ . '$/i', '',$paths[0]);
+                    $_SERVER['PATH_INFO']   =   isset($paths[1])?$paths[1]:'';
                 }
             }             
         }
@@ -140,7 +136,7 @@ class Dispatcher {
         define('MODULE_NAME', defined('BIND_MODULE')? BIND_MODULE : self::getModule($varModule));
         
         // 检测模块是否存在
-        if( MODULE_NAME && (defined('BIND_MODULE') || !in_array_case(MODULE_NAME,C('MODULE_DENY_LIST')) ) && is_dir(APP_PATH.MODULE_NAME)){
+        if( MODULE_NAME && !in_array_case(MODULE_NAME,C('MODULE_DENY_LIST')) && is_dir(APP_PATH.MODULE_NAME)){
             // 定义当前模块路径
             define('MODULE_PATH', APP_PATH.MODULE_NAME.'/');
             // 定义当前模块的模版缓存路径
@@ -322,6 +318,10 @@ class Dispatcher {
     static private function getModule($var) {
         $module   = (!empty($_GET[$var])?$_GET[$var]:C('DEFAULT_MODULE'));
         unset($_GET[$var]);
+        $allowList  =   C('MODULE_ALLOW_LIST'); // 允许的模块列表
+        if( !empty($allowList) && is_array($allowList) && !in_array_case($module, $allowList)){
+            E(L('_MODULE_NOT_EXIST_').':'.strip_tags(ucfirst($module)));
+        }        
         if($maps = C('URL_MODULE_MAP')) {
             if(isset($maps[strtolower($module)])) {
                 // 记录当前别名
