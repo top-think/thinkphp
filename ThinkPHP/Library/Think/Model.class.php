@@ -1147,13 +1147,17 @@ class Model {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
                         case 'callback': // 使用回调方法
                             $args = isset($auto[4])?(array)$auto[4]:array();
-                            if(isset($data[$auto[0]])) {
-                                array_unshift($args,$data[$auto[0]]);
+                            $fields = explode(',', $auto[0]);
+                            foreach (array_reverse($fields) as $field) {
+                                $field = trim($field);
+                                if (!empty($field)) {
+                                    array_unshift($args, $data[$field]);
+                                }
                             }
                             if('function'==$auto[3]) {
-                                $data[$auto[0]]  = call_user_func_array($auto[1], $args);
+                                $data[$fields[0]]  = call_user_func_array($auto[1], $args);
                             }else{
-                                $data[$auto[0]]  =  call_user_func_array(array(&$this,$auto[1]), $args);
+                                $data[$fields[0]]  = call_user_func_array(array(&$this,$auto[1]), $args);
                             }
                             break;
                         case 'field':    // 用其它字段的值进行填充
