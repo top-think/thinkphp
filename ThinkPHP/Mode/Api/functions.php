@@ -62,7 +62,7 @@ function C($name = null, $value = null, $default = null)
  * @param string $parse 配置解析方法 有些格式需要用户自己解析
  * @return void
  */
-function loadConfig($file, $parse = CONF_PARSE)
+function load_config($file, $parse = CONF_PARSE)
 {
     $ext = pathinfo($file, PATHINFO_EXTENSION);
     switch ($ext) {
@@ -551,7 +551,7 @@ function D($name = '', $layer = '')
         return $_model[$name . $layer];
     }
 
-    $class = parseResName($name, $layer);
+    $class = parse_res_name($name, $layer);
     if (class_exists($class)) {
         $model = new $class(basename($name));
     } elseif (false === strpos($name, '/')) {
@@ -596,7 +596,7 @@ function M($name = '', $tablePrefix = '', $connection = '')
  * @param string $layer 分层名称
  * @return string
  */
-function parseResName($name, $layer, $level = 1)
+function parse_res_name($name, $layer, $level = 1)
 {
     if (strpos($name, '://')) {
 // 指定扩展资源
@@ -639,7 +639,7 @@ function A($name, $layer = '', $level = '')
         return $_action[$name . $layer];
     }
 
-    $class = parseResName($name, $layer, $level);
+    $class = parse_res_name($name, $layer, $level);
     if (class_exists($class)) {
         $action                  = new $class();
         $_action[$name . $layer] = $action;
@@ -693,7 +693,7 @@ function B($name, &$params = null)
  * @param string $content 代码内容
  * @return string
  */
-function stripWhitespace($content)
+function strip_whitespace($content)
 {
     $stripStr = '';
     //分析php源码
@@ -895,7 +895,7 @@ function F($name, $value = '', $path = DATA_PATH)
  * @param mixed $mix 变量
  * @return string
  */
-function toGuidString($mix)
+function to_guid_string($mix)
 {
     if (is_object($mix)) {
         return spl_object_hash($mix);
@@ -917,7 +917,7 @@ function toGuidString($mix)
  * @param string $encoding 数据编码
  * @return string
  */
-function xmlEncode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id', $encoding = 'utf-8')
+function xml_encode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id', $encoding = 'utf-8')
 {
     if (is_array($attr)) {
         $_attr = array();
@@ -942,7 +942,7 @@ function xmlEncode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id
  * @param string $id   数字索引key转换为的属性名
  * @return string
  */
-function dataToXml($data, $item = 'item', $id = 'id')
+function data_to_xml($data, $item = 'item', $id = 'id')
 {
     $xml = $attr = '';
     foreach ($data as $key => $val) {
@@ -1249,7 +1249,7 @@ function getClientIp($type = 0)
  * @param integer $code 状态码
  * @return void
  */
-function sendHttpStatus($code)
+function send_http_status($code)
 {
     static $_status = array(
         // Success 2xx
@@ -1273,12 +1273,12 @@ function sendHttpStatus($code)
 }
 
 // 不区分大小写的in_array实现
-function inArrayCase($value, $array)
+function in_array_case($value, $array)
 {
     return in_array(strtolower($value), array_map('strtolower', $array));
 }
 
-function thinkFilter(&$value)
+function think_filter(&$value)
 {
     // TODO 其他安全过滤
 

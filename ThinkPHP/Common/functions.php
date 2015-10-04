@@ -62,7 +62,7 @@ function C($name = null, $value = null, $default = null)
  * @param string $parse 配置解析方法 有些格式需要用户自己解析
  * @return array
  */
-function loadConfig($file, $parse = CONF_PARSE)
+function load_config($file, $parse = CONF_PARSE)
 {
     $ext = pathinfo($file, PATHINFO_EXTENSION);
     switch ($ext) {
@@ -71,7 +71,7 @@ function loadConfig($file, $parse = CONF_PARSE)
         case 'ini':
             return parse_ini_file($file);
         case 'yaml':
-            return yamlParseFile($file);
+            return yaml_parse_file($file);
         case 'xml':
             return (array) simplexml_load_file($file);
         case 'json':
@@ -91,7 +91,7 @@ function loadConfig($file, $parse = CONF_PARSE)
  * @return array
  */
 if (!function_exists('yaml_parse_file')) {
-    function yamlParseFile($file)
+    function yaml_parse_file($file)
     {
         vendor('spyc.Spyc');
         return Spyc::YAMLLoad($file);
@@ -651,7 +651,7 @@ function D($name = '', $layer = '')
         return $_model[$name . $layer];
     }
 
-    $class = parseResName($name, $layer);
+    $class = parse_res_name($name, $layer);
     if (class_exists($class)) {
         $model = new $class(basename($name));
     } elseif (false === strpos($name, '/')) {
@@ -701,7 +701,7 @@ function M($name = '', $tablePrefix = '', $connection = '')
  * @param integer $level 控制器层次
  * @return string
  */
-function parseResName($name, $layer, $level = 1)
+function parse_res_name($name, $layer, $level = 1)
 {
     if (strpos($name, '://')) {
 // 指定扩展资源
@@ -776,7 +776,7 @@ function A($name, $layer = '', $level = 0)
         return $_action[$name . $layer];
     }
 
-    $class = parseResName($name, $layer, $level);
+    $class = parse_res_name($name, $layer, $level);
     if (class_exists($class)) {
         $action                  = new $class();
         $_action[$name . $layer] = $action;
@@ -840,7 +840,7 @@ function B($name, $tag = '', &$params = null)
  * @param string $content 代码内容
  * @return string
  */
-function stripWhitespace($content)
+function strip_whitespace($content)
 {
     $stripStr = '';
     //分析php源码
@@ -893,7 +893,7 @@ function stripWhitespace($content)
  * @param integer $code 异常代码 默认为0
  * @return void
  */
-function throwException($msg, $type = 'Think\\Exception', $code = 0)
+function throw_exception($msg, $type = 'Think\\Exception', $code = 0)
 {
     Think\Log::record('建议使用E方法替代throw_exception', Think\Log::NOTICE);
     if (class_exists($type, false)) {
@@ -1130,7 +1130,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
         $url .= '#' . $anchor;
     }
     if ($domain) {
-        $url = (isSsl() ? 'https://' : 'http://') . $domain . $url;
+        $url = (is_ssl() ? 'https://' : 'http://') . $domain . $url;
     }
     return $url;
 }
@@ -1150,7 +1150,7 @@ function W($name, $data = array())
  * 判断是否SSL协议
  * @return boolean
  */
-function isSsl()
+function is_ssl()
 {
     if (isset($_SERVER['HTTPS']) && ('1' == $_SERVER['HTTPS'] || 'on' == strtolower($_SERVER['HTTPS']))) {
         return true;
@@ -1280,7 +1280,7 @@ function F($name, $value = '', $path = DATA_PATH)
  * @param mixed $mix 变量
  * @return string
  */
-function toGuidString($mix)
+function to_guid_string($mix)
 {
     if (is_object($mix)) {
         return spl_object_hash($mix);
@@ -1302,7 +1302,7 @@ function toGuidString($mix)
  * @param string $encoding 数据编码
  * @return string
  */
-function xmlEncode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id', $encoding = 'utf-8')
+function xml_encode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id', $encoding = 'utf-8')
 {
     if (is_array($attr)) {
         $_attr = array();
@@ -1327,7 +1327,7 @@ function xmlEncode($data, $root = 'think', $item = 'item', $attr = '', $id = 'id
  * @param string $id   数字索引key转换为的属性名
  * @return string
  */
-function dataToXml($data, $item = 'item', $id = 'id')
+function data_to_xml($data, $item = 'item', $id = 'id')
 {
     $xml = $attr = '';
     foreach ($data as $key => $val) {
@@ -1426,7 +1426,8 @@ function session($name = '', $value = '')
             return $prefix ? $_SESSION[$prefix] : $_SESSION;
         } elseif (0 === strpos($name, '[')) {
             // session 操作
-            if ('[pause]' == $name) { // 暂停session
+            if ('[pause]' == $name) {
+                // 暂停session
                 session_write_close();
             } elseif ('[start]' == $name) {
                 // 启动session
@@ -1549,7 +1550,7 @@ function cookie($name = '', $value = '', $option = null)
         // 要删除的cookie前缀，不指定则删除config设置的指定前缀
         $prefix = empty($value) ? $config['prefix'] : $value;
         if (!empty($prefix)) {
-// 如果前缀为空字符串将不作处理直接返回
+            // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === stripos($key, $prefix)) {
                     setcookie($key, '', time() - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
@@ -1597,7 +1598,7 @@ function cookie($name = '', $value = '', $option = null)
  * @var string $path 文件路径
  * @return void
  */
-function loadExtFile($path)
+function load_ext_file($path)
 {
     // 加载自定义外部文件
     if ($files = C('LOAD_EXT_FILE')) {
@@ -1619,7 +1620,7 @@ function loadExtFile($path)
         foreach ($configs as $key => $config) {
             $file = is_file($config) ? $config : $path . 'Conf/' . $config . CONF_EXT;
             if (is_file($file)) {
-                is_numeric($key) ? C(loadConfig($file)) : C($key, loadConfig($file));
+                is_numeric($key) ? C(load_Config($file)) : C($key, load_Config($file));
             }
         }
     }
@@ -1631,7 +1632,7 @@ function loadExtFile($path)
  * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
  * @return mixed
  */
-function getClientIp($type = 0, $adv = false)
+function get_client_ip($type = 0, $adv = false)
 {
     $type      = $type ? 1 : 0;
     static $ip = null;
@@ -1667,7 +1668,7 @@ function getClientIp($type = 0, $adv = false)
  * @param integer $code 状态码
  * @return void
  */
-function sendHttpStatus($code)
+function send_http_status($code)
 {
     static $_status = array(
         // Informational 1xx
@@ -1725,7 +1726,7 @@ function sendHttpStatus($code)
     }
 }
 
-function thinkFilter(&$value)
+function think_filter(&$value)
 {
     // TODO 其他安全过滤
 
@@ -1736,7 +1737,7 @@ function thinkFilter(&$value)
 }
 
 // 不区分大小写的in_array实现
-function inArrayCase($value, $array)
+function in_array_case($value, $array)
 {
     return in_array(strtolower($value), array_map('strtolower', $array));
 }

@@ -13,13 +13,14 @@ namespace Think;
 /**
  * ThinkPHP 控制器基类 抽象类
  */
-class Controller
+abstract class Controller
 {
     /**
      * 视图实例对象
      * @var view
      * @access protected
-     */abstract protected $view = null;
+     */
+    protected $view = null;
 
     /**
      * 控制器参数
