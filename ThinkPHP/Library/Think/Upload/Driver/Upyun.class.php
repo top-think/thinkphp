@@ -10,7 +10,9 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Upload\Driver;
-class Upyun{
+
+class Upyun
+{
     /**
      * 上传文件根目录
      * @var string
@@ -35,9 +37,10 @@ class Upyun{
      * 构造函数，用于设置上传根路径
      * @param array  $config FTP配置
      */
-    public function __construct($config){
+    public function __construct($config)
+    {
         /* 默认FTP配置 */
-        $this->config = array_merge($this->config, $config);
+        $this->config             = array_merge($this->config, $config);
         $this->config['password'] = md5($this->config['password']);
     }
 
@@ -46,7 +49,8 @@ class Upyun{
      * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath($rootpath){
+    public function checkRootPath($rootpath)
+    {
         /* 设置根目录 */
         $this->rootPath = trim($rootpath, './') . '/';
         return true;
@@ -57,7 +61,8 @@ class Upyun{
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-    public function checkSavePath($savepath){
+    public function checkSavePath($savepath)
+    {
         return true;
     }
 
@@ -66,7 +71,8 @@ class Upyun{
      * @param  string $savepath 目录名称
      * @return boolean          true-创建成功，false-创建失败
      */
-    public function mkdir($savepath){
+    public function mkdir($savepath)
+    {
         return true;
     }
 
@@ -76,11 +82,12 @@ class Upyun{
      * @param  boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
      */
-    public function save($file, $replace = true) {
+    public function save($file, $replace = true)
+    {
         $header['Content-Type'] = $file['type'];
-        $header['Content-MD5'] 	= $file['md5'];
-        $header['Mkdir'] = 'true';
-        $resource = fopen($file['tmp_name'], 'r');
+        $header['Content-MD5']  = $file['md5'];
+        $header['Mkdir']        = 'true';
+        $resource               = fopen($file['tmp_name'], 'r');
 
         $save = $this->rootPath . $file['savepath'] . $file['savename'];
         $data = $this->request($save, 'PUT', $header, $resource);
@@ -91,7 +98,8 @@ class Upyun{
      * 获取最后一次上传错误信息
      * @return string 错误信息
      */
-    public function getError(){
+    public function getError()
+    {
         return $this->error;
     }
 
@@ -103,13 +111,14 @@ class Upyun{
      * @param  resource $body    上传文件资源
      * @return boolean
      */
-    private function request($path, $method, $headers = null, $body = null){
+    private function request($path, $method, $headers = null, $body = null)
+    {
         $uri = "/{$this->config['bucket']}/{$path}";
         $ch  = curl_init($this->config['host'] . $uri);
 
         $_headers = array('Expect:');
-        if (!is_null($headers) && is_array($headers)){
-            foreach($headers as $k => $v) {
+        if (!is_null($headers) && is_array($headers)) {
+            foreach ($headers as $k => $v) {
                 array_push($_headers, "{$k}: {$v}");
             }
         }
@@ -118,7 +127,7 @@ class Upyun{
         $date   = gmdate('D, d M Y H:i:s \G\M\T');
 
         if (!is_null($body)) {
-            if(is_resource($body)){
+            if (is_resource($body)) {
                 fseek($body, 0, SEEK_END);
                 $length = ftell($body);
                 fseek($body, 0);
@@ -145,13 +154,13 @@ class Upyun{
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
-        if ($method == 'PUT' || $method == 'POST') {
+        if ('PUT' == $method || 'POST' == $method) {
             curl_setopt($ch, CURLOPT_POST, 1);
         } else {
             curl_setopt($ch, CURLOPT_POST, 0);
         }
 
-        if ($method == 'HEAD') {
+        if ('HEAD' == $method) {
             curl_setopt($ch, CURLOPT_NOBODY, true);
         }
 
@@ -160,8 +169,8 @@ class Upyun{
         curl_close($ch);
         list($header, $body) = explode("\r\n\r\n", $response, 2);
 
-        if ($status == 200) {
-            if ($method == 'GET') {
+        if (200 == $status) {
+            if ('GET' == $method) {
                 return $body;
             } else {
                 $data = $this->response($header);
@@ -178,14 +187,15 @@ class Upyun{
      * @param  string $text 响应头字符串
      * @return array        响应数据列表
      */
-    private function response($text){
+    private function response($text)
+    {
         $headers = explode("\r\n", $text);
-        $items = array();
-        foreach($headers as $header) {
+        $items   = array();
+        foreach ($headers as $header) {
             $header = trim($header);
-            if(strpos($header, 'x-upyun') !== False){
-                list($k, $v) = explode(':', $header);
-                $items[trim($k)] = in_array(substr($k,8,5), array('width','heigh','frame')) ? intval($v) : trim($v);
+            if (strpos($header, 'x-upyun') !== false) {
+                list($k, $v)     = explode(':', $header);
+                $items[trim($k)] = in_array(substr($k, 8, 5), array('width', 'heigh', 'frame')) ? intval($v) : trim($v);
             }
         }
         return $items;
@@ -199,7 +209,8 @@ class Upyun{
      * @param  integer $length 请求内容大小
      * @return string          请求签名
      */
-    private function sign($method, $uri, $date, $length){
+    private function sign($method, $uri, $date, $length)
+    {
         $sign = "{$method}&{$uri}&{$date}&{$length}&{$this->config['password']}";
         return 'UpYun ' . $this->config['username'] . ':' . md5($sign);
     }
@@ -208,11 +219,12 @@ class Upyun{
      * 获取请求错误信息
      * @param  string $header 请求返回头信息
      */
-    private function error($header) {
-        list($status, $stash) = explode("\r\n", $header, 2);
+    private function error($header)
+    {
+        list($status, $stash)     = explode("\r\n", $header, 2);
         list($v, $code, $message) = explode(" ", $status, 3);
-        $message = is_null($message) ? 'File Not Found' : "[{$status}]:{$message}";
-        $this->error = $message;
+        $message                  = is_null($message) ? 'File Not Found' : "[{$status}]:{$message}";
+        $this->error              = $message;
     }
 
 }

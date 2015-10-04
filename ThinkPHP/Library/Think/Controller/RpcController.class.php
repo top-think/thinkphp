@@ -9,35 +9,40 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Controller;
+
 /**
  * ThinkPHP RPC控制器类
  */
-class RpcController {
+class RpcController
+{
 
-    protected $allowMethodList  =   '';
-    protected $debug            =   false;
+    protected $allowMethodList = '';
+    protected $debug           = false;
 
-   /**
+    /**
      * 架构函数
      * @access public
      */
-    public function __construct() {
+    public function __construct()
+    {
         //控制器初始化
-        if(method_exists($this,'_initialize'))
+        if (method_exists($this, '_initialize')) {
             $this->_initialize();
+        }
+
         //导入类库
         Vendor('phpRPC.phprpc_server');
         //实例化phprpc
-        $server     =   new \PHPRPC_Server();
-        if($this->allowMethodList){
-            $methods    =   $this->allowMethodList;
-        }else{
-            $methods    =   get_class_methods($this);
-            $methods    =   array_diff($methods,array('__construct','__call','_initialize'));   
+        $server = new \PHPRPC_Server();
+        if ($this->allowMethodList) {
+            $methods = $this->allowMethodList;
+        } else {
+            $methods = get_class_methods($this);
+            $methods = array_diff($methods, array('__construct', '__call', '_initialize'));
         }
-        $server->add($methods,$this);
+        $server->add($methods, $this);
 
-        if(APP_DEBUG || $this->debug ) {
+        if (APP_DEBUG || $this->debug) {
             $server->setDebugMode(true);
         }
         $server->setEnableGZIP(true);
@@ -52,5 +57,6 @@ class RpcController {
      * @param array $args 参数
      * @return mixed
      */
-    public function __call($method,$args){}
+    public function __call($method, $args)
+    {}
 }

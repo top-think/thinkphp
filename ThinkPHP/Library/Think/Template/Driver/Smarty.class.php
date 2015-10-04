@@ -9,10 +9,12 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Template\Driver;
+
 /**
- * Smarty模板引擎驱动 
+ * Smarty模板引擎驱动
  */
-class Smarty {
+class Smarty
+{
 
     /**
      * 渲染模板输出
@@ -21,18 +23,19 @@ class Smarty {
      * @param array $var 模板变量
      * @return void
      */
-    public function fetch($templateFile,$var) {
-        $templateFile   =   substr($templateFile,strlen(THEME_PATH));
+    public function fetch($templateFile, $var)
+    {
+        $templateFile = substr($templateFile, strlen(THEME_PATH));
         vendor('Smarty.Smarty#class');
-        $tpl            =   new \Smarty();
-        $tpl->caching       = C('TMPL_CACHE_ON');
-        $tpl->template_dir  = THEME_PATH;
-        $tpl->compile_dir   = CACHE_PATH ;
-        $tpl->cache_dir     = TEMP_PATH ;        
-        if(C('TMPL_ENGINE_CONFIG')) {
-            $config  =  C('TMPL_ENGINE_CONFIG');
-            foreach ($config as $key=>$val){
-                $tpl->{$key}   =  $val;
+        $tpl               = new \Smarty();
+        $tpl->caching      = C('TMPL_CACHE_ON');
+        $tpl->template_dir = THEME_PATH;
+        $tpl->compile_dir  = CACHE_PATH;
+        $tpl->cache_dir    = TEMP_PATH;
+        if (C('TMPL_ENGINE_CONFIG')) {
+            $config = C('TMPL_ENGINE_CONFIG');
+            foreach ($config as $key => $val) {
+                $tpl->{$key} = $val;
             }
         }
         $tpl->assign($var);

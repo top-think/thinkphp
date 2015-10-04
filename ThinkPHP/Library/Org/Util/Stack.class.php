@@ -17,14 +17,16 @@ namespace Org\Util;
  * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
  */
-class Stack extends ArrayList {
+class Stack extends ArrayList
+{
 
     /**
      * 架构函数
      * @access public
      * @param array $values  初始化数组元素
      */
-    public function __construct($values = array()) {
+    public function __construct($values = array())
+    {
         parent::__construct($values);
     }
 
@@ -33,7 +35,8 @@ class Stack extends ArrayList {
      * @access public
      * @return mixed
      */
-    public function peek() {
+    public function peek()
+    {
         return reset($this->toArray());
     }
 
@@ -43,7 +46,8 @@ class Stack extends ArrayList {
      * @param mixed $value
      * @return mixed
      */
-    public function push($value) {
+    public function push($value)
+    {
         $this->add($value);
         return $value;
     }

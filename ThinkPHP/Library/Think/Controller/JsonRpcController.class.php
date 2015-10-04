@@ -9,19 +9,25 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Controller;
+
 /**
  * ThinkPHP JsonRPC控制器类
  */
-class JsonRpcController {
+use jsonRPCServer as jsonRPCServer;
+class JsonRpcController
+{
 
-   /**
+    /**
      * 架构函数
      * @access public
      */
-    public function __construct() {
+    public function __construct()
+    {
         //控制器初始化
-        if(method_exists($this,'_initialize'))
+        if (method_exists($this, '_initialize')) {
             $this->_initialize();
+        }
+
         //导入类库
         Vendor('jsonRPC.jsonRPCServer');
         // 启动server
@@ -35,5 +41,6 @@ class JsonRpcController {
      * @param array $args 参数
      * @return mixed
      */
-    public function __call($method,$args){}
+    public function __call($method, $args)
+    {}
 }

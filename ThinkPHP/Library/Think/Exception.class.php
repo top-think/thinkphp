@@ -9,8 +9,10 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think;
+
 /**
  * ThinkPHP系统异常基类
  */
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 }
