@@ -382,7 +382,7 @@ function I($name, $default = '', $filter = null, $datas = null)
                 $filters = explode(',', $filters);
             }
             foreach ($filters as $filter) {
-                $data = arrayMapRecursive($filter, $data); // 参数过滤
+                $data = array_map_recursive($filter, $data); // 参数过滤
             }
         }
     } elseif (isset($input[$name])) {
@@ -406,7 +406,7 @@ function I($name, $default = '', $filter = null, $datas = null)
             if (is_array($filters)) {
                 foreach ($filters as $filter) {
                     if (function_exists($filter)) {
-                        $data = is_array($data) ? arrayMapRecursive($filter, $data) : $filter($data); // 参数过滤
+                        $data = is_array($data) ? array_map_recursive($filter, $data) : $filter($data); // 参数过滤
                     } else {
                         $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
                         if (false === $data) {
@@ -443,12 +443,12 @@ function I($name, $default = '', $filter = null, $datas = null)
     return $data;
 }
 
-function arrayMapRecursive($filter, $data)
+function array_map_recursive($filter, $data)
 {
     $result = array();
     foreach ($data as $key => $val) {
         $result[$key] = is_array($val)
-        ? arrayMapRecursive($filter, $val)
+        ? array_map_recursive($filter, $val)
         : call_user_func($filter, $val);
     }
     return $result;
@@ -493,7 +493,7 @@ function N($key, $step = 0, $save = false)
  * @param integer $type 转换类型
  * @return string
  */
-function parseName($name, $type = 0)
+function parse_name($name, $type = 0)
 {
     if ($type) {
         return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function ($match) {return strtoupper($match[1]);}, $name));
@@ -507,11 +507,11 @@ function parseName($name, $type = 0)
  * @param string $filename 文件地址
  * @return boolean
  */
-function requireCache($filename)
+function require_cache($filename)
 {
     static $_importFiles = array();
     if (!isset($_importFiles[$filename])) {
-        if (fileExistsCase($filename)) {
+        if (file_exists_case($filename)) {
             require $filename;
             $_importFiles[$filename] = true;
         } else {
@@ -526,7 +526,7 @@ function requireCache($filename)
  * @param string $filename 文件地址
  * @return boolean
  */
-function fileExistsCase($filename)
+function file_exists_case($filename)
 {
     if (is_file($filename)) {
         if (IS_WIN && APP_DEBUG) {
@@ -582,7 +582,7 @@ function import($class, $baseUrl = '', $ext = EXT)
     $classfile = $baseUrl . $class . $ext;
     if (!class_exists(basename($class), false)) {
         // 如果类不存在 则导入类库文件
-        return requireCache($classfile);
+        return require_cache($classfile);
     }
     return null;
 }
@@ -600,7 +600,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
-//加载当前模块函数库
+            //加载当前模块函数库
             $baseUrl = MODULE_PATH . 'Common/';
             $name    = substr($name, 2);
         } else {
@@ -614,7 +614,7 @@ function load($name, $baseUrl = '', $ext = '.php')
         $baseUrl .= '/';
     }
 
-    requireCache($baseUrl . $name . $ext);
+    require_cache($baseUrl . $name . $ext);
 }
 
 /**
@@ -717,12 +717,12 @@ function parse_res_name($name, $layer, $level = 1)
     }
     $array = explode('/', $name);
     if (!C('APP_USE_NAMESPACE')) {
-        $class = parseName($name, 1);
+        $class = parse_name($name, 1);
         import($module . '/' . $layer . '/' . $class . $layer);
     } else {
         $class = $module . '\\' . $layer;
         foreach ($array as $name) {
-            $class .= '\\' . parseName($name, 1);
+            $class .= '\\' . parse_name($name, 1);
         }
         // 导入资源类库
         if ($extend) {
@@ -743,13 +743,13 @@ function controller($name, $path = '')
 {
     $layer = C('DEFAULT_C_LAYER');
     if (!C('APP_USE_NAMESPACE')) {
-        $class = parseName($name, 1) . $layer;
+        $class = parse_name($name, 1) . $layer;
         import(MODULE_NAME . '/' . $layer . '/' . $class);
     } else {
         $class = ($path ? basename(ADDON_PATH) . '\\' . $path : MODULE_NAME) . '\\' . $layer;
         $array = explode('/', $name);
         foreach ($array as $name) {
-            $class .= '\\' . parseName($name, 1);
+            $class .= '\\' . parse_name($name, 1);
         }
         $class .= $layer;
     }
@@ -1060,7 +1060,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
                 }
             }
             if ($urlCase) {
-                $var[$varController] = parseName($var[$varController]);
+                $var[$varController] = parse_name($var[$varController]);
             }
             $module = '';
 

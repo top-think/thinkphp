@@ -74,7 +74,7 @@ class Route
                     $len2 = substr_count($rule, '/');
                     if ($len1 >= $len2 || strpos($rule, '[')) {
                         if ('$' == substr($rule, -1, 1)) {
-// 完整匹配
+                            // 完整匹配
                             if ($len1 != $len2) {
                                 continue;
                             } else {

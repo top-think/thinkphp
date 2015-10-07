@@ -349,12 +349,12 @@ function I($name, $default = '', $filter = null, $datas = null)
     return $data;
 }
 
-function arrayMapRecursive($filter, $data)
+function array_map_recursive($filter, $data)
 {
     $result = array();
     foreach ($data as $key => $val) {
         $result[$key] = is_array($val)
-        ? arrayMapRecursive($filter, $val)
+        ? array_map_recursive($filter, $val)
         : call_user_func($filter, $val);
     }
     return $result;
@@ -398,7 +398,7 @@ function N($key, $step = 0, $save = false)
  * @param integer $type 转换类型
  * @return string
  */
-function parseName($name, $type = 0)
+function parse_name($name, $type = 0)
 {
     if ($type) {
         return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function ($match) {return strtoupper($match[1]);}, $name));
@@ -412,11 +412,11 @@ function parseName($name, $type = 0)
  * @param string $filename 文件地址
  * @return boolean
  */
-function requireCache($filename)
+function require_cache($filename)
 {
     static $_importFiles = array();
     if (!isset($_importFiles[$filename])) {
-        if (fileExistsCase($filename)) {
+        if (file_exists_case($filename)) {
             require $filename;
             $_importFiles[$filename] = true;
         } else {
@@ -431,7 +431,7 @@ function requireCache($filename)
  * @param string $filename 文件地址
  * @return boolean
  */
-function fileExistsCase($filename)
+function file_exists_case($filename)
 {
     if (is_file($filename)) {
         if (IS_WIN && APP_DEBUG) {
@@ -483,7 +483,7 @@ function import($class, $baseUrl = '', $ext = EXT)
     $classfile = $baseUrl . $class . $ext;
     if (!class_exists(basename($class), false)) {
         // 如果类不存在 则导入类库文件
-        return requireCache($classfile);
+        return require_cache($classfile);
     }
 }
 
@@ -500,7 +500,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
-//加载当前模块函数库
+            //加载当前模块函数库
             $baseUrl = MODULE_PATH . 'Common/';
             $name    = substr($name, 2);
         } else {
@@ -514,7 +514,7 @@ function load($name, $baseUrl = '', $ext = '.php')
         $baseUrl .= '/';
     }
 
-    requireCache($baseUrl . $name . $ext);
+    require_cache($baseUrl . $name . $ext);
 }
 
 /**
@@ -613,7 +613,7 @@ function parse_res_name($name, $layer, $level = 1)
     $array = explode('/', $name);
     $class = $module . '\\' . $layer;
     foreach ($array as $name) {
-        $class .= '\\' . parseName($name, 1);
+        $class .= '\\' . parse_name($name, 1);
     }
     // 导入资源类库
     if ($extend) {
@@ -1038,7 +1038,8 @@ function session($name, $value = '')
     } elseif ('' === $value) {
         if (0 === strpos($name, '[')) {
             // session 操作
-            if ('[pause]' == $name) { // 暂停session
+            if ('[pause]' == $name) {
+                // 暂停session
                 session_write_close();
             } elseif ('[start]' == $name) {
                 // 启动session
@@ -1183,7 +1184,7 @@ function cookie($name, $value = '', $option = null)
  * 加载动态扩展文件
  * @return void
  */
-function loadExtFile($path)
+function load_ext_file($path)
 {
     // 加载自定义外部文件
     if (C('LOAD_EXT_FILE')) {
@@ -1217,7 +1218,7 @@ function loadExtFile($path)
  * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
  * @return mixed
  */
-function getClientIp($type = 0)
+function get_client_ip($type = 0)
 {
     $type      = $type ? 1 : 0;
     static $ip = null;
