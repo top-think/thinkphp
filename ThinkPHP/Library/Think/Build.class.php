@@ -95,14 +95,10 @@ class [MODEL]Model extends Model
                 file_put_contents(APP_PATH . $module . '/Conf/config' . CONF_EXT, '.php' == CONF_EXT ? "<?php\nreturn array(\n\t//'配置项'=>'配置值'\n);" : '');
             }
 
-            // 生成模块的测试控制器
-            if (defined('BUILD_CONTROLLER_LIST')) {
-                self::buildController($module, BUILD_CONTROLLER_LIST);
-            } else {
-                // 生成默认的控制器
-                self::buildController($module, C('DEFAULT_CONTROLLER'), true);
-            }
-            // 生成模块的模型
+            // 自动生成控制器类
+            self::buildController($module, defined('BUILD_CONTROLLER_LIST') ? BUILD_CONTROLLER_LIST : C('DEFAULT_CONTROLLER'));
+
+            // 自动生成模型类
             if (defined('BUILD_MODEL_LIST')) {
                 self::buildModel($module, BUILD_MODEL_LIST);
             }
@@ -138,13 +134,14 @@ class [MODEL]Model extends Model
     }
 
     // 创建控制器类
-    public static function buildController($module, $controllers, $default = false)
+    public static function buildController($module, $controllers)
     {
         $list  = is_array($controllers) ? $controllers : explode(',', $controllers);
-        $hello = $default ? '$this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');' : '';
+        $hello = '$this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');';
 
         foreach ($list as $controller) {
-            $file = APP_PATH . $module . '/Controller/' . $controller . 'Controller' . EXT;
+            $hello = C('DEFAULT_CONTROLLER') == $controller ? $hello : '';
+            $file  = APP_PATH . $module . '/Controller/' . $controller . 'Controller' . EXT;
             if (!is_file($file)) {
                 $content = str_replace(array('[MODULE]', '[CONTROLLER]', '[CONTENT]'), array($module, $controller, $hello), self::$controller);
                 if (!C('APP_USE_NAMESPACE')) {
