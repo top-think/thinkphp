@@ -930,7 +930,7 @@ function xml_encode($data, $root = 'think', $item = 'item', $attr = '', $id = 'i
     $attr = empty($attr) ? '' : " {$attr}";
     $xml  = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
     $xml .= "<{$root}{$attr}>";
-    $xml .= dataToXml($data, $item, $id);
+    $xml .= data_to_xml($data, $item, $id);
     $xml .= "</{$root}>";
     return $xml;
 }
@@ -951,7 +951,7 @@ function data_to_xml($data, $item = 'item', $id = 'id')
             $key         = $item;
         }
         $xml .= "<{$key}{$attr}>";
-        $xml .= (is_array($val) || is_object($val)) ? dataToXml($val, $item, $id) : $val;
+        $xml .= (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
         $xml .= "</{$key}>";
     }
     return $xml;
@@ -1141,7 +1141,7 @@ function cookie($name, $value = '', $option = null)
         // 要删除的cookie前缀，不指定则删除config设置的指定前缀
         $prefix = empty($value) ? $config['prefix'] : $value;
         if (!empty($prefix)) {
-// 如果前缀为空字符串将不作处理直接返回
+            // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === stripos($key, $prefix)) {
                     setcookie($key, '', time() - 3600, $config['path'], $config['domain']);

@@ -573,7 +573,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
-//加载当前模块函数库
+            //加载当前模块函数库
             $baseUrl = MODULE_PATH . 'Common/';
             $name    = substr($name, 2);
         } else {

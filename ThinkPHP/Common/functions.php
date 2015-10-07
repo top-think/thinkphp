@@ -332,16 +332,16 @@ function I($name, $default = '', $filter = null, $datas = null)
             break;
         case 'param':
             switch ($_SERVER['REQUEST_METHOD']) {
-                case 'POST':
+            case 'POST':
                     $input = $_POST;
                     break;
-                case 'PUT':
+            case 'PUT':
                     if (is_null($_PUT)) {
                         parse_str(file_get_contents('php://input'), $_PUT);
                     }
                     $input = $_PUT;
                     break;
-                default:
+            default:
                     $input = $_GET;
             }
             break;
@@ -418,19 +418,19 @@ function I($name, $default = '', $filter = null, $datas = null)
         }
         if (!empty($type)) {
             switch (strtolower($type)) {
-                case 'a': // 数组
+                case 'a':    // 数组
                     $data = (array) $data;
                     break;
-                case 'd': // 数字
+                case 'd':    // 数字
                     $data = (int) $data;
                     break;
-                case 'f': // 浮点
+                case 'f':    // 浮点
                     $data = (float) $data;
                     break;
-                case 'b': // 布尔
+                case 'b':    // 布尔
                     $data = (boolean) $data;
                     break;
-                case 's': // 字符串
+                case 's':// 字符串
                 default:
                     $data = (string) $data;
             }
@@ -704,7 +704,7 @@ function M($name = '', $tablePrefix = '', $connection = '')
 function parse_res_name($name, $layer, $level = 1)
 {
     if (strpos($name, '://')) {
-// 指定扩展资源
+        // 指定扩展资源
         list($extend, $name) = explode('://', $name);
     } else {
         $extend = '';
@@ -1026,7 +1026,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
     $urlCase = C('URL_CASE_INSENSITIVE');
     if ($url) {
         if (0 === strpos($url, '/')) {
-// 定义路由
+            // 定义路由
             $route = true;
             $url   = substr($url, 1);
             if ('/' != $depr) {
@@ -1315,7 +1315,7 @@ function xml_encode($data, $root = 'think', $item = 'item', $attr = '', $id = 'i
     $attr = empty($attr) ? '' : " {$attr}";
     $xml  = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
     $xml .= "<{$root}{$attr}>";
-    $xml .= dataToXml($data, $item, $id);
+    $xml .= data_to_xml($data, $item, $id);
     $xml .= "</{$root}>";
     return $xml;
 }
@@ -1336,7 +1336,7 @@ function data_to_xml($data, $item = 'item', $id = 'id')
             $key         = $item;
         }
         $xml .= "<{$key}{$attr}>";
-        $xml .= (is_array($val) || is_object($val)) ? dataToXml($val, $item, $id) : $val;
+        $xml .= (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
         $xml .= "</{$key}>";
     }
     return $xml;
