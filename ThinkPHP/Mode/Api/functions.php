@@ -398,7 +398,7 @@ function N($key, $step = 0, $save = false)
  * @param integer $type 转换类型
  * @return string
  */
-function parseName($name, $type = 0)
+function parse_name($name, $type = 0)
 {
     if ($type) {
         return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function ($match) {return strtoupper($match[1]);}, $name));
@@ -412,11 +412,11 @@ function parseName($name, $type = 0)
  * @param string $filename 文件地址
  * @return boolean
  */
-function requireCache($filename)
+function require_cache($filename)
 {
     static $_importFiles = array();
     if (!isset($_importFiles[$filename])) {
-        if (fileExistsCase($filename)) {
+        if (file_exists_case($filename)) {
             require $filename;
             $_importFiles[$filename] = true;
         } else {
@@ -431,7 +431,7 @@ function requireCache($filename)
  * @param string $filename 文件地址
  * @return boolean
  */
-function fileExistsCase($filename)
+function file_exists_case($filename)
 {
     if (is_file($filename)) {
         if (IS_WIN && APP_DEBUG) {
@@ -483,7 +483,7 @@ function import($class, $baseUrl = '', $ext = EXT)
     $classfile = $baseUrl . $class . $ext;
     if (!class_exists(basename($class), false)) {
         // 如果类不存在 则导入类库文件
-        return requireCache($classfile);
+        return require_cache($classfile);
     }
 }
 
@@ -500,7 +500,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
-//加载当前模块函数库
+            //加载当前模块函数库
             $baseUrl = MODULE_PATH . 'Common/';
             $name    = substr($name, 2);
         } else {
@@ -514,7 +514,7 @@ function load($name, $baseUrl = '', $ext = '.php')
         $baseUrl .= '/';
     }
 
-    requireCache($baseUrl . $name . $ext);
+    require_cache($baseUrl . $name . $ext);
 }
 
 /**
@@ -613,7 +613,7 @@ function parse_res_name($name, $layer, $level = 1)
     $array = explode('/', $name);
     $class = $module . '\\' . $layer;
     foreach ($array as $name) {
-        $class .= '\\' . parseName($name, 1);
+        $class .= '\\' . parse_name($name, 1);
     }
     // 导入资源类库
     if ($extend) {
@@ -930,7 +930,7 @@ function xml_encode($data, $root = 'think', $item = 'item', $attr = '', $id = 'i
     $attr = empty($attr) ? '' : " {$attr}";
     $xml  = "<?xml version=\"1.0\" encoding=\"{$encoding}\"?>";
     $xml .= "<{$root}{$attr}>";
-    $xml .= dataToXml($data, $item, $id);
+    $xml .= data_to_xml($data, $item, $id);
     $xml .= "</{$root}>";
     return $xml;
 }
@@ -951,7 +951,7 @@ function data_to_xml($data, $item = 'item', $id = 'id')
             $key         = $item;
         }
         $xml .= "<{$key}{$attr}>";
-        $xml .= (is_array($val) || is_object($val)) ? dataToXml($val, $item, $id) : $val;
+        $xml .= (is_array($val) || is_object($val)) ? data_to_xml($val, $item, $id) : $val;
         $xml .= "</{$key}>";
     }
     return $xml;
@@ -1140,7 +1140,7 @@ function cookie($name, $value = '', $option = null)
         // 要删除的cookie前缀，不指定则删除config设置的指定前缀
         $prefix = empty($value) ? $config['prefix'] : $value;
         if (!empty($prefix)) {
-// 如果前缀为空字符串将不作处理直接返回
+            // 如果前缀为空字符串将不作处理直接返回
             foreach ($_COOKIE as $key => $val) {
                 if (0 === stripos($key, $prefix)) {
                     setcookie($key, '', time() - 3600, $config['path'], $config['domain']);
@@ -1183,7 +1183,7 @@ function cookie($name, $value = '', $option = null)
  * 加载动态扩展文件
  * @return void
  */
-function loadExtFile($path)
+function load_ext_file($path)
 {
     // 加载自定义外部文件
     if (C('LOAD_EXT_FILE')) {
@@ -1217,7 +1217,7 @@ function loadExtFile($path)
  * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
  * @return mixed
  */
-function getClientIp($type = 0)
+function get_client_ip($type = 0)
 {
     $type      = $type ? 1 : 0;
     static $ip = null;

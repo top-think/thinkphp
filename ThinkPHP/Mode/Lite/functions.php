@@ -466,7 +466,7 @@ function N($key, $step = 0, $save = false)
  * @param integer $type 转换类型
  * @return string
  */
-function parseName($name, $type = 0)
+function parse_name($name, $type = 0)
 {
     if ($type) {
         return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function ($match) {return strtoupper($match[1]);}, $name));
@@ -480,11 +480,11 @@ function parseName($name, $type = 0)
  * @param string $filename 文件地址
  * @return boolean
  */
-function requireCache($filename)
+function require_cache($filename)
 {
     static $_importFiles = array();
     if (!isset($_importFiles[$filename])) {
-        if (fileExistsCase($filename)) {
+        if (file_exists_case($filename)) {
             require $filename;
             $_importFiles[$filename] = true;
         } else {
@@ -499,7 +499,7 @@ function requireCache($filename)
  * @param string $filename 文件地址
  * @return boolean
  */
-function fileExistsCase($filename)
+function file_exists_case($filename)
 {
     if (is_file($filename)) {
         if (IS_WIN && APP_DEBUG) {
@@ -555,7 +555,7 @@ function import($class, $baseUrl = '', $ext = EXT)
     $classfile = $baseUrl . $class . $ext;
     if (!class_exists(basename($class), false)) {
         // 如果类不存在 则导入类库文件
-        return requireCache($classfile);
+        return require_cache($classfile);
     }
     return null;
 }
@@ -573,7 +573,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     $name = str_replace(array('.', '#'), array('/', '.'), $name);
     if (empty($baseUrl)) {
         if (0 === strpos($name, '@/')) {
-//加载当前模块函数库
+            //加载当前模块函数库
             $baseUrl = MODULE_PATH . 'Common/';
             $name    = substr($name, 2);
         } else {
@@ -586,7 +586,7 @@ function load($name, $baseUrl = '', $ext = '.php')
     if (substr($baseUrl, -1) != '/') {
         $baseUrl .= '/';
     }
-    requireCache($baseUrl . $name . $ext);
+    require_cache($baseUrl . $name . $ext);
 }
 
 /**
@@ -681,7 +681,7 @@ function parse_res_name($name, $layer)
     $array = explode('/', $name);
     $class = $module . '\\' . $layer;
     foreach ($array as $name) {
-        $class .= '\\' . parseName($name, 1);
+        $class .= '\\' . parse_name($name, 1);
     }
     // 导入资源类库
     if ($extend) {
@@ -702,7 +702,7 @@ function controller($name)
     $class = MODULE_NAME . '\\Controller';
     $array = explode('/', $name);
     foreach ($array as $name) {
-        $class .= '\\' . parseName($name, 1);
+        $class .= '\\' . parse_name($name, 1);
     }
     $class .= $layer;
 
@@ -980,7 +980,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
             $var[$varAction]     = !empty($path) ? array_pop($path) : ACTION_NAME;
             $var[$varController] = !empty($path) ? array_pop($path) : CONTROLLER_NAME;
             if ($urlCase) {
-                $var[$varController] = parseName($var[$varController]);
+                $var[$varController] = parse_name($var[$varController]);
             }
             $module = '';
 
