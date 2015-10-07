@@ -18,17 +18,24 @@ class Build
 
     protected static $controller = '<?php
 namespace [MODULE]\Controller;
+
 use Think\Controller;
-class [CONTROLLER]Controller extends Controller {
-    public function index(){
-        $this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');
+
+class [CONTROLLER]Controller extends Controller
+{
+    public function index()
+    {
+        [CONTENT]
     }
 }';
 
     protected static $model = '<?php
 namespace [MODULE]\Model;
+
 use Think\Model;
-class [MODEL]Model extends Model {
+
+class [MODEL]Model extends Model
+{
 
 }';
     // 检测应用目录是否需要自动创建
@@ -90,22 +97,14 @@ class [MODEL]Model extends Model {
 
             // 生成模块的测试控制器
             if (defined('BUILD_CONTROLLER_LIST')) {
-                // 自动生成的控制器列表（注意大小写）
-                $list = explode(',', BUILD_CONTROLLER_LIST);
-                foreach ($list as $controller) {
-                    self::buildController($module, $controller);
-                }
+                self::buildController($module, BUILD_CONTROLLER_LIST);
             } else {
                 // 生成默认的控制器
-                self::buildController($module);
+                self::buildController($module, C('DEFAULT_CONTROLLER'), true);
             }
             // 生成模块的模型
             if (defined('BUILD_MODEL_LIST')) {
-                // 自动生成的控制器列表（注意大小写）
-                $list = explode(',', BUILD_MODEL_LIST);
-                foreach ($list as $model) {
-                    self::buildModel($module, $model);
-                }
+                self::buildModel($module, BUILD_MODEL_LIST);
             }
         } else {
             header('Content-Type:text/html; charset=utf-8');
@@ -139,36 +138,44 @@ class [MODEL]Model extends Model {
     }
 
     // 创建控制器类
-    public static function buildController($module, $controller = 'Index')
+    public static function buildController($module, $controllers, $default = false)
     {
-        $file = APP_PATH . $module . '/Controller/' . $controller . 'Controller' . EXT;
-        if (!is_file($file)) {
-            $content = str_replace(array('[MODULE]', '[CONTROLLER]'), array($module, $controller), self::$controller);
-            if (!C('APP_USE_NAMESPACE')) {
-                $content = preg_replace('/namespace\s(.*?);/', '', $content, 1);
+        $list  = is_array($controllers) ? $controllers : explode(',', $controllers);
+        $hello = $default ? '$this->show(\'<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>\',\'utf-8\');' : '';
+
+        foreach ($list as $controller) {
+            $file = APP_PATH . $module . '/Controller/' . $controller . 'Controller' . EXT;
+            if (!is_file($file)) {
+                $content = str_replace(array('[MODULE]', '[CONTROLLER]', '[CONTENT]'), array($module, $controller, $hello), self::$controller);
+                if (!C('APP_USE_NAMESPACE')) {
+                    $content = preg_replace('/namespace\s(.*?);/', '', $content, 1);
+                }
+                $dir = dirname($file);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                file_put_contents($file, $content);
             }
-            $dir = dirname($file);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-            file_put_contents($file, $content);
         }
     }
 
     // 创建模型类
-    public static function buildModel($module, $model)
+    public static function buildModel($module, $models)
     {
-        $file = APP_PATH . $module . '/Model/' . $model . 'Model' . EXT;
-        if (!is_file($file)) {
-            $content = str_replace(array('[MODULE]', '[MODEL]'), array($module, $model), self::$model);
-            if (!C('APP_USE_NAMESPACE')) {
-                $content = preg_replace('/namespace\s(.*?);/', '', $content, 1);
+        $list = is_array($models) ? $models : explode(',', $models);
+        foreach ($list as $model) {
+            $file = APP_PATH . $module . '/Model/' . $model . 'Model' . EXT;
+            if (!is_file($file)) {
+                $content = str_replace(array('[MODULE]', '[MODEL]'), array($module, $model), self::$model);
+                if (!C('APP_USE_NAMESPACE')) {
+                    $content = preg_replace('/namespace\s(.*?);/', '', $content, 1);
+                }
+                $dir = dirname($file);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                file_put_contents($file, $content);
             }
-            $dir = dirname($file);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-            file_put_contents($file, $content);
         }
     }
 
@@ -187,7 +194,6 @@ class [MODEL]Model extends Model {
                 foreach ($dirs as $dir) {
                     file_put_contents($dir . $filename, $content);
                 }
-
             }
         }
     }
