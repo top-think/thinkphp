@@ -121,6 +121,7 @@ class App
         }
         return;
     }
+
     public static function invokeAction($module, $action)
     {
         if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
@@ -191,6 +192,7 @@ class App
             throw new \ReflectionException();
         }
     }
+
     /**
      * 运行应用实例 入口文件使用的快捷方法
      * @access public
