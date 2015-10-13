@@ -114,8 +114,7 @@ class Model
         if (empty($this->fields)) {
             // 如果数据表字段没有定义则自动获取
             if (C('DB_FIELDS_CACHE')) {
-                $db     = $this->dbName ?: C('DB_NAME');
-                $fields = F('_fields/' . strtolower($db . '.' . $this->tablePrefix . $this->name));
+                $fields = F('_fields/' . strtolower($this->getTableName()));
                 if ($fields) {
                     $this->fields = $fields;
                     if (!empty($fields['_pk'])) {
@@ -138,7 +137,8 @@ class Model
     {
         // 缓存不存在则查询数据表信息
         $this->db->setModel($this->name);
-        $fields = $this->db->getFields($this->getTableName());
+        $tableName = $this->getTableName();
+        $fields    = $this->db->getFields($tableName);
         if (!$fields) {
             // 无法获取字段信息
             return false;
@@ -173,8 +173,7 @@ class Model
         // 2008-3-7 增加缓存开关控制
         if (C('DB_FIELDS_CACHE')) {
             // 永久缓存数据表信息
-            $db = $this->dbName ?: C('DB_NAME');
-            F('_fields/' . strtolower($db . '.' . $this->tablePrefix . $this->name), $this->fields);
+            F('_fields/' . strtolower($tableName), $this->fields);
         }
     }
 
