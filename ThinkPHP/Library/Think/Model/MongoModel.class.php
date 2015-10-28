@@ -237,6 +237,44 @@ class MongoModel extends Model
         }
     }
 
+	/**
+     * 查询多行数据
+     * @access public
+     * @param mixed $options 表达式参数
+     * @return mixed
+     */
+	public function select($options = array()) {
+		if( is_numeric($options) || is_string($options)) {
+			$id = $this->getPk();
+            $where[$id] = $options;
+            $options = array();
+            $options['where'] = $where;
+		}
+        // 分析表达式
+        $options = $this->_parseOptions($options);
+        $result = $this->db->select($options);
+        if(false === $result) {
+            return false;
+        }
+        
+        if(empty($result)) {// 查询结果为空
+            return null;
+        }
+        else{
+            $this->checkMongoId($result);
+        }
+        
+        //$result是以主键为key的，所以需要处理一下
+        $data = array();
+        foreach($result as $v)
+        	$data[] = $v;
+        
+        $this->data = $data;
+        $this->_after_select($this->data, $options);
+        
+        return $this->data;
+	}
+	
     /**
      * 查询数据
      * @access public
