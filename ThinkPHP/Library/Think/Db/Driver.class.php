@@ -380,7 +380,7 @@ abstract class Driver
         // 记录错误日志
         trace($this->error, '', 'ERR');
         if ($this->config['debug']) {
-// 开启数据库调试模式
+            // 开启数据库调试模式
             E($this->error);
         } else {
             return $this->error;
@@ -411,7 +411,7 @@ abstract class Driver
             } elseif (is_null($val)) {
                 $set[] = $this->parseKey($key) . '=NULL';
             } elseif (is_scalar($val)) {
-// 过滤非标量数据
+                // 过滤非标量数据
                 if (0 === strpos($val, ':') && in_array($val, array_keys($this->bind))) {
                     $set[] = $this->parseKey($key) . '=' . $this->escapeString($val);
                 } else {
@@ -509,7 +509,7 @@ abstract class Driver
     protected function parseTable($tables)
     {
         if (is_array($tables)) {
-// 支持别名定义
+            // 支持别名定义
             $array = array();
             foreach ($tables as $table => $alias) {
                 if (!is_numeric($table)) {
@@ -604,7 +604,7 @@ abstract class Driver
                     // 比较运算
                     $whereStr .= $key . ' ' . $this->exp[$exp] . ' ' . $this->parseValue($val[1]);
                 } elseif (preg_match('/^(notlike|like)$/', $exp)) {
-// 模糊查找
+                    // 模糊查找
                     if (is_array($val[1])) {
                         $likeLogic = isset($val[2]) ? strtoupper($val[2]) : 'OR';
                         if (in_array($likeLogic, array('AND', 'OR', 'XOR'))) {
@@ -744,17 +744,26 @@ abstract class Driver
      */
     protected function parseOrder($order)
     {
+        $array = array();
         if (is_array($order)) {
-            $array = array();
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
                     $array[] = $this->parseKey($val);
                 } else {
-                    $array[] = $this->parseKey($key) . ' ' . $val;
+                    $sort    = in_array(strtolower($val), array('asc', 'desc')) ? ' ' . $val : '';
+                    $array[] = $this->parseKey($key) . $sort;
                 }
             }
-            $order = implode(',', $array);
+        } else {
+            foreach (explode(',', $order) as $val) {
+                if (preg_match('/\s+(ASC|DESC)$/i', rtrim($val), $match, PREG_OFFSET_CAPTURE)) {
+                    $array[] = $this->parseKey(ltrim(substr($val, 0, $match[0][1]))) . ' ' . $match[1][0];
+                } else {
+                    $array[] = $this->parseKey($val);
+                }
+            }
         }
+        $order = implode(',', $array);
         return !empty($order) ? ' ORDER BY ' . $order : '';
     }
 
@@ -984,7 +993,7 @@ abstract class Driver
         $table = $this->parseTable($options['table']);
         $sql   = 'UPDATE ' . $table . $this->parseSet($data);
         if (strpos($table, ',')) {
-// 多表更新支持JOIN操作
+            // 多表更新支持JOIN操作
             $sql .= $this->parseJoin(!empty($options['join']) ? $options['join'] : '');
         }
         $sql .= $this->parseWhere(!empty($options['where']) ? $options['where'] : '');
@@ -1010,7 +1019,7 @@ abstract class Driver
         $table = $this->parseTable($options['table']);
         $sql   = 'DELETE FROM ' . $table;
         if (strpos($table, ',')) {
-// 多表删除支持USING和JOIN操作
+            // 多表删除支持USING和JOIN操作
             if (!empty($options['using'])) {
                 $sql .= ' USING ' . $this->parseTable($options['using']) . ' ';
             }
@@ -1150,7 +1159,7 @@ abstract class Driver
     protected function debug($start)
     {
         if ($this->config['debug']) {
-// 开启数据库调试模式
+            // 开启数据库调试模式
             if ($start) {
                 G('queryStartTime');
             } else {
@@ -1210,7 +1219,7 @@ abstract class Driver
                 $r = $m;
             } else {
                 if (is_numeric($this->config['slave_no'])) {
-// 指定服务器读
+                    // 指定服务器读
                     $r = $this->config['slave_no'];
                 } else {
                     // 读操作连接从服务器
