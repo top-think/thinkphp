@@ -748,7 +748,9 @@ abstract class Driver
         if (is_array($order)) {
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
-                    $array[] = $this->parseKey($val);
+                    if (false === strpos($val, '(')) {
+                        $array[] = $this->parseKey($val);
+                    }
                 } else {
                     $sort    = in_array(strtolower($val), array('asc', 'desc')) ? ' ' . $val : '';
                     $array[] = $this->parseKey($key) . $sort;
@@ -758,7 +760,7 @@ abstract class Driver
             foreach (explode(',', $order) as $val) {
                 if (preg_match('/\s+(ASC|DESC)$/i', rtrim($val), $match, PREG_OFFSET_CAPTURE)) {
                     $array[] = $this->parseKey(ltrim(substr($val, 0, $match[0][1]))) . ' ' . $match[1][0];
-                } else {
+                } elseif (false === strpos($val, '(')) {
                     $array[] = $this->parseKey($val);
                 }
             }

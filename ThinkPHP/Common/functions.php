@@ -332,16 +332,16 @@ function I($name, $default = '', $filter = null, $datas = null)
             break;
         case 'param':
             switch ($_SERVER['REQUEST_METHOD']) {
-            case 'POST':
+                case 'POST':
                     $input = $_POST;
                     break;
-            case 'PUT':
+                case 'PUT':
                     if (is_null($_PUT)) {
                         parse_str(file_get_contents('php://input'), $_PUT);
                     }
                     $input = $_PUT;
                     break;
-            default:
+                default:
                     $input = $_GET;
             }
             break;
@@ -418,19 +418,19 @@ function I($name, $default = '', $filter = null, $datas = null)
         }
         if (!empty($type)) {
             switch (strtolower($type)) {
-                case 'a':    // 数组
+                case 'a': // 数组
                     $data = (array) $data;
                     break;
-                case 'd':    // 数字
+                case 'd': // 数字
                     $data = (int) $data;
                     break;
-                case 'f':    // 浮点
+                case 'f': // 浮点
                     $data = (float) $data;
                     break;
-                case 'b':    // 布尔
+                case 'b': // 布尔
                     $data = (boolean) $data;
                     break;
-                case 's':// 字符串
+                case 's': // 字符串
                 default:
                     $data = (string) $data;
             }
