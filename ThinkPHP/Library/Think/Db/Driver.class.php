@@ -718,7 +718,7 @@ abstract class Driver
      */
     protected function parseLimit($limit)
     {
-        return !empty($limit) ? ' LIMIT ' . $limit . ' ' : '';
+        return (!empty($limit) && false === strpos($limit, '(')) ? ' LIMIT ' . $limit . ' ' : '';
     }
 
     /**
