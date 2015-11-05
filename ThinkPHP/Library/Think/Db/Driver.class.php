@@ -745,6 +745,9 @@ abstract class Driver
     protected function parseOrder($order)
     {
         $array = array();
+        if (empty($order)) {
+            return '';
+        }
         if (is_array($order)) {
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
