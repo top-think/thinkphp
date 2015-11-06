@@ -132,7 +132,7 @@ class ViewModel extends Model
                     }
                 }
             }
-            $where = array_merge($where, $view);
+            $where = array_merge($view, array_diff_key(array_merge($where, $view), $view));
         }
         return $where;
     }
