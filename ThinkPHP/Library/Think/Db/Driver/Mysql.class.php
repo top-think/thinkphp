@@ -108,6 +108,16 @@ class Mysql extends Driver
     }
 
     /**
+     * 随机排序
+     * @access protected
+     * @return string
+     */
+    protected function parseRand()
+    {
+        return 'rand()';
+    }
+
+    /**
      * 批量插入记录
      * @access public
      * @param mixed $dataSet 数据集

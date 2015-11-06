@@ -759,6 +759,9 @@ abstract class Driver
                     $array[] = $this->parseKey($key) . $sort;
                 }
             }
+        } elseif ('[RAND]' == $order) {
+            // 随机排序
+            $array[] = $this->parseRand();
         } else {
             foreach (explode(',', $order) as $val) {
                 if (preg_match('/\s+(ASC|DESC)$/i', rtrim($val), $match, PREG_OFFSET_CAPTURE)) {

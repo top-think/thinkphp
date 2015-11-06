@@ -185,4 +185,14 @@ class Oracle extends Driver
 
         return ' FOR UPDATE NOWAIT ';
     }
+
+    /**
+     * 随机排序
+     * @access protected
+     * @return string
+     */
+    protected function parseRand()
+    {
+        return 'DBMS_RANDOM.value';
+    }
 }
