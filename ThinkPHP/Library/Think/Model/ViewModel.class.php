@@ -45,7 +45,7 @@ class ViewModel extends Model
                     $prefix    = $this->tablePrefix;
                     $tableName = preg_replace_callback("/__([A-Z_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $tableName);
                 } else {
-                    $class = $key . 'Model';
+                    $class = parse_res_name($key, C('DEFAULT_M_LAYER'));
                     $Model = class_exists($class) ? new $class() : M($key);
                     $tableName .= $Model->getTableName();
                 }
@@ -102,7 +102,7 @@ class ViewModel extends Model
     private function _checkFields($name, $fields)
     {
         if (false !== $pos = array_search('*', $fields)) {
-// 定义所有字段
+            // 定义所有字段
             $fields = array_merge($fields, M($name)->getDbFields());
             unset($fields[$pos]);
         }
