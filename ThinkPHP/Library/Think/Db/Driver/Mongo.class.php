@@ -130,7 +130,7 @@ class Mongo extends Driver
                 return $value;
             }
         }
-        N('db_write',1); // 兼容代码
+        N('db_write', 1); // 兼容代码
         $this->model  =   $options['model'];
         $this->executeTimes++;
         try {
@@ -300,7 +300,6 @@ class Mongo extends Driver
             $this->switchCollection($options['table']);
         }
         
-        $this->model  =   $options['model'];
         $this->executeTimes++;
         N('db_write', 1); // 兼容代码
         $this->model = $options['model'];
@@ -395,13 +394,13 @@ class Mongo extends Driver
         
         $cache  =  isset($options['cache'])?$options['cache']:false;
         if($cache) {
-        	$key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
-        	$value  =  S($key,'','',$cache['type']);
-        	if(false !== $value) {
-        		return $value;
-        	}
+            $key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $value  =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+            }
         }
-        
+
         $this->model = $options['model'];
         $this->queryTimes++;
         N('db_query', 1); // 兼容代码
@@ -455,9 +454,9 @@ class Mongo extends Driver
             $resultSet     = iterator_to_array($_cursor);
             
             if($cache) {
-            	S($key,$resultSet,$cache['expire'],$cache['type']);
+                S($key,$resultSet,$cache['expire'],$cache['type']);
             }
-            
+
             return $resultSet;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());

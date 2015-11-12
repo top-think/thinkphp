@@ -501,8 +501,9 @@ class MongoModel extends Model
      * @return object
      */
     public function timeout($timeout=-1) {
-    	if(class_exists('MongoCursor'))
-    		MongoCursor::$timeout = $timeout;
+        if(class_exists('MongoCursor')) {
+            MongoCursor::$timeout = $timeout;
+    	}
     	return $this;
     }
 }
