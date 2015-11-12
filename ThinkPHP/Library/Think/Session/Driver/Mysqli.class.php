@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
@@ -7,7 +6,9 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: hainuo<admin@hainuo.info> liu21st <liu21st@gmail.com>
+// +----------------------------------------------------------------------
+// | change  mysql to mysqli  解决php7没有mysql扩展时数据库存放session无法操作的问题
 // +----------------------------------------------------------------------
 namespace Think\Session\Driver;
 
@@ -20,7 +21,7 @@ namespace Think\Session\Driver;
  *      UNIQUE KEY `session_id` (`session_id`)
  *    );
  */
-class Db
+class Mysqli
 {
 
     /**
@@ -65,28 +66,30 @@ class Db
                     $r = floor(mt_rand(C('DB_MASTER_NUM'), count($host) - 1));
                 }
                 //主数据库链接
-                $hander = mysql_connect(
+                $hander = mysqli_connect(
                     $host[$w] . (isset($port[$w]) ? ':' . $port[$w] : ':' . $port[0]),
                     isset($user[$w]) ? $user[$w] : $user[0],
                     isset($pwd[$w]) ? $pwd[$w] : $pwd[0]
                 );
-                $dbSel = mysql_select_db(
+                $dbSel = mysqli_select_db(
+                    $hander,
                     isset($name[$w]) ? $name[$w] : $name[0]
-                    , $hander);
+                );
                 if (!$hander || !$dbSel) {
                     return false;
                 }
 
                 $this->hander[0] = $hander;
                 //从数据库链接
-                $hander = mysql_connect(
+                $hander = mysqli_connect(
                     $host[$r] . (isset($port[$r]) ? ':' . $port[$r] : ':' . $port[0]),
                     isset($user[$r]) ? $user[$r] : $user[0],
                     isset($pwd[$r]) ? $pwd[$r] : $pwd[0]
                 );
-                $dbSel = mysql_select_db(
+                $dbSel = mysqli_select_db(
+                    $hander,
                     isset($name[$r]) ? $name[$r] : $name[0]
-                    , $hander);
+                );
                 if (!$hander || !$dbSel) {
                     return false;
                 }
@@ -97,14 +100,15 @@ class Db
         }
         //从数据库链接
         $r      = floor(mt_rand(0, count($host) - 1));
-        $hander = mysql_connect(
+        $hander = mysqli_connect(
             $host[$r] . (isset($port[$r]) ? ':' . $port[$r] : ':' . $port[0]),
             isset($user[$r]) ? $user[$r] : $user[0],
             isset($pwd[$r]) ? $pwd[$r] : $pwd[0]
         );
-        $dbSel = mysql_select_db(
+        $dbSel = mysqli_select_db(
+            $hander,
             isset($name[$r]) ? $name[$r] : $name[0]
-            , $hander);
+        );
         if (!$hander || !$dbSel) {
             return false;
         }
@@ -121,10 +125,10 @@ class Db
     {
         if (is_array($this->hander)) {
             $this->gc($this->lifeTime);
-            return (mysql_close($this->hander[0]) && mysql_close($this->hander[1]));
+            return (mysqli_close($this->hander[0]) && mysqli_close($this->hander[1]));
         }
         $this->gc($this->lifeTime);
-        return mysql_close($this->hander);
+        return mysqli_close($this->hander);
     }
 
     /**
@@ -135,9 +139,9 @@ class Db
     public function read($sessID)
     {
         $hander = is_array($this->hander) ? $this->hander[1] : $this->hander;
-        $res    = mysql_query('SELECT session_data AS data FROM ' . $this->sessionTable . " WHERE session_id = '$sessID'   AND session_expire >" . time(), $hander);
+        $res    = mysqli_query($hander, "SELECT session_data AS data FROM " . $this->sessionTable . " WHERE session_id = '$sessID'   AND session_expire >" . time());
         if ($res) {
-            $row = mysql_fetch_assoc($res);
+            $row = mysqli_fetch_assoc($res);
             return $row['data'];
         }
         return "";
@@ -151,11 +155,10 @@ class Db
      */
     public function write($sessID, $sessData)
     {
-        $hander   = is_array($this->hander) ? $this->hander[0] : $this->hander;
-        $expire   = time() + $this->lifeTime;
-        $sessData = addslashes($sessData);
-        mysql_query('REPLACE INTO  ' . $this->sessionTable . " (  session_id, session_expire, session_data)  VALUES( '$sessID', '$expire',  '$sessData')", $hander);
-        if (mysql_affected_rows($hander)) {
+        $hander = is_array($this->hander) ? $this->hander[0] : $this->hander;
+        $expire = time() + $this->lifeTime;
+        mysqli_query($hander, "REPLACE INTO  " . $this->sessionTable . " (  session_id, session_expire, session_data)  VALUES( '$sessID', '$expire',  '$sessData')");
+        if (mysqli_affected_rows($hander)) {
             return true;
         }
 
@@ -170,8 +173,8 @@ class Db
     public function destroy($sessID)
     {
         $hander = is_array($this->hander) ? $this->hander[0] : $this->hander;
-        mysql_query('DELETE FROM ' . $this->sessionTable . " WHERE session_id = '$sessID'", $hander);
-        if (mysql_affected_rows($hander)) {
+        mysqli_query($hander, "DELETE FROM " . $this->sessionTable . " WHERE session_id = '$sessID'");
+        if (mysqli_affected_rows($hander)) {
             return true;
         }
 
@@ -186,8 +189,8 @@ class Db
     public function gc($sessMaxLifeTime)
     {
         $hander = is_array($this->hander) ? $this->hander[0] : $this->hander;
-        mysql_query('DELETE FROM ' . $this->sessionTable . ' WHERE session_expire < ' . time(), $hander);
-        return mysql_affected_rows($hander);
+        mysqli_query($hander, "DELETE FROM " . $this->sessionTable . " WHERE session_expire < " . time());
+        return mysqli_affected_rows($hander);
     }
 
 }

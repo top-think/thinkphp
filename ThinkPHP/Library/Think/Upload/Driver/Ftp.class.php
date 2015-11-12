@@ -10,7 +10,9 @@
 // +----------------------------------------------------------------------
 
 namespace Think\Upload\Driver;
-class Ftp {
+
+class Ftp
+{
     /**
      * 上传文件根目录
      * @var string
@@ -41,12 +43,13 @@ class Ftp {
      * 构造函数，用于设置上传根路径
      * @param array  $config FTP配置
      */
-    public function __construct($config){
+    public function __construct($config)
+    {
         /* 默认FTP配置 */
         $this->config = array_merge($this->config, $config);
 
         /* 登录FTP服务器 */
-        if(!$this->login()){
+        if (!$this->login()) {
             E($this->error);
         }
     }
@@ -56,11 +59,12 @@ class Ftp {
      * @param string $rootpath   根目录
      * @return boolean true-检测通过，false-检测失败
      */
-    public function checkRootPath($rootpath){
+    public function checkRootPath($rootpath)
+    {
         /* 设置根目录 */
         $this->rootPath = ftp_pwd($this->link) . '/' . ltrim($rootpath, '/');
 
-        if(!@ftp_chdir($this->link, $this->rootPath)){
+        if (!@ftp_chdir($this->link, $this->rootPath)) {
             $this->error = '上传根目录不存在！';
             return false;
         }
@@ -72,7 +76,8 @@ class Ftp {
      * @param  string $savepath 上传目录
      * @return boolean          检测结果，true-通过，false-失败
      */
-    public function checkSavePath($savepath){
+    public function checkSavePath($savepath)
+    {
         /* 检测并创建目录 */
         if (!$this->mkdir($savepath)) {
             return false;
@@ -88,7 +93,8 @@ class Ftp {
      * @param  boolean $replace 同名文件是否覆盖
      * @return boolean          保存状态，true-成功，false-失败
      */
-    public function save($file, $replace=true) {
+    public function save($file, $replace = true)
+    {
         $filename = $this->rootPath . $file['savepath'] . $file['savename'];
 
         /* 不覆盖同名文件 */
@@ -107,18 +113,19 @@ class Ftp {
 
     /**
      * 创建目录
-     * @param  string $savepath 要创建的穆里
+     * @param  string $savepath 要创建的目录
      * @return boolean          创建状态，true-成功，false-失败
      */
-    public function mkdir($savepath){
+    public function mkdir($savepath)
+    {
         $dir = $this->rootPath . $savepath;
-        if(ftp_chdir($this->link, $dir)){
+        if (ftp_chdir($this->link, $dir)) {
             return true;
         }
 
-        if(ftp_mkdir($this->link, $dir)){
+        if (ftp_mkdir($this->link, $dir)) {
             return true;
-        } elseif($this->mkdir(dirname($savepath)) && ftp_mkdir($this->link, $dir)) {
+        } elseif ($this->mkdir(dirname($savepath)) && ftp_mkdir($this->link, $dir)) {
             return true;
         } else {
             $this->error = "目录 {$savepath} 创建失败！";
@@ -130,7 +137,8 @@ class Ftp {
      * 获取最后一次上传错误信息
      * @return string 错误信息
      */
-    public function getError(){
+    public function getError()
+    {
         return $this->error;
     }
 
@@ -138,12 +146,13 @@ class Ftp {
      * 登录到FTP服务器
      * @return boolean true-登录成功，false-登录失败
      */
-    private function login(){
+    private function login()
+    {
         extract($this->config);
         $this->link = ftp_connect($host, $port, $timeout);
-        if($this->link) {
+        if ($this->link) {
             if (ftp_login($this->link, $username, $password)) {
-               return true;
+                return true;
             } else {
                 $this->error = "无法登录到FTP服务器：username - {$username}";
             }
@@ -156,7 +165,8 @@ class Ftp {
     /**
      * 析构方法，用于断开当前FTP连接
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         ftp_close($this->link);
     }
 

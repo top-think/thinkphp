@@ -9,10 +9,12 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think;
+
 /**
  * ThinkPHP Behavior基础类
  */
-abstract class Behavior {
+abstract class Behavior
+{
     /**
      * 执行行为 run方法是Behavior唯一的接口
      * @access public

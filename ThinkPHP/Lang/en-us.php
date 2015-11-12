@@ -13,9 +13,9 @@
  * ThinkPHP English language package
  */
 return array(
-    /* core language package */ 
+    /* core language package */
     '_MODULE_NOT_EXIST_'     => "Module can't be loaded",
-    '_CONTROLLER_NOT_EXIST_' =>	"Controller can't be loaded",
+    '_CONTROLLER_NOT_EXIST_' => "Controller can't be loaded",
     '_ERROR_ACTION_'         => 'Illegal Action',
     '_LANGUAGE_NOT_LOAD_'    => "Can't load language package",
     '_TEMPLATE_NOT_EXIST_'   => "Template doesn't exist",
@@ -32,7 +32,7 @@ return array(
     '_NO_DB_CONFIG_'         => 'Not define the database configuration',
     '_NOT_SUPPORT_'          => 'The system does not support',
     '_CACHE_TYPE_INVALID_'   => 'Unable to load the cache type',
-    '_FILE_NOT_WRITABLE_'   => 'Directory (file) is not writable',
+    '_FILE_NOT_WRITABLE_'    => 'Directory (file) is not writable',
     '_METHOD_NOT_EXIST_'     => 'The method you requested  does not exist!',
     '_CLASS_NOT_EXIST_'      => 'Instantiating a class does not exist！',
     '_CLASS_CONFLICT_'       => 'Class name conflicts',
@@ -47,5 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => 'Record has been updated',
     '_NOT_ALLOW_PHP_'        => 'PHP codes are not allowed in the template',
     '_PARAM_ERROR_'          => 'Parameter error or undefined',
-    '_ERROR_QUERY_EXPRESS_'  => 'Query express error',       
+    '_ERROR_QUERY_EXPRESS_'  => 'Query express error',
 );

@@ -13,7 +13,7 @@
  * ThinkPHP 繁体中文語言包
  */
 return array(
-    /* 核心語言變數 */  
+    /* 核心語言變數 */
     '_MODULE_NOT_EXIST_'     => '無法載入模組',
     '_CONTROLLER_NOT_EXIST_' => '無法載入控制器',
     '_ERROR_ACTION_'         => '非法操作',
@@ -32,7 +32,7 @@ return array(
     '_NO_DB_CONFIG_'         => '沒有定義資料庫設定',
     '_NOT_SUPPORT_'          => '系統不支援',
     '_CACHE_TYPE_INVALID_'   => '無法載入快取類型',
-    '_FILE_NOT_WRITABLE_'   => '目錄（檔案）不可寫',
+    '_FILE_NOT_WRITABLE_'    => '目錄（檔案）不可寫',
     '_METHOD_NOT_EXIST_'     => '方法不存在！',
     '_CLASS_NOT_EXIST_'      => '實例化一個不存在的類別！',
     '_CLASS_CONFLICT_'       => '類別名稱衝突',
@@ -47,5 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => '記錄已經更新',
     '_NOT_ALLOW_PHP_'        => '模板禁用PHP代碼',
     '_PARAM_ERROR_'          => '參數錯誤或者未定義',
-    '_ERROR_QUERY_EXPRESS_'  => '錯誤的查詢條件',    
+    '_ERROR_QUERY_EXPRESS_'  => '錯誤的查詢條件',
 );

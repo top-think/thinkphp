@@ -13,7 +13,7 @@
  * ThinkPHP Portuguese language package
  */
 return array(
-    /* core language package */ 
+    /* core language package */
     '_MODULE_NOT_EXIST_'     => "Módulo não pode ser carregado",
     '_CONTROLLER_NOT_EXIST_' => "Controller não pode ser carregado",
     '_ERROR_ACTION_'         => 'Ação ilegal',
@@ -32,7 +32,7 @@ return array(
     '_NO_DB_CONFIG_'         => 'Não define a configuração do banco',
     '_NOT_SUPPORT_'          => 'O sistema não suporta',
     '_CACHE_TYPE_INVALID_'   => 'Impossível carregar o tipo de cache',
-    '_FILE_NOT_WRITABLE_'   => 'Diretório (arquivo) não pode ser escrito',
+    '_FILE_NOT_WRITABLE_'    => 'Diretório (arquivo) não pode ser escrito',
     '_METHOD_NOT_EXIST_'     => 'O método solicitado não existe!',
     '_CLASS_NOT_EXIST_'      => 'Não existe instância da classe',
     '_CLASS_CONFLICT_'       => 'Conflitos com nome da classe',
@@ -47,5 +47,5 @@ return array(
     '_RECORD_HAS_UPDATE_'    => 'Gravação não foi atualizada',
     '_NOT_ALLOW_PHP_'        => 'Código PHP não é permitido no template',
     '_PARAM_ERROR_'          => 'Parâmetro errado ou indefinido',
-    '_ERROR_QUERY_EXPRESS_'  => 'Erros na expressão da query',       
+    '_ERROR_QUERY_EXPRESS_'  => 'Erros na expressão da query',
 );
