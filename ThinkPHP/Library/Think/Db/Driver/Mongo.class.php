@@ -299,7 +299,7 @@ class Mongo extends Driver
         if (isset($options['table'])) {
             $this->switchCollection($options['table']);
         }
-        
+
         $this->executeTimes++;
         N('db_write', 1); // 兼容代码
         $this->model = $options['model'];
@@ -487,14 +487,14 @@ class Mongo extends Driver
         if (isset($options['table'])) {
             $this->switchCollection($options['table'], '', false);
         }
-        
+
         $cache  =  isset($options['cache'])?$options['cache']:false;
         if($cache) {
-        	$key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
-        	$value  =  S($key,'','',$cache['type']);
-        	if(false !== $value) {
-        		return $value;
-        	}
+            $key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $value  =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+             }
         }
         $this->model = $options['model'];
         $this->queryTimes++;
