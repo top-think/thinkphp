@@ -489,7 +489,7 @@ class MongoModel extends Model
      * @access public
      * @return object
      */
-	public function getCollection()
+    public function getCollection()
     {
         return $this->db->getCollection();
     }

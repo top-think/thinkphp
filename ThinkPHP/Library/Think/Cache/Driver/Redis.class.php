@@ -116,7 +116,7 @@ class Redis extends Cache
      */
     function __call($method, $args)
     {
-    	return call_user_func_array(array($this->handler, $method) , $args);
+        return call_user_func_array(array($this->handler, $method) , $args);
     }
 
 }

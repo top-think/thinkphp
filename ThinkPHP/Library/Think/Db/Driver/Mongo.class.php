@@ -511,8 +511,9 @@ class Mongo extends Driver
             $count = $this->_collection->count($query);
             $this->debug(false);
             
-            if($cache)
+            if($cache) {
             	S($key,$count,$cache['expire'],$cache['type']);
+            }
             
             return $count;
         } catch (\MongoCursorException $e) {
