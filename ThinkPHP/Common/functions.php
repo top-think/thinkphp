@@ -366,6 +366,7 @@ function I($name,$default='',$filter=null,$datas=null) {
             
             if(is_array($filters)){
                 foreach($filters as $filter){
+                    $filter = trim($filter);
                     if(function_exists($filter)) {
                         $data   =   is_array($data) ? array_map_recursive($filter,$data) : $filter($data); // 参数过滤
                     }else{
