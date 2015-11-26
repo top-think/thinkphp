@@ -31,6 +31,7 @@ class Redis extends Cache
         $options = array_merge(array(
             'host'       => C('REDIS_HOST') ?: '127.0.0.1',
             'port'       => C('REDIS_PORT') ?: 6379,
+            'password'   => C('REDIS_PASSWORD') ?: '',
             'timeout'    => C('DATA_CACHE_TIMEOUT') ?: false,
             'persistent' => false,
         ), $options);
@@ -40,9 +41,13 @@ class Redis extends Cache
         $this->options['prefix'] = isset($options['prefix']) ? $options['prefix'] : C('DATA_CACHE_PREFIX');
         $this->options['length'] = isset($options['length']) ? $options['length'] : 0;
         $func                    = $options['persistent'] ? 'pconnect' : 'connect';
-        $this->handler           = new \Redis; false === $options['timeout'] ?
+        $this->handler           = new \Redis;
+        false === $options['timeout'] ?
         $this->handler->$func($options['host'], $options['port']) :
         $this->handler->$func($options['host'], $options['port'], $options['timeout']);
+        if ('' != $options['password']) {
+            $this->handler->auth($options['password']);
+        }
     }
 
     /**
