@@ -24,9 +24,6 @@ class App
      */
     public static function init()
     {
-        // 加载动态应用公共文件和配置
-        load_ext_file(COMMON_PATH);
-
         // 日志目录转换为绝对路径 默认情况下存储到公共模块下面
         C('LOG_PATH', realpath(LOG_PATH) . '/Common/');
 
@@ -200,6 +197,8 @@ class App
      */
     public static function run()
     {
+        // 加载动态应用公共文件和配置
+        load_ext_file(COMMON_PATH);
         // 应用初始化标签
         Hook::listen('app_init');
         App::init();
