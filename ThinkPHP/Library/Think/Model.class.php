@@ -61,7 +61,7 @@ class Model
     // 是否批处理验证
     protected $patchValidate = false;
     // 链操作方法列表
-    protected $methods = array('strict', 'order', 'alias', 'having', 'group', 'lock', 'distinct', 'auto', 'filter', 'validate', 'result', 'token', 'index', 'force');
+    protected $methods = array('strict', 'order', 'alias', 'having', 'group', 'lock', 'distinct', 'auto', 'filter', 'validate', 'result', 'token', 'index', 'force', 'master');
 
     /**
      * 架构函数
@@ -708,11 +708,6 @@ class Model
                     if (is_scalar($val)) {
                         $this->_parseType($options['where'], $key);
                     }
-                } elseif (!is_numeric($key) && '_' != substr($key, 0, 1) && false === strpos($key, '.') && false === strpos($key, '(') && false === strpos($key, '|') && false === strpos($key, '&')) {
-                    if (!empty($this->options['strict'])) {
-                        E(L('_ERROR_QUERY_EXPRESS_') . ':[' . $key . '=>' . $val . ']');
-                    }
-                    unset($options['where'][$key]);
                 }
             }
         }
