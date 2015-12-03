@@ -43,13 +43,13 @@ class Sqlite extends Driver
         $info            = array();
         if ($result) {
             foreach ($result as $key => $val) {
-                $info[$val['field']] = array(
-                    'name'    => $val['field'],
+                $info[$val['name']] = array(
+                    'name'    => $val['name'],
                     'type'    => $val['type'],
-                    'notnull' => (bool) ('' === $val['null']), // not null is empty, null is yes
-                    'default' => $val['default'],
-                    'primary' => (strtolower($val['dey']) == 'pri'),
-                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
+                    'notnull' => boolval($val['notnull']), // not null is empty, null is yes
+                    'default' => $val['dflt_value'],
+                    'primary' => boolval($val['pk']), //sqlite3下autoinc必须是主键，而主键又不能重复指派的，所以下面的autoinc值也是$val['pk']
+                    'autoinc' => boolval($val['pk']),
                 );
             }
         }
