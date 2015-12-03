@@ -46,10 +46,10 @@ class Sqlite extends Driver
                 $info[$val['name']] = array(
                     'name'    => $val['name'],
                     'type'    => $val['type'],
-                    'notnull' => boolval($val['notnull']), // not null is empty, null is yes
+                    'notnull' => (bool) (1 === $val['notnull']),
                     'default' => $val['dflt_value'],
-                    'primary' => boolval($val['pk']), //sqlite3下autoinc必须是主键，而主键又不能重复指派的，所以下面的autoinc值也是$val['pk']
-                    'autoinc' => boolval($val['pk']),
+                    'primary' => '1' == $val['pk'],
+                    'autoinc' => false,
                 );
             }
         }

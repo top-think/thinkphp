@@ -84,11 +84,11 @@ class Dispatcher
                 }
                 $array = explode('/', $rule);
                 // 模块绑定
-                define('BIND_MODULE', array_shift($array));
+                defined('BIND_MODULE') or define('BIND_MODULE', array_shift($array));
                 // 控制器绑定
                 if (!empty($array)) {
                     $controller = array_shift($array);
-                    if ($controller) {
+                    if ($controller && !defined('BIND_MODULE')) {
                         define('BIND_CONTROLLER', $controller);
                     }
                 }
