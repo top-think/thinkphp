@@ -146,6 +146,10 @@ class View
         $content = ob_get_clean();
         // 内容过滤标签
         Hook::listen('view_filter', $content);
+        if(APP_DEBUG){ // debug模式时，将后台分配变量输出到浏览器控制台
+            $parseVar = empty($this->tVar) ? json_encode(array()) : json_encode($this->tVar);
+            $content  = $content.'<script type="text/javascript">var PARSE_VAR = '.$parseVar.';</script>';
+        }
         // 输出模板文件
         return $content;
     }
