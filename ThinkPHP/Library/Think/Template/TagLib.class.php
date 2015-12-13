@@ -21,7 +21,7 @@ class TagLib
      * @var string
      * @access protected
      */
-    protected $xml  = '';
+    protected $xml = '';
     protected $tags = array(); // 标签定义
     /**
      * 标签库名称
@@ -71,6 +71,148 @@ class TagLib
     }
 
     /**
+     * 按签标库替换页面中的标签
+     * @access public
+     * @param  string $content 模板内容
+     * @param  string $lib 标签库名
+     * @return void
+     */
+    public function parseTag(&$content, $lib = '')
+    {
+        $lib  = strtolower($lib);
+        $tags = array();
+        foreach ($this->tags as $name => $val) {
+            $close               = !isset($val['close']) || $val['close'] ? 1 : 0;
+            $_key                = $lib ? $lib . ':' . $name : $name;
+            $tags[$close][$_key] = $name;
+            if (isset($val['alias'])) {
+                // 别名设置
+                foreach (explode(',', $val['alias']) as $v) {
+                    $_key                = $lib ? $lib . ':' . $v : $v;
+                    $tags[$close][$_key] = $name;
+                }
+            }
+        }
+
+        // 闭合标签
+        if (!empty($tags[1])) {
+            $nodes = array();
+            $regex = $this->getRegex(array_keys($tags[1]), 1);
+            if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+                $right = array();
+                foreach ($matches as $match) {
+                    if ($match[1][0] == '') {
+                        $name = $match[2][0];
+                        // 如果有没闭合的标签头则取出最后一个
+                        if (!empty($right[$name])) {
+                            // $match[0][1]为标签结束符在模板中的位置
+                            $nodes[$match[0][1]] = array(
+                                'name'  => $name,
+                                'begin' => array_pop($right[$name]), // 标签开始符
+                                'end'   => $match[0] // 标签结束符
+                            );
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        // 标签头压入栈
+                        $right[$match[1][0]][] = $match[0];
+                    }
+                }
+                unset($right, $matches);
+                // 按标签在模板中的位置从后向前排序
+                krsort($nodes);
+            }
+
+            $break = '<!--###break###--!>';
+            if ($nodes) {
+                $beginArray = array();
+                // 标签替换 从后向前
+                foreach ($nodes as $pos => $node) {
+                    // 对应的标签名
+                    $name = $tags[1][$node['name']];
+                    // 解析标签属性
+                    $attrs  = $this->parseAttr($node['begin'][0], $name);
+                    $method = '_' . $name;
+                    // 读取标签库中对应的标签内容 replace[0]用来替换标签头，replace[1]用来替换标签尾
+                    $replace = explode($break, $this->$method($attrs, $break, $node['name']));
+                    if (count($replace) > 1) {
+                        while ($beginArray) {
+                            $begin = end($beginArray);
+                            // 判断当前标签尾的位置是否在栈中最后一个标签头的后面，是则为子标签
+                            if ($node['end'][1] > $begin['pos']) {
+                                break;
+                            } else {
+                                // 不为子标签时，取出栈中最后一个标签头
+                                $begin = array_pop($beginArray);
+                                // 替换标签头部
+                                $content = substr_replace($content, $begin['str'], $begin['pos'], $begin['len']);
+                            }
+                        }
+                        // 替换标签尾部
+                        $content = substr_replace($content, $replace[1], $node['end'][1], strlen($node['end'][0]));
+                        // 把标签头压入栈
+                        $beginArray[] = array('pos' => $node['begin'][1], 'len' => strlen($node['begin'][0]), 'str' => $replace[0]);
+                    }
+                }
+                while ($beginArray) {
+                    $begin = array_pop($beginArray);
+                    // 替换标签头部
+                    $content = substr_replace($content, $begin['str'], $begin['pos'], $begin['len']);
+                }
+            }
+        }
+        // 自闭合标签
+        if (!empty($tags[0])) {
+            $regex   = $this->getRegex(array_keys($tags[0]), 0);
+            $self    = &$this;
+            $content = preg_replace_callback($regex, function ($matches) use (&$tags, &$self) {
+                $name = $tags[0][$matches[1]];
+                // 解析标签属性
+                $attrs  = $self->parseAttr($matches[0], $name);
+                $method = '_' . $name;
+                return $self->$method($attrs, '', $matches[1]);
+            }, $content);
+        }
+        return;
+    }
+
+    /**
+     * 按标签生成正则
+     * @access private
+     * @param  array|string $tags 标签名
+     * @param  boolean $close 是否为闭合标签
+     * @return string
+     */
+    private function getRegex($tags, $close)
+    {
+        $begin  = $this->tpl->config['taglib_begin'];
+        $end    = $this->tpl->config['taglib_end'];
+        $single = strlen(ltrim($begin, '\\')) == 1 && strlen(ltrim($end, '\\')) == 1 ? true : false;
+        if (is_array($tags)) {
+            $tagName = implode('|', $tags);
+        } else {
+            $tagName = $tags;
+        }
+        if ($single) {
+            if ($close) {
+                // 如果是闭合标签
+                $regex = $begin . '(?:(' . $tagName . ')\b(?>[^' . $end . ']*)|\/(' . $tagName . '))' . $end;
+            } else {
+                $regex = $begin . '(' . $tagName . ')\b(?>[^' . $end . ']*)' . $end;
+            }
+        } else {
+            if ($close) {
+                // 如果是闭合标签
+                $regex = $begin . '(?:(' . $tagName . ')\b(?>(?:(?!' . $end . ').)*)|\/(' . $tagName . '))' . $end;
+            } else {
+                $regex = $begin . '(' . $tagName . ')\b(?>(?:(?!' . $end . ').)*)' . $end;
+            }
+        }
+        return '/' . $regex . '/is';
+    }
+
+    /**
      * TagLib标签属性分析 返回标签属性数组
      * @access public
      * @param string $tagStr 标签内容
@@ -80,12 +222,16 @@ class TagLib
     {
         //XML解析安全过滤
         $attr = str_replace('&', '___', $attr);
-        $xml  = '<tpl><tag ' . $attr . ' /></tpl>';
-        $xml  = simplexml_load_string($xml);
+        if (substr($attr, 0, 1) == '<' && substr($attr, -1, 1) == '>') {
+            $xml = '<tpl>' . $attr . '</tpl>';
+        } else {
+            $xml = '<tpl><tag ' . $attr . ' /></tpl>';
+        }
+        $xml = simplexml_load_string($xml);
         if (!$xml) {
             E(L('_XML_TAG_ERROR_') . ' : ' . $attr);
         }
-        $xml = (array) ($xml->tag->attributes());
+        $xml = (array)($xml->tag->attributes());
         if (isset($xml['@attributes'])) {
             $array = array_change_key_case($xml['@attributes']);
             if ($array) {
@@ -122,29 +268,71 @@ class TagLib
     }
 
     /**
+     * 分析标签属性 正则方式
+     * @access public
+     * @param string $str 标签属性字符串
+     * @param string $tag 标签名
+     * @return array
+     */
+    public function parseAttr($str, $tag)
+    {
+        if (ini_get('magic_quotes_sybase')) {
+            $str = str_replace('\"', '\'', $str);
+        }
+        $regex = '/\s+(?>(?<name>\w+)\s*)=(?>\s*)([\"\'])(?<value>(?:(?!\\2).)*)\\2/is';
+        $array = array();
+        if (preg_match_all($regex, $str, $matches)) {
+            foreach ($matches['name'] as $key => $val) {
+                $array[$val] = $matches['value'][$key];
+            }
+            $tag = strtolower($tag);
+            if (!isset($this->tags[$tag])) {
+                // 检测是否存在别名定义
+                foreach ($this->tags as $key => $val) {
+                    if (isset($val['alias']) && in_array($tag, explode(',', $val['alias']))) {
+                        $item = $val;
+                        break;
+                    }
+                }
+            } else {
+                $item = $this->tags[$tag];
+            }
+            if (!empty($item['must'])) {
+                $must = explode(',', $item['must']);
+                foreach ($must as $name) {
+                    if (!isset($array[$name])) {
+                        E(L('_PARAM_ERROR_') . ':' . $name);
+                    }
+                }
+            }
+        } else {
+            // 允许直接使用表达式的标签
+            if (!empty($this->tags[$tag]['expression'])) {
+                static $_taglibs;
+                if (!isset($_taglibs[$tag])) {
+                    $_taglibs[$tag][0] = strlen(C('TAGLIB_BEGIN') . $tag);
+                    $_taglibs[$tag][1] = strlen(C('TAGLIB_END'));
+                }
+                $str                 = substr($str, $_taglibs[$tag][0], -$_taglibs[$tag][1]);
+                $array['expression'] = trim($str);
+            } elseif (empty($this->tags[$tag]) || !empty($this->tags[$tag]['attr'])) {
+                E(L('_XML_TAG_ERROR_') . ' : ' . $tag);
+            }
+        }
+        return $array;
+    }
+
+    /**
      * 解析条件表达式
      * @access public
-     * @param string $condition 表达式标签内容
-     * @return array
+     * @param  string $condition 表达式标签内容
+     * @return string
      */
     public function parseCondition($condition)
     {
         $condition = str_ireplace(array_keys($this->comparison), array_values($this->comparison), $condition);
-        $condition = preg_replace('/\$(\w+):(\w+)\s/is', '$\\1->\\2 ', $condition);
-        switch (strtolower(C('TMPL_VAR_IDENTIFY'))) {
-            case 'array': // 识别为数组
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is', '$\\1["\\2"] ', $condition);
-                break;
-            case 'obj': // 识别为对象
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is', '$\\1->\\2 ', $condition);
-                break;
-            default: // 自动判断数组或对象 只支持二维
-                $condition = preg_replace('/\$(\w+)\.(\w+)\s/is', '(is_array($\\1)?$\\1["\\2"]:$\\1->\\2) ', $condition);
-        }
-        if (false !== strpos($condition, '$Think')) {
-            $condition = preg_replace_callback('/(\$Think.*?)\s/is', array($this, 'parseThinkVar'), $condition);
-        }
-
+        $this->tpl->parseVar($condition);
+        $this->tpl->parseVarFunction($condition); // XXX: 此句能解析表达式中用|分隔的函数，但表达式中如果有|、||这样的逻辑运算就产生了歧异
         return $condition;
     }
 
@@ -154,120 +342,30 @@ class TagLib
      * @param string $name 变量描述
      * @return string
      */
-    public function autoBuildVar($name)
+    public function autoBuildVar(&$name)
     {
-        if ('Think.' == substr($name, 0, 6)) {
-            // 特殊变量
-            return $this->parseThinkVar($name);
-        } elseif (strpos($name, '.')) {
-            $vars = explode('.', $name);
-            $var  = array_shift($vars);
-            switch (strtolower(C('TMPL_VAR_IDENTIFY'))) {
-                case 'array': // 识别为数组
-                    $name = '$' . $var;
-                    foreach ($vars as $key => $val) {
-                        if (0 === strpos($val, '$')) {
-                            $name .= '["{' . $val . '}"]';
-                        } else {
-                            $name .= '["' . $val . '"]';
-                        }
-                    }
-                    break;
-                case 'obj': // 识别为对象
-                    $name = '$' . $var;
-                    foreach ($vars as $key => $val) {
-                        $name .= '->' . $val;
-                    }
-
-                    break;
-                default: // 自动判断数组或对象 只支持二维
-                    $name = 'is_array($' . $var . ')?$' . $var . '["' . $vars[0] . '"]:$' . $var . '->' . $vars[0];
+        $flag = substr($name, 0, 1);
+        if (':' == $flag) {
+            // 以:开头为函数调用，解析前去掉:
+            $name = substr($name, 1);
+        } elseif ('$' != $flag && preg_match('/[a-zA-Z_]/', $flag)) { // XXX: 这句的写法可能还需要改进
+            // 常量不需要解析
+            if (defined($name)) {
+                return $name;
             }
-        } elseif (strpos($name, ':')) {
-            // 额外的对象方式支持
-            $name = '$' . str_replace(':', '->', $name);
-        } elseif (!defined($name)) {
+            // 不以$开头并且也不是常量，自动补上$前缀
             $name = '$' . $name;
         }
+        $this->tpl->parseVar($name);
+        $this->tpl->parseVarFunction($name);
         return $name;
     }
 
     /**
-     * 用于标签属性里面的特殊模板变量解析
-     * 格式 以 Think. 打头的变量属于特殊模板变量
+     * 获取标签列表
      * @access public
-     * @param string $varStr  变量字符串
-     * @return string
+     * @return array
      */
-    public function parseThinkVar($varStr)
-    {
-        if (is_array($varStr)) {
-//用于正则替换回调函数
-            $varStr = $varStr[1];
-        }
-        $vars     = explode('.', $varStr);
-        $vars[1]  = strtoupper(trim($vars[1]));
-        $parseStr = '';
-        if (count($vars) >= 3) {
-            $vars[2] = trim($vars[2]);
-            switch ($vars[1]) {
-                case 'SERVER':$parseStr = '$_SERVER[\'' . $vars[2] . '\']';
-                    break;
-                case 'GET':$parseStr = '$_GET[\'' . $vars[2] . '\']';
-                    break;
-                case 'POST':$parseStr = '$_POST[\'' . $vars[2] . '\']';
-                    break;
-                case 'COOKIE':
-                    if (isset($vars[3])) {
-                        $parseStr = '$_COOKIE[\'' . $vars[2] . '\'][\'' . $vars[3] . '\']';
-                    } elseif (C('COOKIE_PREFIX')) {
-                        $parseStr = '$_COOKIE[\'' . C('COOKIE_PREFIX') . $vars[2] . '\']';
-                    } else {
-                        $parseStr = '$_COOKIE[\'' . $vars[2] . '\']';
-                    }
-                    break;
-                case 'SESSION':
-                    if (isset($vars[3])) {
-                        $parseStr = '$_SESSION[\'' . $vars[2] . '\'][\'' . $vars[3] . '\']';
-                    } elseif (C('SESSION_PREFIX')) {
-                        $parseStr = '$_SESSION[\'' . C('SESSION_PREFIX') . '\'][\'' . $vars[2] . '\']';
-                    } else {
-                        $parseStr = '$_SESSION[\'' . $vars[2] . '\']';
-                    }
-                    break;
-                case 'ENV':$parseStr = '$_ENV[\'' . $vars[2] . '\']';
-                    break;
-                case 'REQUEST':$parseStr = '$_REQUEST[\'' . $vars[2] . '\']';
-                    break;
-                case 'CONST':$parseStr = strtoupper($vars[2]);
-                    break;
-                case 'LANG':$parseStr = 'L("' . $vars[2] . '")';
-                    break;
-                case 'CONFIG':$parseStr = 'C("' . $vars[2] . '")';
-                    break;
-            }
-        } else if (count($vars) == 2) {
-            switch ($vars[1]) {
-                case 'NOW':$parseStr = "date('Y-m-d g:i a',time())";
-                    break;
-                case 'VERSION':$parseStr = 'THINK_VERSION';
-                    break;
-                case 'TEMPLATE':$parseStr = 'C("TEMPLATE_NAME")';
-                    break;
-                case 'LDELIM':$parseStr = 'C("TMPL_L_DELIM")';
-                    break;
-                case 'RDELIM':$parseStr = 'C("TMPL_R_DELIM")';
-                    break;
-                default:if (defined($vars[1])) {
-                        $parseStr = $vars[1];
-                    }
-
-            }
-        }
-        return $parseStr;
-    }
-
-    // 获取标签定义
     public function getTags()
     {
         return $this->tags;
