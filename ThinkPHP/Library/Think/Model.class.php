@@ -972,14 +972,14 @@ class Model
                 return $value + $step;
             } else {
                 // 追加数据到缓存
-                S($guid, $value + $step);
+                S($guid, $value + $step, 0);
                 return false;
             }
         } else {
             // 没有缓存数据
-            S($guid, $step);
+            S($guid, $step, 0);
             // 计时开始
-            S($guid . '_time', NOW_TIME);
+            S($guid . '_time', NOW_TIME, 0);
             return false;
         }
     }
