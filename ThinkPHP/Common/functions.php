@@ -1014,7 +1014,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
         // aaa=1&bbb=2 转换成数组
         parse_str($vars, $vars);
     } elseif (!is_array($vars)) {
-        $vars = array();
+        $vars = [];
     }
     if (isset($info['query'])) {
         // 解析地址里面参数 合并到vars
@@ -1041,7 +1041,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
             // 解析模块、控制器和操作
             $url                 = trim($url, $depr);
             $path                = explode($depr, $url);
-            $var                 = array();
+            $var                 = [];
             $varModule           = C('VAR_MODULE');
             $varController       = C('VAR_CONTROLLER');
             $varAction           = C('VAR_ACTION');
@@ -1068,7 +1068,17 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
             if (!empty($path)) {
                 $var[$varModule] = implode($depr, $path);
             } else {
-                if (C('MULTI_MODULE')) {
+                // 如果为插件，自动转换路径
+                if (CONTROLLER_PATH) {
+                    $var[$varModule] = MODULE_NAME;
+                    $varAddon        = C('VAR_ADDON');
+                    if (MODULE_NAME != C('DEFAULT_MODULE')) {
+                        $var[$varController] = MODULE_NAME;
+                    }
+
+                    $vars = array_merge([$varAddon => CONTROLLER_PATH], $vars);
+
+                } elseif (C('MULTI_MODULE')) {
                     if (MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')) {
                         $var[$varModule] = MODULE_NAME;
                     }
@@ -1080,14 +1090,14 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
                 }
             }
             if (isset($var[$varModule])) {
-                $module = $var[$varModule];
+                $module = defined('BIND_MODULE') && BIND_MODULE == $module ? '' : $var[$varModule];
                 unset($var[$varModule]);
             }
 
         }
     }
 
-    if (C('URL_MODEL') == 0) {
+    if (0 == C('URL_MODEL')) {
         // 普通模式URL转换
         $url = __APP__ . '?' . C('VAR_MODULE') . "={$module}&" . http_build_query(array_reverse($var));
         if ($urlCase) {
@@ -1102,8 +1112,16 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
         if (isset($route)) {
             $url = __APP__ . '/' . rtrim($url, $depr);
         } else {
-            $module = (defined('BIND_MODULE') && BIND_MODULE == $module) ? '' : $module;
-            $url    = __APP__ . '/' . ($module ? $module . MODULE_PATHINFO_DEPR : '') . implode($depr, array_reverse($var));
+            $path = implode($depr, array_reverse($var));
+            if (C('URL_ROUTER_ON')) {
+                $url = Think\Route::reverse($path, $vars, $depr, $suffix);
+                if (!$url) {
+                    $url = $path;
+                }
+            } else {
+                $url = $path;
+            }
+            $url = __APP__ . '/' . ($module ? $module . MODULE_PATHINFO_DEPR : '') . $url;
         }
         if ($urlCase) {
             $url = strtolower($url);
@@ -1114,7 +1132,6 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
                 if ('' !== trim($val)) {
                     $url .= $depr . $var . $depr . urlencode($val);
                 }
-
             }
         }
         if ($suffix) {
