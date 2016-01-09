@@ -1014,7 +1014,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
         // aaa=1&bbb=2 转换成数组
         parse_str($vars, $vars);
     } elseif (!is_array($vars)) {
-        $vars = [];
+        $vars = array();
     }
     if (isset($info['query'])) {
         // 解析地址里面参数 合并到vars
@@ -1041,7 +1041,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
             // 解析模块、控制器和操作
             $url                 = trim($url, $depr);
             $path                = explode($depr, $url);
-            $var                 = [];
+            $var                 = array();
             $varModule           = C('VAR_MODULE');
             $varController       = C('VAR_CONTROLLER');
             $varAction           = C('VAR_ACTION');
