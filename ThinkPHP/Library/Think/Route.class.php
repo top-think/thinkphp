@@ -149,7 +149,7 @@ class Route
                             if (!empty($val[2])) {
                                 if ($val[2] == 'int') {
                                     // 是否为数字
-                                    if (!is_numeric($vars[$key]) || !is_int($vars[$key])) {
+                                    if (!is_numeric($vars[$key]) || !preg_match('/^\d*$/',$vars[$key])) {
                                         break;
                                     }
                                 } else {
@@ -409,7 +409,7 @@ class Route
                         // 设置了过滤条件
                         if ($val[2] == 'int') {
                             // 如果值不为整数
-                            if (!is_int($var)) {
+                            if (!preg_match('/^\d*$/',$var)) {
                                 return false;
                             }
                         } else {
