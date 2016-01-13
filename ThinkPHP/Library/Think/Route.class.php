@@ -72,6 +72,25 @@ class Route
                                 return $matches[$match[1] - 1];
                             }, $route[0]);
                         }
+                        // 路由参数关联$matches
+                        if ('/' == substr($rule, 0, 1)) {
+                            $rule_params = array();
+                            foreach($route[1] as $param_key => $param)
+                            {
+                                list($param_name,$param_value) = explode('=', $param,2);
+                                if(!is_null($param_value))
+                                {
+                                    if(preg_match('/^:(\d*)$/',$param_value, $match_index))
+                                    {
+                                        $match_index = $match_index[1]-1;
+                                        $param_value = $matches[$match_index];
+                                    }
+                                    $rule_params[$param_name] = $param_value;
+                                    unset($route[1][$param_key]);
+                                }
+                            }
+                            $route[1] = $rule_params;
+                        }
                         // 重定向
                         if ('/' == substr($route[0], 0, 1)) {
                             header("Location: $route[0]", true, $route[1]);
@@ -225,7 +244,7 @@ class Route
     {
         $result = array();
         $module = defined('MODULE_NAME') ? '_' . MODULE_NAME : '';
-        if ($update || !$result = S('url_route_rules' . $module)) {
+        if (APP_DEBUG || $update || !$result = S('url_route_rules' . $module)) {
             // 静态路由
             $result[0] = C('URL_MAP_RULES');
             if (!empty($result[0])) {
@@ -388,6 +407,7 @@ class Route
                     $regx = substr_replace($regx, '', 0, strlen($matches[0]));
                 }
                 array_shift($matches);
+                return $matches;
             } else {
                 return false;
             }
