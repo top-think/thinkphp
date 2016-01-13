@@ -163,8 +163,8 @@ class App
                     }
                 }
                 // 开启绑定参数过滤机制
-                if (C('URL_PARAMS_SAFE')) {
-                    $filters = C('URL_PARAMS_FILTER') ?: C('DEFAULT_FILTER');
+                if (C('URL_PARAMS_FILTER')) {
+                    $filters = C('URL_PARAMS_FILTER_TYPE') ?: C('DEFAULT_FILTER');
                     if ($filters) {
                         $filters = explode(',', $filters);
                         foreach ($filters as $filter) {
