@@ -344,7 +344,6 @@ class Route
                         }
                         $route[] = $args;
                         $result[1][$rule] = $route;
-                        //if($route[0] == 'Home/Article/article')
                     } else {
                         unset($result[1][$rule]);
                     }
