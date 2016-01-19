@@ -300,7 +300,7 @@ function T($template = '', $layer = '')
  * @param mixed $datas 要获取的额外数据源
  * @return mixed
  */
-function I($name, $default = '', $filter = null, $datas = null)
+function I($name, $default, $filter = null, $datas = null)
 {
     static $_PUT = null;
     if (strpos($name, '/')) {
