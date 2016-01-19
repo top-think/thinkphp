@@ -203,7 +203,7 @@ class Template
             $this->parseTagLib($tag, $content, true);
         }
         //解析普通模板标签 {$tagName}
-        $content = preg_replace_callback('/(' . $this->config['tmpl_begin'] . ')([^\d\w\s' . $this->config['tmpl_begin'] . $this->config['tmpl_end'] . '].+?)(' . $this->config['tmpl_end'] . ')/is', array($this, 'parseTag'), $content);
+        $content = preg_replace_callback('/(' . $this->config['tmpl_begin'] . ')(?!\'|\")([^\d\w\s' . $this->config['tmpl_begin'] . $this->config['tmpl_end'] . '].+?)(' . $this->config['tmpl_end'] . ')/is', array($this, 'parseTag'), $content);
         return $content;
     }
 
