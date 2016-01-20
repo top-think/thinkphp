@@ -98,7 +98,7 @@ class Mysql extends Driver
      * @param string $key
      * @return string
      */
-    protected function parseKey(&$key)
+    protected function parseKey($key)
     {
         $key = trim($key);
         if (!is_numeric($key) && !preg_match('/[,\'\"\*\(\)`.\s]/', $key)) {
@@ -197,10 +197,10 @@ class Mysql extends Driver
                 }
 
                 switch ($val[0]) {
-                    case 'exp': // 表达式
+                    case 'exp':    // 表达式
                         $updates[] = $this->parseKey($key) . "=($val[1])";
                         break;
-                    case 'value': // 值
+                    case 'value':// 值
                     default:
                         $name      = count($this->bind);
                         $updates[] = $this->parseKey($key) . "=:" . $name;
