@@ -188,6 +188,7 @@ class Route
                     // 匹配成功
                     if (!empty($flag)) {
                         foreach (array_keys($array) as $key) {
+                            $array[$key] = urlencode($array[$key]);
                             unset($vars[$key]);
                         }
                         return implode($depr, $array);
@@ -195,21 +196,23 @@ class Route
                 } else {
                     // 正则路由
                     $keys = !empty($args) ? array_keys($args) : array_keys($vars);
-                    $str = preg_replace_callback('/\(.+\)/', function ($match) use (&$vars, &$keys) {
+                    $temp_vars = $vars;
+                    $str = preg_replace_callback('/\(.*?\)/', function ($match) use (&$temp_vars, &$keys) {
                         $k = array_shift($keys);
-                        return isset($vars[$k]) ? $vars[$k] : '';
+                        $re_var = '';
+                        if(isset($temp_vars[$k]))
+                        {
+                            $re_var = $temp_vars[$k];
+                            unset($temp_vars[$k]);
+                        }
+                        return urlencode($re_var);
                     }, $rule);
                     $str = substr($str, 1, -1);
                     $str = rtrim(ltrim($str, '^'), '$');
                     $str = str_replace('\\', '', $str);
                     if (preg_match($rule, $str, $matches)) {
                         // 匹配成功
-                        if ($args) {
-                            $keys = array_keys($args);
-                        }
-                        foreach ($keys as $key) {
-                            unset($vars[$key]);
-                        }
+                        $vars = $temp_vars;
                         return str_replace('/', $depr, $str);
                     }
                 }
