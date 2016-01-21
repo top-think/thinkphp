@@ -417,8 +417,8 @@ abstract class Driver
                     $set[] = $this->parseKey($key) . '=' . $val;
                 } else {
                     $name  = count($this->bind);
-                    $set[] = $this->parseKey($key) . '=:' . 'bind_' . $name;
-                    $this->bindParam('bind_' . $name, $val);
+                    $set[] = $this->parseKey($key) . '=:' . NOW_TIME.'_' . $name;
+                    $this->bindParam(NOW_TIME.'_' . $name, $val);
                 }
             }
         }
@@ -911,8 +911,8 @@ abstract class Driver
                     $values[] = $val;
                 } else {
                     $name     = count($this->bind);
-                    $values[] = ':' . 'bind_' . $name;
-                    $this->bindParam('bind_' . $name, $val);
+                    $values[] = ':' . NOW_TIME.'_' . $name;
+                    $this->bindParam(NOW_TIME.'_' . $name, $val);
                 }
             }
         }
@@ -953,8 +953,8 @@ abstract class Driver
                         $value[] = $val;
                     } else {
                         $name    = count($this->bind);
-                        $value[] = ':' . 'bind_' . $name;
-                        $this->bindParam('bind_' . $name, $val);
+                        $value[] = ':' . NOW_TIME.'_' . $name;
+                        $this->bindParam(NOW_TIME.'_' . $name, $val);
                     }
                 }
             }
