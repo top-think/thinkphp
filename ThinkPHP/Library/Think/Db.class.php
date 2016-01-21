@@ -125,7 +125,7 @@ class Db
             'password' => isset($info['pass']) ? $info['pass'] : '',
             'hostname' => isset($info['host']) ? $info['host'] : '',
             'hostport' => isset($info['port']) ? $info['port'] : '',
-            'database' => isset($info['path']) ? substr($info['path'], 1) : '',
+            'database' => isset($info['path']) ? ltrim($info['path'], '/') : '',
             'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
         );
 
