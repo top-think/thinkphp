@@ -450,7 +450,8 @@ class Route
                     }
                 }
             }
-            $matches = $params;
+            //防止返回空数组
+            $matches = $params ? $params : true;
             $regx = implode('/', $paths);
         }
         // 解析剩余的URL参数
