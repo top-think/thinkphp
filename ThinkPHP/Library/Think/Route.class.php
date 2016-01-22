@@ -410,7 +410,8 @@ class Route
                     $regx = substr_replace($regx, '', 0, strlen($matches[0]));
                 }
                 array_shift($matches);
-                return $matches;
+                //防止返回空数组
+                return $matches ? $matches : true;
             } else {
                 return false;
             }
