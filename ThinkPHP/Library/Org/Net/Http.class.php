@@ -164,7 +164,7 @@ class Http
         if (empty($showname)) {
             $showname = $filename;
         }
-        $showname = basename($showname);
+        $showname = self::get_basename($showname);;
         if (!empty($filename)) {
             $finfo = new \finfo(FILEINFO_MIME);
             $type  = $finfo->file($filename);
@@ -188,6 +188,14 @@ class Http
             echo ($content);
         }
         exit();
+    }
+
+    /**
+     * 获取文件的名称，兼容中文名
+     * @return string
+     */
+    static public function get_basename($filename){
+        return preg_replace('/^.+[\\\\\\/]/', '', $filename);
     }
 
     /**
