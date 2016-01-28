@@ -18,7 +18,7 @@ class BuildLiteBehavior
 {
     public function run(&$params)
     {
-        if (!defined('BUILD_LITE_FILE')) {
+        if (!defined('BUILD_LITE_FILE') || BUILD_LITE_FILE == false) {
             return;
         }
 
