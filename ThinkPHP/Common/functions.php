@@ -990,9 +990,9 @@ function U($url = '', $vars = '', $suffix = true, $domain)
         list($url, $host) = explode('@', $info['path'], 2);
     }
     // 判断模块是否已配置域名部署
-    if(empty($domain) && 2===substr_count($url,'/') && in_array(strchr($url,'/',true),C('APP_SUB_DOMAIN_RULES'))){
+    if(!isset($domain) && 2===substr_count($url,'/') && in_array(strchr($url,'/',true),C('APP_SUB_DOMAIN_RULES'))){
         $domain=true;
-    }elseif(empty($domain)){
+    }elseif(!isset($domain)){
         $domain=false;
     }
     // 解析子域名
