@@ -969,7 +969,7 @@ function layout($layout)
  * @param boolean $domain 是否显示域名
  * @return string
  */
-function U($url = '', $vars = '', $suffix = true, $domain = false)
+function U($url = '', $vars = '', $suffix = true, $domain)
 {
     // 解析URL
     $info = parse_url($url);
@@ -988,6 +988,12 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
     } elseif (false !== strpos($url, '@')) {
         // 解析域名
         list($url, $host) = explode('@', $info['path'], 2);
+    }
+    // 判断模块是否已配置域名部署
+    if(empty($domain) && 2===substr_count($url,'/') && in_array(strchr($url,'/',true),C('APP_SUB_DOMAIN_RULES'))){
+        $domain=true;
+    }elseif(empty($domain)){
+        $domain=false;
     }
     // 解析子域名
     if (isset($host)) {
