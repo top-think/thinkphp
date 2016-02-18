@@ -966,10 +966,10 @@ function layout($layout)
  * @param string $url URL表达式，格式：'[模块/控制器/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string|boolean $suffix 伪静态后缀，默认为true表示获取配置值
- * @param boolean $domain 是否显示域名
+ * @param boolean $domain 是否显示域名,默认为null表示根据域名部署配置决定是否显示域名
  * @return string
  */
-function U($url = '', $vars = '', $suffix = true, $domain = false)
+function U($url = '', $vars = '', $suffix = true, $domain = null)
 {
     // 解析URL
     $info = parse_url($url);
@@ -988,6 +988,10 @@ function U($url = '', $vars = '', $suffix = true, $domain = false)
     } elseif (false !== strpos($url, '@')) {
         // 解析域名
         list($url, $host) = explode('@', $info['path'], 2);
+    }
+    // 判断模块是否已配置域名部署
+    if(NULL === $domain && 2===substr_count($url,'/') && in_array(strchr($url,'/',true),C('APP_SUB_DOMAIN_RULES'))){
+        $domain=true;
     }
     // 解析子域名
     if (isset($host)) {
