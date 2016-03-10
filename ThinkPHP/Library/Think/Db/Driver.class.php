@@ -632,7 +632,11 @@ abstract class Driver
                             $val[1] = explode(',', $val[1]);
                         }
                         $zone = implode(',', $this->parseValue($val[1]));
-                        $whereStr .= $key . ' ' . $this->exp[$exp] . ' (' . $zone . ')';
+                        if(is_null($zone) || $zone){
+                            $whereStr .= $key . ' ' . $this->exp[$exp] . ' (' . $zone . ')';
+                        }else{
+                            $whereStr .= '1 != 1';
+                        }
                     }
                 } elseif (preg_match('/^(notbetween|not between|between)$/', $exp)) {
                     // BETWEEN运算
