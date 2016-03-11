@@ -38,14 +38,28 @@ function C($name = null, $value = null, $default = null)
             $_config[$name] = $value;
             return null;
         }
-        // 二维数组设置和获取支持
+        // 多维数组设置和获取支持
         $name    = explode('.', $name);
-        $name[0] = strtoupper($name[0]);
         if (is_null($value)) {
-            return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : $default;
-        }
+            foreach ($name as $segment) {
+                if ((! is_array($_config) || ! array_key_exists($segment, $_config)) &&
+                    (! $_config instanceof ArrayAccess || ! $_config->offsetExists($segment))) {
+                    return $default;
+                }
 
-        $_config[$name[0]][$name[1]] = $value;
+                $_config = $_config[$segment];
+            }
+            return $_config;
+        }
+        while (count($name) > 1) {
+            $key = array_shift($name);
+            if (! isset($_config[$key]) || ! is_array($_config[$key])) {
+                $_config[$key] = [];
+            }
+
+            $_config = &$_config[$key];
+        }
+        $_config[array_shift($name)] = $value;
         return null;
     }
     // 批量设置
