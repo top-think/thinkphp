@@ -8,17 +8,13 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
 namespace Think\Db\Driver;
-
 use Think\Db\Driver;
-
 /**
  * mysql数据库驱动
  */
 class Mysql extends Driver
 {
-
     /**
      * 解析pdo连接的dsn信息
      * @access public
@@ -33,7 +29,6 @@ class Mysql extends Driver
         } elseif (!empty($config['socket'])) {
             $dsn .= ';unix_socket=' . $config['socket'];
         }
-
         if (!empty($config['charset'])) {
             //为兼容各版本PHP,用两种方式设置编码
             $this->options[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES ' . $config['charset'];
@@ -41,7 +36,6 @@ class Mysql extends Driver
         }
         return $dsn;
     }
-
     /**
      * 取得数据表的字段信息
      * @access public
@@ -56,7 +50,6 @@ class Mysql extends Driver
         } else {
             $sql = 'SHOW COLUMNS FROM `' . $tableName . '`';
         }
-
         $result = $this->query($sql);
         $info   = array();
         if ($result) {
@@ -76,7 +69,6 @@ class Mysql extends Driver
         }
         return $info;
     }
-
     /**
      * 取得数据库的表信息
      * @access public
@@ -91,7 +83,6 @@ class Mysql extends Driver
         }
         return $info;
     }
-
     /**
      * 字段和表名处理
      * @access protected
@@ -106,7 +97,6 @@ class Mysql extends Driver
         }
         return $key;
     }
-
     /**
      * 随机排序
      * @access protected
@@ -116,7 +106,6 @@ class Mysql extends Driver
     {
         return 'rand()';
     }
-
     /**
      * 批量插入记录
      * @access public
@@ -132,7 +121,6 @@ class Mysql extends Driver
         if (!is_array($dataSet[0])) {
             return false;
         }
-
         $this->parseBind(!empty($options['bind']) ? $options['bind'] : array());
         $fields = array_map(array($this, 'parseKey'), array_keys($dataSet[0]));
         foreach ($dataSet as $data) {
@@ -160,7 +148,6 @@ class Mysql extends Driver
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
         return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
     }
-
     /**
      * ON DUPLICATE KEY UPDATE 分析
      * @access protected
@@ -173,7 +160,6 @@ class Mysql extends Driver
         if (is_bool($duplicate) || empty($duplicate)) {
             return '';
         }
-
         if (is_string($duplicate)) {
             // field1,field2 转数组
             $duplicate = explode(',', $duplicate);
@@ -191,11 +177,9 @@ class Mysql extends Driver
                 {
                     $val = array('value', $val);
                 }
-
-                if (!isset($val[1])) {
+                if (!isset($val[1]) && !is_null($val[1])) {
                     continue;
                 }
-
                 switch ($val[0]) {
                     case 'exp':    // 表达式
                         $updates[] = $this->parseKey($key) . "=($val[1])";
@@ -212,10 +196,8 @@ class Mysql extends Driver
         if (empty($updates)) {
             return '';
         }
-
         return " ON DUPLICATE KEY UPDATE " . join(', ', $updates);
     }
-
     /**
      * 执行存储过程查询 返回多个数据集
      * @access public
@@ -230,7 +212,6 @@ class Mysql extends Driver
         if (!$this->_linkID) {
             return false;
         }
-
         $this->queryStr = $str;
         if ($fetchSql) {
             return $this->queryStr;
@@ -239,7 +220,6 @@ class Mysql extends Driver
         if (!empty($this->PDOStatement)) {
             $this->free();
         }
-
         $this->queryTimes++;
         N('db_query', 1); // 兼容代码
         // 调试开始
