@@ -208,6 +208,9 @@ abstract class Controller {
      */
     protected function ajaxReturn($data,$type='') {
         if(empty($type)) $type  =   C('DEFAULT_AJAX_RETURN');
+        if(in_array(strtoupper($_GET['type']), array('JSON', 'XML', 'JSONP', 'EVAL'))){
+            $type = $_GET['type'];
+        }
         switch (strtoupper($type)){
             case 'JSON' :
                 // 返回JSON数据格式到客户端 包含状态信息
