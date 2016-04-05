@@ -111,30 +111,85 @@ class ViewModel extends Model
 
     /**
      * 检查条件中的视图字段
-     * @access protected
-     * @param mixed $data 条件表达式
+     * @param $where 条件表达式
      * @return array
      */
     protected function checkCondition($where)
     {
         if (is_array($where)) {
-            $view = array();
-            // 检查视图字段
+            $fields = $field_map_table = array();
             foreach ($this->viewFields as $key => $val) {
-                $k   = isset($val['_as']) ? $val['_as'] : $key;
-                $val = $this->_checkFields($key, $val);
-                foreach ($where as $name => $value) {
-                    if (false !== $field = array_search($name, $val, true)) {
-                        // 存在视图字段
-                        $_key        = is_numeric($field) ? $k . '.' . $name : $k . '.' . $field;
-                        $view[$_key] = $value;
-                        unset($where[$name]);
+                $table_alias = isset($val['_as']) ? $val['_as'] : $key;
+                $val         = $this->_checkFields($key, $val);
+                foreach ($val as $as_name => $v) {
+                    if (is_numeric($as_name)) {
+                        $fields[]          = $v; //所有表字段集合
+                        $field_map_table[] = $table_alias; //所有表字段对应表名集合
+                    } else {
+                        $fields[$as_name]          = $v;
+                        $field_map_table[$as_name] = $table_alias;
                     }
                 }
             }
-            $where = array_merge($view, array_diff_key(array_merge($where, $view), $view));
+            $where = $this->_parseWhere($where, $fields, $field_map_table);
         }
+
         return $where;
+    }
+
+    /**
+     * 解析where表达式
+     * @param $where
+     * @param $fields
+     * @param $field_map_table
+     * @return array
+     */
+    private function _parseWhere($where, $fields, $field_map_table)
+    {
+        $view = array();
+        foreach ($where as $name => $val) {
+            if ('_complex' == $name) {
+                //复合查询
+                foreach ($val as $k => $v) {
+                    if (false === strpos(substr($k, 0, 1), '_')) {
+                        if (false !== $field = array_search($k, $fields, true)) { // 存在视图字段
+                            $k = is_numeric($field) ? $field_map_table[$field] . '.' . $k : $field_map_table[$field] . '.' . $field; //字段别名
+                        }
+                    } else if (is_array($v)) {
+                        //数组复合查询
+                        $v = $this->_parseWhere($val[$k], $fields, $field_map_table);
+                    }
+                    $view[$name][$k] = $v;
+                }
+            } else {
+                if (strpos($name, '|')) {
+                    //name|title快捷查询
+                    $arr = explode('|', $name);
+                    foreach ($arr as $k => $v) {
+                        if (false !== $field = array_search($v, $fields, true)) {
+                            $arr[$k] = is_numeric($field) ? $field_map_table[$field] . '.' . $v : $field_map_table[$field] . '.' . $field;
+                        }
+                    }
+                    $view[implode('|', $arr)] = $val;
+                } else if (strpos($name, '&')) {
+                    //name&title快捷查询
+                    $arr = explode('&', $name);
+                    foreach ($arr as $k => $v) {
+                        if (false !== $field = array_search($v, $fields, true)) {
+                            $arr[$k] = is_numeric($field) ? $field_map_table[$field] . '.' . $v : $field_map_table[$field] . '.' . $field;
+                        }
+                    }
+                    $view[implode('&', $arr)] = $val;
+                } else {
+                    if (false !== $field = array_search($name, $fields, true)) {
+                        $name = is_numeric($field) ? $field_map_table[$field] . '.' . $name : $field_map_table[$field] . '.' . $field;
+                    }
+                    $view[$name] = $val;
+                }
+            }
+        }
+
+        return $view;
     }
 
     /**

@@ -61,7 +61,7 @@ class Model
     // 是否批处理验证
     protected $patchValidate = false;
     // 链操作方法列表
-    protected $methods = array('strict', 'order', 'alias', 'having', 'group', 'lock', 'distinct', 'auto', 'filter', 'validate', 'result', 'token', 'index', 'force');
+    protected $methods = array('strict', 'order', 'alias', 'having', 'group', 'lock', 'distinct', 'auto', 'filter', 'validate', 'result', 'token', 'index', 'force', 'master');
 
     /**
      * 架构函数
@@ -708,11 +708,6 @@ class Model
                     if (is_scalar($val)) {
                         $this->_parseType($options['where'], $key);
                     }
-                } elseif (!is_numeric($key) && '_' != substr($key, 0, 1) && false === strpos($key, '.') && false === strpos($key, '(') && false === strpos($key, '|') && false === strpos($key, '&')) {
-                    if (!empty($this->options['strict'])) {
-                        E(L('_ERROR_QUERY_EXPRESS_') . ':[' . $key . '=>' . $val . ']');
-                    }
-                    unset($options['where'][$key]);
                 }
             }
         }
@@ -977,14 +972,14 @@ class Model
                 return $value + $step;
             } else {
                 // 追加数据到缓存
-                S($guid, $value + $step);
+                S($guid, $value + $step, 0);
                 return false;
             }
         } else {
             // 没有缓存数据
-            S($guid, $step);
+            S($guid, $step, 0);
             // 计时开始
-            S($guid . '_time', NOW_TIME);
+            S($guid . '_time', NOW_TIME, 0);
             return false;
         }
     }
@@ -1106,6 +1101,15 @@ class Model
             $fields = $this->insertFields;
         } elseif (self::MODEL_UPDATE == $type && isset($this->updateFields)) {
             $fields = $this->updateFields;
+            $pk     = $this->getPk();
+            if (is_string($pk)) {
+                array_push($fields, $pk);
+            }
+            if (is_array($pk)) {
+                foreach ($pk as $pkTemp) {
+                    array_push($fields, $pkTemp);
+                }
+            }
         }
         if (isset($fields)) {
             if (is_string($fields)) {

@@ -237,19 +237,20 @@ class MongoModel extends Model
         }
     }
 
-	/**
+    /**
      * 查询多行数据
      * @access public
      * @param mixed $options 表达式参数
      * @return mixed
      */
-	public function select($options = array()) {
-		if( is_numeric($options) || is_string($options)) {
-			$id = $this->getPk();
+    public function select($options = array())
+    {
+        if( is_numeric($options) || is_string($options)) {
+            $id = $this->getPk();
             $where[$id] = $options;
             $options = array();
             $options['where'] = $where;
-		}
+        }
         // 分析表达式
         $options = $this->_parseOptions($options);
         $result = $this->db->select($options);
@@ -266,15 +267,16 @@ class MongoModel extends Model
         
         //$result是以主键为key的，所以需要处理一下
         $data = array();
-        foreach($result as $v)
-        	$data[] = $v;
+        foreach($result as $v){
+            $data[] = $v;
+        }
         
         $this->data = $data;
         $this->_after_select($this->data, $options);
         
         return $this->data;
-	}
-	
+    }
+
     /**
      * 查询数据
      * @access public
@@ -296,7 +298,7 @@ class MongoModel extends Model
             return false;
         }
         if (empty($result)) {
-// 查询结果为空
+            // 查询结果为空
             return null;
         } else {
             $this->checkMongoId($result);
@@ -368,7 +370,7 @@ class MongoModel extends Model
         } else {
             // 返回数据个数
             if (true !== $sepa) {
-// 当sepa指定为true的时候 返回所有数据
+                // 当sepa指定为true的时候 返回所有数据
                 $options['limit'] = is_numeric($sepa) ? $sepa : 1;
             } // 查找符合的记录
             $result = $this->db->select($options);
