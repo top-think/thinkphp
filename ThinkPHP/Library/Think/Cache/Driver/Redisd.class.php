@@ -173,6 +173,7 @@ class Redisd extends Cache
         try {
             $value = $this->handler->get($this->options ['prefix'] . $name);
         } catch (\RedisException $e) {
+            unset(self::$redis_rw_handler[0]);
             $this->master();
             $this->get($name);
         } catch (\Exception $e) {
@@ -226,6 +227,7 @@ class Redisd extends Cache
                 $result = $this->handler->set($name, $value);
             }
         } catch (\RedisException $e) {
+            unset(self::$redis_rw_handler[1]);
             $this->master(true);
             $this->set($name, $value, $expire);
         } catch (\Exception $e) {
