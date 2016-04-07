@@ -135,7 +135,11 @@ class Redisd extends Cache
                 $this->handler->slaveof();
             } else {
                 //尝试failover，如果有其它节点则进行其它节点的尝试
-                array_shift($this->options["server_slave"]);
+                foreach ($this->options["server_slave"] as $k=>$v)
+                {
+                    if (trim($v) == trim($host))
+                        unset($this->options["server_slave"][$k]);
+                }
                 
                 //如果无可用节点，则抛出异常
                 if(! count($this->options["server_slave"])) {
