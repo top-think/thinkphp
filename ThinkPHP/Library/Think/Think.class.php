@@ -44,9 +44,10 @@ class Think
         if (!APP_DEBUG && Storage::has($runtimefile)) {
             Storage::load($runtimefile);
         } else {
-            if (Storage::has($runtimefile)) {
+            //在高并发状态下，这里容易引起死锁，建议去掉这里的删除和重建，毕竟后面已经有一个删除和重建操作了
+            /*if (Storage::has($runtimefile)) {
                 Storage::unlink($runtimefile);
-            }
+            }*/
 
             $content = '';
             // 读取应用模式
