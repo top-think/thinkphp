@@ -54,7 +54,10 @@ class IpLocation
     public function __construct($filename = "UTFWry.dat")
     {
         $this->fp = 0;
-        if (($this->fp = fopen(dirname(__FILE__) . '/' . $filename, 'rb')) !== false) {
+        if(!is_file($filename)) {
+            $filename = dirname(__FILE__) . '/' . $filename;
+        }
+        if (($this->fp = fopen($filename, 'rb')) !== false) {
             $this->firstip = $this->getlong();
             $this->lastip  = $this->getlong();
             $this->totalip = ($this->lastip - $this->firstip) / 7;
