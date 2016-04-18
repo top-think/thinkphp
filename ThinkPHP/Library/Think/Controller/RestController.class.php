@@ -203,9 +203,14 @@ class RestController extends Controller
             return '';
         }
 
-        if ('json' == $type) {
+        if('json' == $type) {
             // 返回JSON数据格式到客户端 包含状态信息
-            $data = json_encode($data);
+            if(version_compare(PHP_VERSION,'5.4.0','<')) {
+                $this->arrayRecursive($data, 'urlencode', true);
+                $data = urldecode(json_encode($data));
+            } else {
+                $data = json_encode($data,JSON_UNESCAPED_UNICODE);
+            }
         } elseif ('xml' == $type) {
             // 返回xml格式数据
             $data = xml_encode($data);
@@ -215,6 +220,39 @@ class RestController extends Controller
         $this->setContentType($type);
         //header('Content-Length: ' . strlen($data));
         return $data;
+    }
+
+    /**************************************************************
+     *
+     *    使用特定function对数组中所有元素做处理
+     *    @param  string  &$array     要处理的字符串
+     *    @param  string  $function   要执行的函数
+     *    @return boolean $apply_to_keys_also     是否也应用到key上
+     *    @access protected
+     *
+     *************************************************************/
+    protected function arrayRecursive(&$array, $function, $apply_to_keys_also = false)
+    {
+        static $recursive_counter = 0;
+        if (++$recursive_counter > 1000) {
+            die('possible deep recursion attack');
+        }
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $this->arrayRecursive($array[$key], $function, $apply_to_keys_also);
+            } else {
+                $array[$key] = $function($value);
+            }
+
+            if ($apply_to_keys_also && is_string($key)) {
+                $new_key = $function($key);
+                if ($new_key != $key) {
+                    $array[$new_key] = $array[$key];
+                    unset($array[$key]);
+                }
+            }
+        }
+        $recursive_counter--;
     }
 
     /**
