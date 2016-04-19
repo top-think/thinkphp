@@ -225,7 +225,7 @@ class RestController extends Controller
     /**************************************************************
      *
      *    使用特定function对数组中所有元素做处理
-     *    @param  string  &$array     要处理的字符串
+     *    @param  string|array  &$array     要处理的字符串或者数组
      *    @param  string  $function   要执行的函数
      *    @return boolean $apply_to_keys_also     是否也应用到key上
      *    @access protected
@@ -240,7 +240,7 @@ class RestController extends Controller
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $this->arrayRecursive($array[$key], $function, $apply_to_keys_also);
-            } else {
+            } elseif(is_string($value)) {
                 $array[$key] = $function($value);
             }
 
