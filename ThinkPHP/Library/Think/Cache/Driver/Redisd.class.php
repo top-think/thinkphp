@@ -132,7 +132,7 @@ class Redisd extends Cache
 
                 //如果是slave，断开主从升主，需要手工同步新主的数据到旧主上
                 //目前这块的逻辑未经过严格测试
-                $this->handler->slaveof();
+                //$this->handler->slaveof();
             } else {
                 //尝试failover，如果有其它节点则进行其它节点的尝试
                 foreach ($this->options["server_slave"] as $k=>$v)
