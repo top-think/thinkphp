@@ -622,7 +622,7 @@ class Mongo extends Driver
             if (is_array($val)) {
                 switch ($val[0]) {
                     case 'inc':
-                        $result['$inc'][$key] = (int) $val[1];
+                        $result['$inc'][$key] = (float) $val[1];
                         break;
                     case 'set':
                     case 'unset':
