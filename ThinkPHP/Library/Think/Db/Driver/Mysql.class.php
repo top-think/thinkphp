@@ -192,7 +192,7 @@ class Mysql extends Driver
                     $val = array('value', $val);
                 }
 
-                if (!isset($val[1])) {
+                if (!isset($val[1]) && !is_null($val[1])) {
                     continue;
                 }
 
