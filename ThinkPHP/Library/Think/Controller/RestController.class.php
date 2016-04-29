@@ -123,9 +123,10 @@ class RestController extends Controller
         foreach ($type as $key => $val) {
             $array = explode(',', $val);
             foreach ($array as $k => $v) {
-                if (stristr($_SERVER['HTTP_ACCEPT'], $v)) {
-                    return $key;
-                }
+            	if(array_key_exists('HTTP_ACCEPT',$_SERVER))
+	                if (stristr($_SERVER['HTTP_ACCEPT'], $v)) {
+	                    return $key;
+	                }
             }
         }
         return false;
