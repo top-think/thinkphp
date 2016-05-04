@@ -19,9 +19,15 @@
     'REDISD_HOST'              =>'192.168.1.11,192.168.1.12', //redis服务器ip，多台用逗号隔开；读写分离开启时，第一台负责写，其它[随机]负责读
     'REDISD_MASTER_FAILOVER'   =>'192.168.1.12',              //当主发生故障时，从12断从升级为主，读写均在12
     'REDISD_PORT'              =>6379,          //端口号
-    'REDISD_TIMEOUT'           =>30,            //连接超时时间
-    'REDISD_PERSISTENT'        =>false,         //是否长连接 false=短连接，推荐长链接
-    'REDISD_AUTH'              =>'',            //AUTH认证密码
+    'REDISD_TIMEOUT'           =>10,            //连接超时时间
+    'REDISD_PERSISTENT'        =>true,          //是否长连接 false=短连接，推荐长连接
+    'REDISD_AUTH'              =>'',            //AUTH认证密码，当redis服务直接暴露在外网时需要
+ */
+
+/**
+    $redis = \Think\Cache::getInstance();
+    $redis->master(true);
+    $redis->get($redis->getOptions('prefix').'key');
  */
 
 namespace Think\Cache\Driver;
