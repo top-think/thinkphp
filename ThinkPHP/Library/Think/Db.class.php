@@ -97,7 +97,7 @@ class Db
                 'rw_separate' => C('DB_RW_SEPARATE'),
                 'master_num'  => C('DB_MASTER_NUM'),
                 'slave_no'    => C('DB_SLAVE_NO'),
-                'debug'       => C('DB_DEBUG', null, APP_DEBUG),
+                'debug'       => C('DB_DEBUG') ? C('DB_DEBUG') : APP_DEBUG,
                 'lite'        => C('DB_LITE'),
             );
         }
