@@ -588,6 +588,8 @@ class Cx extends TagLib
         $name = $this->autoBuildVar($tag['name']);
         if ('$' == substr($tag['value'], 0, 1)) {
             $value = $this->autoBuildVar(substr($tag['value'], 1));
+        } elseif(':' == substr($tag['value'], 0, 1)){
+            $value =substr($tag['value'], 1);
         } else {
             $value = '\'' . $tag['value'] . '\'';
         }
