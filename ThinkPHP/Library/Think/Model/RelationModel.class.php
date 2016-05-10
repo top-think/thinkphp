@@ -214,6 +214,9 @@ class RelationModel extends Model
                             } else {
                                 $mappingRelationTable = $this->getRelationTableName($model);
                             }
+                            if($mappingFields != '*'){
+                                $mappingFields = implode(',b.',explode(',',$mappingFields));
+                            }
                             $sql = "SELECT b.{$mappingFields} FROM {$mappingRelationTable} AS a, " . $model->getTableName() . " AS b WHERE a.{$mappingRelationFk} = b.{$model->getPk()} AND a.{$mappingCondition}";
                             if (!empty($val['condition'])) {
                                 $sql .= ' AND ' . $val['condition'];
