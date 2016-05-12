@@ -1562,6 +1562,10 @@ class Model
             array_shift($parse);
         }
         $sql = $this->parseSql($sql, $parse);
+        //支持参数绑定
+        if (isset($this->options['bind']) && is_array($this->options['bind'])) {
+            $this->db->setBind($this->options['bind']);
+        }
         return $this->db->execute($sql);
     }
 
