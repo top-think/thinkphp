@@ -1529,6 +1529,9 @@ class Model
 
     /**
      * SQL查询
+     *
+     * 在query之前使用模型bind()方法绑定参数,query中sql语句可使用参数绑定
+     *
      * @access public
      * @param string $sql  SQL指令
      * @param mixed $parse  是否需要解析SQL
@@ -1550,6 +1553,9 @@ class Model
 
     /**
      * 执行SQL语句
+     *
+     * 在query之前使用模型bind()方法绑定参数,query中sql语句即可使用参数绑定
+     *
      * @access public
      * @param string $sql  SQL指令
      * @param mixed $parse  是否需要解析SQL
