@@ -198,7 +198,7 @@ abstract class Driver
                 return $this->getResult();
             }
         } catch (\PDOException $e) {
-            $this->error();
+            $this->error($e->getMessage());
             return false;
         }
     }
@@ -280,7 +280,7 @@ abstract class Driver
                 return $this->numRows;
             }
         } catch (\PDOException $e) {
-            $this->error();
+            $this->error($e->getMessage());
             return false;
         }
     }
@@ -395,10 +395,12 @@ abstract class Driver
      * 数据库错误信息
      * 并显示当前的SQL语句
      * @access public
+     * @param string $message 自定义错误信息
      * @return string
      */
-    public function error()
+    public function error($message = '')
     {
+        $this->error .= $message."\n";
         if ($this->PDOStatement) {
             $error = $this->PDOStatement->errorInfo();
             $this->error .= $error[1] . ':' . $error[2];
