@@ -9,54 +9,59 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 namespace Think\Controller;
-use Think\Controller;
+
 use Think\App;
+use Think\Controller;
+
 /**
  * ThinkPHP REST控制器类
  */
-class RestController extends Controller {
+class RestController extends Controller
+{
     // 当前请求类型
-    protected   $_method        =   ''; 
+    protected $_method = '';
     // 当前请求的资源类型
-    protected   $_type          =   ''; 
+    protected $_type = '';
     // REST允许的请求类型列表
-    protected   $allowMethod    =   array('get','post','put','delete'); 
+    protected $allowMethod = array('get', 'post', 'put', 'delete');
     // REST默认请求类型
-    protected   $defaultMethod  =   'get';
+    protected $defaultMethod = 'get';
     // REST允许请求的资源类型列表
-    protected   $allowType      =   array('html','xml','json','rss'); 
+    protected $allowType = array('html', 'xml', 'json', 'rss');
     // 默认的资源类型
-    protected   $defaultType    =   'html';
+    protected $defaultType = 'html';
     // REST允许输出的资源类型列表
-    protected   $allowOutputType=   array(  
-                    'xml' => 'application/xml',
-                    'json' => 'application/json',
-                    'html' => 'text/html',
-                );
+    protected $allowOutputType = array(
+        'xml'  => 'application/xml',
+        'json' => 'application/json',
+        'html' => 'text/html',
+    );
 
-   /**
+    /**
      * 架构函数
      * @access public
      */
-    public function __construct() {
+    public function __construct()
+    {
         // 资源类型检测
-        if(''==__EXT__) { // 自动检测资源类型
-            $this->_type   =  $this->getAcceptType();
-        }elseif(!in_array(__EXT__,$this->allowType)) {
+        if ('' == __EXT__) {
+            // 自动检测资源类型
+            $this->_type = $this->getAcceptType();
+        } elseif (!in_array(__EXT__, $this->allowType)) {
             // 资源类型非法 则用默认资源类型访问
-            $this->_type   =  $this->defaultType;
-        }else{
-            $this->_type   =  __EXT__ ;
+            $this->_type = $this->defaultType;
+        } else {
+            $this->_type = __EXT__;
         }
 
         // 请求方式检测
-        $method  =  strtolower(REQUEST_METHOD);
-        if(!in_array($method,$this->allowMethod)) {
+        $method = strtolower(REQUEST_METHOD);
+        if (!in_array($method, $this->allowMethod)) {
             // 请求方式非法 则用默认请求方法
             $method = $this->defaultMethod;
         }
         $this->_method = $method;
-        
+
         parent::__construct();
     }
 
@@ -67,25 +72,27 @@ class RestController extends Controller {
      * @param array $args 参数
      * @return mixed
      */
-    public function __call($method,$args) {
-        if( 0 === strcasecmp($method,ACTION_NAME.C('ACTION_SUFFIX'))) {
-            if(method_exists($this,$method.'_'.$this->_method.'_'.$this->_type)) { // RESTFul方法支持
-                $fun  =  $method.'_'.$this->_method.'_'.$this->_type;
-                App::invokeAction($this,$fun);
-            }elseif($this->_method == $this->defaultMethod && method_exists($this,$method.'_'.$this->_type) ){
-                $fun  =  $method.'_'.$this->_type;
-                App::invokeAction($this,$fun);
-            }elseif($this->_type == $this->defaultType && method_exists($this,$method.'_'.$this->_method) ){
-                $fun  =  $method.'_'.$this->_method;
-                App::invokeAction($this,$fun);
-            }elseif(method_exists($this,'_empty')) {
+    public function __call($method, $args)
+    {
+        if (0 === strcasecmp($method, ACTION_NAME . C('ACTION_SUFFIX'))) {
+            if (method_exists($this, $method . '_' . $this->_method . '_' . $this->_type)) {
+                // RESTFul方法支持
+                $fun = $method . '_' . $this->_method . '_' . $this->_type;
+                App::invokeAction($this, $fun);
+            } elseif ($this->_method == $this->defaultMethod && method_exists($this, $method . '_' . $this->_type)) {
+                $fun = $method . '_' . $this->_type;
+                App::invokeAction($this, $fun);
+            } elseif ($this->_type == $this->defaultType && method_exists($this, $method . '_' . $this->_method)) {
+                $fun = $method . '_' . $this->_method;
+                App::invokeAction($this, $fun);
+            } elseif (method_exists($this, '_empty')) {
                 // 如果定义了_empty操作 则调用
-                $this->_empty($method,$args);
-            }elseif(file_exists_case($this->view->parseTemplate())){
+                $this->_empty($method, $args);
+            } elseif (file_exists_case($this->view->parseTemplate())) {
                 // 检查是否存在默认模版 如果有直接输出模版
                 $this->display();
-            }else{
-                E(L('_ERROR_ACTION_').':'.ACTION_NAME);
+            } else {
+                E(L('_ERROR_ACTION_') . ':' . ACTION_NAME);
             }
         }
     }
@@ -94,37 +101,40 @@ class RestController extends Controller {
      * 获取当前请求的Accept头信息
      * @return string
      */
-    protected function getAcceptType(){
+    protected function getAcceptType()
+    {
         $type = array(
-            'xml'   =>  'application/xml,text/xml,application/x-xml',
-            'json'  =>  'application/json,text/x-json,application/jsonrequest,text/json',
-            'js'    =>  'text/javascript,application/javascript,application/x-javascript',
-            'css'   =>  'text/css',
-            'rss'   =>  'application/rss+xml',
-            'yaml'  =>  'application/x-yaml,text/yaml',
-            'atom'  =>  'application/atom+xml',
-            'pdf'   =>  'application/pdf',
-            'text'  =>  'text/plain',
-            'png'   =>  'image/png',
-            'jpg'   =>  'image/jpg,image/jpeg,image/pjpeg',
-            'gif'   =>  'image/gif',
-            'csv'   =>  'text/csv',
-            'html'  =>  'text/html,application/xhtml+xml,*/*'
+            'html' => 'text/html,application/xhtml+xml,*/*',
+            'xml'  => 'application/xml,text/xml,application/x-xml',
+            'json' => 'application/json,text/x-json,application/jsonrequest,text/json',
+            'js'   => 'text/javascript,application/javascript,application/x-javascript',
+            'css'  => 'text/css',
+            'rss'  => 'application/rss+xml',
+            'yaml' => 'application/x-yaml,text/yaml',
+            'atom' => 'application/atom+xml',
+            'pdf'  => 'application/pdf',
+            'text' => 'text/plain',
+            'png'  => 'image/png',
+            'jpg'  => 'image/jpg,image/jpeg,image/pjpeg',
+            'gif'  => 'image/gif',
+            'csv'  => 'text/csv',
         );
-        
-        foreach($type as $key=>$val){
-            $array   =  explode(',',$val);
-            foreach($array as $k=>$v){
-                if(stristr($_SERVER['HTTP_ACCEPT'], $v)) {
-                    return $key;
-                }
+
+        foreach ($type as $key => $val) {
+            $array = explode(',', $val);
+            foreach ($array as $k => $v) {
+            	if(array_key_exists('HTTP_ACCEPT',$_SERVER))
+	                if (stristr($_SERVER['HTTP_ACCEPT'], $v)) {
+	                    return $key;
+	                }
             }
         }
         return false;
     }
 
     // 发送Http状态信息
-    protected function sendHttpStatus($code) {
+    protected function sendHttpStatus($code)
+    {
         static $_status = array(
             // Informational 1xx
             100 => 'Continue',
@@ -140,7 +150,7 @@ class RestController extends Controller {
             // Redirection 3xx
             300 => 'Multiple Choices',
             301 => 'Moved Permanently',
-            302 => 'Moved Temporarily ',  // 1.1
+            302 => 'Moved Temporarily ', // 1.1
             303 => 'See Other',
             304 => 'Not Modified',
             305 => 'Use Proxy',
@@ -172,12 +182,12 @@ class RestController extends Controller {
             503 => 'Service Unavailable',
             504 => 'Gateway Timeout',
             505 => 'HTTP Version Not Supported',
-            509 => 'Bandwidth Limit Exceeded'
+            509 => 'Bandwidth Limit Exceeded',
         );
-        if(isset($_status[$code])) {
-            header('HTTP/1.1 '.$code.' '.$_status[$code]);
+        if (isset($_status[$code])) {
+            header('HTTP/1.1 ' . $code . ' ' . $_status[$code]);
             // 确保FastCGI模式下正常
-            header('Status:'.$code.' '.$_status[$code]);
+            header('Status:' . $code . ' ' . $_status[$code]);
         }
     }
 
@@ -188,20 +198,62 @@ class RestController extends Controller {
      * @param String $type 返回类型 JSON XML
      * @return string
      */
-    protected function encodeData($data,$type='') {
-        if(empty($data))  return '';
+    protected function encodeData($data, $type = '')
+    {
+        if (empty($data)) {
+            return '';
+        }
+
         if('json' == $type) {
             // 返回JSON数据格式到客户端 包含状态信息
-            $data = json_encode($data);
-        }elseif('xml' == $type){
+            if(version_compare(PHP_VERSION,'5.4.0','<')) {
+                $this->arrayRecursive($data, 'urlencode', true);
+                $data = urldecode(json_encode($data));
+            } else {
+                $data = json_encode($data,JSON_UNESCAPED_UNICODE);
+            }
+        } elseif ('xml' == $type) {
             // 返回xml格式数据
             $data = xml_encode($data);
-        }elseif('php'==$type){
+        } elseif ('php' == $type) {
             $data = serialize($data);
-        }// 默认直接输出
+        } // 默认直接输出
         $this->setContentType($type);
         //header('Content-Length: ' . strlen($data));
         return $data;
+    }
+
+    /**************************************************************
+     *
+     *    使用特定function对数组中所有元素做处理
+     *    @param  string|array  &$array     要处理的字符串或者数组
+     *    @param  string  $function   要执行的函数
+     *    @return boolean $apply_to_keys_also     是否也应用到key上
+     *    @access protected
+     *
+     *************************************************************/
+    protected function arrayRecursive(&$array, $function, $apply_to_keys_also = false)
+    {
+        static $recursive_counter = 0;
+        if (++$recursive_counter > 1000) {
+            die('possible deep recursion attack');
+        }
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $this->arrayRecursive($array[$key], $function, $apply_to_keys_also);
+            } elseif(is_string($value)) {
+                $array[$key] = $function($value);
+            }
+
+            if ($apply_to_keys_also && is_string($key)) {
+                $new_key = $function($key);
+                if ($new_key != $key) {
+                    $array[$new_key] = $array[$key];
+                    unset($array[$key]);
+                }
+            }
+        }
+        $recursive_counter--;
     }
 
     /**
@@ -211,12 +263,22 @@ class RestController extends Controller {
      * @param string $charset 页面输出编码
      * @return void
      */
-    public function setContentType($type, $charset=''){
-        if(headers_sent()) return;
-        if(empty($charset))  $charset = C('DEFAULT_CHARSET');
+    public function setContentType($type, $charset = '')
+    {
+        if (headers_sent()) {
+            return;
+        }
+
+        if (empty($charset)) {
+            $charset = C('DEFAULT_CHARSET');
+        }
+
         $type = strtolower($type);
-        if(isset($this->allowOutputType[$type])) //过滤content_type
-            header('Content-Type: '.$this->allowOutputType[$type].'; charset='.$charset);
+        if (isset($this->allowOutputType[$type])) //过滤content_type
+        {
+            header('Content-Type: ' . $this->allowOutputType[$type] . '; charset=' . $charset);
+        }
+
     }
 
     /**
@@ -227,8 +289,9 @@ class RestController extends Controller {
      * @param integer $code HTTP状态
      * @return void
      */
-    protected function response($data,$type='',$code=200) {
+    protected function response($data, $type = '', $code = 200)
+    {
         $this->sendHttpStatus($code);
-        exit($this->encodeData($data,strtolower($type)));
+        exit($this->encodeData($data, strtolower($type)));
     }
 }
