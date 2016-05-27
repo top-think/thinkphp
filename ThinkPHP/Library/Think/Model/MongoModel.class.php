@@ -148,7 +148,8 @@ class MongoModel extends Model
         if (empty($pk)) {
             $pk = $this->getPk();
         }
-        return $this->db->getMongoNextId($pk);
+        $options = $this->_parseOptions();
+        return $this->db->getMongoNextId($pk,$options);
     }
 
     /**
@@ -198,7 +199,7 @@ class MongoModel extends Model
             // 主键自动增长
             $pk = $this->getPk();
             if (!isset($data[$pk])) {
-                $data[$pk] = $this->db->getMongoNextId($pk);
+                $data[$pk] = $this->db->getMongoNextId($pk, $options);
             }
         }
     }
