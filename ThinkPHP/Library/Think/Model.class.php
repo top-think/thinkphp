@@ -1585,6 +1585,7 @@ class Model
             $options = $this->_parseOptions();
             $sql     = $this->db_instance()->parseSql($sql, $options);
         } elseif (is_array($parse)) {
+            $this->db_instance();
             // SQL预处理
             $parse = array_map(array($this->db, 'escapeString'), $parse);
             $sql   = vsprintf($sql, $parse);
@@ -2016,6 +2017,7 @@ class Model
                 $parse = func_get_args();
                 array_shift($parse);
             }
+            $this->db_instance();
             $parse = array_map(array($this->db, 'escapeString'), $parse);
             $where = vsprintf($where, $parse);
         } elseif (is_object($where)) {
