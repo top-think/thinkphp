@@ -896,7 +896,7 @@ class Model {
             // 判断令牌验证字段
             if(C('TOKEN_ON'))   $fields[] = C('TOKEN_NAME');
             foreach ($data as $key=>$val){
-                if(!in_array($key,$fields)) {
+                if(!in_array($key,$fields,true)) {
                     unset($data[$key]);
                 }
             }
