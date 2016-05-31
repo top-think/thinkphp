@@ -104,7 +104,7 @@ class Model
     }
 
     //检查连接是否断开
-    function db_instance($connection)
+    function db_instance()
     {
         if (empty($this->db) || empty($this->_db))
             $this->db(0, empty($this->connection) ? $this->connection_args : $this->connection, true);
