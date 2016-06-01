@@ -134,7 +134,8 @@ class Model
                 }
             }
             // 每次都会读取数据表信息
-            $this->flush();
+            if($this->db)
+                $this->flush();
         }
     }
 
@@ -1771,6 +1772,9 @@ class Model
      */
     public function getDbFields()
     {
+        if (is_null($this->db))
+            $this->db_instance();
+        
         if (isset($this->options['table'])) {
             // 动态指定表名
             if (is_array($this->options['table'])) {
