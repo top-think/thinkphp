@@ -157,8 +157,8 @@ class Dispatcher
             C('LOG_PATH', realpath(LOG_PATH) . '/' . MODULE_NAME . '/');
 
             // 加载模块配置文件
-            if (is_file(MODULE_PATH . 'Conf/config' . CONF_EXT)) {
-                C(load_config(MODULE_PATH . 'Conf/config' . CONF_EXT));
+            if (is_file(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config' . CONF_EXT)) {
+                C(load_config(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config' . CONF_EXT));
             }
 
             // 加载模块别名定义

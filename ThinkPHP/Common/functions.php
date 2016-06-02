@@ -1618,7 +1618,7 @@ function load_ext_file($path)
         }
 
         foreach ($configs as $key => $config) {
-            $file = is_file($config) ? $config : $path . 'Conf/' . $config . CONF_EXT;
+            $file   = is_file($config)? $config : $path.'Conf/'.APP_ENV_PATH.$config.CONF_EXT;
             if (is_file($file)) {
                 is_numeric($key) ? C(load_Config($file)) : C($key, load_Config($file));
             }

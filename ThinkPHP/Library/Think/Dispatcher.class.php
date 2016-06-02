@@ -163,18 +163,18 @@ class Dispatcher
             Hook::listen('module_check');
 
             // 加载模块配置文件
-            if (is_file(MODULE_PATH . 'Conf/config' . CONF_EXT)) {
-                C(load_config(MODULE_PATH . 'Conf/config' . CONF_EXT));
+            if (is_file(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config' . CONF_EXT)) {
+                C(load_config(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config' . CONF_EXT));
             }
 
             // 加载应用模式对应的配置文件
-            if ('common' != APP_MODE && is_file(MODULE_PATH . 'Conf/config_' . APP_MODE . CONF_EXT)) {
-                C(load_config(MODULE_PATH . 'Conf/config_' . APP_MODE . CONF_EXT));
+            if ('common' != APP_MODE && is_file(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config_' . APP_MODE . CONF_EXT)) {
+                C(load_config(MODULE_PATH . 'Conf/'.APP_ENV_PATH.'config_' . APP_MODE . CONF_EXT));
             }
 
             // 当前应用状态对应的配置文件
-            if (APP_STATUS && is_file(MODULE_PATH . 'Conf/' . APP_STATUS . CONF_EXT)) {
-                C(load_config(MODULE_PATH . 'Conf/' . APP_STATUS . CONF_EXT));
+            if (APP_STATUS && is_file(MODULE_PATH . 'Conf/'. APP_ENV_PATH . APP_STATUS . CONF_EXT)) {
+                C(load_config(MODULE_PATH . 'Conf/'. APP_ENV_PATH . APP_STATUS . CONF_EXT));
             }
 
             // 加载模块别名定义
