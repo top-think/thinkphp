@@ -8,8 +8,9 @@
  * 2，去掉URL调度
  * 3，去掉行为、Hook
  * 4，去掉视图
- * 5，去掉控制器的反射、空操作
- * 6，去掉Session，可实现无状态的Api
+ * 5，去掉控制器的反射
+ * 6，去掉Session，构建无状态Api
+ * 7，去掉参数绑定、参数过滤、前置后置
  */
 return array(
     // 配置文件
@@ -30,10 +31,8 @@ return array(
 
     // 函数和类文件
     'core'   => array(
-        THINK_PATH . 'Common/functions.php',
+        THINK_PATH  . 'Common/functions.php',
         COMMON_PATH . 'Common/function.php',
-    ),
-    // 行为扩展定义
-    'tags'   => array(
+        MODE_PATH   . 'Tiny/App' . EXT,
     ),
 );

@@ -8,7 +8,6 @@ namespace Think;
  */
 class App
 {
-
     /**
      * 应用程序初始化
      * @access public
@@ -46,8 +45,44 @@ class App
      */
     public static function exec()
     {
-        $module = new \Api\Controller\IndexController();
-        $module->index();
+        // 获取控制器和操作名
+        define('MODULE_NAME',     defined('BIND_MODULE') ? BIND_MODULE : C('DEFAULT_MODULE'));
+        define('CONTROLLER_NAME', defined('BIND_CONTROLLER') ? BIND_CONTROLLER : C('DEFAULT_CONTROLLER'));
+        define('ACTION_NAME',     defined('BIND_ACTION') ? BIND_ACTION : C('DEFAULT_ACTION'));
+        
+        $module = sprintf("%s/%s", MODULE_NAME, CONTROLLER_NAME);
+        $module = A($module);
+        $action = ACTION_NAME;
+
+        //检查模块/控制器是否存在
+        if (!$module) {
+            // 是否定义Empty控制器
+            $module = A('Empty');
+            if (!$module) {
+                E(L('_CONTROLLER_NOT_EXIST_') . ':' . CONTROLLER_NAME);
+            }
+        }
+
+        try {
+            if (!preg_match('/^[A-Za-z](\w)*$/', $action)) {
+                // 非法操作
+                throw new \ReflectionException();
+            }
+
+            //执行当前操作
+            $method = new \ReflectionMethod($module, $action);
+            if ($method->isPublic() && !$method->isStatic()) {
+                $method->invoke($module);
+            } else {
+                // 操作方法不是Public 抛出异常
+                throw new \ReflectionException();
+            }
+        } catch (\ReflectionException $e) {
+            // 方法调用发生异常后 引导到__call方法处理
+            $method = new \ReflectionMethod($module, '__call');
+            $method->invokeArgs($module, array($action, ''));
+        }
+        return;
     }
 
     /**
@@ -58,7 +93,7 @@ class App
     public static function run()
     {
         load_ext_file(COMMON_PATH);
-        
+
         App::init();
         App::exec();
     }
