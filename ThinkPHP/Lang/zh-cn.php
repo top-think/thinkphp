@@ -28,6 +28,7 @@ return array(
     '_OPERATION_WRONG_'      => '操作出现错误',
     '_NOT_LOAD_DB_'          => '无法加载数据库',
     '_NO_DB_DRIVER_'         => '无法加载数据库驱动',
+    '_NO_DB_TYPE_'           => '没有加载数据库类型，请检查配置文件是否正确',
     '_NOT_SUPPORT_DB_'       => '系统暂时不支持数据库',
     '_NO_DB_CONFIG_'         => '没有定义数据库配置',
     '_NOT_SUPPORT_'          => '系统不支持',
