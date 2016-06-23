@@ -13,9 +13,9 @@
  * ThinkPHP 简体中文语言包
  */
 return array(
-    /* 核心语言变量 */  
+    /* 核心语言变量 */
     '_MODULE_NOT_EXIST_'     => '无法加载模块',
-    '_CONTROLLER_NOT_EXIST_' =>	'无法加载控制器',
+    '_CONTROLLER_NOT_EXIST_' => '无法加载控制器',
     '_ERROR_ACTION_'         => '非法操作',
     '_LANGUAGE_NOT_LOAD_'    => '无法加载语言包',
     '_TEMPLATE_NOT_EXIST_'   => '模板不存在',
@@ -32,7 +32,7 @@ return array(
     '_NO_DB_CONFIG_'         => '没有定义数据库配置',
     '_NOT_SUPPORT_'          => '系统不支持',
     '_CACHE_TYPE_INVALID_'   => '无法加载缓存类型',
-    '_FILE_NOT_WRITABLE_'   => '目录（文件）不可写',
+    '_FILE_NOT_WRITABLE_'    => '目录（文件）不可写',
     '_METHOD_NOT_EXIST_'     => '方法不存在！',
     '_CLASS_NOT_EXIST_'      => '实例化一个不存在的类！',
     '_CLASS_CONFLICT_'       => '类名冲突',
