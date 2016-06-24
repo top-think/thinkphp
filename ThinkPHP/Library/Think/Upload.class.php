@@ -84,7 +84,7 @@ class Upload {
             $this->config[$name] = $value;
             if($name == 'driverConfig'){
                 //改变驱动配置后重置上传驱动
-                //注意：必须选改变驱动然后再改变驱动配置
+                //注意：必须先改变驱动然后再改变驱动配置
                 $this->setDriver(); 
             }
         }
@@ -256,7 +256,7 @@ class Upload {
         $class = strpos($driver,'\\')? $driver : 'Think\\Upload\\Driver\\'.ucfirst(strtolower($driver));
         $this->uploader = new $class($config);
         if(!$this->uploader){
-            E("不存在上传驱动：{$name}");
+            E("不存在上传驱动：{$driver}");
         }
     }
 
