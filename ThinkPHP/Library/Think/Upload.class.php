@@ -84,7 +84,7 @@ class Upload {
             $this->config[$name] = $value;
             if($name == 'driverConfig'){
                 //改变驱动配置后重置上传驱动
-                //注意：必须选改变驱动然后再改变驱动配置
+                //注意：必须先改变驱动然后再改变驱动配置
                 $this->setDriver(); 
             }
         }
