@@ -132,11 +132,23 @@ class View
         ob_implicit_flush(0);
         if ('php' == strtolower(C('TMPL_ENGINE_TYPE'))) {
             // 使用PHP原生模板
-            $_content = $content;
-            // 模板阵列变量分解成为独立变量
-            extract($this->tVar, EXTR_OVERWRITE);
-            // 直接载入PHP模板
-            empty($_content) ? include $templateFile : eval('?>' . $_content);
+            if (empty($content)) {
+                if (isset($this->tVar['templateFile'])) {
+                    $__template__ = $templateFile;
+                    extract($this->tVar, EXTR_OVERWRITE);
+                    include $__template__;
+                } else {
+                    extract($this->tVar, EXTR_OVERWRITE);
+                    include $template;
+                }
+            } elseif (isset($this->tVar['content'])) {
+                $__content__ = $content;
+                extract($this->tVar, EXTR_OVERWRITE);
+                eval('?>' . $__content__);
+            } else {
+                extract($this->tVar, EXTR_OVERWRITE);
+                eval('?>' . $content);
+            }
         } else {
             // 视图解析标签
             $params = array('var' => $this->tVar, 'file' => $templateFile, 'content' => $content, 'prefix' => $prefix);
