@@ -828,8 +828,8 @@ class Model
         // 读取数据后的处理
         $data = $this->_read_data($resultSet[0]);
         $this->_after_find($data, $options);
-        if (!empty($this->options['result'])) {
-            return $this->returnResult($data, $this->options['result']);
+        if (!empty($options['result'])) {
+            return $this->returnResult($data, $options['result']);
         }
         $this->data = $data;
         if (isset($cache)) {
