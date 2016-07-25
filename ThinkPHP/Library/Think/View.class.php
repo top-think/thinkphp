@@ -139,7 +139,7 @@ class View
                     include $__template__;
                 } else {
                     extract($this->tVar, EXTR_OVERWRITE);
-                    include $template;
+                    include $templateFile;
                 }
             } elseif (isset($this->tVar['content'])) {
                 $__content__ = $content;
