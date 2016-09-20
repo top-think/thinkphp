@@ -520,8 +520,12 @@ class Mongo extends Driver
         }
         try {
             $this->debug(true);
-            $option = array('condition' => $options['condition'], 'finalize' => $options['finalize'], 'maxTimeMS' => $options['maxTimeMS']);
-            $group  = $this->_collection->group($keys, $initial, $reduce, $options);
+            
+            $option = array();
+            isset($options['condition'])&&$option['condition']=$options['condition'];
+            isset($options['finalize'])&&$option['finalize']=$options['condition'];
+            isset($options['maxTimeMS'])&&$option['maxTimeMS']=$options['condition'];
+            $group = $this->_collection->group($keys,$initial,$reduce,$option); 
             $this->debug(false);
 
             if ($cache && $group['ok']) {
