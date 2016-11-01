@@ -95,7 +95,7 @@ class App
         load_ext_file(COMMON_PATH);
 
         App::init();
-        App::exec();
+        ! defined('APP_NO_EXEC') && App::exec();
     }
 
 }

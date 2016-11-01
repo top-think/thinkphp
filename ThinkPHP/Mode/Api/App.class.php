@@ -143,7 +143,7 @@ class App
         }
         // 记录应用初始化时间
         G('initTime');
-        App::exec();
+        ! defined('APP_NO_EXEC') && App::exec();
         return;
     }
 
