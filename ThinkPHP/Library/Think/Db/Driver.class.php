@@ -303,7 +303,7 @@ abstract class Driver
                 return false;
             }
         } else {
-            $this->transTimes--;
+            $this->transTimes = $this->transTimes <= 0 ? 0 : $this->transTimes-1;
         }
         return true;
     }
