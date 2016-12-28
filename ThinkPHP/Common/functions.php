@@ -548,7 +548,7 @@ function session($name,$value='') {
         if(isset($name['expire']))          {
             ini_set('session.gc_maxlifetime', $name['expire']);
             ini_set('session.cookie_lifetime', $name['expire']);
-	}
+        }
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
         if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);
