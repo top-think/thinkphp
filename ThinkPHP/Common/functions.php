@@ -546,8 +546,8 @@ function session($name,$value='') {
         if(isset($name['path']))            session_save_path($name['path']);
         if(isset($name['domain']))          ini_set('session.cookie_domain', $name['domain']);
         if(isset($name['expire']))          {
-		ini_set('session.gc_maxlifetime', $name['expire']);
-		ini_set('session.cookie_lifetime', $name['expire']);
+            ini_set('session.gc_maxlifetime', $name['expire']);
+            ini_set('session.cookie_lifetime', $name['expire']);
 	}
         if(isset($name['use_trans_sid']))   ini_set('session.use_trans_sid', $name['use_trans_sid']?1:0);
         if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
@@ -727,7 +727,7 @@ function load_ext_file() {
  * @return mixed
  */
 function get_client_ip($type = 0) {
-	$type       =  $type ? 1 : 0;
+    $type       =  $type ? 1 : 0;
     static $ip  =   NULL;
     if ($ip !== NULL) return $ip[$type];
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
