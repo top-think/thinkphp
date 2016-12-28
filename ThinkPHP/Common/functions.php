@@ -101,8 +101,8 @@ function dump($var, $echo=true, $label=null, $strict=true) {
 }
 
 /**
- * 404处理 
- * 调试模式会抛异常 
+ * 404处理
+ * 调试模式会抛异常
  * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
  * @param string $msg 提示信息
  * @param string $url 跳转URL地址
@@ -156,7 +156,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         $anchor =   $info['fragment'];
         if(false !== strpos($anchor,'?')) { // 解析参数
             list($anchor,$info['query']) = explode('?',$anchor,2);
-        }        
+        }
         if(false !== strpos($anchor,'@')) { // 解析域名
             list($anchor,$host)    =   explode('@',$anchor, 2);
         }
@@ -191,7 +191,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         parse_str($info['query'],$params);
         $vars = array_merge($params,$vars);
     }
-    
+
     // URL组装
     $depr = C('URL_PATHINFO_DEPR');
     if($url) {
@@ -223,7 +223,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
                 if($module = array_search(strtolower($var[C('VAR_MODULE')]),$maps)){
                     $var[C('VAR_MODULE')] = $module;
                 }
-            }            
+            }
             if(C('URL_CASE_INSENSITIVE')) {
                 $var[C('VAR_MODULE')]   =   parse_name($var[C('VAR_MODULE')]);
             }
@@ -258,7 +258,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
         if(!empty($vars)) { // 添加参数
             foreach ($vars as $var => $val){
                 if('' !== trim($val))   $url .= $depr . $var . $depr . urlencode($val);
-            }                
+            }
         }
         if($suffix) {
             $suffix   =  $suffix===true?C('URL_HTML_SUFFIX'):$suffix;
@@ -286,7 +286,7 @@ function U($url='',$vars='',$suffix=true,$redirect=false,$domain=false) {
  * 渲染输出Widget
  * @param string $name Widget名称
  * @param array $data 传入的参数
- * @param boolean $return 是否返回内容 
+ * @param boolean $return 是否返回内容
  * @param string $path Widget所在路径
  * @return void
  */
@@ -567,7 +567,7 @@ function session($name,$value='') {
         }
         // 启动session
         if(C('SESSION_AUTO_START'))  session_start();
-    }elseif('' === $value){ 
+    }elseif('' === $value){
         if(0===strpos($name,'[')) { // session 操作
             if('[pause]'==$name){ // 暂停session
                 session_write_close();
@@ -597,17 +597,17 @@ function session($name,$value='') {
         }elseif($prefix){ // 获取session
             if(strpos($name,'.')){
                 list($name1,$name2) =   explode('.',$name);
-                return isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;  
+                return isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;
             }else{
-                return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;                
-            }            
+                return isset($_SESSION[$prefix][$name])?$_SESSION[$prefix][$name]:null;
+            }
         }else{
             if(strpos($name,'.')){
                 list($name1,$name2) =   explode('.',$name);
-                return isset($_SESSION[$name1][$name2])?$_SESSION[$name1][$name2]:null;  
+                return isset($_SESSION[$name1][$name2])?$_SESSION[$name1][$name2]:null;
             }else{
                 return isset($_SESSION[$name])?$_SESSION[$name]:null;
-            }            
+            }
         }
     }elseif(is_null($value)){ // 删除session
         if($prefix){
