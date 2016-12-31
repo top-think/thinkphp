@@ -270,7 +270,7 @@ class Upload
         $class          = strpos($driver, '\\') ? $driver : 'Think\\Upload\\Driver\\' . ucfirst(strtolower($driver));
         $this->uploader = new $class($config);
         if (!$this->uploader) {
-            E("不存在上传驱动：{$name}");
+            E("不存在上传驱动：{$driver}");
         }
     }
 
