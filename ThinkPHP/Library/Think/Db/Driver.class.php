@@ -700,8 +700,17 @@ abstract class Driver
                 $whereStr = substr($this->parseWhere($val), 6);
                 break;
             case '_query':
+                $where = [];
                 // 字符串模式查询条件
-                parse_str($val, $where);
+                if (strpos($val, '.') === false)
+                    parse_str($val, $where);
+                else {
+                    $tmpWhere = explode('&', $val);
+                    foreach ($tmpWhere as $value) {
+                        $tmpValue            = explode('=', $value);
+                        $where[$tmpValue[0]] = $tmpValue[1];
+                    }
+                }
                 if (isset($where['_logic'])) {
                     $op = ' ' . strtoupper($where['_logic']) . ' ';
                     unset($where['_logic']);
