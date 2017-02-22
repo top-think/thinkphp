@@ -42,6 +42,8 @@ class Db
             $class = !empty($options['lite']) ? 'Think\Db\Lite' : 'Think\\Db\\Driver\\' . ucwords(strtolower($options['type']));
             if (class_exists($class)) {
                 self::$instance[$md5] = new $class($options);
+            } elseif (!($options['type'])) {
+                E(L('_NO_DB_TYPE_'));
             } else {
                 // 类没有定义
                 E(L('_NO_DB_DRIVER_') . ': ' . $class);
