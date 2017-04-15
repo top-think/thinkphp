@@ -410,7 +410,8 @@ class Route
                     $regx = substr_replace($regx, '', 0, strlen($matches[0]));
                 }
                 array_shift($matches);
-                return $matches;
+                //防止返回空数组
+                return $matches ? $matches : true;
             } else {
                 return false;
             }
@@ -450,7 +451,8 @@ class Route
                     }
                 }
             }
-            $matches = $params;
+            //防止返回空数组
+            $matches = $params ? $params : true;
             $regx = implode('/', $paths);
         }
         // 解析剩余的URL参数
