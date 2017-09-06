@@ -212,7 +212,7 @@ class Redisd extends Cache
         if (is_null($expire )) {
             $expire = $this->options ['expire'];
         }
-        $name = $this->options ['prefix'] . $name;
+        $keyname = $this->options ['prefix'] . $name;
         
         /**
          * 兼容历史版本
@@ -222,15 +222,15 @@ class Redisd extends Cache
         $value = (is_object($value) || is_array($value )) ? json_encode($value) : $value;
         
         if ($value === null) {
-            return $this->handler->delete($this->options ['prefix'] . $name);
+            return $this->handler->delete($keyname);
         }
         
         // $expire < 0 则等于ttl操作，列为todo吧
         try {
             if (is_int($expire) && $expire) {
-                $result = $this->handler->setex($name, $expire, $value);
+                $result = $this->handler->setex($keyname, $expire, $value);
             } else {
-                $result = $this->handler->set($name, $value);
+                $result = $this->handler->set($keyname, $value);
             }
         } catch (\RedisException $e) {
             unset(self::$redis_rw_handler[1]);
