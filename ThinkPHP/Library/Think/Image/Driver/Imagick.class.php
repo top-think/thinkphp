@@ -84,9 +84,9 @@ class Imagick
             $this->img->setImageFormat($type);
         }
 
-        //JPEG图像设置隔行扫描
-        if ('jpeg' == $type || 'jpg' == $type) {
-            $this->img->setImageInterlaceScheme(1);
+        //JPEG\PNG 图像进行渐进渲染
+        if ('jpeg' == $type || 'jpg' == $type || 'png' == $type) {
+            $this->img->setImageInterlaceScheme(\Imagick::INTERLACE_PLANE);
         }
 
         // 设置图像质量
