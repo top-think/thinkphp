@@ -1148,8 +1148,9 @@ class Model {
                 }else{
                     $map[$val[0]] = $data[$val[0]];
                 }
-                if(!empty($data[$this->getPk()])) { // 完善编辑的时候验证唯一
-                    $map[$this->getPk()] = array('neq',$data[$this->getPk()]);
+                $pk =   $this->getPk();
+                if(!empty($data[$pk]) && is_string($pk) && !(is_array($val[0])? in_array($pk, $val[0]) : $pk == $val[0])) { // 完善编辑的时候验证唯一
+                    $map[$pk] = array('neq',$data[$pk]);
                 }
                 if($this->where($map)->find())   return false;
                 return true;
