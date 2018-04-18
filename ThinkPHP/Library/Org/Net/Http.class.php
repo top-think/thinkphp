@@ -182,6 +182,9 @@ class Http
         header("Content-type: " . $type);
         header('Content-Encoding: none');
         header("Content-Transfer-Encoding: binary");
+        // 清空文件的头部信息，解决文件下载无法打开问题
+        ob_clean(); // 清空缓冲区
+        flush();  // 刷新输出缓冲
         if ('' == $content) {
             readfile($filename);
         } else {
