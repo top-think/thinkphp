@@ -26,7 +26,11 @@ class App
     {
 
         // 日志目录转换为绝对路径 默认情况下存储到公共模块下面
-        C('LOG_PATH', realpath(LOG_PATH) . '/Common/');
+        if (is_null(C('LOG_PATH'))) {
+            C('LOG_PATH', realpath(LOG_PATH) . '/Common/');
+        } else {
+            C('LOG_PATH', C('LOG_PATH') . '/Common/');
+        }
 
         // 定义当前请求的系统常量
         define('NOW_TIME', $_SERVER['REQUEST_TIME']);
