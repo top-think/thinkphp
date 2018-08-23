@@ -93,7 +93,7 @@ class Model
         } elseif ('' != $tablePrefix) {
             $this->tablePrefix = $tablePrefix;
         } elseif (!isset($this->tablePrefix)) {
-            $this->tablePrefix = !empty($this->connection) && !is_null(C($this->connection.'.DB_PREFIX')) ? C($this->connection.'.DB_PREFIX') : C('DB_PREFIX');
+            $this->tablePrefix = !empty($this->connection) && !is_null(C($this->connection . '.DB_PREFIX')) ? C($this->connection . '.DB_PREFIX') : C('DB_PREFIX');
         }
 
         // 数据库初始化操作
@@ -518,8 +518,8 @@ class Model
             } else {
                 $where[$pk] = $options;
             }
-            $options          = array();
-            $options['where'] = $where;
+
+            $this->options['where'] = $where;
         }
         // 根据复合主键删除记录
         if (is_array($options) && (count($options) > 0) && is_array($pk)) {
@@ -536,13 +536,13 @@ class Model
                     $where[$field] = $options[$i];
                     unset($options[$i++]);
                 }
-                $options['where'] = $where;
+                $this->options['where'] = $where;
             } else {
                 return false;
             }
         }
         // 分析表达式
-        $options = $this->_parseOptions($options);
+        $options = $this->_parseOptions();
         if (empty($options['where'])) {
             // 如果条件为空 不进行删除操作 除非设置 1=1
             return false;
@@ -589,8 +589,8 @@ class Model
             } else {
                 $where[$pk] = $options;
             }
-            $options          = array();
-            $options['where'] = $where;
+
+            $this->options['where'] = $where;
         } elseif (is_array($options) && (count($options) > 0) && is_array($pk)) {
             // 根据复合主键查询
             $count = 0;
@@ -606,16 +606,16 @@ class Model
                     $where[$field] = $options[$i];
                     unset($options[$i++]);
                 }
-                $options['where'] = $where;
+                $this->options['where'] = $where;
             } else {
                 return false;
             }
         } elseif (false === $options) {
             // 用于子查询 不查询只返回SQL
-            $options['fetch_sql'] = true;
+            $this->options['fetch_sql'] = true;
         }
         // 分析表达式
-        $options = $this->_parseOptions($options);
+        $options = $this->_parseOptions();
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
@@ -774,8 +774,8 @@ class Model
     {
         if (is_numeric($options) || is_string($options)) {
             $where[$this->getPk()] = $options;
-            $options               = array();
-            $options['where']      = $where;
+
+            $this->options['where'] = $where;
         }
         // 根据复合主键查找记录
         $pk = $this->getPk();
@@ -794,15 +794,15 @@ class Model
                     $where[$field] = $options[$i];
                     unset($options[$i++]);
                 }
-                $options['where'] = $where;
+                $this->options['where'] = $where;
             } else {
                 return false;
             }
         }
         // 总是查找一条记录
-        $options['limit'] = 1;
+        $this->options['limit'] = 1;
         // 分析表达式
-        $options = $this->_parseOptions($options);
+        $options = $this->_parseOptions();
         // 判断查询缓存
         if (isset($options['cache'])) {
             $cache = $options['cache'];
@@ -1254,8 +1254,8 @@ class Model
                     }
 
                     switch (trim($auto[3])) {
-                        case 'function'://  使用函数进行填充 字段的值作为参数
-                        case 'callback':    // 使用回调方法
+                        case 'function': //  使用函数进行填充 字段的值作为参数
+                        case 'callback': // 使用回调方法
                             $args = isset($auto[4]) ? (array) $auto[4] : array();
                             if (isset($data[$auto[0]])) {
                                 array_unshift($args, $data[$auto[0]]);
@@ -1266,17 +1266,17 @@ class Model
                                 $data[$auto[0]] = call_user_func_array(array(&$this, $auto[1]), $args);
                             }
                             break;
-                        case 'field':    // 用其它字段的值进行填充
+                        case 'field': // 用其它字段的值进行填充
                             $data[$auto[0]] = $data[$auto[1]];
                             break;
-                        case 'ignore':    // 为空忽略
+                        case 'ignore': // 为空忽略
                             if ($auto[1] === $data[$auto[0]]) {
                                 unset($data[$auto[0]]);
                             }
 
                             break;
                         case 'string':
-                        default:    // 默认作为字符串填充
+                        default: // 默认作为字符串填充
                             $data[$auto[0]] = $auto[1];
                     }
                     if (isset($data[$auto[0]]) && false === $data[$auto[0]]) {
@@ -1330,13 +1330,13 @@ class Model
                     $val[4] = isset($val[4]) ? $val[4] : 'regex';
                     // 判断验证条件
                     switch ($val[3]) {
-                        case self::MUST_VALIDATE:    // 必须验证 不管表单是否有设置该字段
+                        case self::MUST_VALIDATE: // 必须验证 不管表单是否有设置该字段
                             if (false === $this->_validationField($data, $val)) {
                                 return false;
                             }
 
                             break;
-                        case self::VALUE_VALIDATE:    // 值不为空的时候才验证
+                        case self::VALUE_VALIDATE: // 值不为空的时候才验证
                             if ('' != trim($data[$val[0]])) {
                                 if (false === $this->_validationField($data, $val)) {
                                     return false;
@@ -1344,7 +1344,7 @@ class Model
                             }
 
                             break;
-                        default:    // 默认表单存在该字段就验证
+                        default: // 默认表单存在该字段就验证
                             if (isset($data[$val[0]])) {
                                 if (false === $this->_validationField($data, $val)) {
                                     return false;
@@ -1399,8 +1399,8 @@ class Model
     protected function _validationFieldItem($data, $val)
     {
         switch (strtolower(trim($val[4]))) {
-            case 'function':// 使用函数进行验证
-            case 'callback':    // 调用方法进行验证
+            case 'function': // 使用函数进行验证
+            case 'callback': // 调用方法进行验证
                 $args = isset($val[6]) ? (array) $val[6] : array();
                 if (is_string($val[0]) && strpos($val[0], ',')) {
                     $val[0] = explode(',', $val[0]);
@@ -1421,9 +1421,9 @@ class Model
                 } else {
                     return call_user_func_array(array(&$this, $val[1]), $args);
                 }
-            case 'confirm':    // 验证两个字段是否相同
+            case 'confirm': // 验证两个字段是否相同
                 return $data[$val[0]] == $data[$val[1]];
-            case 'unique':    // 验证某个值是否唯一
+            case 'unique': // 验证某个值是否唯一
                 if (is_string($val[0]) && strpos($val[0], ',')) {
                     $val[0] = explode(',', $val[0]);
                 }
@@ -1450,7 +1450,7 @@ class Model
 
                 $this->options = $options;
                 return true;
-            default:    // 检查附加规则
+            default: // 检查附加规则
                 return $this->check($data[$val[0]], $val[1], $val[4]);
         }
     }
@@ -1467,12 +1467,12 @@ class Model
     {
         $type = strtolower(trim($type));
         switch ($type) {
-            case 'in':// 验证是否在某个指定范围之内 逗号分隔字符串或者数组
+            case 'in': // 验证是否在某个指定范围之内 逗号分隔字符串或者数组
             case 'notin':
                 $range = is_array($rule) ? $rule : explode(',', $rule);
                 return 'in' == $type ? in_array($value, $range) : !in_array($value, $range);
-            case 'between':// 验证是否在某个范围
-            case 'notbetween':    // 验证是否不在某个范围
+            case 'between': // 验证是否在某个范围
+            case 'notbetween': // 验证是否不在某个范围
                 if (is_array($rule)) {
                     $min = $rule[0];
                     $max = $rule[1];
@@ -1480,11 +1480,11 @@ class Model
                     list($min, $max) = explode(',', $rule);
                 }
                 return 'between' == $type ? $value >= $min && $value <= $max : $value < $min || $value > $max;
-            case 'equal':// 验证是否等于某个值
-            case 'notequal':    // 验证是否等于某个值
+            case 'equal': // 验证是否等于某个值
+            case 'notequal': // 验证是否等于某个值
                 return 'equal' == $type ? $value == $rule : $value != $rule;
-            case 'length':    // 验证长度
-                $length = mb_strlen($value, 'utf-8');     // 当前数据长度
+            case 'length': // 验证长度
+                $length = mb_strlen($value, 'utf-8'); // 当前数据长度
                 if (strpos($rule, ',')) {
                     // 长度区间
                     list($min, $max) = explode(',', $rule);
@@ -1504,12 +1504,12 @@ class Model
                 }
 
                 return NOW_TIME >= $start && NOW_TIME <= $end;
-            case 'ip_allow':    // IP 操作许可验证
+            case 'ip_allow': // IP 操作许可验证
                 return in_array(get_client_ip(), explode(',', $rule));
-            case 'ip_deny':    // IP 操作禁止验证
+            case 'ip_deny': // IP 操作禁止验证
                 return !in_array(get_client_ip(), explode(',', $rule));
             case 'regex':
-            default:    // 默认使用正则验证 可以使用验证类中定义的验证名称
+            default: // 默认使用正则验证 可以使用验证类中定义的验证名称
                 // 检查附加规则
                 return $this->regex($value, $rule);
         }
