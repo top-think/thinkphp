@@ -293,17 +293,17 @@ abstract class Driver
      */
     public function commit()
     {
-        if ($this->transTimes == 1) {
+        if (1 == $this->transTimes) {
             // 由嵌套事物的最外层进行提交
-            $result = $this->_linkID->commit();
+            $result           = $this->_linkID->commit();
             $this->transTimes = 0;
-            $this->transPdo = null;
+            $this->transPdo   = null;
             if (!$result) {
                 $this->error();
                 return false;
             }
         } else {
-            $this->transTimes = $this->transTimes <= 0 ? 0 : $this->transTimes-1;
+            $this->transTimes = $this->transTimes <= 0 ? 0 : $this->transTimes - 1;
         }
         return true;
     }
@@ -316,9 +316,9 @@ abstract class Driver
     public function rollback()
     {
         if ($this->transTimes > 0) {
-            $result = $this->_linkID->rollback();
+            $result           = $this->_linkID->rollback();
             $this->transTimes = 0;
-            $this->transPdo = null;
+            $this->transPdo   = null;
             if (!$result) {
                 $this->error();
                 return false;
@@ -447,12 +447,13 @@ abstract class Driver
     }
 
     /**
-     * 字段名分析
+     * 字段和表名处理
      * @access protected
      * @param string $key
+     * @param bool   $strict
      * @return string
      */
-    protected function parseKey($key)
+    protected function parseKey($key, $strict = false)
     {
         return $key;
     }
@@ -765,7 +766,7 @@ abstract class Driver
                     }
                 } else {
                     $sort    = in_array(strtolower($val), array('asc', 'desc')) ? ' ' . $val : '';
-                    $array[] = $this->parseKey($key) . $sort;
+                    $array[] = $this->parseKey($key, true) . $sort;
                 }
             }
         } elseif ('[RAND]' == $order) {
