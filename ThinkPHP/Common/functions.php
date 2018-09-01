@@ -1639,6 +1639,8 @@ function load_ext_file($path)
             $file = is_file($config) ? $config : $path . 'Conf/' . $config . CONF_EXT;
             if (is_file($file)) {
                 is_numeric($key) ? C(load_Config($file)) : C($key, load_Config($file));
+            }elseif(is_file($file = CONF_PATH.$config.CONF_EXT)) {
+            	is_numeric($key)?C(load_config($file)):C($key,load_config($file));
             }
         }
     }

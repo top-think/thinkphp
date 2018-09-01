@@ -496,4 +496,17 @@ class MongoModel extends Model
     {
         return $this->db->getCollection();
     }
+    
+    /**
+     * 设置查询超时时间，-1为不限时间
+     * @param int $timeout 毫秒
+     * @access public
+     * @return object
+     */
+    public function timeout($timeout=-1) {
+        if(class_exists('MongoCursor')) {
+            MongoCursor::$timeout = $timeout;
+    	}
+    	return $this;
+    }
 }

@@ -210,7 +210,7 @@ class App
         }
         // 记录应用初始化时间
         G('initTime');
-        App::exec();
+        ! defined('APP_NO_EXEC') && App::exec();
         // 应用结束标签
         Hook::listen('app_end');
         return;

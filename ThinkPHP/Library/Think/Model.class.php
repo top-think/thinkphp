@@ -99,7 +99,17 @@ class Model
         // 数据库初始化操作
         // 获取数据库操作对象
         // 当前模型有独立的数据库连接信息
-        $this->db(0, empty($this->connection) ? $connection : $this->connection, true);
+        //$this->db(0, empty($this->connection) ? $connection : $this->connection, true);
+        $this->connection_args = $connection;
+    }
+
+    //检查连接是否断开
+    function db_instance()
+    {
+        if (empty($this->db) || empty($this->_db))
+            $this->db(0, empty($this->connection) ? $this->connection_args : $this->connection, true);
+
+        return $this->db;
     }
 
     /**
@@ -124,7 +134,8 @@ class Model
                 }
             }
             // 每次都会读取数据表信息
-            $this->flush();
+            if($this->db)
+                $this->flush();
         }
     }
 
@@ -136,9 +147,9 @@ class Model
     public function flush()
     {
         // 缓存不存在则查询数据表信息
-        $this->db->setModel($this->name);
+        $this->db_instance()->setModel($this->name);
         $tableName = $this->getTableName();
-        $fields    = $this->db->getFields($tableName);
+        $fields    = $this->db_instance()->getFields($tableName);
         if (!$fields) {
             // 无法获取字段信息
             return false;
@@ -337,7 +348,7 @@ class Model
             return false;
         }
         // 写入数据到数据库
-        $result = $this->db->insert($data, $options, $replace);
+        $result = $this->db_instance()->insert($data, $options, $replace);
         if (false !== $result && is_numeric($result)) {
             $pk = $this->getPk();
             // 增加复合主键支持
@@ -380,7 +391,7 @@ class Model
         // 分析表达式
         $options = $this->_parseOptions($options);
         // 写入数据到数据库
-        $result = $this->db->insertAll($dataList, $options, $replace);
+        $result = $this->db_instance()->insertAll($dataList, $options, $replace);
         if (false !== $result) {
             $insertId = $this->getLastInsID();
             if ($insertId) {
@@ -403,7 +414,7 @@ class Model
         // 分析表达式
         $options = $this->_parseOptions($options);
         // 写入数据到数据库
-        if (false === $result = $this->db->selectInsert($fields ?: $options['field'], $table ?: $this->getTableName(), $options)) {
+        if (false === $result = $this->db_instance()->selectInsert($fields ?: $options['field'], $table ?: $this->getTableName(), $options)) {
             // 数据库插入操作失败
             $this->error = L('_OPERATION_WRONG_');
             return false;
@@ -476,7 +487,7 @@ class Model
         if (false === $this->_before_update($data, $options)) {
             return false;
         }
-        $result = $this->db->update($data, $options);
+        $result = $this->db_instance()->update($data, $options);
         if (false !== $result && is_numeric($result)) {
             if (isset($pkValue)) {
                 $data[$pk] = $pkValue;
@@ -554,7 +565,7 @@ class Model
         if (false === $this->_before_delete($options)) {
             return false;
         }
-        $result = $this->db->delete($options);
+        $result = $this->db_instance()->delete($options);
         if (false !== $result && is_numeric($result)) {
             $data = array();
             if (isset($pkValue)) {
@@ -625,7 +636,7 @@ class Model
                 return $data;
             }
         }
-        $resultSet = $this->db->select($options);
+        $resultSet = $this->db_instance()->select($options);
         if (false === $resultSet) {
             return false;
         }
@@ -813,7 +824,7 @@ class Model
                 return $data;
             }
         }
-        $resultSet = $this->db->select($options);
+        $resultSet = $this->db_instance()->select($options);
         if (false === $resultSet) {
             return false;
         }
@@ -1010,7 +1021,7 @@ class Model
             if (!isset($options['limit'])) {
                 $options['limit'] = is_numeric($sepa) ? $sepa : '';
             }
-            $resultSet = $this->db->select($options);
+            $resultSet = $this->db_instance()->select($options);
             if (!empty($resultSet)) {
                 if (is_string($resultSet)) {
                     return $resultSet;
@@ -1041,7 +1052,7 @@ class Model
                 // 当sepa指定为true的时候 返回所有数据
                 $options['limit'] = is_numeric($sepa) ? $sepa : 1;
             }
-            $result = $this->db->select($options);
+            $result = $this->db_instance()->select($options);
             if (!empty($result)) {
                 if (is_string($result)) {
                     return $result;
@@ -1524,7 +1535,7 @@ class Model
      */
     public function procedure($sql, $parse = false)
     {
-        return $this->db->procedure($sql, $parse);
+        return $this->db_instance()->procedure($sql, $parse);
     }
 
     /**
@@ -1541,7 +1552,7 @@ class Model
             array_shift($parse);
         }
         $sql = $this->parseSql($sql, $parse);
-        return $this->db->query($sql);
+        return $this->db_instance()->query($sql);
     }
 
     /**
@@ -1558,7 +1569,7 @@ class Model
             array_shift($parse);
         }
         $sql = $this->parseSql($sql, $parse);
-        return $this->db->execute($sql);
+        return $this->db_instance()->execute($sql);
     }
 
     /**
@@ -1573,8 +1584,9 @@ class Model
         // 分析表达式
         if (true === $parse) {
             $options = $this->_parseOptions();
-            $sql     = $this->db->parseSql($sql, $options);
+            $sql     = $this->db_instance()->parseSql($sql, $options);
         } elseif (is_array($parse)) {
+            $this->db_instance();
             // SQL预处理
             $parse = array_map(array($this->db, 'escapeString'), $parse);
             $sql   = vsprintf($sql, $parse);
@@ -1583,7 +1595,7 @@ class Model
             $prefix = $this->tablePrefix;
             $sql    = preg_replace_callback("/__([A-Z0-9_-]+)__/sU", function ($match) use ($prefix) {return $prefix . strtolower($match[1]);}, $sql);
         }
-        $this->db->setModel($this->name);
+        $this->db_instance()->setModel($this->name);
         return $sql;
     }
 
@@ -1674,7 +1686,7 @@ class Model
     public function startTrans()
     {
         $this->commit();
-        $this->db->startTrans();
+        $this->db_instance()->startTrans();
         return;
     }
 
@@ -1685,7 +1697,7 @@ class Model
      */
     public function commit()
     {
-        return $this->db->commit();
+        return $this->db_instance()->commit();
     }
 
     /**
@@ -1695,7 +1707,7 @@ class Model
      */
     public function rollback()
     {
-        return $this->db->rollback();
+        return $this->db_instance()->rollback();
     }
 
     /**
@@ -1715,7 +1727,7 @@ class Model
      */
     public function getDbError()
     {
-        return $this->db->getError();
+        return $this->db_instance()->getError();
     }
 
     /**
@@ -1725,7 +1737,7 @@ class Model
      */
     public function getLastInsID()
     {
-        return $this->db->getLastInsID();
+        return $this->db_instance()->getLastInsID();
     }
 
     /**
@@ -1735,7 +1747,7 @@ class Model
      */
     public function getLastSql()
     {
-        return $this->db->getLastSql($this->name);
+        return $this->db_instance()->getLastSql($this->name);
     }
     // 鉴于getLastSql比较常用 增加_sql 别名
     public function _sql()
@@ -1760,6 +1772,9 @@ class Model
      */
     public function getDbFields()
     {
+        if (is_null($this->db))
+            $this->db_instance();
+        
         if (isset($this->options['table'])) {
             // 动态指定表名
             if (is_array($this->options['table'])) {
@@ -1771,7 +1786,7 @@ class Model
                     return false;
                 }
             }
-            $fields = $this->db->getFields($table);
+            $fields = $this->db_instance()->getFields($table);
             return $fields ? array_keys($fields) : false;
         }
         if ($this->fields) {
@@ -2006,6 +2021,7 @@ class Model
                 $parse = func_get_args();
                 array_shift($parse);
             }
+            $this->db_instance();
             $parse = array_map(array($this->db, 'escapeString'), $parse);
             $where = vsprintf($where, $parse);
         } elseif (is_object($where)) {

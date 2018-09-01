@@ -113,5 +113,15 @@ class Redis extends Cache
     {
         return $this->handler->flushDB();
     }
+    
+    /**
+     * 魔术方法，phpRedis中所包含的所有操作均可以通过魔术方法直接调用
+     * @access public
+     * @return mixed
+     */
+    function __call($method, $args)
+    {
+        return call_user_func_array(array($this->handler, $method) , $args);
+    }
 
 }

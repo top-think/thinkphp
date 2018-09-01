@@ -131,6 +131,7 @@ class Mongo extends Driver
             }
         }
         N('db_write', 1); // 兼容代码
+        $this->model  =   $options['model'];
         $this->executeTimes++;
         try {
             if ($this->config['debug']) {
@@ -301,6 +302,7 @@ class Mongo extends Driver
         if (isset($options['table'])) {
             $this->switchCollection($options['table']);
         }
+
         $this->executeTimes++;
         N('db_write', 1); // 兼容代码
         $this->model = $options['model'];
@@ -392,6 +394,16 @@ class Mongo extends Driver
         if (isset($options['table'])) {
             $this->switchCollection($options['table'], '', false);
         }
+        
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) {
+            $key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $value  =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+            }
+        }
+
         $this->model = $options['model'];
         $this->queryTimes++;
         N('db_query', 1); // 兼容代码
@@ -443,6 +455,11 @@ class Mongo extends Driver
             $this->debug(false);
             $this->_cursor = $_cursor;
             $resultSet     = iterator_to_array($_cursor);
+            
+            if($cache) {
+                S($key,$resultSet,$cache['expire'],$cache['type']);
+            }
+
             return $resultSet;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
@@ -473,6 +490,15 @@ class Mongo extends Driver
         if (isset($options['table'])) {
             $this->switchCollection($options['table'], '', false);
         }
+
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) {
+            $key    =  is_string($cache['key'])?$cache['key']:md5(serialize($options));
+            $value  =  S($key,'','',$cache['type']);
+            if(false !== $value) {
+                return $value;
+             }
+        }
         $this->model = $options['model'];
         $this->queryTimes++;
         N('db_query', 1); // 兼容代码
@@ -486,6 +512,11 @@ class Mongo extends Driver
             $this->debug(true);
             $count = $this->_collection->count($query);
             $this->debug(false);
+            
+            if($cache) {
+            	S($key,$count,$cache['expire'],$cache['type']);
+            }
+            
             return $count;
         } catch (\MongoCursorException $e) {
             E($e->getMessage());
