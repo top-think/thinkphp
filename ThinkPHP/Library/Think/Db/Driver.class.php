@@ -220,6 +220,7 @@ abstract class Driver
             $this->queryStr = strtr($this->queryStr, array_map(function ($val) use ($that) {return '\'' . $that->escapeString($val) . '\'';}, $this->bind));
         }
         if ($fetchSql) {
+            $this->bind = array();
             return $this->queryStr;
         }
         //释放前次的查询结果
