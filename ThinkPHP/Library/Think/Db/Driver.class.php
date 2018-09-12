@@ -764,7 +764,7 @@ abstract class Driver
                     if (false === strpos($val, '(')) {
                         $array[] = $this->parseKey($val);
                     }
-                } else {
+                } elseif (false === strpos($key, ')') && false === strpos($key, '#')) {
                     $sort    = in_array(strtolower($val), array('asc', 'desc')) ? ' ' . $val : '';
                     $array[] = $this->parseKey($key, true) . $sort;
                 }
