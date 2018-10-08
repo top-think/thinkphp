@@ -758,29 +758,29 @@ abstract class Driver
             return '';
         }
         $array = array();
+        if (is_string($order) && '[RAND]' != $order) {
+            $order = explode(',', $order);
+        }
+
         if (is_array($order)) {
             foreach ($order as $key => $val) {
                 if (is_numeric($key)) {
-                    if (false === strpos($val, '(') && false === strpos($val, ';')) {
-                        $array[] = $this->parseKey($val);
-                    }
-                } elseif (false === strpos($key, ')') && false === strpos($key, '#')) {
-                    $sort    = in_array(strtolower($val), array('asc', 'desc')) ? ' ' . $val : '';
+                    list($key, $sort) = explode(' ', strpos($val, ' ') ? $val : $val . ' ');
+                } else {
+                    $sort = $val;
+                }
+
+                if (preg_match('/^[\w]+$/', $key)) {
+                    $sort    = strtoupper($sort);
+                    $sort    = in_array($sort, ['ASC', 'DESC'], true) ? ' ' . $sort : '';
                     $array[] = $this->parseKey($key, true) . $sort;
                 }
             }
         } elseif ('[RAND]' == $order) {
             // 随机排序
             $array[] = $this->parseRand();
-        } else {
-            foreach (explode(',', $order) as $val) {
-                if (preg_match('/\s+(ASC|DESC)$/i', rtrim($val), $match, PREG_OFFSET_CAPTURE)) {
-                    $array[] = $this->parseKey(ltrim(substr($val, 0, $match[0][1]))) . ' ' . $match[1][0];
-                } elseif (false === strpos($val, '(') && false === strpos($val, ';')) {
-                    $array[] = $this->parseKey($val);
-                }
-            }
         }
+
         $order = implode(',', $array);
         return !empty($order) ? ' ORDER BY ' . $order : '';
     }
