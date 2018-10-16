@@ -759,7 +759,7 @@ abstract class Driver
         }
         $array = array();
         if (is_string($order) && '[RAND]' != $order) {
-            $order = explode(',', $order);
+            $order = array_map('trim', explode(',', $order));
         }
 
         if (is_array($order)) {
