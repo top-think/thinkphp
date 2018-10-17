@@ -58,7 +58,8 @@ class Route
                         continue;
                     }
                 }
-                if ($matches = self::checkUrlMatch($rule, $args, $regx)) {
+                $matches = self::checkUrlMatch($rule, $args, $regx);
+                if ($matches !== null) {
                     if ($route[0] instanceof \Closure) {
                         // 执行闭包
                         $result = self::invoke($route[0], $matches);
