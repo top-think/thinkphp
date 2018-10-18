@@ -448,12 +448,12 @@ abstract class Driver
 
     /**
      * 字段和表名处理
-     * @access protected
+     * @access public
      * @param string $key
      * @param bool   $strict
      * @return string
      */
-    protected function parseKey($key, $strict = false)
+    public function parseKey($key, $strict = false)
     {
         return $key;
     }
