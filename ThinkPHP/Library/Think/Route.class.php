@@ -58,7 +58,7 @@ class Route
                         continue;
                     }
                 }
-                if ($matches = self::checkUrlMatch($rule, $args, $regx)) {
+                if (false !== $matches = self::checkUrlMatch($rule, $args, $regx)) {
                     if ($route[0] instanceof \Closure) {
                         // 执行闭包
                         $result = self::invoke($route[0], $matches);
@@ -75,18 +75,17 @@ class Route
                         // 路由参数关联$matches
                         if ('/' == substr($rule, 0, 1)) {
                             $rule_params = array();
-                            foreach($route[1] as $param_key => $param)
-                            {
-                                list($param_name,$param_value) = explode('=', $param,2);
-                                if(!is_null($param_value))
-                                {
-                                    if(preg_match('/^:(\d*)$/',$param_value, $match_index))
-                                    {
-                                        $match_index = $match_index[1]-1;
-                                        $param_value = $matches[$match_index];
+                            if(isset($route[1]) && is_array($route[1])) {
+                                foreach($route[1] as $param_key => $param) {
+                                    list($param_name, $param_value) = explode('=', $param, 2);
+                                    if(!is_null($param_value)) {
+                                        if(preg_match('/^:(\d*)$/', $param_value, $match_index)) {
+                                            $match_index = $match_index[1] - 1;
+                                            $param_value = $matches[$match_index];
+                                        }
+                                        $rule_params[$param_name] = $param_value;
+                                        unset($route[1][$param_key]);
                                     }
-                                    $rule_params[$param_name] = $param_value;
-                                    unset($route[1][$param_key]);
                                 }
                             }
                             $route[1] = $rule_params;
