@@ -101,13 +101,17 @@ class Mysql extends Driver
      */
     public function parseKey($key, $strict = false)
     {
+        if (is_int($key)) {
+            return $key;
+        }
+
         $key = trim($key);
 
         if ($strict && !preg_match('/^[\w\.\*]+$/', $key)) {
             E('not support data:' . $key);
         }
 
-        if ($strict || (!is_numeric($key) && !preg_match('/[,\'\"\*\(\)`.\s]/', $key))) {
+        if ('*' != $key && !preg_match('/[,\'\"\*\(\)`.\s]/', $key)) {
             $key = '`' . $key . '`';
         }
         return $key;
