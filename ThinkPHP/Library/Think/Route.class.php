@@ -437,7 +437,7 @@ class Route
                             }
                         } else {
                             // 如果值在排除的名单里
-                            if (in_array($var, $val[2])) {
+                            if (is_array($val[2]) && in_array($var, $val[2])) {
                                 return false;
                             }
                         }
