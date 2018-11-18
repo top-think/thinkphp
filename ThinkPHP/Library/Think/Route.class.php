@@ -272,9 +272,10 @@ class Route
                 }
             }
             // 动态路由
-            $result[1] = C('URL_ROUTE_RULES');
-            if (!empty($result[1])) {
-                foreach ($result[1] as $rule => $route) {
+            $result[1] = [];
+            $dynamicRoutes = C('URL_ROUTE_RULES');
+            if (!empty($dynamicRoutes)) {
+                foreach ($dynamicRoutes as $rule => $route) {
                     if (!is_array($route)) {
                         $route = array($route);
                     } elseif (is_numeric($rule)) {
@@ -348,8 +349,6 @@ class Route
                         }
                         $route[] = $args;
                         $result[1][$rule] = $route;
-                    } else {
-                        unset($result[1][$rule]);
                     }
                 }
             }
