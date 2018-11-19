@@ -51,6 +51,10 @@ class Route
         // 动态路由检查
         if (!empty($rules[1])) {
             foreach ($rules[1] as $rule => $route) {
+                if (is_numeric($rule)) {
+                    $rule = array_shift($route);
+                }
+
                 $args = array_pop($route);
                 if (isset($route[2])) {
                     // 路由参数检查
@@ -147,6 +151,10 @@ class Route
         }
         if (isset($_rules[1][$path])) {
             foreach ($_rules[1][$path] as $rule => $route) {
+                if (is_numeric($rule)) {
+                    $rule = array_shift($route);
+                }
+
                 $args = array_pop($route);
                 $array = array();
                 if (isset($route[2])) {
@@ -275,7 +283,10 @@ class Route
             $result[1] = [];
             $dynamicRoutes = C('URL_ROUTE_RULES');
             if (!empty($dynamicRoutes)) {
-                foreach ($dynamicRoutes as $rule => $route) {
+                foreach ($dynamicRoutes as $key => $value) {
+                    $rule = $key;
+                    $route = $value;
+
                     if (!is_array($route)) {
                         $route = array($route);
                     } elseif (is_numeric($rule)) {
@@ -348,6 +359,13 @@ class Route
                             }
                         }
                         $route[] = $args;
+
+                        // 保持配置中路由定义的键的类型，以支持多个路由的路由表达式相同而路由参数不同的情况
+                        if (is_numeric($key)) {
+                            array_unshift($route, $rule);
+                            $rule = $key;
+                        }
+
                         $result[1][$rule] = $route;
                     }
                 }
