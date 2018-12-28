@@ -1645,6 +1645,45 @@ function load_ext_file($path)
 }
 
 /**
+ * 判断一个ip是否是内网ip
+ *   A类 10.0.0.0--10.255.255.255
+ *   B类 172.16.0.0--172.31.255.255
+ *   C类 192.168.0.0--192.168.255.255
+ * @param string $ip
+ * @return boolean
+ */
+function is_inner_ip($ip)
+{
+	if ('127.0.0.1' === $ip) {
+		return true;
+	}
+	list($i1, $i2, $i3, $i4) = explode('.', $ip, 4);
+	return ($i1 == 10 || ($i1 == 172 && 16 <= $i2 && $i2 < 32) || ($i1 == 192 && $i2 == 168));
+}
+
+/**
+ * 获取一堆ip里面的第一个外网ip，如果没有外网ip，返回最后一个合法的ip，否则返回 unknown
+ * @param string $iplist
+ * @return string
+ */
+function get_first_outerip($iplist)
+{
+	$iparr = preg_split('/;|,|\s/', $iplist);
+	$ip = 'unknown';
+	foreach ($iparr as $v) {
+		$v = trim($v);
+		if (false === ip2long($v)) {
+			continue;
+		}
+		$ip = $v;
+		if (!is_inner_ip($ip)) {
+			break;
+		}
+	}
+	return $ip;
+}
+
+/**
  * 获取客户端IP地址
  * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
  * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
@@ -1659,19 +1698,11 @@ function get_client_ip($type = 0, $adv = false)
     }
 
     if ($adv) {
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-            $pos = array_search('unknown', $arr);
-            if (false !== $pos) {
-                unset($arr[$pos]);
-            }
-
-            $ip = trim($arr[0]);
-        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR']
+            .' '.$_SERVER['HTTP_CLIENT_IP']
+            .' '.$_SERVER['HTTP_VIA']
+            .' '.$_SERVER['REMOTE_ADDR'];
+        $ip = get_first_outerip($ip);
     } elseif (isset($_SERVER['REMOTE_ADDR'])) {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
