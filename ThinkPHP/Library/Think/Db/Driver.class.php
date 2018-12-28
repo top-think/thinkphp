@@ -1281,6 +1281,58 @@ abstract class Driver
         );
         return $this->connect($db_config, $r, $r == $m ? false : $db_master);
     }
+    
+    /**
+     * 启动XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function startTransXa($xid)
+    {
+        $this->initConnect(true);
+        if (!$this->linkID) {
+            return false;
+        }
+        $this->execute("XA START '$xid'");
+    }
+    
+    /**
+     * 预编译XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function prepareXa($xid)
+    {
+        $this->initConnect(true);
+        $this->execute("XA END '$xid'");
+        $this->execute("XA PREPARE '$xid'");
+    }
+    
+    /**
+     * 提交XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function commitXa($xid)
+    {
+        $this->initConnect(true);
+        $this->execute("XA COMMIT '$xid'");
+    }
+    
+    /**
+     * 回滚XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function rollbackXa($xid)
+    {
+        $this->initConnect(true);
+        $this->execute("XA ROLLBACK '$xid'");
+    }
 
     /**
      * 析构方法
