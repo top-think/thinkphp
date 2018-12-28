@@ -142,7 +142,7 @@ class jsonRPCClient {
 		
 		// debug output
 		if ($this->debug) {
-			echo nl2br($debug);
+			echo nl2br($this->debug);
 		}
 		
 		// final checks and return
