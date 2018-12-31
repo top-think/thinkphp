@@ -53,6 +53,7 @@ class Model
     // 查询表达式参数
     protected $options   = array();
     protected $_validate = array(); // 自动验证定义
+    protected $_reserve         =   array();  // 保留非法字段(DBfield中没有的字段)
     protected $_auto     = array(); // 自动完成定义
     protected $_map      = array(); // 字段映射定义
     protected $_scope    = array(); // 命名范围定义
@@ -1143,7 +1144,8 @@ class Model
             // 开启字段检测 则过滤非法字段数据
             $fields = $this->getDbFields();
             foreach ($data as $key => $val) {
-                if (!in_array($key, $fields)) {
+                // 不需要保留非法字段 也 不存在DBfield中
+                if(!in_array($key, $this->_reserve) && !in_array($key,$fields)) {
                     unset($data[$key]);
                 } elseif (MAGIC_QUOTES_GPC && is_string($val)) {
                     $data[$key] = stripslashes($val);
