@@ -814,10 +814,10 @@ class Mongo extends Driver
                 break;
         }
         //兼容 MongoClient OR条件查询方法
-        if (isset($query['$or']) && !is_array(current($query['$or']))) {
+        if (isset($query['$or'])) {
             $val = array();
             foreach ($query['$or'] as $k => $v) {
-                $val[] = array($k => $v);
+                $val[] = $this->parseWhereItem($k,$v);
             }
 
             $query['$or'] = $val;
