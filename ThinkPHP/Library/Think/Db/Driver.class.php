@@ -973,9 +973,11 @@ abstract class Driver
                     }
                 }
             }
-            $values[] = 'SELECT ' . implode(',', $value);
+//            $values[] = 'SELECT ' . implode(',', $value);
+            $values[]    = '('.implode(',', $value).')';
         }
-        $sql = 'INSERT INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
+        $sql   =  'INSERT INTO '.$this->parseTable($options['table']).' ('.implode(',', $fields).') values'.implode(',',$values);
+//        $sql = 'INSERT INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
         $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
         return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
     }
