@@ -919,7 +919,7 @@ function dump($var, $echo = true, $label = null, $strict = true)
     if (!$strict) {
         if (ini_get('html_errors')) {
             $output = print_r($var, true);
-            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES, 'ISO-8859-1') . '</pre>';
         } else {
             $output = $label . print_r($var, true);
         }
@@ -929,7 +929,7 @@ function dump($var, $echo = true, $label = null, $strict = true)
         $output = ob_get_clean();
         if (!extension_loaded('xdebug')) {
             $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
-            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES, 'ISO-8859-1') . '</pre>';
         }
     }
     if ($echo) {
