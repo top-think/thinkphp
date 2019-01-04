@@ -44,7 +44,11 @@ class App
         }
 
         // 日志目录转换为绝对路径
-        C('LOG_PATH', realpath(LOG_PATH) . '/');
+        if (is_null(C('LOG_PATH'))) {
+            C('LOG_PATH', realpath(LOG_PATH) . '/');
+        } else {
+            C('LOG_PATH', C('LOG_PATH') . '/');
+        }
         // TMPL_EXCEPTION_FILE 改为绝对地址
         C('TMPL_EXCEPTION_FILE', realpath(C('TMPL_EXCEPTION_FILE')));
         return;

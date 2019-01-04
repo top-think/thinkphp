@@ -154,7 +154,7 @@ class Dispatcher
             // 定义当前模块的模版缓存路径
             C('CACHE_PATH', CACHE_PATH . MODULE_NAME . '/');
             // 定义当前模块的日志目录
-            C('LOG_PATH', realpath(LOG_PATH) . '/' . MODULE_NAME . '/');
+            C('LOG_PATH', C('LOG_PATH') . '/' . MODULE_NAME . '/');
 
             // 加载模块配置文件
             if (is_file(MODULE_PATH . 'Conf/config' . CONF_EXT)) {
