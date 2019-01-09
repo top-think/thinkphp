@@ -1515,9 +1515,9 @@ class FirePHP
         if (function_exists('json_encode')
             && false != $this->options['useNativeJsonEncode']) {
 
-            return jsonEncode($Object);
+            return json_encode($Object);
         } else {
-            return $this->jsonEncode($Object);
+            return $this->json_encode($Object);
         }
     }
 
@@ -1865,7 +1865,7 @@ class FirePHP
      * @return   mixed   JSON string representation of input var or an error if a problem occurs
      * @access   public
      */
-    private function jsonEncode($var)
+    private function json_encode($var)
     {
 
         if (is_object($var)) {
