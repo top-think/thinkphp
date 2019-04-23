@@ -86,6 +86,42 @@ class Firebird extends Driver
     }
 
     /**
+     * 批量插入记录
+     * @access public
+     * @param mixed $dataSet 数据集
+     * @param array $options 参数表达式
+     * @param boolean $replace 是否replace
+     * @return false | integer
+     */
+    public function insertAll($dataSet, $options = array(), $replace = false)
+    {
+        $values      = array();
+        $this->model = $options['model'];
+        if (!is_array($dataSet[0])) {
+            return false;
+        }
+
+        $this->parseBind(!empty($options['bind']) ? $options['bind'] : array());
+        $fields = array_map(array($this, 'parseKey'), array_keys($dataSet[0]));
+        foreach ($dataSet as $data) {
+            $value = array();
+            foreach ($data as $key => $val) {
+                if (is_array($val) && 'exp' == $val[0]) {
+                    $value[] = $val[1];
+                } elseif (is_null($val)) {
+                    $value[] = 'NULL';
+                } elseif (is_scalar($val)) {
+                    $value[] = '\''.$this->escapeString($val).'\'';
+                }
+            }
+            $values[] = 'SELECT ' . implode(',', $value).' FROM rdb$database';
+        }
+		$sql='INSERT INTO ' . $this->parseTable($options['table']) . ' (' . implode(',', $fields) . ') ' . implode(' UNION ALL ', $values);
+        $sql .= $this->parseComment(!empty($options['comment']) ? $options['comment'] : '');
+        return $this->execute($sql, !empty($options['fetch_sql']) ? true : false);
+    }
+    
+    /**
      * 取得数据表的字段信息
      * @access public
      */
