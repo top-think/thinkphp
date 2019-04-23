@@ -93,26 +93,27 @@ class Firebird extends Driver
     {
         $this->initConnect(true);
         list($tableName) = explode(' ', $tableName);
-        $sql             = 'SELECT RF.RDB$FIELD_NAME AS FIELD,RF.RDB$DEFAULT_VALUE AS DEFAULT1,RF.RDB$NULL_FLAG AS NULL1,TRIM(T.RDB$TYPE_NAME) || \'(\' || F.RDB$FIELD_LENGTH || \')\' as TYPE FROM RDB$RELATION_FIELDS RF LEFT JOIN RDB$FIELDS F ON (F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE) LEFT JOIN RDB$TYPES T ON (T.RDB$TYPE = F.RDB$FIELD_TYPE) WHERE RDB$RELATION_NAME=UPPER(\'' . $tableName . '\') AND T.RDB$FIELD_NAME = \'RDB$FIELD_TYPE\' ORDER By RDB$FIELD_POSITION';
-        $result          = $this->query($sql);
-        $info            = array();
-        if ($result) {
-            foreach ($result as $key => $val) {
-                $info[trim($val['field'])] = array(
-                    'name'    => trim($val['field']),
-                    'type'    => $val['type'],
-                    'notnull' => (bool) (1 == $val['null1']), // 1表示不为Null
-                    'default' => $val['default1'],
-                    'primary' => false,
-                    'autoinc' => false,
-                );
+        $sql='SELECT TRIM(RF.RDB$FIELD_NAME) AS FIELD,RF.RDB$DEFAULT_VALUE AS DEFAULT1,RF.RDB$NULL_FLAG AS NULL1,TRIM(T.RDB$TYPE_NAME) || \'(\' || F.RDB$FIELD_LENGTH || \')\' as TYPE FROM RDB$RELATION_FIELDS RF LEFT JOIN RDB$FIELDS F ON (F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE) LEFT JOIN RDB$TYPES T ON (T.RDB$TYPE = F.RDB$FIELD_TYPE) WHERE RDB$RELATION_NAME=UPPER(\''.$tableName.'\') AND T.RDB$FIELD_NAME = \'RDB$FIELD_TYPE\' ORDER By RDB$FIELD_POSITION';
+		$result=$this->_linkID->query($sql);
+        $info   =   array();
+        if($result){
+            foreach($result as $key => $val){
+				$info[$val[0]] = array(
+					'name'=>$val[0],
+					'type'=>$val[3],
+					'notnull'=>($val[2]==1),
+					'default' => $val[1],
+					'primary' => false,
+					'autoinc' => false
+				);
             }
         }
         //获取主键
-        $sql     = 'select b.rdb$field_name as field_name from rdb$relation_constraints a join rdb$index_segments b on a.rdb$index_name=b.rdb$index_name where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\'' . $tableName . '\')';
-        $rs_temp = $this->query($sql);
-        foreach ($rs_temp as $row) {
-            $info[trim($row['field_name'])]['primary'] = true;
+		$sql='select TRIM(b.rdb$field_name) as field_name from rdb$relation_constraints a join rdb$index_segments b on a.rdb$index_name=b.rdb$index_name where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$tableName.'\')';
+		
+		$rs_temp = $this->_linkID->query($sql);
+        foreach($rs_temp as $row) {
+            $info[$row[0]]['primary']=True;
         }
         return $info;
     }
@@ -171,6 +172,24 @@ class Firebird extends Driver
     protected function parseRand()
     {
         return 'rand()';
+    }
+    
+    /**
+     * 启动事务
+     * @access public
+     * @return void
+     */
+    public function startTrans() {
+        $this->initConnect(true);
+		
+        if ( !$this->_linkID ) return false;
+        //数据rollback 支持
+        if ($this->transTimes == 0) {
+			$this->_linkID->setAttribute( \PDO::ATTR_AUTOCOMMIT,false);
+            $this->_linkID->beginTransaction();
+        }
+        $this->transTimes++;
+        return ;
     }
 
 }
