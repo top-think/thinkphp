@@ -38,6 +38,11 @@ defined('THINK_PATH') or define('THINK_PATH', __DIR__ . '/');
 defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
 defined('APP_STATUS') or define('APP_STATUS', ''); // 应用状态 加载对应的配置文件
 defined('APP_DEBUG') or define('APP_DEBUG', false); // 是否调试模式
+defined('APP_ENV')    or define('APP_ENV',      ''); // 定义配置模式
+if(APP_ENV) define('APP_ENV_PATH',APP_ENV.'/'); // 定义配置路径
+else{
+    define('APP_ENV_PATH','');
+}
 
 if (function_exists('saeAutoLoader')) {
 // 自动识别SAE环境
