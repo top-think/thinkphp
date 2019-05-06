@@ -1697,6 +1697,50 @@ class Model
     {
         return $this->db->rollback();
     }
+    
+    /**
+     * 启动XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function startTransXa($xid)
+    {
+       return $this->db->startTransXa($xid);
+    }
+    
+    /**
+     * 预编译XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function prepareXa($xid)
+    {
+        return $this->db->prepareXa($xid);
+    }
+    
+    /**
+     * 提交XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function commitXa($xid)
+    {
+        return $this->db->commitXa($xid);
+    }
+    
+    /**
+     * 回滚XA事务
+     * @access public
+     * @param  string $xid XA事务id
+     * @return void
+     */
+    public function rollbackXa($xid)
+    {
+        return $this->db->rollbackXa($xid);
+    }
 
     /**
      * 返回模型的错误信息
