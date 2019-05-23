@@ -85,7 +85,7 @@ class ReadHtmlCacheBehavior
                     array(CONTROLLER_NAME, ACTION_NAME, MODULE_NAME),
                     $rule);
                 // {|FUN} 单独使用函数
-                $rule = preg_replace_callback('/{|(\w+)}/', function ($match) {return $match[1]();}, $rule);
+                $rule = preg_replace_callback('/{\|(\w+)}/', function ($match) {return $match[1]();}, $rule);
                 $cacheTime = C('HTML_CACHE_TIME', null, 60);
                 if (is_array($html)) {
                     if (!empty($html[2])) {
